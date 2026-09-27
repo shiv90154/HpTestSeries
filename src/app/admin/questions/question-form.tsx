@@ -3,6 +3,7 @@
 import { Plus, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
+import { RichContent } from "@/components/rich-content";
 import type { Taxonomy } from "@/modules/content/taxonomy";
 import { MAX_OPTIONS, MIN_OPTIONS, emptyQuestionInput, type Lang, type QuestionInput } from "@/modules/content/question-shape";
 import { ErrorList, input as inputCls, label as labelCls, panel } from "../ui";
@@ -31,6 +32,7 @@ export function QuestionForm({ id, initial, status, taxonomy, canPublish, canDel
   const [errors, setErrors] = useState<string[]>([]);
   const [notice, setNotice] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
+  const [previewLang, setPreviewLang] = useState<Lang>("en");
 
   const langs = (["en", "hi"] as const).filter((l) => q.langs[l]);
   const topics = taxonomy.subjects.find((s) => s.id === subjectId)?.topics ?? [];
@@ -229,6 +231,50 @@ export function QuestionForm({ id, initial, status, taxonomy, canPublish, canDel
             ))}
           </div>
         </section>
+
+        {langs.length > 0 && (
+          <section className={`${panel} space-y-3`}>
+            <div className="flex items-center justify-between">
+              <span className={labelCls}>Preview — how the student will see this</span>
+              {langs.length === 2 && (
+                <div className="flex gap-1 text-xs">
+                  {langs.map((l) => (
+                    <button
+                      key={l}
+                      type="button"
+                      onClick={() => setPreviewLang(l)}
+                      className={`rounded-md px-2 py-1 font-medium ${previewLang === l ? "bg-primary text-primary-foreground" : "text-muted hover:bg-surface-muted"}`}
+                    >
+                      {LANG_LABEL[l]}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+            {(() => {
+              const l = langs.includes(previewLang) ? previewLang : langs[0];
+              return (
+                <div className="rounded-xl border border-border bg-surface p-4">
+                  <RichContent text={q.stem[l]} className="text-base leading-relaxed" />
+                  <ul className="mt-4 space-y-2 text-sm">
+                    {q.options.map((o, i) => (
+                      <li key={i} className={`flex items-start gap-2 rounded-lg border px-3 py-2 ${q.correctIndex === i ? "border-success bg-success-soft" : "border-border"}`}>
+                        <span className="font-sans font-semibold text-muted">{LETTERS[i]}.</span>
+                        <RichContent text={o[l]} className="flex-1" />
+                      </li>
+                    ))}
+                  </ul>
+                  {q.explanation[l] && (
+                    <div className="mt-4 rounded-lg bg-primary-soft/60 p-3 text-sm">
+                      <p className="mb-1 font-semibold text-primary">Explanation</p>
+                      <RichContent text={q.explanation[l]} />
+                    </div>
+                  )}
+                </div>
+              );
+            })()}
+          </section>
+        )}
       </fieldset>
 
       <ErrorList errors={errors} />

@@ -74,11 +74,26 @@ body {
 }
 
 ::selection {
-  background: var(--primary-soft);
+  background: var(--primary);
+  color: #ffffff;
 }
 
 @layer components {
   .cbt-btn {
     @apply inline-flex h-10 items-center justify-center rounded-lg px-3 text-[13px] font-semibold sm:px-4 sm:text-sm;
+  }
+
+  .rich-content p {
+    @apply m-0;
+  }
+  .rich-content img {
+    @apply my-2 max-w-full rounded-md;
+  }
+  .rich-content ul,
+  .rich-content ol {
+    @apply my-1 pl-5;
+  }
+  .rich-content .katex-display {
+    @apply my-2 overflow-x-auto;
   }
 }

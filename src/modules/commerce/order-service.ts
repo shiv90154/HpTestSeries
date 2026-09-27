@@ -1,0 +1,42 @@
+import "server-only";
+import { db } from "@/lib/db";
+
+export type OrderListItem = {
+  id: string;
+  userName: string;
+  userEmail: string;
+  productTitle: string;
+  amountPaise: number;
+  status: string;
+  razorpayOrderId: string | null;
+  paymentId: string | null;
+  createdAt: Date;
+};
+
+export async function listOrders(limit = 200): Promise<OrderListItem[]> {
+  const orders = await db.order.findMany({
+    orderBy: { createdAt: "desc" },
+    take: limit,
+    select: {
+      id: true,
+      amountPaise: true,
+      status: true,
+      razorpayOrderId: true,
+      createdAt: true,
+      user: { select: { name: true, email: true } },
+      product: { select: { title: true } },
+      payments: { select: { razorpayPaymentId: true }, take: 1, orderBy: { createdAt: "desc" } },
+    },
+  });
+  return orders.map((o) => ({
+    id: o.id,
+    userName: o.user.name,
+    userEmail: o.user.email,
+    productTitle: o.product.title,
+    amountPaise: o.amountPaise,
+    status: o.status,
+    razorpayOrderId: o.razorpayOrderId,
+    paymentId: o.payments[0]?.razorpayPaymentId ?? null,
+    createdAt: o.createdAt,
+  }));
+}

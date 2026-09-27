@@ -17,6 +17,7 @@ import { SiteHeader } from "@/components/site-header";
 import { btn, card } from "@/components/ui";
 import { site } from "@/lib/site";
 import { getCatalog } from "@/modules/catalog/queries";
+import { listActiveProducts } from "@/modules/commerce/product-service";
 
 export const revalidate = 3600;
 
@@ -45,6 +46,12 @@ const features = [
   },
 ];
 
+const PLAN_ITEMS: Record<string, string[]> = {
+  SERIES: ["Full mock tests", "Previous-year style questions", "Sectional & topic tests", "Detailed analysis"],
+  PACK: ["Multiple exam series", "Full mock tests & PYQs", "Sectional & topic tests", "Detailed analysis"],
+  PASS: ["Every Himachal exam", "All mock tests & PYQs", "HP GK & current affairs tests", "Best value for serious aspirants"],
+};
+
 const faqs = [
   {
     q: "Can I take a mock test without logging in?",
@@ -69,7 +76,7 @@ const faqs = [
 ];
 
 export default async function Home() {
-  const catalog = await getCatalog();
+  const [catalog, products] = await Promise.all([getCatalog(), listActiveProducts()]);
   const examCount = catalog.reduce((n, b) => n + b.exams.length, 0);
 
   return (
@@ -228,8 +235,24 @@ export default async function Home() {
             </div>
             <div className="-mx-4 flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 pb-2 scrollbar-none md:mx-0 md:grid md:grid-cols-3 md:gap-5 md:overflow-visible md:px-0 md:pb-0">
               <Plan name="Free" price="₹0" note="forever" items={["Free mock tests", "Real CBT interface", "Solutions in Hindi & English", "HP rank on free tests"]} cta={{ href: DEMO, label: "Start free test" }} />
-              <Plan name="Exam Test Series" price="₹49–99" note="per exam" soon items={["20–40 full mock tests", "Previous-year papers", "Sectional & topic tests", "Detailed analysis"]} />
-              <Plan highlight name="All-Access Pass" price="₹299" note="per year" soon items={["Every Himachal exam", "All mock tests & PYQs", "HP GK & current affairs tests", "Best value for serious aspirants"]} />
+              {products.length > 0 ? (
+                products.slice(0, 2).map((p, i, shown) => (
+                  <Plan
+                    key={p.slug}
+                    highlight={i === shown.length - 1}
+                    name={p.title}
+                    price={`₹${(p.priceInPaise / 100).toLocaleString("en-IN")}`}
+                    note={p.validityDays ? `valid ${p.validityDays} days` : "one-time"}
+                    items={PLAN_ITEMS[p.kind] ?? PLAN_ITEMS.SERIES}
+                    cta={{ href: `/buy/${p.slug}`, label: "Buy now" }}
+                  />
+                ))
+              ) : (
+                <>
+                  <Plan name="Exam Test Series" price="₹49–99" note="per exam" soon items={["20–40 full mock tests", "Previous-year papers", "Sectional & topic tests", "Detailed analysis"]} />
+                  <Plan highlight name="All-Access Pass" price="₹299" note="per year" soon items={["Every Himachal exam", "All mock tests & PYQs", "HP GK & current affairs tests", "Best value for serious aspirants"]} />
+                </>
+              )}
             </div>
           </div>
         </section>
@@ -271,23 +294,24 @@ export default async function Home() {
 
 function Plan(props: { name: string; price: string; note: string; items: string[]; highlight?: boolean; soon?: boolean; cta?: { href: string; label: string } }) {
   return (
-    <div className={`relative flex w-[82%] shrink-0 snap-center flex-col rounded-2xl border p-5 md:w-auto md:p-6 ${props.highlight ? "border-primary bg-primary text-white shadow-xl" : "border-border bg-background"}`}>
+    <div className={`relative flex w-[82%] shrink-0 snap-center flex-col rounded-2xl border bg-background p-5 md:w-auto md:p-6 ${props.highlight ? "border-primary shadow-xl" : "border-border"}`}>
+      {props.highlight && (
+        <span className="absolute -top-3 left-5 rounded-full bg-primary px-2.5 py-1 text-xs font-semibold text-white">Best value</span>
+      )}
       {props.soon && (
-        <span className={`absolute right-5 top-5 rounded-full px-2.5 py-1 text-xs font-semibold ${props.highlight ? "bg-accent text-[#1f1300]" : "bg-accent-soft text-accent-strong"}`}>
-          Launching soon
-        </span>
+        <span className="absolute right-5 top-5 rounded-full bg-accent-soft px-2.5 py-1 text-xs font-semibold text-accent-strong">Launching soon</span>
       )}
       <h3 className="flex items-center gap-2 font-semibold">
-        <BadgeIndianRupee className={`size-5 ${props.highlight ? "text-accent" : "text-primary"}`} /> {props.name}
+        <BadgeIndianRupee className="size-5 text-primary" /> {props.name}
       </h3>
       <p className="mt-4">
         <span className="text-4xl font-bold">{props.price}</span>
-        <span className={`ml-1 text-sm ${props.highlight ? "text-white/75" : "text-muted"}`}>{props.note}</span>
+        <span className="ml-1 text-sm text-muted">{props.note}</span>
       </p>
       <ul className="mt-6 flex-1 space-y-2.5 text-sm">
         {props.items.map((i) => (
           <li key={i} className="flex items-start gap-2">
-            <CheckCircle2 className={`mt-0.5 size-4 shrink-0 ${props.highlight ? "text-accent" : "text-success"}`} /> {i}
+            <CheckCircle2 className="mt-0.5 size-4 shrink-0 text-success" /> {i}
           </li>
         ))}
       </ul>

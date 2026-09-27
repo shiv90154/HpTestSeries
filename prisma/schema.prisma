@@ -521,6 +521,8 @@ model Attempt {
   sectionStats Json?
   topicStats   Json?
   flagged      Boolean       @default(false) // suspicious; excluded from leaderboards
+  // Tab-switch / fullscreen-exit / copy-paste attempts seen by the client during the exam.
+  violationCount Int         @default(0)
 
   // A partial unique index (one IN_PROGRESS attempt per user+test) is added in raw SQL in the first migration.
   @@index([testId, isFirst, score(sort: Desc)])
@@ -571,4 +573,16 @@ model AuditLog {
   at       DateTime @default(now())
 
   @@index([entity, entityId])
+}
+
+// Self-hosted crash/error log — no external monitoring service is wired up yet.
+model ErrorLog {
+  id        String   @id @default(cuid())
+  message   String
+  stack     String?
+  path      String? // route or server action where it was caught
+  userId    String?
+  createdAt DateTime @default(now())
+
+  @@index([createdAt(sort: Desc)])
 }

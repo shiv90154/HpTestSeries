@@ -276,15 +276,18 @@ export async function startAttempt(userId: string, slug: string): Promise<Starte
   }
 }
 
-export async function saveProgress(userId: string, attemptId: string, answers: SubmittedAnswers): Promise<boolean> {
+/** Attempts with this many recorded tab-switch/fullscreen-exit/copy-paste violations are excluded from ranking. */
+const VIOLATION_FLAG_THRESHOLD = 5;
+
+export async function saveProgress(userId: string, attemptId: string, answers: SubmittedAnswers, violationCount?: number): Promise<boolean> {
   const res = await db.attempt.updateMany({
     where: { id: attemptId, userId, status: "IN_PROGRESS", deadlineAt: { gt: new Date(Date.now() - SUBMIT_GRACE_MS) } },
-    data: { answers },
+    data: { answers, ...(violationCount !== undefined && { violationCount }) },
   });
   return res.count === 1;
 }
 
-async function finalizeAttempt(t: FullTest, attemptId: string, answers: SubmittedAnswers) {
+async function finalizeAttempt(t: FullTest, attemptId: string, answers: SubmittedAnswers, violationCount?: number) {
   const clean = sanitizeAnswers(t, answers);
   const grade = gradeAttempt(gradingSections(t), clean);
   await db.attempt.updateMany({
@@ -300,12 +303,21 @@ async function finalizeAttempt(t: FullTest, attemptId: string, answers: Submitte
       timeSpentSec: grade.timeSpentSec,
       sectionStats: grade.sectionStats,
       topicStats: grade.topicStats,
+      ...(violationCount !== undefined && { violationCount, flagged: violationCount >= VIOLATION_FLAG_THRESHOLD }),
     },
   });
 }
 
-export async function submitAttempt(userId: string, attemptId: string, answers: SubmittedAnswers): Promise<{ ok: true } | { error: string }> {
-  const attempt = await db.attempt.findFirst({ where: { id: attemptId, userId }, include: { test: { select: { slug: true } } } });
+export async function submitAttempt(
+  userId: string,
+  attemptId: string,
+  answers: SubmittedAnswers,
+  violationCount?: number,
+): Promise<{ ok: true } | { error: string }> {
+  const attempt = await db.attempt.findFirst({
+    where: { id: attemptId, userId },
+    include: { test: { select: { slug: true, title: true } } },
+  });
   if (!attempt) return { error: "Attempt not found." };
   if (attempt.status !== "IN_PROGRESS") return { ok: true }; // already submitted (double submit / retry)
 
@@ -314,8 +326,16 @@ export async function submitAttempt(userId: string, attemptId: string, answers: 
 
   // After the deadline (plus grace) only the last autosave counts — answers can't be changed late.
   const late = Date.now() > attempt.deadlineAt.getTime() + SUBMIT_GRACE_MS;
-  await finalizeAttempt(t, attempt.id, late ? (attempt.answers as SubmittedAnswers) : answers);
+  await finalizeAttempt(t, attempt.id, late ? (attempt.answers as SubmittedAnswers) : answers, violationCount);
+  void notifyResultReady(userId, attemptId, attempt.test.title).catch(() => {});
   return { ok: true };
+}
+
+async function notifyResultReady(userId: string, attemptId: string, testTitle: string): Promise<void> {
+  const user = await db.user.findUnique({ where: { id: userId }, select: { email: true, emailVerified: true } });
+  if (!user?.email || !user.emailVerified) return;
+  const { sendResultReadyEmail } = await import("@/modules/identity/email");
+  await sendResultReadyEmail(user.email, testTitle, attemptId);
 }
 
 export async function getAttemptResult(userId: string, attemptId: string): Promise<ResultData | null> {

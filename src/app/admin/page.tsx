@@ -5,11 +5,18 @@ import { db } from "@/lib/db";
 export default async function AdminOverviewPage() {
   await connection(); // always render per request; counts must be live
 
-  const [exams, questions, published, users] = await Promise.all([
+  const todayStart = new Date();
+  todayStart.setHours(0, 0, 0, 0);
+
+  const [exams, questions, published, users, revenue, ordersToday, attemptsToday, flagged] = await Promise.all([
     db.exam.count(),
     db.question.count(),
     db.question.count({ where: { status: "PUBLISHED" } }),
     db.user.count(),
+    db.order.aggregate({ where: { status: "PAID" }, _sum: { amountPaise: true } }),
+    db.order.count({ where: { status: "PAID", createdAt: { gte: todayStart } } }),
+    db.attempt.count({ where: { status: "SUBMITTED", submittedAt: { gte: todayStart } } }),
+    db.attempt.count({ where: { flagged: true } }),
   ]);
 
   const missing = missingBusinessDetails();
@@ -19,6 +26,10 @@ export default async function AdminOverviewPage() {
     { label: "Questions", value: questions },
     { label: "Published questions", value: published },
     { label: "Users", value: users },
+    { label: "Revenue (paid)", value: (revenue._sum.amountPaise ?? 0) / 100, isCurrency: true },
+    { label: "Orders today", value: ordersToday },
+    { label: "Attempts today", value: attemptsToday },
+    { label: "Flagged attempts", value: flagged },
   ];
 
   return (
@@ -34,7 +45,10 @@ export default async function AdminOverviewPage() {
         {stats.map((s) => (
           <div key={s.label} className="rounded-xl border border-border bg-surface p-4">
             <dt className="text-sm text-muted">{s.label}</dt>
-            <dd className="mt-1 text-2xl font-semibold tabular-nums">{s.value.toLocaleString("en-IN")}</dd>
+            <dd className="mt-1 text-2xl font-semibold tabular-nums">
+              {"isCurrency" in s && s.isCurrency ? "₹" : ""}
+              {s.value.toLocaleString("en-IN")}
+            </dd>
           </div>
         ))}
       </dl>

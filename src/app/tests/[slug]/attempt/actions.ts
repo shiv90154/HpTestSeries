@@ -13,19 +13,25 @@ export async function startAttemptAction(slug: string): Promise<StartedAttempt |
   return startAttempt(user.id, id.parse(slug));
 }
 
-export async function saveProgressAction(attemptId: string, answers: unknown): Promise<boolean> {
+const violationCount = z.number().int().min(0).max(100_000);
+
+export async function saveProgressAction(attemptId: string, answers: unknown, violations?: number): Promise<boolean> {
   const user = await getCurrentUser();
   const parsed = answersSchema.safeParse(answers);
   if (!user || !parsed.success) return false;
-  return saveProgress(user.id, id.parse(attemptId), parsed.data);
+  return saveProgress(user.id, id.parse(attemptId), parsed.data, violations !== undefined ? violationCount.parse(violations) : undefined);
 }
 
-export async function submitAttemptAction(attemptId: string, answers: unknown): Promise<{ ok: true } | { error: string }> {
+export async function submitAttemptAction(
+  attemptId: string,
+  answers: unknown,
+  violations?: number,
+): Promise<{ ok: true } | { error: string }> {
   const user = await getCurrentUser();
   if (!user) return { error: "Your session expired. Log in again — your autosaved answers are safe." };
   const parsed = answersSchema.safeParse(answers);
   if (!parsed.success) return { error: "Could not read your answers. Please try again." };
-  return submitAttempt(user.id, id.parse(attemptId), parsed.data);
+  return submitAttempt(user.id, id.parse(attemptId), parsed.data, violations !== undefined ? violationCount.parse(violations) : undefined);
 }
 
 export async function gradeGuestAction(slug: string, answers: unknown): Promise<ResultData | { error: string }> {

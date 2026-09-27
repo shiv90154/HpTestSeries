@@ -4,17 +4,17 @@
 
 export const business = {
   /** Legal name exactly as on PAN (proprietor's name, or the company/LLP name) */
-  legalName: "",
+  legalName: "Shiv Kumar",
   /** Support email, e.g. support@hptestseries.in */
   email: "shiva90154@gmail.com",
   /** Support phone in +91 format */
   phone: "+91 90154 84696",
   /** Full postal address with PIN code */
-  address: "",
+  address: "Village Bhalat, Post Office Harsour, Hamirpur, Himachal Pradesh 174305",
   /** City whose courts have jurisdiction, e.g. "Shimla" */
-  jurisdictionCity: "",
+  jurisdictionCity: "Hamirpur",
   /** Grievance Officer (IT Rules 2021 / DPDP Act 2023) — can be the owner */
-  grievanceOfficer: "",
+  grievanceOfficer: "Shiv Kumar",
   supportHours: "Monday to Saturday, 10:00 AM – 6:00 PM IST",
   /** Date the current policies took effect (YYYY-MM-DD) */
   policiesUpdated: "2026-09-27",

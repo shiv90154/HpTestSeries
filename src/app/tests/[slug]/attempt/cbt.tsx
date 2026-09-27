@@ -1,10 +1,11 @@
 "use client";
 
-import { Clock, Grid3x3, Languages, LogIn, X } from "lucide-react";
+import { Clock, Grid3x3, Languages, LogIn, Maximize, X } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
+import { RichContent } from "@/components/rich-content";
 import type { Bilingual, Paper, SubmittedAnswers } from "@/modules/assessment/types";
 import { gradeGuestAction, saveProgressAction, startAttemptAction, submitAttemptAction } from "./actions";
 import { OnboardingTour } from "./onboarding-tour";
@@ -92,10 +93,14 @@ export function Cbt({ paper, candidate }: { paper: Paper; candidate: { name: str
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [starting, setStarting] = useState(false);
+  const [violations, setViolations] = useState(0);
+  const [fullscreenLost, setFullscreenLost] = useState(false);
 
   const shownAt = useRef(0); // set when the exam starts
   const dirty = useRef(false);
   const submittedRef = useRef(false);
+  const violationsRef = useRef(0);
+  const lastViolationToastAt = useRef(0);
   const drawerRef = useRef<HTMLDivElement>(null);
   const swipeStartX = useRef<number | null>(null);
 
@@ -128,6 +133,63 @@ export function Cbt({ paper, candidate }: { paper: Paper; candidate: { name: str
     }
     return out;
   }, []);
+
+  // Anti-cheating: honour-system deterrents only — logs are shown to the student, sent to the
+  // server, and surfaced to admins (flagged if excessive), but nothing here can stop a determined
+  // cheater (e.g. a second device). See AGENTS.md-adjacent docs — this is a best-effort signal, not enforcement.
+  const recordViolation = useCallback((message: string) => {
+    violationsRef.current += 1;
+    setViolations(violationsRef.current);
+    dirty.current = true;
+    const now = Date.now();
+    if (now - lastViolationToastAt.current > 4000) {
+      lastViolationToastAt.current = now;
+      toast.warning(message);
+    }
+  }, []);
+
+  // Tab switch / minimise detection.
+  useEffect(() => {
+    if (phase !== "exam") return;
+    const onVisibility = () => {
+      if (document.hidden) recordViolation("Tab switch detected — this has been recorded.");
+    };
+    document.addEventListener("visibilitychange", onVisibility);
+    return () => document.removeEventListener("visibilitychange", onVisibility);
+  }, [phase, recordViolation]);
+
+  // Right-click and copy/cut/paste are disabled during the exam.
+  useEffect(() => {
+    if (phase !== "exam") return;
+    const block = (e: Event) => e.preventDefault();
+    const onCopyLike = (e: Event) => {
+      e.preventDefault();
+      recordViolation("Copying is not allowed during the test.");
+    };
+    document.addEventListener("contextmenu", block);
+    document.addEventListener("copy", onCopyLike);
+    document.addEventListener("cut", onCopyLike);
+    document.addEventListener("paste", onCopyLike);
+    return () => {
+      document.removeEventListener("contextmenu", block);
+      document.removeEventListener("copy", onCopyLike);
+      document.removeEventListener("cut", onCopyLike);
+      document.removeEventListener("paste", onCopyLike);
+    };
+  }, [phase, recordViolation]);
+
+  // Fullscreen enforcement: request it on entering the exam, flag when the student exits it.
+  useEffect(() => {
+    if (phase !== "exam") return;
+    document.documentElement.requestFullscreen?.().catch(() => {});
+    const onFullscreenChange = () => {
+      const inFullscreen = !!document.fullscreenElement;
+      setFullscreenLost(!inFullscreen);
+      if (!inFullscreen) recordViolation("You exited fullscreen — this has been recorded.");
+    };
+    document.addEventListener("fullscreenchange", onFullscreenChange);
+    return () => document.removeEventListener("fullscreenchange", onFullscreenChange);
+  }, [phase, recordViolation]);
 
   // Persist locally on every change so a reload or dead battery doesn't lose answers.
   useEffect(() => {
@@ -216,15 +278,17 @@ export function Cbt({ paper, candidate }: { paper: Paper; candidate: { name: str
     const answers = toAnswers(commitTime(qs));
     try {
       if (candidate && attemptId) {
-        const res = await submitAttemptAction(attemptId, answers);
+        const res = await submitAttemptAction(attemptId, answers, violationsRef.current);
         if ("error" in res) throw new Error(res.error);
         writeStored(storeKey, null);
+        if (document.fullscreenElement) void document.exitFullscreen().catch(() => {});
         router.replace(`/results/${attemptId}`);
       } else {
         const res = await gradeGuestAction(paper.slug, answers);
         if ("error" in res) throw new Error(res.error);
         sessionStorage.setItem(`result:${paper.slug}`, JSON.stringify(res));
         writeStored(storeKey, null);
+        if (document.fullscreenElement) void document.exitFullscreen().catch(() => {});
         router.replace(`/tests/${paper.slug}/result`);
       }
     } catch (err) {
@@ -255,7 +319,7 @@ export function Cbt({ paper, candidate }: { paper: Paper; candidate: { name: str
     const id = setInterval(() => {
       if (!dirty.current) return;
       dirty.current = false;
-      void saveProgressAction(attemptId, toAnswers(qs)).catch(() =>
+      void saveProgressAction(attemptId, toAnswers(qs), violationsRef.current).catch(() =>
         toast.error("Couldn't save your progress — check your internet connection."),
       );
     }, AUTOSAVE_MS);
@@ -346,6 +410,14 @@ export function Cbt({ paper, candidate }: { paper: Paper; candidate: { name: str
         <p className="min-w-0 flex-1 truncate font-sans text-sm font-semibold sm:text-base">
           {lang === "hi" && paper.titleHi ? paper.titleHi : paper.title}
         </p>
+        {violations > 0 && (
+          <span
+            className="hidden shrink-0 rounded-md bg-danger px-2 py-1 font-sans text-xs font-semibold text-white sm:inline"
+            title="Tab switches, fullscreen exits and copy/paste attempts recorded this test"
+          >
+            {violations} flagged
+          </span>
+        )}
         <div
           id="cbt-timer"
           className={`flex items-center gap-1.5 rounded-md px-2.5 py-1 font-mono text-sm font-semibold tabular-nums ${remaining < 5 * 60_000 ? "bg-danger animate-pulse" : "bg-white/15"}`}
@@ -396,6 +468,19 @@ export function Cbt({ paper, candidate }: { paper: Paper; candidate: { name: str
         )}
       </div>
 
+      {fullscreenLost && (
+        <div className="flex items-center gap-3 bg-danger-soft px-4 py-2 font-sans text-sm text-danger">
+          <p className="flex-1">You left fullscreen mode. Please return to it to continue the test.</p>
+          <button
+            type="button"
+            onClick={() => void document.documentElement.requestFullscreen?.().catch(() => {})}
+            className="inline-flex shrink-0 items-center gap-1.5 rounded-lg bg-danger px-3 py-1.5 font-semibold text-white"
+          >
+            <Maximize className="size-4" /> Re-enter fullscreen
+          </button>
+        </div>
+      )}
+
       <div className="flex min-h-0 flex-1">
         {/* Question */}
         <main className="flex min-w-0 flex-1 flex-col">
@@ -413,7 +498,7 @@ export function Cbt({ paper, candidate }: { paper: Paper; candidate: { name: str
           </div>
 
           <div className="flex-1 overflow-y-auto px-4 py-5 sm:px-6">
-            <p className="whitespace-pre-line text-base leading-relaxed sm:text-[17px]">{pick(q.stem, lang)}</p>
+            <RichContent text={pick(q.stem, lang)} className="text-base leading-relaxed sm:text-[17px]" />
             <fieldset className="mt-6 space-y-2.5">
               <legend className="sr-only">Options</legend>
               {q.options.map((o, i) => {
@@ -431,7 +516,7 @@ export function Cbt({ paper, candidate }: { paper: Paper; candidate: { name: str
                       onChange={() => setSelection(o.id)}
                     />
                     <span className="font-sans text-sm font-semibold text-muted">{String.fromCharCode(65 + i)}.</span>
-                    <span className="flex-1 leading-relaxed">{pick(o.text, lang)}</span>
+                    <RichContent text={pick(o.text, lang)} className="flex-1 leading-relaxed" />
                   </label>
                 );
               })}
@@ -692,6 +777,7 @@ function Instructions(props: {
                 <li><b>Mark for Review &amp; Next</b> प्रश्न को बाद में देखने के लिए चिह्नित करता है। चिह्नित प्रश्न का चुना हुआ उत्तर भी मूल्यांकित होगा।</li>
                 <li>चुना हुआ उत्तर हटाने के लिए <b>Clear Response</b> पर क्लिक करें।</li>
                 <li>ऊपर दिए सेक्शन टैब से किसी भी सेक्शन में जा सकते हैं, और &ldquo;View in&rdquo; से भाषा बदल सकते हैं।</li>
+                <li>टेस्ट फुलस्क्रीन में शुरू होगा। टैब बदलना, फुलस्क्रीन से बाहर जाना या कॉपी करने की कोशिश दर्ज की जाएगी।</li>
               </>
             ) : (
               <>
@@ -701,6 +787,7 @@ function Instructions(props: {
                 <li><b>Mark for Review &amp; Next</b> flags a question to revisit. A selected answer on a marked question is still evaluated.</li>
                 <li>Click <b>Clear Response</b> to remove your selected answer.</li>
                 <li>Use the section tabs at the top to switch sections, and &ldquo;View in&rdquo; to switch between English and Hindi at any time.</li>
+                <li>The test opens in fullscreen. Switching tabs, leaving fullscreen or trying to copy content is recorded.</li>
               </>
             )}
           </ol>

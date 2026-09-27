@@ -29,25 +29,46 @@ export function otpEmail(code: string): { subject: string; text: string; html: s
 }
 
 export async function sendOtpEmail(email: string, code: string): Promise<void> {
+  if (!(await sendEmail(email, otpEmail(code), `[dev] Email OTP for ${email}: ${code}`))) {
+    // Never log the code itself.
+    throw new Error("Resend send failed");
+  }
+}
+
+function resultReadyEmail(testTitle: string, attemptId: string): { subject: string; text: string; html: string } {
+  const url = `${process.env.NEXT_PUBLIC_SITE_URL ?? ""}/results/${attemptId}`;
+  const subject = `Your result for "${testTitle}" is ready`;
+  const text = [`Your result for "${testTitle}" is ready.`, "", `View it here: ${url}`].join("\n");
+  const html = `<!doctype html><html><body style="margin:0;background:#f5f7fb;font-family:Arial,Helvetica,sans-serif;color:#0f1b33">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="padding:24px 12px"><tr><td align="center">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:440px;background:#ffffff;border:1px solid #dfe5ef;border-radius:16px;padding:28px">
+<tr><td style="font-size:18px;font-weight:bold;color:#1e4fd8">HP Test Series</td></tr>
+<tr><td style="padding-top:16px;font-size:15px">Your result for <b>${testTitle}</b> is ready.</td></tr>
+<tr><td style="padding-top:16px"><a href="${url}" style="display:inline-block;background:#1e4fd8;color:#fff;padding:10px 18px;border-radius:8px;text-decoration:none;font-weight:600">View result</a></td></tr>
+</table></td></tr></table></body></html>`;
+  return { subject, text, html };
+}
+
+/** Best-effort — a missing/broken email setup must never block grading or submission. */
+export async function sendResultReadyEmail(email: string, testTitle: string, attemptId: string): Promise<void> {
+  await sendEmail(email, resultReadyEmail(testTitle, attemptId), `[dev] Result-ready email for ${email}: ${testTitle}`);
+}
+
+async function sendEmail(email: string, content: { subject: string; text: string; html: string }, devLogLine: string): Promise<boolean> {
   const apiKey = process.env.RESEND_API_KEY;
   const from = process.env.EMAIL_FROM;
 
   if (!apiKey || !from) {
-    if (process.env.NODE_ENV === "production") {
-      throw new Error("RESEND_API_KEY / EMAIL_FROM are not configured");
-    }
-    // Local development: no email is sent; read the code from the server terminal.
-    console.info(`[dev] Email OTP for ${email}: ${code}`);
-    return;
+    if (process.env.NODE_ENV === "production") return false;
+    // Local development: no email is sent.
+    console.info(devLogLine);
+    return true;
   }
 
   const res = await fetch(RESEND_URL, {
     method: "POST",
     headers: { authorization: `Bearer ${apiKey}`, "content-type": "application/json" },
-    body: JSON.stringify({ from, to: [email], ...otpEmail(code) }),
+    body: JSON.stringify({ from, to: [email], ...content }),
   });
-  if (!res.ok) {
-    // Never log the code itself.
-    throw new Error(`Resend send failed with status ${res.status}`);
-  }
+  return res.ok;
 }

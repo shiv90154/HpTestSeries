@@ -4,6 +4,7 @@ import confetti from "canvas-confetti";
 import { Award, CheckCircle2, Clock, LogIn, RotateCcw, Target, Trophy, XCircle } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
+import { RichContent } from "@/components/rich-content";
 import type { Bilingual, ResultData } from "@/modules/assessment/types";
 import { ReportQuestion } from "./report-question";
 import { btn, card } from "./ui";
@@ -226,7 +227,7 @@ export function ResultView({ data, isGuest, loggedIn = !isGuest }: { data: Resul
                   </span>
                   <span className="text-muted">{duration(q.timeSec)}</span>
                 </div>
-                <p className="whitespace-pre-line font-reading leading-relaxed">{pick(q.stem, lang)}</p>
+                <RichContent text={pick(q.stem, lang)} className="font-reading leading-relaxed" />
                 <ul className="mt-4 space-y-2 font-reading text-[15px]">
                   {q.options.map((opt, i) => {
                     const isCorrect = opt.id === q.correctOptionId;
@@ -237,7 +238,7 @@ export function ResultView({ data, isGuest, loggedIn = !isGuest }: { data: Resul
                         className={`flex items-start gap-3 rounded-lg border px-3.5 py-2.5 ${isCorrect ? "border-success bg-success-soft" : isChosen ? "border-danger bg-danger-soft" : "border-border"}`}
                       >
                         <span className="font-sans text-sm font-semibold text-muted">{String.fromCharCode(65 + i)}.</span>
-                        <span className="flex-1">{pick(opt.text, lang)}</span>
+                        <RichContent text={pick(opt.text, lang)} className="flex-1" />
                         {isCorrect && <CheckCircle2 className="size-5 shrink-0 text-success" aria-label="Correct answer" />}
                         {isChosen && !isCorrect && <XCircle className="size-5 shrink-0 text-danger" aria-label="Your answer" />}
                       </li>
@@ -249,7 +250,7 @@ export function ResultView({ data, isGuest, loggedIn = !isGuest }: { data: Resul
                     <p className="mb-1 flex items-center gap-1.5 font-semibold text-primary">
                       <Award className="size-4" /> Explanation
                     </p>
-                    <p className="font-reading">{pick(q.explanation, lang)}</p>
+                    <RichContent text={pick(q.explanation, lang)} className="font-reading" />
                   </div>
                 )}
                 <div className="mt-4 border-t border-border pt-3">
