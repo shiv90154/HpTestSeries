@@ -47,6 +47,13 @@ export const auth = betterAuth({
     cookieCache: { enabled: true, maxAge: 5 * 60 }, // avoid a DB hit on every request
   },
 
+  advanced: {
+    // nginx sets X-Real-IP to $remote_addr (unspoofable) and the app only listens on 127.0.0.1.
+    // X-Forwarded-For is unusable: a client-sent value makes the chain multi-hop, Better Auth then
+    // resolves no IP and every user shares one rate-limit bucket.
+    ipAddress: { ipAddressHeaders: ["x-real-ip"] },
+  },
+
   rateLimit: {
     enabled: true,
     storage: "database",
