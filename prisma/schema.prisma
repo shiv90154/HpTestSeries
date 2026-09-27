@@ -1,0 +1,574 @@
+// HP Test Series — data model. See docs/BLUEPRINT.md §13 for the rationale.
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ───────────────────────── Identity (Better Auth tables) ─────────────────────────
+
+enum Role {
+  STUDENT
+  SUPPORT
+  EDITOR
+  REVIEWER
+  ADMIN
+}
+
+enum Lang {
+  en
+  hi
+}
+
+model User {
+  id                  String    @id @default(cuid())
+  name                String
+  email               String    @unique
+  emailVerified       Boolean   @default(false)
+  image               String?
+  phoneNumber         String?   @unique
+  phoneNumberVerified Boolean   @default(false)
+  role                Role      @default(STUDENT)
+  preferredLang       Lang      @default(en)
+  district            String?
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+
+  sessions       Session[]
+  accounts       Account[]
+  attempts       Attempt[]
+  orders         Order[]
+  entitlements   Entitlement[]
+  reports        QuestionReport[]
+  questionsMade  Question[]       @relation("QuestionCreatedBy")
+  questionsCheck Question[]       @relation("QuestionReviewedBy")
+  auditLogs      AuditLog[]
+
+  @@map("user")
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  token     String   @unique
+  expiresAt DateTime
+  ipAddress String?
+  userAgent String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@map("session")
+}
+
+model Account {
+  id                    String    @id @default(cuid())
+  accountId             String
+  providerId            String
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  @@index([userId])
+  @@map("account")
+}
+
+model Verification {
+  id         String   @id @default(cuid())
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([identifier])
+  @@map("verification")
+}
+
+// Better Auth rate-limit counters (rateLimit.storage = "database"; memory is useless on serverless).
+model RateLimit {
+  id          String @id @default(cuid())
+  key         String @unique
+  count       Int
+  lastRequest BigInt
+
+  @@map("rateLimit")
+}
+
+// ───────────────────────── Catalogue ─────────────────────────
+
+model ExamBody {
+  id     String @id @default(cuid())
+  slug   String @unique // e.g. "hprca" — first URL segment
+  name   String
+  nameHi String?
+  state  String @default("HP") // future multi-state expansion
+  order  Int    @default(0)
+  exams  Exam[]
+}
+
+model Exam {
+  id          String   @id @default(cuid())
+  bodyId      String
+  body        ExamBody @relation(fields: [bodyId], references: [id])
+  slug        String // unique within body, e.g. "joa-it"
+  name        String
+  nameHi      String?
+  description String?
+  pattern     Json? // sections, marks, negative marking, duration, as displayed on the hub page
+  syllabus    String? // markdown
+  seo         Json? // { title, description, keywords }
+  isActive    Boolean  @default(true)
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  stages       ExamStage[]
+  topics       ExamTopic[]
+  tests        Test[]
+  series       TestSeries[]
+  pyqQuestions Question[]
+
+  @@unique([bodyId, slug])
+}
+
+model ExamStage {
+  id     String @id @default(cuid())
+  examId String
+  exam   Exam   @relation(fields: [examId], references: [id], onDelete: Cascade)
+  slug   String // "prelims", "mains", "tgt-arts"
+  name   String
+  nameHi String?
+  order  Int    @default(0)
+  tests  Test[]
+
+  @@unique([examId, slug])
+}
+
+// Global subject/topic taxonomy shared across all exams — the basis of question reuse.
+model Subject {
+  id     String  @id @default(cuid())
+  slug   String  @unique
+  name   String
+  nameHi String?
+  order  Int     @default(0)
+  topics Topic[]
+}
+
+model Topic {
+  id        String          @id @default(cuid())
+  subjectId String
+  subject   Subject         @relation(fields: [subjectId], references: [id])
+  parentId  String?
+  parent    Topic?          @relation("TopicTree", fields: [parentId], references: [id])
+  children  Topic[]         @relation("TopicTree")
+  slug      String
+  name      String
+  nameHi    String?
+  order     Int             @default(0)
+  exams     ExamTopic[]
+  questions QuestionTopic[]
+
+  @@unique([subjectId, slug])
+}
+
+model ExamTopic {
+  examId  String
+  exam    Exam   @relation(fields: [examId], references: [id], onDelete: Cascade)
+  topicId String
+  topic   Topic  @relation(fields: [topicId], references: [id], onDelete: Cascade)
+
+  @@id([examId, topicId])
+}
+
+// ───────────────────────── Question bank ─────────────────────────
+
+enum QuestionType {
+  MCQ_SINGLE
+}
+
+enum Difficulty {
+  EASY
+  MEDIUM
+  HARD
+}
+
+enum ContentStatus {
+  DRAFT
+  IN_REVIEW
+  PUBLISHED
+  ARCHIVED
+}
+
+enum SourceType {
+  ORIGINAL
+  PYQ
+}
+
+model Question {
+  id           String        @id @default(cuid())
+  type         QuestionType  @default(MCQ_SINGLE)
+  difficulty   Difficulty    @default(MEDIUM)
+  status       ContentStatus @default(DRAFT)
+  sourceType   SourceType    @default(ORIGINAL)
+  sourceExamId String?
+  sourceExam   Exam?         @relation(fields: [sourceExamId], references: [id])
+  sourceYear   Int?
+  textHash     String // normalized-stem hash for duplicate detection
+  createdById  String?
+  createdBy    User?         @relation("QuestionCreatedBy", fields: [createdById], references: [id])
+  reviewedById String?
+  reviewedBy   User?         @relation("QuestionReviewedBy", fields: [reviewedById], references: [id])
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  contents      QuestionContent[]
+  options       QuestionOption[]
+  topics        QuestionTopic[]
+  testQuestions TestQuestion[]
+  reports       QuestionReport[]
+
+  @@index([textHash])
+  @@index([status, difficulty])
+}
+
+model QuestionContent {
+  questionId  String
+  question    Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  lang        Lang
+  stem        String // markdown (images as R2 URLs)
+  explanation String?
+
+  @@id([questionId, lang])
+}
+
+model QuestionOption {
+  id         String                  @id @default(cuid())
+  questionId String
+  question   Question                @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  order      Int
+  isCorrect  Boolean                 @default(false)
+  contents   QuestionOptionContent[]
+
+  @@unique([questionId, order])
+}
+
+model QuestionOptionContent {
+  optionId String
+  option   QuestionOption @relation(fields: [optionId], references: [id], onDelete: Cascade)
+  lang     Lang
+  text     String
+
+  @@id([optionId, lang])
+}
+
+model QuestionTopic {
+  questionId String
+  question   Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  topicId    String
+  topic      Topic    @relation(fields: [topicId], references: [id], onDelete: Cascade)
+
+  @@id([questionId, topicId])
+  @@index([topicId])
+}
+
+// ───────────────────────── Tests & series ─────────────────────────
+
+enum TestType {
+  MOCK
+  PYQ
+  SECTIONAL
+  TOPIC
+  DAILY
+}
+
+model Test {
+  id           String        @id @default(cuid())
+  slug         String        @unique
+  title        String
+  titleHi      String?
+  type         TestType
+  examId       String?
+  exam         Exam?         @relation(fields: [examId], references: [id])
+  stageId      String?
+  stage        ExamStage?    @relation(fields: [stageId], references: [id])
+  durationSec  Int
+  instructions String?
+  isFree       Boolean       @default(false)
+  status       ContentStatus @default(DRAFT)
+  publishedAt  DateTime?
+  version      Int           @default(1) // bumped on erratum; attempts record the version they took
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  sections  TestSection[]
+  questions TestQuestion[]
+  series    SeriesTest[]
+  attempts  Attempt[]
+  stats     TestStats?
+
+  @@index([examId, status])
+}
+
+model TestSection {
+  id           String         @id @default(cuid())
+  testId       String
+  test         Test           @relation(fields: [testId], references: [id], onDelete: Cascade)
+  name         String
+  nameHi       String?
+  order        Int
+  marksCorrect Decimal        @default(1) @db.Decimal(5, 2)
+  marksWrong   Decimal        @default(0) @db.Decimal(5, 2) // stored positive; deducted on wrong answer
+  durationSec  Int? // null = shares test timer
+  questions    TestQuestion[]
+
+  @@unique([testId, order])
+}
+
+model TestQuestion {
+  testId     String
+  test       Test        @relation(fields: [testId], references: [id], onDelete: Cascade)
+  sectionId  String
+  section    TestSection @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+  questionId String
+  question   Question    @relation(fields: [questionId], references: [id])
+  order      Int
+
+  @@id([testId, questionId])
+  @@index([sectionId, order])
+}
+
+model TestSeries {
+  id          String        @id @default(cuid())
+  slug        String        @unique
+  examId      String
+  exam        Exam          @relation(fields: [examId], references: [id])
+  title       String
+  titleHi     String?
+  description String?
+  seo         Json?
+  status      ContentStatus @default(DRAFT)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  tests    SeriesTest[]
+  products ProductItem[]
+}
+
+model SeriesTest {
+  seriesId  String
+  series    TestSeries @relation(fields: [seriesId], references: [id], onDelete: Cascade)
+  testId    String
+  test      Test       @relation(fields: [testId], references: [id], onDelete: Cascade)
+  order     Int
+  releaseAt DateTime? // drip release
+
+  @@id([seriesId, testId])
+  @@index([testId])
+}
+
+// ───────────────────────── Commerce ─────────────────────────
+
+enum ProductKind {
+  SERIES
+  PACK
+  PASS // all-access: covers every series, no ProductItem rows needed
+}
+
+enum OrderStatus {
+  CREATED
+  PAID
+  FAILED
+  REFUNDED
+}
+
+enum EntitlementSource {
+  PURCHASE
+  ADMIN
+  COUPON_FREE
+}
+
+model Product {
+  id           String        @id @default(cuid())
+  slug         String        @unique
+  title        String
+  titleHi      String?
+  kind         ProductKind
+  priceInPaise Int // GST-inclusive
+  validityDays Int? // either relative validity...
+  validUntil   DateTime? // ...or a fixed end date (e.g. exam date + buffer)
+  isActive     Boolean       @default(true)
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  items        ProductItem[]
+  orders       Order[]
+  entitlements Entitlement[]
+}
+
+model ProductItem {
+  productId String
+  product   Product    @relation(fields: [productId], references: [id], onDelete: Cascade)
+  seriesId  String
+  series    TestSeries @relation(fields: [seriesId], references: [id], onDelete: Cascade)
+
+  @@id([productId, seriesId])
+  @@index([seriesId])
+}
+
+model Coupon {
+  id           String    @id @default(cuid())
+  code         String    @unique
+  pctOff       Int? // 0-100
+  flatOffPaise Int?
+  maxUses      Int?
+  usedCount    Int       @default(0)
+  validTill    DateTime?
+  affiliateTag String? // attribution for YouTube/Telegram partners
+  isActive     Boolean   @default(true)
+  createdAt    DateTime  @default(now())
+  orders       Order[]
+}
+
+model Order {
+  id              String      @id @default(cuid())
+  userId          String
+  user            User        @relation(fields: [userId], references: [id])
+  productId       String
+  product         Product     @relation(fields: [productId], references: [id])
+  amountPaise     Int
+  couponId        String?
+  coupon          Coupon?     @relation(fields: [couponId], references: [id])
+  status          OrderStatus @default(CREATED)
+  razorpayOrderId String?     @unique
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  payments    Payment[]
+  entitlement Entitlement?
+
+  @@index([userId, createdAt])
+  @@index([status, createdAt])
+}
+
+model Payment {
+  id                String   @id @default(cuid())
+  orderId           String
+  order             Order    @relation(fields: [orderId], references: [id])
+  razorpayPaymentId String   @unique // idempotency key for webhook processing
+  status            String
+  raw               Json
+  createdAt         DateTime @default(now())
+}
+
+model Entitlement {
+  id        String            @id @default(cuid())
+  userId    String
+  user      User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  productId String
+  product   Product           @relation(fields: [productId], references: [id])
+  source    EntitlementSource
+  startsAt  DateTime          @default(now())
+  expiresAt DateTime
+  revokedAt DateTime?
+  orderId   String?           @unique
+  order     Order?            @relation(fields: [orderId], references: [id])
+  createdAt DateTime          @default(now())
+
+  @@index([userId, expiresAt])
+}
+
+// ───────────────────────── Assessment ─────────────────────────
+
+enum AttemptStatus {
+  IN_PROGRESS
+  SUBMITTED
+  EXPIRED
+}
+
+model Attempt {
+  id           String        @id @default(cuid())
+  userId       String
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  testId       String
+  test         Test          @relation(fields: [testId], references: [id])
+  testVersion  Int
+  isFirst      Boolean // only first attempts are ranked
+  status       AttemptStatus @default(IN_PROGRESS)
+  startedAt    DateTime      @default(now())
+  deadlineAt   DateTime // server-authoritative
+  submittedAt  DateTime?
+  // { [questionId]: { o?: optionId, t: seconds, m?: markedForReview } } — one blob per attempt, see BLUEPRINT §13
+  answers      Json          @default("{}")
+  score        Decimal?      @db.Decimal(7, 2)
+  correct      Int?
+  wrong        Int?
+  skipped      Int?
+  timeSpentSec Int?
+  sectionStats Json?
+  topicStats   Json?
+  flagged      Boolean       @default(false) // suspicious; excluded from leaderboards
+
+  // A partial unique index (one IN_PROGRESS attempt per user+test) is added in raw SQL in the first migration.
+  @@index([testId, isFirst, score(sort: Desc)])
+  @@index([userId, startedAt(sort: Desc)])
+}
+
+model TestStats {
+  testId         String   @id
+  test           Test     @relation(fields: [testId], references: [id], onDelete: Cascade)
+  attempts       Int      @default(0)
+  avgScore       Decimal  @default(0) @db.Decimal(7, 2)
+  topScore       Decimal  @default(0) @db.Decimal(7, 2)
+  scoreHistogram Json? // bucketed first-attempt scores for O(1) percentile
+  updatedAt      DateTime @updatedAt
+}
+
+// ───────────────────────── Operations ─────────────────────────
+
+enum ReportStatus {
+  OPEN
+  FIXED
+  REJECTED
+}
+
+model QuestionReport {
+  id         String       @id @default(cuid())
+  questionId String
+  question   Question     @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  userId     String
+  user       User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  reason     String // WRONG_ANSWER | TYPO | TRANSLATION | OTHER
+  note       String?
+  status     ReportStatus @default(OPEN)
+  createdAt  DateTime     @default(now())
+
+  @@index([status, createdAt])
+  @@index([questionId])
+}
+
+model AuditLog {
+  id       String   @id @default(cuid())
+  actorId  String?
+  actor    User?    @relation(fields: [actorId], references: [id])
+  entity   String
+  entityId String
+  action   String
+  diff     Json?
+  at       DateTime @default(now())
+
+  @@index([entity, entityId])
+}
