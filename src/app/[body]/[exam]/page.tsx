@@ -2,14 +2,18 @@ import { CheckCircle2, ChevronRight } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { FaqList } from "@/components/faq-list";
 import { JsonLd } from "@/components/json-ld";
+import { Markdown } from "@/components/markdown";
 import { Mountains } from "@/components/mountains";
+import { PostCard } from "@/components/post-card";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { TestCard } from "@/components/test-card";
 import { btn, card } from "@/components/ui";
 import { site } from "@/lib/site";
 import { examLabel, getAllExamParams, getCatalog, getExamPage } from "@/modules/catalog/queries";
+import { faqPageJsonLd } from "@/modules/content/exam-content";
 
 export const revalidate = 3600;
 
@@ -24,11 +28,17 @@ export async function generateMetadata({ params }: PageProps<"/[body]/[exam]">):
   const data = await getExamPage(body, exam);
   if (!data) return {};
   const name = examLabel(data.body.slug, data.name);
+  // Admin-set SEO copy wins; `{year}` in it is replaced so titles don't go stale every January.
+  const title = data.seo.title.replaceAll("{year}", String(year())) || `${name} Mock Test ${year()} — Free Test Series in Hindi & English`;
+  const description =
+    data.seo.description.replaceAll("{year}", String(year())) ||
+    `Free ${name} mock tests in a real CBT exam interface. Himachal GK, reasoning, maths and more in Hindi & English, with detailed solutions and your rank among HP aspirants.`;
   return {
-    title: `${name} Mock Test ${year()} — Free Test Series in Hindi & English`,
-    description: `Free ${name} mock tests in a real CBT exam interface. Himachal GK, reasoning, maths and more in Hindi & English, with detailed solutions and your rank among HP aspirants.`,
+    // An admin-written title is used as-is, without the "| HP Test Series" suffix.
+    title: data.seo.title ? { absolute: title } : title,
+    description,
     alternates: { canonical: `/${body}/${exam}` },
-    openGraph: { title: `${name} Mock Test ${year()}`, url: `/${body}/${exam}` },
+    openGraph: { title, description, url: `/${body}/${exam}` },
   };
 }
 
@@ -42,6 +52,7 @@ export default async function ExamPage({ params }: PageProps<"/[body]/[exam]">) 
   const related = catalog.flatMap((b) => b.exams).filter((e) => e.href !== `/${body}/${exam}`).slice(0, 6);
 
   const faqs = [
+    ...data.faqs,
     {
       q: `Is the ${name} mock test available for free?`,
       a: `Yes. You can start with free ${name} mock tests without logging in. Log in for free to save your results and see your rank among Himachal aspirants.`,
@@ -59,15 +70,18 @@ export default async function ExamPage({ params }: PageProps<"/[body]/[exam]">) 
   return (
     <>
       <JsonLd
-        data={{
-          "@context": "https://schema.org",
-          "@type": "BreadcrumbList",
-          itemListElement: [
-            { "@type": "ListItem", position: 1, name: "Home", item: site.url },
-            { "@type": "ListItem", position: 2, name: "Exams", item: `${site.url}/exams` },
-            { "@type": "ListItem", position: 3, name: `${name} Mock Test`, item: `${site.url}/${body}/${exam}` },
-          ],
-        }}
+        data={[
+          {
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            itemListElement: [
+              { "@type": "ListItem", position: 1, name: "Home", item: site.url },
+              { "@type": "ListItem", position: 2, name: "Exams", item: `${site.url}/exams` },
+              { "@type": "ListItem", position: 3, name: `${name} Mock Test`, item: `${site.url}/${body}/${exam}` },
+            ],
+          },
+          faqPageJsonLd(faqs),
+        ]}
       />
       <SiteHeader />
       <main className="flex-1">
@@ -88,7 +102,7 @@ export default async function ExamPage({ params }: PageProps<"/[body]/[exam]">) 
             <h1 className="max-w-3xl text-3xl font-bold leading-tight tracking-tight sm:text-4xl">
               {name} Mock Test {year()}
             </h1>
-            {data.nameHi && <p className="text-lg text-white/85">{data.nameHi} मॉक टेस्ट — हिंदी और अंग्रेज़ी में, असली CBT परीक्षा जैसा</p>}
+            {data.nameHi && <p lang="hi" className="text-lg text-white/85">{data.nameHi} मॉक टेस्ट — हिंदी और अंग्रेज़ी में, असली CBT परीक्षा जैसा</p>}
             <div className="flex flex-wrap gap-3 pt-2">
               {firstFree && (
                 <Link href={`/tests/${firstFree.slug}/attempt`} className={btn("accent", "lg")}>
@@ -108,7 +122,7 @@ export default async function ExamPage({ params }: PageProps<"/[body]/[exam]">) 
             {data.description && (
               <section className="space-y-3">
                 <h2 className="text-2xl font-bold tracking-tight">About the {name} exam</h2>
-                <p className="leading-relaxed text-foreground/85">{data.description}</p>
+                <Markdown text={data.description} />
                 {data.stages.length > 0 && (
                   <div className="flex flex-wrap gap-2 pt-1">
                     {data.stages.map((s) => (
@@ -119,6 +133,57 @@ export default async function ExamPage({ params }: PageProps<"/[body]/[exam]">) 
                   </div>
                 )}
                 <p className="text-xs text-muted">Always check the latest official notification for the current exam pattern, syllabus and eligibility.</p>
+              </section>
+            )}
+
+            {data.pattern && (
+              <section className="space-y-3">
+                <h2 className="text-2xl font-bold tracking-tight">
+                  {name} exam pattern {year()}
+                </h2>
+                {data.pattern.sections.length > 0 && (
+                  <div className={`${card} overflow-x-auto`}>
+                    <table className="w-full text-sm">
+                      <thead className="bg-surface-muted text-left">
+                        <tr>
+                          <th className="px-4 py-2.5 font-semibold">Subject / Section</th>
+                          <th className="px-4 py-2.5 text-right font-semibold">Questions</th>
+                          <th className="px-4 py-2.5 text-right font-semibold">Marks</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {data.pattern.sections.map((s) => (
+                          <tr key={s.name} className="border-t border-border">
+                            <td className="px-4 py-2.5">{s.name}</td>
+                            <td className="px-4 py-2.5 text-right tabular-nums">{s.questions ?? "—"}</td>
+                            <td className="px-4 py-2.5 text-right tabular-nums">{s.marks ?? "—"}</td>
+                          </tr>
+                        ))}
+                        {data.pattern.sections.length > 1 && (
+                          <tr className="border-t border-border font-semibold">
+                            <td className="px-4 py-2.5">Total</td>
+                            <td className="px-4 py-2.5 text-right tabular-nums">{data.pattern.sections.reduce((n, s) => n + (s.questions ?? 0), 0) || "—"}</td>
+                            <td className="px-4 py-2.5 text-right tabular-nums">{data.pattern.sections.reduce((n, s) => n + (s.marks ?? 0), 0) || "—"}</td>
+                          </tr>
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+                <ul className="flex flex-wrap gap-2 text-sm">
+                  {data.pattern.durationMin ? <li className="rounded-full border border-border bg-surface px-3 py-1">Time: {data.pattern.durationMin} minutes</li> : null}
+                  {data.pattern.negativeMarking && (
+                    <li className="rounded-full border border-border bg-surface px-3 py-1">Negative marking: {data.pattern.negativeMarking}</li>
+                  )}
+                </ul>
+                {data.pattern.note && <p className="text-sm text-muted">{data.pattern.note}</p>}
+              </section>
+            )}
+
+            {data.syllabus && (
+              <section className="space-y-3">
+                <h2 className="text-2xl font-bold tracking-tight">{name} syllabus</h2>
+                <Markdown text={data.syllabus} />
               </section>
             )}
 
@@ -134,19 +199,25 @@ export default async function ExamPage({ params }: PageProps<"/[body]/[exam]">) 
               )}
             </section>
 
+            {data.posts.length > 0 && (
+              <section className="space-y-4">
+                <div className="flex items-end justify-between gap-4">
+                  <h2 className="text-2xl font-bold tracking-tight">Latest {name} updates</h2>
+                  <Link href="/blog" className="shrink-0 text-sm font-medium text-primary hover:underline">
+                    All exam updates →
+                  </Link>
+                </div>
+                <div className="grid gap-4 sm:grid-cols-2">
+                  {data.posts.map((p) => (
+                    <PostCard key={p.slug} post={p} />
+                  ))}
+                </div>
+              </section>
+            )}
+
             <section className="space-y-4">
-              <h2 className="text-2xl font-bold tracking-tight">{name} mock test — FAQs</h2>
-              <div className="space-y-3">
-                {faqs.map((f) => (
-                  <details key={f.q} className={`${card} group p-5`}>
-                    <summary className="flex cursor-pointer list-none items-center justify-between gap-4 font-semibold">
-                      {f.q}
-                      <ChevronRight className="size-5 shrink-0 text-muted transition group-open:rotate-90" />
-                    </summary>
-                    <p className="mt-3 text-sm leading-relaxed text-muted">{f.a}</p>
-                  </details>
-                ))}
-              </div>
+              <h2 className="text-2xl font-bold tracking-tight">{name} — FAQs</h2>
+              <FaqList faqs={faqs} />
             </section>
           </div>
 

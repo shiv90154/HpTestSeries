@@ -6,14 +6,19 @@
 
 type Header = { key: string; value: string };
 
+// Google Analytics 4 (gtag.js): script from googletagmanager.com, hits to *.google-analytics.com.
+const GA_SCRIPT = "https://www.googletagmanager.com";
+const GA_CONNECT = "https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com";
+
 export function contentSecurityPolicy(isDev: boolean): string {
   const directives = [
     "default-src 'self'",
-    `script-src 'self' 'unsafe-inline' https://checkout.razorpay.com${isDev ? " 'unsafe-eval'" : ""}`,
+    `script-src 'self' 'unsafe-inline' https://checkout.razorpay.com ${GA_SCRIPT}${isDev ? " 'unsafe-eval'" : ""}`,
     "style-src 'self' 'unsafe-inline'",
-    "img-src 'self' data: blob: https://*.razorpay.com",
+    // Any https image: blog posts embed cover/inline images by URL (images can't run script).
+    "img-src 'self' data: blob: https:",
     "font-src 'self' data:",
-    `connect-src 'self' https://*.razorpay.com${isDev ? " ws: wss:" : ""}`,
+    `connect-src 'self' https://*.razorpay.com ${GA_CONNECT}${isDev ? " ws: wss:" : ""}`,
     "frame-src https://*.razorpay.com",
     "object-src 'none'",
     "base-uri 'self'",

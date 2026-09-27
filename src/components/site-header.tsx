@@ -5,6 +5,7 @@ import { Logo } from "./logo";
 const nav = [
   { href: "/exams", label: "Exams" },
   { href: "/tests", label: "Mock Tests" },
+  { href: "/blog", label: "Exam Updates" },
   { href: "/#pricing", label: "Pricing" },
 ];
 

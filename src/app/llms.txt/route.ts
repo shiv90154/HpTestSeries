@@ -1,11 +1,11 @@
 // llms.txt — a machine-readable summary of the site for LLM crawlers/agents. Spec: https://llmstxt.org/
 import { site } from "@/lib/site";
-import { getCatalog, getPublishedTests } from "@/modules/catalog/queries";
+import { getCatalog, getPublishedPosts, getPublishedTests } from "@/modules/catalog/queries";
 
 export const revalidate = 3600;
 
 export async function GET() {
-  const [catalog, tests] = await Promise.all([getCatalog(), getPublishedTests()]);
+  const [catalog, tests, posts] = await Promise.all([getCatalog(), getPublishedTests(), getPublishedPosts({ take: 20 })]);
   const freeTests = tests.filter((t) => t.isFree);
 
   const lines = [
@@ -21,9 +21,13 @@ export async function GET() {
     "## Free tests (no login needed)",
     ...freeTests.map((t) => `- [${t.title}](${site.url}/tests/${t.slug}): ${t.questionCount} questions, ${t.durationMin} minutes`),
     "",
+    ...(posts.items.length
+      ? ["## Latest exam updates", ...posts.items.map((p) => `- [${p.title}](${site.url}/blog/${p.slug}): ${p.excerpt}`), ""]
+      : []),
     "## Other",
     `- [All mock tests](${site.url}/tests)`,
     `- [All Himachal exams](${site.url}/exams)`,
+    `- [Exam updates & notifications](${site.url}/blog)`,
     `- [Contact](${site.url}/contact)`,
   ];
 

@@ -15,6 +15,12 @@ describe("contentSecurityPolicy", () => {
     expect(csp).toMatch(/frame-src [^;]*razorpay\.com/);
   });
 
+  it("allows Google Analytics", () => {
+    const csp = contentSecurityPolicy(false);
+    expect(csp).toMatch(/script-src [^;]*https:\/\/www\.googletagmanager\.com/);
+    expect(csp).toMatch(/connect-src [^;]*google-analytics\.com/);
+  });
+
   it("only allows eval in development", () => {
     expect(contentSecurityPolicy(false)).not.toContain("unsafe-eval");
     expect(contentSecurityPolicy(true)).toContain("unsafe-eval");

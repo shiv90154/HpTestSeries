@@ -4,6 +4,7 @@ import Script from "next/script";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { track } from "@/components/analytics";
 import { btn } from "@/components/ui";
 import { site } from "@/lib/site";
 import { confirmPaymentAction, createOrderAction } from "./actions";
@@ -49,12 +50,14 @@ export function BuyButton({ productSlug, user }: { productSlug: string; user: { 
             toast.error(`Payment received but could not be confirmed: ${result.error}`);
             return;
           }
+          track("purchase", { transaction_id: order.orderId, value: order.amountPaise / 100, currency: "INR", item_name: order.productTitle });
           toast.success("Payment successful! Access unlocked.");
           router.push("/dashboard");
           router.refresh();
         },
         modal: { ondismiss: () => setLoading(false) },
       });
+      track("begin_checkout", { value: order.amountPaise / 100, currency: "INR", item_name: order.productTitle });
       razorpay.open();
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Could not start payment.");

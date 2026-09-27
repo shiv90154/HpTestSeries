@@ -97,3 +97,52 @@ body {
     @apply my-2 overflow-x-auto;
   }
 }
+
+/* Long-form markdown: exam syllabus and blog posts. */
+@layer components {
+  .prose-content {
+    @apply max-w-none leading-relaxed text-foreground/90;
+  }
+  .prose-content > * + * {
+    @apply mt-4;
+  }
+  .prose-content h2 {
+    @apply mt-9 text-2xl font-bold tracking-tight text-foreground;
+  }
+  .prose-content h3 {
+    @apply mt-7 text-lg font-semibold text-foreground;
+  }
+  .prose-content a {
+    @apply font-medium text-primary underline underline-offset-2 hover:text-primary-strong;
+  }
+  .prose-content ul {
+    @apply list-disc space-y-1.5 pl-6;
+  }
+  .prose-content ol {
+    @apply list-decimal space-y-1.5 pl-6;
+  }
+  .prose-content blockquote {
+    @apply rounded-r-xl border-l-4 border-accent bg-accent-soft px-4 py-3 text-foreground;
+  }
+  .prose-content img {
+    @apply rounded-xl;
+  }
+  .prose-content code {
+    @apply rounded bg-surface-muted px-1.5 py-0.5 text-sm;
+  }
+  .prose-content hr {
+    @apply my-8 border-border;
+  }
+  .prose-content .table-wrap {
+    @apply overflow-x-auto rounded-xl border border-border;
+  }
+  .prose-content table {
+    @apply w-full border-collapse text-sm;
+  }
+  .prose-content th {
+    @apply bg-surface-muted px-3 py-2 text-left font-semibold;
+  }
+  .prose-content td {
+    @apply border-t border-border px-3 py-2;
+  }
+}

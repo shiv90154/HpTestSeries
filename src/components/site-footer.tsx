@@ -1,12 +1,12 @@
 import Link from "next/link";
-import { examLabel, getCatalog } from "@/modules/catalog/queries";
+import { examLabel, getCatalog, getPublishedPosts } from "@/modules/catalog/queries";
 import { site } from "@/lib/site";
 import { LEGAL_LINKS, business } from "@/lib/business";
 import { Logo } from "./logo";
 import { PublicBottomNav } from "./public-bottom-nav";
 
 export async function SiteFooter() {
-  const catalog = await getCatalog();
+  const [catalog, latest] = await Promise.all([getCatalog(), getPublishedPosts({ take: 4 })]);
   const exams = catalog.flatMap((b) => b.exams);
 
   return (
@@ -48,11 +48,30 @@ export async function SiteFooter() {
               </Link>
             </li>
             <li>
+              <Link href="/blog" className="hover:text-accent">
+                Exam Updates &amp; Notifications
+              </Link>
+            </li>
+            <li>
               <Link href="/login" className="hover:text-accent">
                 Login / Sign up
               </Link>
             </li>
           </ul>
+          {latest.items.length > 0 && (
+            <>
+              <h2 className="mb-4 mt-8 text-sm font-semibold uppercase tracking-wider text-white">Latest updates</h2>
+              <ul className="space-y-2.5 text-sm">
+                {latest.items.map((p) => (
+                  <li key={p.slug}>
+                    <Link href={`/blog/${p.slug}`} className="line-clamp-2 hover:text-accent">
+                      {p.title}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </>
+          )}
         </div>
         <div>
           <h2 className="mb-4 text-sm font-semibold uppercase tracking-wider text-white">Help</h2>

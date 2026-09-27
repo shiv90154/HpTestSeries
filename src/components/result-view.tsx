@@ -6,7 +6,9 @@ import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { RichContent } from "@/components/rich-content";
 import type { Bilingual, ResultData } from "@/modules/assessment/types";
+import { site } from "@/lib/site";
 import { ReportQuestion } from "./report-question";
+import { ShareButtons } from "./share-buttons";
 import { btn, card } from "./ui";
 
 type Lang = "en" | "hi";
@@ -100,6 +102,19 @@ export function ResultView({ data, isGuest, loggedIn = !isGuest }: { data: Resul
             )}
           </div>
         </div>
+      </section>
+
+      {/* Share: result pages are private, so the link goes to the public test page. */}
+      <section className={`${card} p-5`}>
+        <ShareButtons
+          label={data.rank ? "Share your rank — challenge your friends" : "Challenge your friends to beat your score"}
+          url={`${site.url}/tests/${data.test.slug}`}
+          text={
+            data.rank
+              ? `Maine "${data.test.title}" me HP rank #${data.rank.rank} paaya (${data.score}/${data.maxScore}) 🏔️ Tum bhi try karo — free mock test:`
+              : `Maine "${data.test.title}" me ${data.score}/${data.maxScore} score kiya 🏔️ Tum bhi try karo — free mock test:`
+          }
+        />
       </section>
 
       {/* Stat cards */}

@@ -47,6 +47,7 @@ model User {
   questionsMade  Question[]       @relation("QuestionCreatedBy")
   questionsCheck Question[]       @relation("QuestionReviewedBy")
   auditLogs      AuditLog[]
+  posts          Post[]
 
   @@map("user")
 }
@@ -131,6 +132,7 @@ model Exam {
   pattern     Json? // sections, marks, negative marking, duration, as displayed on the hub page
   syllabus    String? // markdown
   seo         Json? // { title, description, keywords }
+  faqs        Json? // [{ q, a }] — exam-specific FAQs, rendered + emitted as FAQPage JSON-LD
   isActive    Boolean  @default(true)
   order       Int      @default(0)
   createdAt   DateTime @default(now())
@@ -141,6 +143,7 @@ model Exam {
   tests        Test[]
   series       TestSeries[]
   pyqQuestions Question[]
+  posts        Post[]
 
   @@unique([bodyId, slug])
 }
@@ -585,4 +588,43 @@ model ErrorLog {
   createdAt DateTime @default(now())
 
   @@index([createdAt(sort: Desc)])
+}
+
+// ───────────────────────── Blog (exam updates) ─────────────────────────
+
+enum PostCategory {
+  NOTIFICATION
+  SYLLABUS
+  EXAM_PATTERN
+  EXAM_DATE
+  ADMIT_CARD
+  RESULT
+  CUTOFF
+  STRATEGY
+  CURRENT_AFFAIRS
+}
+
+model Post {
+  id             String        @id @default(cuid())
+  slug           String        @unique
+  title          String
+  titleHi        String?
+  excerpt        String // meta description fallback + list card text
+  content        String // markdown
+  coverImage     String?
+  category       PostCategory
+  status         ContentStatus @default(DRAFT)
+  publishedAt    DateTime?
+  seoTitle       String?
+  seoDescription String?
+  faqs           Json? // [{ q, a }]
+  authorId       String?
+  author         User?         @relation(fields: [authorId], references: [id], onDelete: SetNull)
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  exams Exam[] // cross-linked from the exam hub pages
+
+  @@index([status, publishedAt])
+  @@index([category, status])
 }

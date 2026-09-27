@@ -2,14 +2,16 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { AlertTriangle, ClipboardList, Flag, HelpCircle, LayoutDashboard, Package, ShoppingCart, type LucideIcon } from "lucide-react";
+import { AlertTriangle, ClipboardList, Flag, GraduationCap, HelpCircle, LayoutDashboard, Newspaper, Package, ShoppingCart, type LucideIcon } from "lucide-react";
 
-export type AdminNavIconKey = "overview" | "questions" | "tests" | "reports" | "products" | "orders" | "errors";
+export type AdminNavIconKey = "overview" | "questions" | "tests" | "exams" | "blog" | "reports" | "products" | "orders" | "errors";
 
 const ICONS: Record<AdminNavIconKey, LucideIcon> = {
   overview: LayoutDashboard,
   questions: HelpCircle,
   tests: ClipboardList,
+  exams: GraduationCap,
+  blog: Newspaper,
   reports: Flag,
   products: Package,
   orders: ShoppingCart,

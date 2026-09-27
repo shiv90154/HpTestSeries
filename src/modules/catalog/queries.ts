@@ -1,6 +1,8 @@
 import "server-only";
 import { cache } from "react";
 import { db } from "@/lib/db";
+import type { PostCategory } from "@/generated/prisma/enums";
+import { parseFaqs, parsePattern, parseSeo } from "@/modules/content/exam-content";
 
 export type CatalogExam = {
   slug: string;
@@ -109,13 +111,25 @@ export async function getExamPage(bodySlug: string, examSlug: string) {
       name: true,
       nameHi: true,
       description: true,
+      syllabus: true,
+      pattern: true,
+      faqs: true,
+      seo: true,
+      updatedAt: true,
       body: { select: { slug: true, name: true, nameHi: true } },
       stages: { orderBy: { order: "asc" }, select: { name: true, nameHi: true } },
     },
   });
   if (!exam) return null;
-  const tests = await getPublishedTests({ examId: exam.id });
-  return { ...exam, tests };
+  const [tests, posts] = await Promise.all([getPublishedTests({ examId: exam.id }), getPublishedPosts({ examId: exam.id, take: 6 })]);
+  return {
+    ...exam,
+    pattern: parsePattern(exam.pattern),
+    faqs: parseFaqs(exam.faqs),
+    seo: parseSeo(exam.seo),
+    tests,
+    posts: posts.items,
+  };
 }
 
 export async function getAllExamParams() {
@@ -130,4 +144,105 @@ export async function getAllExamParams() {
 export function examLabel(bodySlug: string, name: string): string {
   if (bodySlug === "hprca" || bodySlug === "hppsc") return `${bodySlug.toUpperCase()} ${name}`;
   return name.startsWith("HP ") ? name : `HP ${name}`;
+}
+
+// ───────────────────────── Blog ─────────────────────────
+
+export type PublicPostCard = {
+  slug: string;
+  title: string;
+  titleHi: string | null;
+  excerpt: string;
+  category: PostCategory;
+  coverImage: string | null;
+  publishedAt: Date;
+  updatedAt: Date;
+};
+
+const postCardSelect = {
+  slug: true,
+  title: true,
+  titleHi: true,
+  excerpt: true,
+  category: true,
+  coverImage: true,
+  publishedAt: true,
+  updatedAt: true,
+} as const;
+
+export const POSTS_PER_PAGE = 12;
+
+export async function getPublishedPosts(
+  f: { category?: PostCategory; examId?: string; page?: number; take?: number; excludeSlug?: string } = {},
+): Promise<{ items: PublicPostCard[]; total: number }> {
+  const take = f.take ?? POSTS_PER_PAGE;
+  const where = {
+    status: "PUBLISHED" as const,
+    ...(f.category && { category: f.category }),
+    ...(f.examId && { exams: { some: { id: f.examId } } }),
+    ...(f.excludeSlug && { slug: { not: f.excludeSlug } }),
+  };
+  const [items, total] = await Promise.all([
+    db.post.findMany({
+      where,
+      orderBy: { publishedAt: "desc" },
+      skip: ((f.page ?? 1) - 1) * take,
+      take,
+      select: postCardSelect,
+    }),
+    db.post.count({ where }),
+  ]);
+  return { items: items.map((p) => ({ ...p, publishedAt: p.publishedAt ?? p.updatedAt })), total };
+}
+
+export const getPost = cache(async (slug: string) => {
+  const p = await db.post.findFirst({
+    where: { slug, status: "PUBLISHED" },
+    select: {
+      ...postCardSelect,
+      id: true,
+      content: true,
+      seoTitle: true,
+      seoDescription: true,
+      faqs: true,
+      author: { select: { name: true } },
+      exams: {
+        where: { isActive: true },
+        select: { id: true, slug: true, name: true, body: { select: { slug: true } } },
+      },
+    },
+  });
+  if (!p) return null;
+  return {
+    ...p,
+    publishedAt: p.publishedAt ?? p.updatedAt,
+    faqs: parseFaqs(p.faqs),
+    exams: p.exams.map((e) => ({ id: e.id, name: examLabel(e.body.slug, e.name), href: `/${e.body.slug}/${e.slug}` })),
+  };
+});
+
+/** Same-exam posts first, then same-category, for the "Related updates" block. */
+export async function getRelatedPosts(post: { slug: string; category: PostCategory; exams: { id: string }[] }, take = 4) {
+  const byExam = post.exams.length
+    ? await db.post.findMany({
+        where: { status: "PUBLISHED", slug: { not: post.slug }, exams: { some: { id: { in: post.exams.map((e) => e.id) } } } },
+        orderBy: { publishedAt: "desc" },
+        take,
+        select: postCardSelect,
+      })
+    : [];
+  const rest =
+    byExam.length < take
+      ? await db.post.findMany({
+          where: { status: "PUBLISHED", category: post.category, slug: { notIn: [post.slug, ...byExam.map((p) => p.slug)] } },
+          orderBy: { publishedAt: "desc" },
+          take: take - byExam.length,
+          select: postCardSelect,
+        })
+      : [];
+  return [...byExam, ...rest].map((p) => ({ ...p, publishedAt: p.publishedAt ?? p.updatedAt }));
+}
+
+export async function getAllPostSlugs() {
+  return db.post.findMany({ where: { status: "PUBLISHED" }, select: { slug: true, updatedAt: true, category: true } });
 }

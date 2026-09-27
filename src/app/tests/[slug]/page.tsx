@@ -36,15 +36,29 @@ export default async function TestDetailPage({ params }: PageProps<"/tests/[slug
   return (
     <>
       <JsonLd
-        data={{
-          "@context": "https://schema.org",
-          "@type": "BreadcrumbList",
-          itemListElement: [
-            { "@type": "ListItem", position: 1, name: "Home", item: site.url },
-            { "@type": "ListItem", position: 2, name: "Mock Tests", item: `${site.url}/tests` },
-            { "@type": "ListItem", position: 3, name: t.title, item: `${site.url}/tests/${slug}` },
-          ],
-        }}
+        data={[
+          {
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            itemListElement: [
+              { "@type": "ListItem", position: 1, name: "Home", item: site.url },
+              { "@type": "ListItem", position: 2, name: "Mock Tests", item: `${site.url}/tests` },
+              { "@type": "ListItem", position: 3, name: t.title, item: `${site.url}/tests/${slug}` },
+            ],
+          },
+          {
+            "@context": "https://schema.org",
+            "@type": "LearningResource",
+            name: t.title,
+            url: `${site.url}/tests/${slug}`,
+            learningResourceType: "Mock test",
+            educationalUse: "assessment",
+            inLanguage: ["en-IN", "hi-IN"],
+            timeRequired: `PT${Math.round(t.durationSec / 60)}M`,
+            isAccessibleForFree: t.isFree,
+            provider: { "@type": "Organization", name: site.name, url: site.url },
+          },
+        ]}
       />
       <SiteHeader />
       <main className="mx-auto w-full max-w-4xl flex-1 space-y-8 px-4 py-10">

@@ -12,11 +12,14 @@ import {
 import Link from "next/link";
 import { JsonLd } from "@/components/json-ld";
 import { Mountains } from "@/components/mountains";
+import { PostCard } from "@/components/post-card";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { btn, card } from "@/components/ui";
+import { organizationNode } from "@/lib/schema";
 import { site } from "@/lib/site";
-import { getCatalog } from "@/modules/catalog/queries";
+import { getCatalog, getPublishedPosts } from "@/modules/catalog/queries";
+import { faqPageJsonLd } from "@/modules/content/exam-content";
 import { listActiveProducts } from "@/modules/commerce/product-service";
 
 export const revalidate = 3600;
@@ -76,15 +79,23 @@ const faqs = [
 ];
 
 export default async function Home() {
-  const [catalog, products] = await Promise.all([getCatalog(), listActiveProducts()]);
+  const [catalog, products, latest] = await Promise.all([getCatalog(), listActiveProducts(), getPublishedPosts({ take: 3 })]);
   const examCount = catalog.reduce((n, b) => n + b.exams.length, 0);
 
   return (
     <>
       <JsonLd
         data={[
-          { "@context": "https://schema.org", "@type": "Organization", name: site.name, url: site.url, logo: `${site.url}/icon.svg` },
-          { "@context": "https://schema.org", "@type": "WebSite", name: site.name, url: site.url, inLanguage: ["en-IN", "hi-IN"] },
+          { "@context": "https://schema.org", ...organizationNode() },
+          {
+            "@context": "https://schema.org",
+            "@type": "WebSite",
+            name: site.name,
+            url: site.url,
+            inLanguage: ["en-IN", "hi-IN"],
+            publisher: { "@id": `${site.url}/#organization` },
+          },
+          faqPageJsonLd(faqs),
         ]}
       />
       <SiteHeader />
@@ -224,6 +235,28 @@ export default async function Home() {
             ))}
           </ol>
         </section>
+
+        {/* Latest exam updates (blog) */}
+        {latest.items.length > 0 && (
+          <section className="mx-auto w-full max-w-6xl space-y-4 px-4 pb-10 sm:space-y-8 sm:pb-20">
+            <div className="flex items-end justify-between gap-4">
+              <div className="space-y-1">
+                <h2 className="text-xl font-bold tracking-tight sm:text-3xl">Latest exam updates</h2>
+                <p lang="hi" className="text-sm text-muted sm:text-base">
+                  नोटिफिकेशन, सिलेबस, कट ऑफ और परीक्षा तिथि — सब एक जगह
+                </p>
+              </div>
+              <Link href="/blog" className="shrink-0 text-sm font-semibold text-primary hover:underline">
+                All updates →
+              </Link>
+            </div>
+            <div className="grid gap-4 md:grid-cols-3">
+              {latest.items.map((p) => (
+                <PostCard key={p.slug} post={p} />
+              ))}
+            </div>
+          </section>
+        )}
 
         {/* Pricing */}
         <section id="pricing" className="bg-surface py-10 sm:py-20">

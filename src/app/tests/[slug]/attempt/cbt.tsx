@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
+import { track } from "@/components/analytics";
 import { RichContent } from "@/components/rich-content";
 import type { Bilingual, Paper, SubmittedAnswers } from "@/modules/assessment/types";
 import { gradeGuestAction, saveProgressAction, startAttemptAction, submitAttemptAction } from "./actions";
@@ -262,6 +263,7 @@ export function Cbt({ paper, candidate }: { paper: Paper; candidate: { name: str
       shownAt.current = Date.now();
       setNow(Date.now());
       setPhase("exam");
+      track("test_start", { test_slug: paper.slug, guest: !candidate });
     } catch (err) {
       setError(err instanceof Error ? err.message : "Could not start the test.");
     } finally {
@@ -280,6 +282,7 @@ export function Cbt({ paper, candidate }: { paper: Paper; candidate: { name: str
       if (candidate && attemptId) {
         const res = await submitAttemptAction(attemptId, answers, violationsRef.current);
         if ("error" in res) throw new Error(res.error);
+        track("test_submit", { test_slug: paper.slug, guest: false });
         writeStored(storeKey, null);
         if (document.fullscreenElement) void document.exitFullscreen().catch(() => {});
         router.replace(`/results/${attemptId}`);
@@ -287,6 +290,7 @@ export function Cbt({ paper, candidate }: { paper: Paper; candidate: { name: str
         const res = await gradeGuestAction(paper.slug, answers);
         if ("error" in res) throw new Error(res.error);
         sessionStorage.setItem(`result:${paper.slug}`, JSON.stringify(res));
+        track("test_submit", { test_slug: paper.slug, guest: true });
         writeStored(storeKey, null);
         if (document.fullscreenElement) void document.exitFullscreen().catch(() => {});
         router.replace(`/tests/${paper.slug}/result`);

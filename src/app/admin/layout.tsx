@@ -20,6 +20,8 @@ export default async function AdminLayout({ children }: LayoutProps<"/admin">) {
     { href: "/admin", label: "Overview", icon: "overview", show: true },
     { href: "/admin/questions", label: "Questions", icon: "questions", show: can(user.role, "content:edit") },
     { href: "/admin/tests", label: "Tests", icon: "tests", show: can(user.role, "content:edit") },
+    { href: "/admin/exams", label: "Exams", icon: "exams", show: can(user.role, "content:edit") },
+    { href: "/admin/blog", label: "Blog", icon: "blog", show: can(user.role, "content:edit") },
     { href: "/admin/reports", label: openReports ? `Reports (${openReports})` : "Reports", icon: "reports", show: can(user.role, "content:edit") },
     { href: "/admin/products", label: "Products", icon: "products", show: can(user.role, "commerce:manage") },
     { href: "/admin/orders", label: "Orders", icon: "orders", show: can(user.role, "commerce:manage") },
