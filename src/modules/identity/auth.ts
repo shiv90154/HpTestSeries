@@ -3,21 +3,21 @@ import { betterAuth } from "better-auth";
 import { APIError } from "better-auth/api";
 import { prismaAdapter } from "better-auth/adapters/prisma";
 import { nextCookies } from "better-auth/next-js";
-import { phoneNumber } from "better-auth/plugins";
+import { emailOTP, phoneNumber } from "better-auth/plugins";
 import { db } from "@/lib/db";
 import { consumeRateLimit } from "@/lib/rate-limit";
 import { isValidIndianMobile } from "./permissions";
+import { sendOtpEmail } from "./email";
+import { googleLoginEnabled, phoneLoginEnabled } from "./login-methods";
 import { sendOtpSms } from "./sms";
 
 /** BLUEPRINT §16: at most this many concurrent sessions per user (deters account sharing). */
 export const MAX_SESSIONS_PER_USER = 2;
 
-const googleConfigured = !!process.env.GOOGLE_CLIENT_ID && !!process.env.GOOGLE_CLIENT_SECRET;
-
 export const auth = betterAuth({
   database: prismaAdapter(db, { provider: "postgresql" }),
 
-  socialProviders: googleConfigured
+  socialProviders: googleLoginEnabled
     ? {
         google: {
           clientId: process.env.GOOGLE_CLIENT_ID!,
@@ -26,6 +26,11 @@ export const auth = betterAuth({
         },
       }
     : {},
+
+  account: {
+    // Same person, same verified email: Google and email-OTP sign-ins land in one account.
+    accountLinking: { enabled: true, trustedProviders: ["google"] },
+  },
 
   user: {
     additionalFields: {
@@ -50,6 +55,8 @@ export const auth = betterAuth({
     customRules: {
       "/phone-number/send-otp": { window: 60 * 10, max: 20 }, // per IP; per-phone cap is in sendOTP
       "/phone-number/verify": { window: 60 * 10, max: 30 },
+      "/email-otp/send-verification-otp": { window: 60 * 10, max: 20 }, // per IP; per-email cap is in sendVerificationOTP
+      "/sign-in/email-otp": { window: 60 * 10, max: 30 },
     },
   },
 
@@ -73,12 +80,28 @@ export const auth = betterAuth({
   },
 
   plugins: [
+    emailOTP({
+      otpLength: 6,
+      expiresIn: 10 * 60,
+      allowedAttempts: 3,
+      storeOTP: "hashed",
+      sendVerificationOTP: async ({ email, otp, type }) => {
+        if (type !== "sign-in") return; // password/email-change flows are not used
+        // Placeholder addresses of phone-only accounts can never receive mail.
+        if (email.endsWith(".invalid")) throw new APIError("BAD_REQUEST", { message: "Enter a real email address." });
+        if (!(await consumeRateLimit(`otp-email:${email.toLowerCase()}`, 60 * 10, 5))) {
+          throw new APIError("TOO_MANY_REQUESTS", { message: "Too many codes requested. Try again in 10 minutes." });
+        }
+        await sendOtpEmail(email, otp);
+      },
+    }),
     phoneNumber({
       otpLength: 6,
       expiresIn: 5 * 60,
       allowedAttempts: 3,
       phoneNumberValidator: isValidIndianMobile,
       sendOTP: async ({ phoneNumber, code }) => {
+        if (!phoneLoginEnabled) throw new APIError("FORBIDDEN", { message: "Mobile login is not available yet." });
         // Per-phone cap (SMS cost + pumping protection). The per-IP rule below stays loose
         // because mobile carriers put thousands of students behind one CGNAT address.
         if (!(await consumeRateLimit(`otp-phone:${phoneNumber}`, 60 * 10, 3))) {

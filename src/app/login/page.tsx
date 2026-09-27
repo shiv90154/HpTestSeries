@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { Logo } from "@/components/logo";
 import { Mountains } from "@/components/mountains";
 import { safeNextPath } from "@/lib/site";
+import { googleLoginEnabled, phoneLoginEnabled } from "@/modules/identity/login-methods";
 import { getCurrentUser } from "@/modules/identity/session";
 import { LoginForm } from "./login-form";
 
@@ -14,10 +15,10 @@ export const metadata: Metadata = {
 };
 
 export default async function LoginPage({ searchParams }: PageProps<"/login">) {
-  const next = safeNextPath((await searchParams).next);
+  const sp = await searchParams;
+  const next = safeNextPath(sp.next);
+  const googleFailed = sp.error === "google";
   if (await getCurrentUser()) redirect(next);
-
-  const googleEnabled = !!process.env.GOOGLE_CLIENT_ID && !!process.env.GOOGLE_CLIENT_SECRET;
 
   return (
     <div className="grid min-h-dvh lg:grid-cols-[1.05fr_1fr]">
@@ -43,9 +44,16 @@ export default async function LoginPage({ searchParams }: PageProps<"/login">) {
         <div className="mx-auto my-auto w-full max-w-sm space-y-7 py-10">
           <div className="space-y-1.5">
             <h1 className="text-2xl font-bold">Login or sign up</h1>
-            <p className="text-sm text-muted">Use your mobile number — we&apos;ll send you a 6-digit code. New here? Your account is created automatically.</p>
+            <p className="text-sm text-muted">
+              {googleLoginEnabled ? "Continue with Google, or get" : "Get"} a 6-digit code by email. New here? Your account is created automatically.
+            </p>
           </div>
-          <LoginForm next={next} googleEnabled={googleEnabled} />
+          {googleFailed && (
+            <p role="alert" className="rounded-xl border border-danger bg-danger-soft p-3 text-sm text-danger">
+              Google sign-in did not complete. Please try again, or use an email code.
+            </p>
+          )}
+          <LoginForm next={next} googleEnabled={googleLoginEnabled} phoneEnabled={phoneLoginEnabled} />
           <p className="text-center text-sm text-muted">
             Just want to try?{" "}
             <Link href="/tests/hp-gk-free-mock-1" className="font-semibold text-primary">
