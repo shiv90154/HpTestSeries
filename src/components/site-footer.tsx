@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { examLabel, getCatalog } from "@/modules/catalog/queries";
 import { site } from "@/lib/site";
-import { LEGAL_LINKS } from "@/lib/business";
+import { LEGAL_LINKS, business } from "@/lib/business";
 import { Logo } from "./logo";
 
 export async function SiteFooter() {
@@ -63,6 +63,22 @@ export async function SiteFooter() {
                 </Link>
               </li>
             ))}
+          </ul>
+          <ul className="mt-5 space-y-2 text-sm text-slate-400">
+            {business.email && (
+              <li>
+                <a href={`mailto:${business.email}`} className="break-all hover:text-accent">
+                  {business.email}
+                </a>
+              </li>
+            )}
+            {business.phone && (
+              <li>
+                <a href={`tel:${business.phone.replace(/[^\d+]/g, "")}`} className="hover:text-accent">
+                  {business.phone}
+                </a>
+              </li>
+            )}
           </ul>
         </div>
       </div>
