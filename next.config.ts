@@ -5,6 +5,8 @@ import type { NextConfig } from "next";
 const buildWorkers = Number(process.env.BUILD_WORKERS) || undefined;
 
 const nextConfig: NextConfig = {
+  // Self-contained server.js + traced node_modules for the Docker image (deploy/).
+  output: "standalone",
   experimental: {
     serverActions: {
       // Bilingual question CSVs: ~1 KB/question (Devanagari is 3 bytes/char), up to 2000 rows per import.

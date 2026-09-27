@@ -1,0 +1,59 @@
+# Production stack on the VPS. Run through deploy/deploy.sh (project name "hptestseries").
+# Everything binds to 127.0.0.1 only; nginx on the host terminates TLS and proxies to the app.
+# The app and migrate containers use host networking so one DATABASE_URL (127.0.0.1:5434)
+# works for build, migrations and runtime.
+
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    env_file: .env.db
+    ports:
+      - "127.0.0.1:5434:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  # One-off: `docker compose run --rm migrate` (migrations + idempotent seed)
+  migrate:
+    build:
+      context: ..
+      target: builder
+      network: host
+      secrets: [env]
+    image: hptestseries-tools
+    network_mode: host
+    env_file: .env.production
+    command: sh -c "npx prisma migrate deploy && npx prisma db seed"
+    profiles: [tools]
+    depends_on:
+      db:
+        condition: service_healthy
+
+  app:
+    build:
+      context: ..
+      target: runner
+      network: host
+      secrets: [env]
+    image: hptestseries-app
+    restart: unless-stopped
+    network_mode: host
+    env_file: .env.production
+    environment:
+      HOSTNAME: 127.0.0.1
+      PORT: "3030"
+    depends_on:
+      db:
+        condition: service_healthy
+
+secrets:
+  env:
+    file: .env.production
+
+volumes:
+  pgdata:
