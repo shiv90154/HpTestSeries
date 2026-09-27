@@ -4,8 +4,19 @@ import { Clock, Grid3x3, Languages, LogIn, X } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { toast } from "sonner";
 import type { Bilingual, Paper, SubmittedAnswers } from "@/modules/assessment/types";
 import { gradeGuestAction, saveProgressAction, startAttemptAction, submitAttemptAction } from "./actions";
+import { OnboardingTour } from "./onboarding-tour";
+
+/** Short vibration on supported phones — a small confirmation on Save & Next / Submit taps. */
+function haptic() {
+  try {
+    navigator.vibrate?.(15);
+  } catch {
+    /* not supported */
+  }
+}
 
 // Real CBT semantics (TCS iON style): an option counts only after "Save & Next" or
 // "Mark for Review & Next". Picking an option and jumping away discards the unsaved choice.
@@ -85,6 +96,8 @@ export function Cbt({ paper, candidate }: { paper: Paper; candidate: { name: str
   const shownAt = useRef(0); // set when the exam starts
   const dirty = useRef(false);
   const submittedRef = useRef(false);
+  const drawerRef = useRef<HTMLDivElement>(null);
+  const swipeStartX = useRef<number | null>(null);
 
   const q = flat[cur];
 
@@ -136,6 +149,7 @@ export function Cbt({ paper, candidate }: { paper: Paper; candidate: { name: str
   }
 
   function saveAndNext(mark: boolean) {
+    haptic();
     const st = qs[q.id] ?? { v: true, m: false, t: 0 };
     const map = { ...qs, [q.id]: { ...st, v: true, s: selection, m: mark } };
     if (cur < flat.length - 1) go(cur + 1, map);
@@ -196,6 +210,7 @@ export function Cbt({ paper, candidate }: { paper: Paper; candidate: { name: str
   const submit = useCallback(async () => {
     if (submittedRef.current) return;
     submittedRef.current = true;
+    haptic();
     setConfirmOpen(false);
     setPhase("submitting");
     const answers = toAnswers(commitTime(qs));
@@ -215,7 +230,7 @@ export function Cbt({ paper, candidate }: { paper: Paper; candidate: { name: str
     } catch (err) {
       submittedRef.current = false;
       setPhase("exam");
-      setError(err instanceof Error ? err.message : "Submit failed. Check your internet and try again.");
+      toast.error(err instanceof Error ? err.message : "Submit failed. Check your internet and try again.");
     }
   }, [attemptId, candidate, commitTime, paper.slug, qs, router, storeKey, toAnswers]);
 
@@ -240,7 +255,9 @@ export function Cbt({ paper, candidate }: { paper: Paper; candidate: { name: str
     const id = setInterval(() => {
       if (!dirty.current) return;
       dirty.current = false;
-      void saveProgressAction(attemptId, toAnswers(qs));
+      void saveProgressAction(attemptId, toAnswers(qs)).catch(() =>
+        toast.error("Couldn't save your progress — check your internet connection."),
+      );
     }, AUTOSAVE_MS);
     return () => clearInterval(id);
   }, [phase, attemptId, qs, toAnswers]);
@@ -322,14 +339,16 @@ export function Cbt({ paper, candidate }: { paper: Paper; candidate: { name: str
   );
 
   return (
-    <div className="flex h-dvh flex-col bg-white font-reading text-[15px] text-foreground">
+    <div className="flex h-dvh flex-col overscroll-y-contain bg-white font-reading text-[15px] text-foreground">
+      <OnboardingTour />
       {/* Header */}
       <header className="flex items-center gap-3 bg-cbt-header px-3 py-2 text-white sm:px-4">
         <p className="min-w-0 flex-1 truncate font-sans text-sm font-semibold sm:text-base">
           {lang === "hi" && paper.titleHi ? paper.titleHi : paper.title}
         </p>
         <div
-          className={`flex items-center gap-1.5 rounded-md px-2.5 py-1 font-mono text-sm font-semibold tabular-nums ${remaining < 5 * 60_000 ? "bg-danger" : "bg-white/15"}`}
+          id="cbt-timer"
+          className={`flex items-center gap-1.5 rounded-md px-2.5 py-1 font-mono text-sm font-semibold tabular-nums ${remaining < 5 * 60_000 ? "bg-danger animate-pulse" : "bg-white/15"}`}
           role="timer"
           aria-label="Time left"
         >
@@ -337,6 +356,7 @@ export function Cbt({ paper, candidate }: { paper: Paper; candidate: { name: str
           {fmt(remaining)}
         </div>
         <button
+          id="cbt-palette-toggle"
           type="button"
           className="rounded-md bg-white/15 p-2 lg:hidden"
           onClick={() => setPaletteOpen(true)}
@@ -347,7 +367,7 @@ export function Cbt({ paper, candidate }: { paper: Paper; candidate: { name: str
       </header>
 
       {/* Section tabs + language */}
-      <div className="flex items-center gap-2 border-b border-border bg-surface-muted px-2">
+      <div id="cbt-section-tabs" className="flex items-center gap-2 border-b border-border bg-surface-muted px-2">
         <div className="flex min-w-0 flex-1 overflow-x-auto">
           {paper.sections.map((s, si) => (
             <button
@@ -416,30 +436,38 @@ export function Cbt({ paper, candidate }: { paper: Paper; candidate: { name: str
                 );
               })}
             </fieldset>
-            {error && (
-              <p role="alert" className="mt-5 rounded-lg bg-danger-soft px-4 py-3 text-sm text-danger">
-                {error}
-              </p>
-            )}
           </div>
 
           {/* Actions */}
-          <div className="border-t border-border bg-surface-muted p-2 font-sans sm:p-3">
-            <div className="flex flex-wrap items-center gap-2">
-              <button type="button" onClick={() => saveAndNext(true)} className="cbt-btn border border-cbt-marked bg-white text-cbt-marked hover:bg-[#f3eefc]">
+          <div className="border-t border-border bg-surface-muted p-2 pb-[calc(0.5rem+env(safe-area-inset-bottom))] font-sans sm:p-3">
+            <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap sm:items-center">
+              <button
+                id="cbt-mark-btn"
+                type="button"
+                onClick={() => saveAndNext(true)}
+                className="cbt-btn border border-cbt-marked bg-white text-cbt-marked hover:bg-[#f3eefc]"
+              >
                 Mark for Review &amp; Next
               </button>
               <button type="button" onClick={clearResponse} className="cbt-btn border border-border bg-white hover:bg-surface-muted">
                 Clear Response
               </button>
-              <div className="ml-auto flex gap-2">
-                <button type="button" onClick={() => go(cur - 1)} disabled={cur === 0} className="cbt-btn border border-border bg-white disabled:opacity-40">
-                  Back
-                </button>
-                <button type="button" onClick={() => saveAndNext(false)} className="cbt-btn bg-cbt-answered text-white hover:brightness-95">
-                  Save &amp; Next
-                </button>
-              </div>
+              <button
+                type="button"
+                onClick={() => go(cur - 1)}
+                disabled={cur === 0}
+                className="cbt-btn border border-border bg-white disabled:opacity-40 sm:ml-auto"
+              >
+                Back
+              </button>
+              <button
+                id="cbt-save-btn"
+                type="button"
+                onClick={() => saveAndNext(false)}
+                className="cbt-btn bg-cbt-answered text-white hover:brightness-95"
+              >
+                Save &amp; Next
+              </button>
             </div>
           </div>
         </main>
@@ -452,7 +480,25 @@ export function Cbt({ paper, candidate }: { paper: Paper; candidate: { name: str
       {paletteOpen && (
         <div className="fixed inset-0 z-50 lg:hidden" role="dialog" aria-modal="true" aria-label="Question palette">
           <button type="button" className="absolute inset-0 bg-black/40" onClick={() => setPaletteOpen(false)} aria-label="Close palette" />
-          <div className="absolute inset-y-0 right-0 flex w-[88%] max-w-[320px] flex-col bg-white font-sans shadow-xl">
+          <div
+            ref={drawerRef}
+            className="absolute inset-y-0 right-0 flex w-[88%] max-w-[320px] flex-col bg-white font-sans shadow-xl transition-transform"
+            onTouchStart={(e) => {
+              swipeStartX.current = e.touches[0].clientX;
+            }}
+            onTouchMove={(e) => {
+              if (swipeStartX.current === null || !drawerRef.current) return;
+              const dx = Math.max(0, e.touches[0].clientX - swipeStartX.current);
+              drawerRef.current.style.transform = `translateX(${dx}px)`;
+            }}
+            onTouchEnd={(e) => {
+              if (swipeStartX.current === null) return;
+              const dx = e.changedTouches[0].clientX - swipeStartX.current;
+              swipeStartX.current = null;
+              if (drawerRef.current) drawerRef.current.style.transform = "";
+              if (dx > 80) setPaletteOpen(false);
+            }}
+          >
             <button type="button" onClick={() => setPaletteOpen(false)} className="absolute right-2 top-2 rounded-md p-1.5 text-muted hover:bg-surface-muted" aria-label="Close">
               <X className="size-5" />
             </button>

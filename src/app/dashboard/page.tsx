@@ -119,51 +119,85 @@ export default async function DashboardPage() {
           {d.recent.length === 0 ? (
             <p className="px-5 py-8 text-center text-sm text-muted">No tests yet — your attempts will show up here.</p>
           ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full min-w-[560px] text-sm">
-                <thead className="bg-surface-muted text-left text-xs text-muted">
-                  <tr>
-                    <th className="px-5 py-2.5 font-medium">Test</th>
-                    <th className="px-5 py-2.5 text-right font-medium">Score</th>
-                    <th className="px-5 py-2.5 text-right font-medium">Accuracy</th>
-                    <th className="px-5 py-2.5 text-right font-medium">HP rank</th>
-                    <th className="px-5 py-2.5 font-medium" />
-                  </tr>
-                </thead>
-                <tbody>
-                  {d.recent.map((r) => (
-                    <tr key={r.id} className="border-t border-border">
-                      <td className="px-5 py-3">
-                        <p className="font-medium">{r.title}</p>
-                        <p className="text-xs text-muted">
-                          {r.submittedAt.toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}
-                          {!r.isFirst && " · re-attempt"}
+            <>
+              {/* Cards on mobile — a 5-column table with horizontal scroll is painful on a phone */}
+              <ul className="divide-y divide-border sm:hidden">
+                {d.recent.map((r) => (
+                  <li key={r.id}>
+                    <Link href={`/results/${r.id}`} className="flex flex-col gap-2 px-5 py-3.5 active:bg-surface-muted">
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="min-w-0">
+                          <p className="truncate font-medium">{r.title}</p>
+                          <p className="text-xs text-muted">
+                            {r.submittedAt.toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}
+                            {!r.isFirst && " · re-attempt"}
+                          </p>
+                        </div>
+                        <p className="shrink-0 text-right tabular-nums">
+                          <b>{r.score}</b>
+                          <span className="text-muted">/{r.maxScore}</span>
                         </p>
-                      </td>
-                      <td className="px-5 py-3 text-right tabular-nums">
-                        <b>{r.score}</b>/{r.maxScore}
-                      </td>
-                      <td className="px-5 py-3 text-right tabular-nums">{r.accuracy}%</td>
-                      <td className="px-5 py-3 text-right tabular-nums">
-                        {r.rank ? (
-                          <span className="inline-flex items-center gap-1">
-                            <Trophy className="size-3.5 text-accent-strong" /> #{r.rank.rank}
-                            <span className="text-muted">/{r.rank.total}</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-xs">
+                        <span className="rounded-full bg-surface-muted px-2 py-1 font-medium tabular-nums">{r.accuracy}% accuracy</span>
+                        {r.rank && (
+                          <span className="inline-flex items-center gap-1 rounded-full bg-accent-soft px-2 py-1 font-medium tabular-nums text-accent-strong">
+                            <Trophy className="size-3" /> #{r.rank.rank}/{r.rank.total}
                           </span>
-                        ) : (
-                          <span className="text-muted">—</span>
                         )}
-                      </td>
-                      <td className="px-5 py-3 text-right">
-                        <Link href={`/results/${r.id}`} className="font-medium text-primary">
-                          Analysis
-                        </Link>
-                      </td>
+                      </div>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+
+              {/* Table on larger screens */}
+              <div className="hidden overflow-x-auto sm:block">
+                <table className="w-full min-w-[560px] text-sm">
+                  <thead className="bg-surface-muted text-left text-xs text-muted">
+                    <tr>
+                      <th className="px-5 py-2.5 font-medium">Test</th>
+                      <th className="px-5 py-2.5 text-right font-medium">Score</th>
+                      <th className="px-5 py-2.5 text-right font-medium">Accuracy</th>
+                      <th className="px-5 py-2.5 text-right font-medium">HP rank</th>
+                      <th className="px-5 py-2.5 font-medium" />
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                  </thead>
+                  <tbody>
+                    {d.recent.map((r) => (
+                      <tr key={r.id} className="border-t border-border">
+                        <td className="px-5 py-3">
+                          <p className="font-medium">{r.title}</p>
+                          <p className="text-xs text-muted">
+                            {r.submittedAt.toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}
+                            {!r.isFirst && " · re-attempt"}
+                          </p>
+                        </td>
+                        <td className="px-5 py-3 text-right tabular-nums">
+                          <b>{r.score}</b>/{r.maxScore}
+                        </td>
+                        <td className="px-5 py-3 text-right tabular-nums">{r.accuracy}%</td>
+                        <td className="px-5 py-3 text-right tabular-nums">
+                          {r.rank ? (
+                            <span className="inline-flex items-center gap-1">
+                              <Trophy className="size-3.5 text-accent-strong" /> #{r.rank.rank}
+                              <span className="text-muted">/{r.rank.total}</span>
+                            </span>
+                          ) : (
+                            <span className="text-muted">—</span>
+                          )}
+                        </td>
+                        <td className="px-5 py-3 text-right">
+                          <Link href={`/results/${r.id}`} className="font-medium text-primary">
+                            Analysis
+                          </Link>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </>
           )}
         </section>
 

@@ -1,8 +1,9 @@
 "use client";
 
+import confetti from "canvas-confetti";
 import { Award, CheckCircle2, Clock, LogIn, RotateCcw, Target, Trophy, XCircle } from "lucide-react";
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type { Bilingual, ResultData } from "@/modules/assessment/types";
 import { ReportQuestion } from "./report-question";
 import { btn, card } from "./ui";
@@ -31,6 +32,15 @@ export function ResultView({ data, isGuest, loggedIn = !isGuest }: { data: Resul
 
   const outcome = (q: ResultData["questions"][number]): Exclude<Filter, "all"> =>
     !q.chosenOptionId ? "skipped" : q.chosenOptionId === q.correctOptionId ? "correct" : "wrong";
+
+  // A little celebration for a strong result — top-3 rank or a clearly good score.
+  useEffect(() => {
+    const scorePct = pct(data.score, data.maxScore);
+    if (!(data.rank && data.rank.rank <= 3) && scorePct < 80) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    confetti({ particleCount: 120, spread: 80, origin: { y: 0.3 }, colors: ["#1e4fd8", "#f59e0b", "#16a34a"] });
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- fire once when the result mounts
+  }, []);
 
   const shown = useMemo(
     () => (filter === "all" ? data.questions : data.questions.filter((q) => outcome(q) === filter)),
