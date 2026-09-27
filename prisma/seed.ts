@@ -7,6 +7,7 @@
 import "dotenv/config";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "../src/generated/prisma/client";
+import { seedContent } from "./seed-content";
 import { DEMO_TEST_SLUG, seedDemoTest } from "./seed-demo";
 
 const db = new PrismaClient({ adapter: new PrismaPg({ connectionString: process.env.DATABASE_URL }) });
@@ -200,11 +201,11 @@ async function main() {
 
     for (const [ei, exam] of exams.entries()) {
       const { stages = [], ...rest } = exam;
-      const examData = { ...rest, description: descriptions[`${body.slug}/${exam.slug}`] ?? null };
+      // Description only on create: after that it's edited in /admin/exams (seedContent fills empty fields).
       const e = await db.exam.upsert({
         where: { bodyId_slug: { bodyId: b.id, slug: exam.slug } },
-        update: { ...examData, order: ei },
-        create: { ...examData, order: ei, bodyId: b.id },
+        update: { ...rest, order: ei },
+        create: { ...rest, description: descriptions[`${body.slug}/${exam.slug}`] ?? null, order: ei, bodyId: b.id },
       });
 
       for (const [si, stage] of stages.entries()) {
@@ -235,7 +236,11 @@ async function main() {
   }
 
   await seedDemoTest(db);
-  console.log(`Seeded ${catalogue.length} bodies, ${taxonomy.length} subjects and the demo test "${DEMO_TEST_SLUG}".`);
+  const content = await seedContent(db);
+  console.log(
+    `Seeded ${catalogue.length} bodies, ${taxonomy.length} subjects, the demo test "${DEMO_TEST_SLUG}", ` +
+      `content for ${content.filled} exams and ${content.created} new draft posts.`,
+  );
 }
 
 main()
