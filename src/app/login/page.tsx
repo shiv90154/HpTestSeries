@@ -5,7 +5,7 @@ import { redirect } from "next/navigation";
 import { Logo } from "@/components/logo";
 import { Mountains } from "@/components/mountains";
 import { safeNextPath } from "@/lib/site";
-import { googleLoginEnabled, phoneLoginEnabled } from "@/modules/identity/login-methods";
+import { emailLoginEnabled, googleLoginEnabled, phoneLoginEnabled } from "@/modules/identity/login-methods";
 import { getCurrentUser } from "@/modules/identity/session";
 import { LoginForm } from "./login-form";
 
@@ -45,7 +45,12 @@ export default async function LoginPage({ searchParams }: PageProps<"/login">) {
           <div className="space-y-1.5">
             <h1 className="text-2xl font-bold">Login or sign up</h1>
             <p className="text-sm text-muted">
-              {googleLoginEnabled ? "Continue with Google, or get" : "Get"} a 6-digit code by email. New here? Your account is created automatically.
+              {emailLoginEnabled
+                ? `${googleLoginEnabled ? "Continue with Google, or get" : "Get"} a 6-digit code by email.`
+                : googleLoginEnabled
+                  ? "Continue with your Google account."
+                  : ""}{" "}
+              New here? Your account is created automatically.
             </p>
           </div>
           {googleFailed && (
@@ -53,7 +58,13 @@ export default async function LoginPage({ searchParams }: PageProps<"/login">) {
               Google sign-in did not complete. Please try again, or use an email code.
             </p>
           )}
-          <LoginForm next={next} googleEnabled={googleLoginEnabled} phoneEnabled={phoneLoginEnabled} />
+          {googleLoginEnabled || emailLoginEnabled || phoneLoginEnabled ? (
+            <LoginForm next={next} googleEnabled={googleLoginEnabled} emailEnabled={emailLoginEnabled} phoneEnabled={phoneLoginEnabled} />
+          ) : (
+            <p className="rounded-xl border border-accent bg-accent-soft p-4 text-sm">
+              Login is being set up and will open shortly. Meanwhile, free mock tests work without an account.
+            </p>
+          )}
           <p className="text-center text-sm text-muted">
             Just want to try?{" "}
             <Link href="/tests/hp-gk-free-mock-1" className="font-semibold text-primary">

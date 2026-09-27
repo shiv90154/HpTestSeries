@@ -59,9 +59,10 @@ function GoogleIcon() {
   );
 }
 
-export function LoginForm({ next, googleEnabled, phoneEnabled }: { next: string; googleEnabled: boolean; phoneEnabled: boolean }) {
+export function LoginForm({ next, googleEnabled, emailEnabled, phoneEnabled }: { next: string; googleEnabled: boolean; emailEnabled: boolean; phoneEnabled: boolean }) {
   const router = useRouter();
-  const [method, setMethod] = useState<Method>("email");
+  const [method, setMethod] = useState<Method>(emailEnabled || !phoneEnabled ? "email" : "phone");
+  const codeLogin = method === "email" ? emailEnabled : phoneEnabled;
   const [step, setStep] = useState<Step>({ kind: "enter" });
   const [value, setValue] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -127,12 +128,15 @@ export function LoginForm({ next, googleEnabled, phoneEnabled }: { next: string;
           >
             <GoogleIcon /> Continue with Google
           </button>
+          {codeLogin && (
           <div className="flex items-center gap-3 text-xs text-muted">
             <span className="h-px flex-1 bg-border" /> or get a code by {method === "email" ? "email" : "SMS"} <span className="h-px flex-1 bg-border" />
           </div>
+          )}
         </>
       )}
 
+      {codeLogin && (
       <form onSubmit={onSubmit} className="space-y-3">
         {step.kind === "enter" ? (
           <label className="block space-y-1.5">
@@ -201,8 +205,9 @@ export function LoginForm({ next, googleEnabled, phoneEnabled }: { next: string;
           </div>
         )}
       </form>
+      )}
 
-      {phoneEnabled && step.kind === "enter" && (
+      {emailEnabled && phoneEnabled && step.kind === "enter" && (
         <button
           type="button"
           onClick={() => switchMethod(method === "email" ? "phone" : "email")}
