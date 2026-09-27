@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { AlertTriangle, ClipboardList, Flag, HelpCircle, LayoutDashboard, Package, ShoppingCart } from "lucide-react";
 import { countOpenReports } from "@/modules/content/report-service";
 import { can } from "@/modules/identity/permissions";
 import { requirePermission } from "@/modules/identity/session";
@@ -18,13 +17,13 @@ export default async function AdminLayout({ children }: LayoutProps<"/admin">) {
   const openReports = can(user.role, "content:edit") ? await countOpenReports() : 0;
 
   const nav: AdminNavItem[] = [
-    { href: "/admin", label: "Overview", icon: LayoutDashboard, show: true },
-    { href: "/admin/questions", label: "Questions", icon: HelpCircle, show: can(user.role, "content:edit") },
-    { href: "/admin/tests", label: "Tests", icon: ClipboardList, show: can(user.role, "content:edit") },
-    { href: "/admin/reports", label: openReports ? `Reports (${openReports})` : "Reports", icon: Flag, show: can(user.role, "content:edit") },
-    { href: "/admin/products", label: "Products", icon: Package, show: can(user.role, "commerce:manage") },
-    { href: "/admin/orders", label: "Orders", icon: ShoppingCart, show: can(user.role, "commerce:manage") },
-    { href: "/admin/errors", label: "Errors", icon: AlertTriangle, show: can(user.role, "users:manage") },
+    { href: "/admin", label: "Overview", icon: "overview", show: true },
+    { href: "/admin/questions", label: "Questions", icon: "questions", show: can(user.role, "content:edit") },
+    { href: "/admin/tests", label: "Tests", icon: "tests", show: can(user.role, "content:edit") },
+    { href: "/admin/reports", label: openReports ? `Reports (${openReports})` : "Reports", icon: "reports", show: can(user.role, "content:edit") },
+    { href: "/admin/products", label: "Products", icon: "products", show: can(user.role, "commerce:manage") },
+    { href: "/admin/orders", label: "Orders", icon: "orders", show: can(user.role, "commerce:manage") },
+    { href: "/admin/errors", label: "Errors", icon: "errors", show: can(user.role, "users:manage") },
   ];
 
   const initials = site.name

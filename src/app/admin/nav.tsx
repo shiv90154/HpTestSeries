@@ -2,12 +2,24 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import type { LucideIcon } from "lucide-react";
+import { AlertTriangle, ClipboardList, Flag, HelpCircle, LayoutDashboard, Package, ShoppingCart, type LucideIcon } from "lucide-react";
+
+export type AdminNavIconKey = "overview" | "questions" | "tests" | "reports" | "products" | "orders" | "errors";
+
+const ICONS: Record<AdminNavIconKey, LucideIcon> = {
+  overview: LayoutDashboard,
+  questions: HelpCircle,
+  tests: ClipboardList,
+  reports: Flag,
+  products: Package,
+  orders: ShoppingCart,
+  errors: AlertTriangle,
+};
 
 export type AdminNavItem = {
   href: string;
   label: string;
-  icon: LucideIcon;
+  icon: AdminNavIconKey;
   show: boolean;
 };
 
@@ -22,8 +34,9 @@ export function AdminSidebarNav({ items }: { items: AdminNavItem[] }) {
     <nav className="space-y-1">
       {items
         .filter((i) => i.show)
-        .map(({ href, label, icon: Icon }) => {
+        .map(({ href, label, icon }) => {
           const active = isActive(pathname, href);
+          const Icon = ICONS[icon];
           return (
             <Link
               key={href}
@@ -48,8 +61,9 @@ export function AdminMobileNav({ items }: { items: AdminNavItem[] }) {
     <nav className="flex gap-1.5 overflow-x-auto px-3 pb-2.5">
       {items
         .filter((i) => i.show)
-        .map(({ href, label, icon: Icon }) => {
+        .map(({ href, label, icon }) => {
           const active = isActive(pathname, href);
+          const Icon = ICONS[icon];
           return (
             <Link
               key={href}
