@@ -1,4 +1,5 @@
 import { ImageResponse } from "next/og";
+import { brandMarkDataUri } from "@/lib/brand-mark";
 import { site } from "@/lib/site";
 
 export const alt = `${site.name} — Himachal govt exam mock tests in real CBT format`;
@@ -21,8 +22,12 @@ export default function OpengraphImage() {
           fontFamily: "sans-serif",
         }}
       >
-        <div style={{ fontSize: 34, fontWeight: 700, display: "flex" }}>
-          HP<span style={{ color: "#f59e0b" }}>Test</span>Series
+        <div style={{ display: "flex", alignItems: "center", gap: 20 }}>
+          {/* eslint-disable-next-line @next/next/no-img-element -- ImageResponse renders plain <img> */}
+          <img src={brandMarkDataUri()} width={76} height={76} alt="" />
+          <div style={{ fontSize: 40, fontWeight: 700, display: "flex" }}>
+            HP&nbsp;<span style={{ color: "#f59e0b" }}>Test Series</span>
+          </div>
         </div>
         <div style={{ fontSize: 68, fontWeight: 800, marginTop: 28, lineHeight: 1.1, maxWidth: 950 }}>
           Himachal govt exam mock tests in real CBT format
