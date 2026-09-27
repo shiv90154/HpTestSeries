@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { countOpenReports } from "@/modules/content/report-service";
 import { can } from "@/modules/identity/permissions";
 import { requirePermission } from "@/modules/identity/session";
 
@@ -12,10 +13,13 @@ export default async function AdminLayout({ children }: LayoutProps<"/admin">) {
   // Layout guard covers rendering; every admin server action must call requirePermission itself too.
   const user = await requirePermission("admin:access", "/admin");
 
+  const openReports = can(user.role, "content:edit") ? await countOpenReports() : 0;
+
   const nav = [
     { href: "/admin", label: "Overview", show: true },
     { href: "/admin/questions", label: "Questions", show: can(user.role, "content:edit") },
     { href: "/admin/tests", label: "Tests", show: can(user.role, "content:edit") },
+    { href: "/admin/reports", label: openReports ? `Reports (${openReports})` : "Reports", show: can(user.role, "content:edit") },
   ];
 
   return (

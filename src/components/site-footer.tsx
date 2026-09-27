@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { examLabel, getCatalog } from "@/modules/catalog/queries";
 import { site } from "@/lib/site";
+import { LEGAL_LINKS } from "@/lib/business";
 import { Logo } from "./logo";
 
 export async function SiteFooter() {
@@ -9,7 +10,7 @@ export async function SiteFooter() {
 
   return (
     <footer className="mt-auto bg-[#0b1733] text-slate-300">
-      <div className="mx-auto grid w-full max-w-6xl gap-10 px-4 py-14 md:grid-cols-[1.4fr_1fr_1fr]">
+      <div className="mx-auto grid w-full max-w-6xl gap-10 px-4 py-14 sm:grid-cols-2 md:grid-cols-[1.4fr_1fr_1fr_1fr]">
         <div className="space-y-4">
           <Logo light />
           <p className="max-w-sm text-sm leading-relaxed text-slate-400">{site.description}</p>
@@ -50,6 +51,18 @@ export async function SiteFooter() {
                 Login / Sign up
               </Link>
             </li>
+          </ul>
+        </div>
+        <div>
+          <h2 className="mb-4 text-sm font-semibold uppercase tracking-wider text-white">Help</h2>
+          <ul className="space-y-2.5 text-sm">
+            {LEGAL_LINKS.map((l) => (
+              <li key={l.href}>
+                <Link href={l.href} className="hover:text-accent">
+                  {l.label}
+                </Link>
+              </li>
+            ))}
           </ul>
         </div>
       </div>

@@ -1,4 +1,5 @@
 import { connection } from "next/server";
+import { missingBusinessDetails } from "@/lib/business";
 import { db } from "@/lib/db";
 
 export default async function AdminOverviewPage() {
@@ -11,6 +12,8 @@ export default async function AdminOverviewPage() {
     db.user.count(),
   ]);
 
+  const missing = missingBusinessDetails();
+
   const stats = [
     { label: "Exams", value: exams },
     { label: "Questions", value: questions },
@@ -21,6 +24,12 @@ export default async function AdminOverviewPage() {
   return (
     <div className="space-y-6">
       <h1 className="text-xl font-semibold">Overview</h1>
+      {missing.length > 0 && (
+        <p role="alert" className="rounded-xl border border-accent bg-accent-soft p-4 text-sm">
+          <b>Before launch:</b> the Contact and policy pages are missing your {missing.join(", ")}. Fill them in{" "}
+          <code>src/lib/business.ts</code> — Razorpay will not approve the account without them.
+        </p>
+      )}
       <dl className="grid grid-cols-2 gap-3 sm:grid-cols-4">
         {stats.map((s) => (
           <div key={s.label} className="rounded-xl border border-border bg-surface p-4">

@@ -4,6 +4,7 @@ import { Award, CheckCircle2, Clock, LogIn, RotateCcw, Target, Trophy, XCircle }
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import type { Bilingual, ResultData } from "@/modules/assessment/types";
+import { ReportQuestion } from "./report-question";
 import { btn, card } from "./ui";
 
 type Lang = "en" | "hi";
@@ -18,7 +19,8 @@ function duration(sec: number): string {
   return m ? `${m}m ${s}s` : `${s}s`;
 }
 
-export function ResultView({ data, isGuest }: { data: ResultData; isGuest: boolean }) {
+/** isGuest: result not saved to an account. loggedIn: can report questions (a guest may log in afterwards). */
+export function ResultView({ data, isGuest, loggedIn = !isGuest }: { data: ResultData; isGuest: boolean; loggedIn?: boolean }) {
   const [lang, setLang] = useState<Lang>("en");
   const [filter, setFilter] = useState<Filter>("all");
   const hasHindi = data.questions.some((q) => q.stem.hi);
@@ -240,6 +242,9 @@ export function ResultView({ data, isGuest }: { data: ResultData; isGuest: boole
                     <p className="font-reading">{pick(q.explanation, lang)}</p>
                   </div>
                 )}
+                <div className="mt-4 border-t border-border pt-3">
+                  <ReportQuestion questionId={q.id} lang={lang} loginHref={!loggedIn ? `/login?next=${encodeURIComponent(`/tests/${data.test.slug}/result`)}` : null} />
+                </div>
               </li>
             );
           })}

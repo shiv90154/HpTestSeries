@@ -15,7 +15,7 @@ function read(slug: string): string | null {
   }
 }
 
-export function GuestResult({ slug }: { slug: string }) {
+export function GuestResult({ slug, loggedIn }: { slug: string; loggedIn: boolean }) {
   const raw = useSyncExternalStore(
     () => () => {},
     () => read(slug),
@@ -34,5 +34,5 @@ export function GuestResult({ slug }: { slug: string }) {
       </main>
     );
   }
-  return <ResultView data={JSON.parse(raw) as ResultData} isGuest />;
+  return <ResultView data={JSON.parse(raw) as ResultData} isGuest loggedIn={loggedIn} />;
 }
