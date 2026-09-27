@@ -22,9 +22,7 @@ services:
   migrate:
     build:
       context: ..
-      target: builder
-      network: host
-      secrets: [env]
+      target: tools
     image: hptestseries-tools
     network_mode: host
     env_file: .env.production
