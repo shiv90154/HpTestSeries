@@ -2,17 +2,10 @@
 // Pure — DB lookups are passed in — so every rule is unit-tested.
 
 import Papa from "papaparse";
+import { LANGS, MAX_EXPLANATION, MAX_OPTION, MAX_STEM, OPTION_LETTERS, type Lang } from "./question-shape";
 import { questionTextHash } from "./text-hash";
 
 export const MAX_IMPORT_ROWS = 2000;
-const MAX_STEM = 5000;
-const MAX_OPTION = 1000;
-const MAX_EXPLANATION = 10000;
-
-const LANGS = ["en", "hi"] as const;
-type Lang = (typeof LANGS)[number];
-
-const OPTION_LETTERS = ["a", "b", "c", "d", "e"] as const;
 
 /** Column order for the downloadable template. */
 export const IMPORT_COLUMNS = [

@@ -15,6 +15,7 @@ export default async function AdminLayout({ children }: LayoutProps<"/admin">) {
   const nav = [
     { href: "/admin", label: "Overview", show: true },
     { href: "/admin/questions", label: "Questions", show: can(user.role, "content:edit") },
+    { href: "/admin/tests", label: "Tests", show: can(user.role, "content:edit") },
   ];
 
   return (

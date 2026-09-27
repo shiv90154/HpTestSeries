@@ -2,33 +2,28 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { connection } from "next/server";
 import { db } from "@/lib/db";
-import type { Prisma } from "@/generated/prisma/client";
 import { ContentStatus } from "@/generated/prisma/enums";
+import { can } from "@/modules/identity/permissions";
 import { requirePermission } from "@/modules/identity/session";
+import { StatusBadge } from "../ui";
+import { bulkStatusAction } from "./actions";
+import { BulkBar } from "./bulk-bar";
+import { filterParams, parseQuestionFilters, questionListWhere } from "./filters";
 
 export const metadata: Metadata = { title: "Questions" };
 
 const PAGE_SIZE = 50;
 
-function one(v: string | string[] | undefined): string | undefined {
-  return Array.isArray(v) ? v[0] : v || undefined;
-}
-
 export default async function QuestionsPage({ searchParams }: PageProps<"/admin/questions">) {
-  await requirePermission("content:edit");
+  const user = await requirePermission("content:edit");
   await connection();
 
   const sp = await searchParams;
-  const status = Object.values(ContentStatus).find((s) => s === one(sp.status));
-  const subject = one(sp.subject);
-  const q = one(sp.q)?.trim().slice(0, 200);
-  const page = Math.max(1, Number(one(sp.page)) || 1);
-
-  const where: Prisma.QuestionWhereInput = {
-    ...(status && { status }),
-    ...(subject && { topics: { some: { topic: { subject: { slug: subject } } } } }),
-    ...(q && { contents: { some: { stem: { contains: q, mode: "insensitive" } } } }),
-  };
+  const filters = parseQuestionFilters(sp);
+  const { status, subject, q } = filters;
+  const page = Math.max(1, Number(sp.page) || 1);
+  const msg = typeof sp.msg === "string" ? sp.msg.slice(0, 200) : null;
+  const where = questionListWhere(filters);
 
   const [total, questions, subjects] = await Promise.all([
     db.question.count({ where }),
@@ -45,7 +40,7 @@ export default async function QuestionsPage({ searchParams }: PageProps<"/admin/
         sourceYear: true,
         contents: { select: { lang: true, stem: true } },
         topics: { select: { topic: { select: { name: true, subject: { select: { name: true } } } } } },
-        _count: { select: { reports: { where: { status: "OPEN" } } } },
+        _count: { select: { reports: { where: { status: "OPEN" } }, testQuestions: true } },
       },
     }),
     db.subject.findMany({ orderBy: { order: "asc" }, select: { slug: true, name: true } }),
@@ -53,10 +48,7 @@ export default async function QuestionsPage({ searchParams }: PageProps<"/admin/
 
   const pages = Math.max(1, Math.ceil(total / PAGE_SIZE));
   const pageHref = (p: number) => {
-    const params = new URLSearchParams();
-    if (status) params.set("status", status);
-    if (subject) params.set("subject", subject);
-    if (q) params.set("q", q);
+    const params = filterParams(filters);
     params.set("page", String(p));
     return `/admin/questions?${params}`;
   };
@@ -67,9 +59,14 @@ export default async function QuestionsPage({ searchParams }: PageProps<"/admin/
         <h1 className="text-xl font-semibold">
           Questions <span className="text-base font-normal text-muted">({total.toLocaleString("en-IN")})</span>
         </h1>
-        <Link href="/admin/questions/import" className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground">
-          Import CSV
-        </Link>
+        <div className="flex gap-2">
+          <Link href="/admin/questions/import" className="rounded-lg border border-border bg-surface px-4 py-2 text-sm font-medium">
+            Import CSV
+          </Link>
+          <Link href="/admin/questions/new" className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground">
+            New question
+          </Link>
+        </div>
       </div>
 
       <form className="flex flex-wrap gap-2 text-sm" action="/admin/questions">
@@ -98,36 +95,55 @@ export default async function QuestionsPage({ searchParams }: PageProps<"/admin/
         <button className="rounded-lg border border-border bg-surface px-4 py-2 font-medium">Filter</button>
       </form>
 
+      {msg && (
+        <p role="status" className="rounded-xl border border-primary bg-primary-soft p-3 text-sm">
+          {msg}
+        </p>
+      )}
+
       {questions.length === 0 ? (
         <p className="rounded-xl border border-border bg-surface p-6 text-sm text-muted">
-          No questions match. <Link href="/admin/questions/import" className="text-primary underline">Import a CSV</Link> to get started.
+          No questions match. <Link href="/admin/questions/new" className="text-primary underline">Write one</Link> or{" "}
+          <Link href="/admin/questions/import" className="text-primary underline">import a CSV</Link>.
         </p>
       ) : (
-        <ul className="divide-y divide-border rounded-xl border border-border bg-surface">
-          {questions.map((qn) => {
-            const en = qn.contents.find((c) => c.lang === "en")?.stem;
-            const hi = qn.contents.find((c) => c.lang === "hi")?.stem;
-            const topic = qn.topics[0]?.topic;
-            return (
-              <li key={qn.id} className="space-y-1.5 p-4 text-sm">
-                <p className="line-clamp-2">{en ?? hi}</p>
-                {en && hi && <p className="line-clamp-1 text-muted">{hi}</p>}
-                <div className="flex flex-wrap gap-x-3 gap-y-1 text-xs text-muted">
-                  <span className="font-medium text-foreground">{qn.status.replace("_", " ")}</span>
-                  {topic && (
-                    <span>
-                      {topic.subject.name} › {topic.name}
-                    </span>
-                  )}
-                  <span>{qn.difficulty.toLowerCase()}</span>
-                  {qn.sourceType === "PYQ" && <span>PYQ {qn.sourceYear}</span>}
-                  <span>{[en && "EN", hi && "HI"].filter(Boolean).join(" + ")}</span>
-                  {qn._count.reports > 0 && <span className="text-danger">{qn._count.reports} open report(s)</span>}
-                </div>
-              </li>
-            );
-          })}
-        </ul>
+        <form action={bulkStatusAction} className="space-y-3">
+          {status && <input type="hidden" name="status" value={status} />}
+          {subject && <input type="hidden" name="subject" value={subject} />}
+          {q && <input type="hidden" name="q" value={q} />}
+          <BulkBar canPublish={can(user.role, "content:publish")} total={total} filtered={!!(status || subject || q)} />
+          <ul className="divide-y divide-border rounded-xl border border-border bg-surface">
+            {questions.map((qn) => {
+              const en = qn.contents.find((c) => c.lang === "en")?.stem;
+              const hi = qn.contents.find((c) => c.lang === "hi")?.stem;
+              const topic = qn.topics[0]?.topic;
+              return (
+                <li key={qn.id} className="flex gap-3 p-4 text-sm">
+                  <input type="checkbox" name="ids" value={qn.id} aria-label="Select question" className="mt-1 shrink-0" />
+                  <div className="min-w-0 flex-1 space-y-1.5">
+                    <Link href={`/admin/questions/${qn.id}`} className="line-clamp-2 hover:text-primary">
+                      {en ?? hi}
+                    </Link>
+                    {en && hi && <p className="line-clamp-1 text-muted">{hi}</p>}
+                    <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted">
+                      <StatusBadge status={qn.status} />
+                      {topic && (
+                        <span>
+                          {topic.subject.name} › {topic.name}
+                        </span>
+                      )}
+                      <span>{qn.difficulty.toLowerCase()}</span>
+                      {qn.sourceType === "PYQ" && <span>PYQ {qn.sourceYear}</span>}
+                      <span>{[en && "EN", hi && "HI"].filter(Boolean).join(" + ")}</span>
+                      {qn._count.testQuestions > 0 && <span>in {qn._count.testQuestions} test(s)</span>}
+                      {qn._count.reports > 0 && <span className="text-danger">{qn._count.reports} open report(s)</span>}
+                    </div>
+                  </div>
+                </li>
+              );
+            })}
+          </ul>
+        </form>
       )}
 
       {pages > 1 && (
