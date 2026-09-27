@@ -86,27 +86,28 @@ export default async function Home() {
         {/* Hero */}
         <section className="relative overflow-hidden bg-linear-to-br from-[#0b1f5c] via-[#133a9e] to-[#1e4fd8] text-white">
           <div className="pointer-events-none absolute -right-32 -top-32 size-[480px] rounded-full bg-[#3b6ef5]/40 blur-3xl" />
-          <div className="relative mx-auto grid w-full max-w-6xl items-center gap-12 px-4 pb-36 pt-14 lg:grid-cols-[1.1fr_1fr] lg:pt-20">
-            <div className="space-y-6">
-              <p className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3.5 py-1.5 text-xs font-medium ring-1 ring-white/20">
+          <div className="relative mx-auto grid w-full max-w-6xl items-center gap-12 px-4 pb-24 pt-7 sm:pb-36 sm:pt-14 lg:grid-cols-[1.1fr_1fr] lg:pt-20">
+            <div className="space-y-4 sm:space-y-6">
+              <p className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 text-[11px] font-medium ring-1 ring-white/20 sm:px-3.5 sm:py-1.5 sm:text-xs">
                 <Sparkles className="size-3.5 text-accent" /> Made for Himachal Pradesh aspirants
               </p>
-              <h1 className="text-4xl font-bold leading-[1.15] tracking-tight sm:text-5xl">
+              <h1 className="text-[28px] font-bold leading-[1.2] tracking-tight sm:text-5xl sm:leading-[1.15]">
                 Crack Himachal govt exams with <span className="text-accent">real CBT</span> mock tests
               </h1>
-              <p className="text-lg text-white/85">{site.taglineHi}</p>
-              <div className="flex flex-wrap gap-3">
-                <Link href={DEMO} className={btn("accent", "lg")}>
+              <p className="text-[15px] text-white/85 sm:text-lg">{site.taglineHi}</p>
+              {/* Phones: full-width, thumb-sized buttons stacked like an app; larger screens: inline */}
+              <div className="grid gap-2.5 sm:flex sm:flex-wrap sm:gap-3">
+                <Link href={DEMO} className={btn("accent", "lg", "w-full sm:w-auto")}>
                   Start free mock test <ChevronRight className="size-5" />
                 </Link>
-                <Link href="/exams" className={btn("white", "lg")}>
+                <Link href="/exams" className={btn("white", "lg", "w-full sm:w-auto")}>
                   Explore exams
                 </Link>
               </div>
-              <ul className="flex flex-wrap gap-x-6 gap-y-2 text-sm text-white/85">
+              <ul className="flex flex-wrap gap-2 text-xs text-white/90 sm:gap-x-6 sm:gap-y-2 sm:text-sm">
                 {["No login needed", "Hindi & English", "Instant solutions"].map((t) => (
-                  <li key={t} className="flex items-center gap-1.5">
-                    <CheckCircle2 className="size-4 text-accent" /> {t}
+                  <li key={t} className="flex items-center gap-1.5 rounded-full bg-white/10 px-2.5 py-1 sm:bg-transparent sm:p-0">
+                    <CheckCircle2 className="size-3.5 text-accent sm:size-4" /> {t}
                   </li>
                 ))}
               </ul>
@@ -118,33 +119,42 @@ export default async function Home() {
 
         {/* Trust strip */}
         <section className="relative z-10 mx-auto -mt-10 w-full max-w-5xl px-4">
-          <dl className={`${card} grid grid-cols-2 divide-border p-2 shadow-lg sm:grid-cols-4 sm:divide-x`}>
+          <dl className={`${card} grid grid-cols-4 divide-x divide-border p-1 shadow-lg sm:p-2`}>
             {[
-              [`${examCount}+`, "Himachal exams"],
+              [`${examCount}+`, "Exams"],
               ["2", "Languages"],
               ["₹0", "To start"],
-              ["100%", "Exam-like CBT"],
+              ["100%", "Real CBT"],
             ].map(([v, l]) => (
-              <div key={l} className="p-4 text-center">
+              <div key={l} className="px-1 py-3 text-center sm:p-4">
                 <dt className="sr-only">{l}</dt>
-                <dd className="text-2xl font-bold text-primary">{v}</dd>
-                <dd className="text-xs text-muted">{l}</dd>
+                <dd className="text-lg font-bold text-primary sm:text-2xl">{v}</dd>
+                <dd className="text-[11px] text-muted sm:text-xs">{l}</dd>
               </div>
             ))}
           </dl>
         </section>
 
         {/* Exams */}
-        <section id="exams" className="mx-auto w-full max-w-6xl space-y-8 px-4 py-20">
-          <div className="max-w-2xl space-y-2">
-            <p className="text-sm font-semibold uppercase tracking-wider text-primary">Exams we cover</p>
-            <h2 className="text-3xl font-bold tracking-tight">All major Himachal Pradesh exams, in one place</h2>
-            <p className="text-muted">Pick your exam to see free tests, previous-year style questions and the full test series.</p>
+        <section id="exams" className="mx-auto w-full max-w-6xl space-y-4 px-4 py-10 sm:space-y-8 sm:py-20">
+          <div className="flex items-end justify-between gap-4">
+            <div className="max-w-2xl space-y-1 sm:space-y-2">
+              <p className="hidden text-sm font-semibold uppercase tracking-wider text-primary sm:block">Exams we cover</p>
+              <h2 className="text-xl font-bold tracking-tight sm:text-3xl">
+                <span className="sm:hidden">Choose your exam</span>
+                <span className="hidden sm:inline">All major Himachal Pradesh exams, in one place</span>
+              </h2>
+              <p className="hidden text-muted sm:block">Pick your exam to see free tests, previous-year style questions and the full test series.</p>
+            </div>
+            <Link href="/exams" className="shrink-0 text-sm font-semibold text-primary sm:hidden">
+              See all
+            </Link>
           </div>
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {/* Phones: swipeable row of cards; larger screens: grid */}
+          <div className="-mx-4 flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 pb-2 scrollbar-none sm:mx-0 sm:grid sm:grid-cols-2 sm:gap-4 sm:overflow-visible sm:px-0 sm:pb-0 lg:grid-cols-3">
             {catalog.flatMap((b) =>
               b.exams.map((e) => (
-                <Link key={e.href} href={e.href} className={`${card} group flex flex-col gap-3 p-5 transition hover:-translate-y-0.5 hover:border-primary hover:shadow-md`}>
+                <Link key={e.href} href={e.href} className={`${card} group flex w-[72%] shrink-0 snap-start flex-col gap-3 p-4 transition hover:-translate-y-0.5 hover:border-primary hover:shadow-md sm:w-auto sm:p-5`}>
                   <div className="flex items-center justify-between">
                     <span className="rounded-lg bg-primary-soft px-2.5 py-1 text-xs font-bold text-primary">{b.slug.toUpperCase()}</span>
                     <ChevronRight className="size-5 text-muted transition group-hover:translate-x-0.5 group-hover:text-primary" />
@@ -161,27 +171,27 @@ export default async function Home() {
         </section>
 
         {/* Features */}
-        <section className="bg-surface py-20">
-          <div className="mx-auto grid w-full max-w-6xl gap-12 px-4 lg:grid-cols-[1fr_1.3fr] lg:items-center">
-            <div className="space-y-4">
-              <p className="text-sm font-semibold uppercase tracking-wider text-primary">Why {site.name}</p>
-              <h2 className="text-3xl font-bold tracking-tight">Practise exactly the way you will be tested</h2>
-              <p className="text-muted">
+        <section className="bg-surface py-10 sm:py-20">
+          <div className="mx-auto grid w-full max-w-6xl gap-6 px-4 sm:gap-12 lg:grid-cols-[1fr_1.3fr] lg:items-center">
+            <div className="space-y-2 sm:space-y-4">
+              <p className="text-xs font-semibold uppercase tracking-wider text-primary sm:text-sm">Why {site.name}</p>
+              <h2 className="text-xl font-bold tracking-tight sm:text-3xl">Practise exactly the way you will be tested</h2>
+              <p className="hidden text-muted sm:block">
                 Most aspirants lose marks to exam-day nerves and an unfamiliar screen, not lack of knowledge. Every test here runs
                 on the same CBT pattern used in Himachal recruitment exams, so the real exam feels like just another mock.
               </p>
-              <Link href={DEMO} className={btn("primary")}>
+              <Link href={DEMO} className={btn("primary", "md", "w-full sm:w-auto")}>
                 Try the CBT interface <ChevronRight className="size-4" />
               </Link>
             </div>
-            <div className="grid gap-4 sm:grid-cols-2">
+            <div className="grid grid-cols-2 gap-3 sm:gap-4">
               {features.map((f) => (
-                <div key={f.title} className="rounded-2xl border border-border bg-background p-5">
-                  <div className="mb-3 grid size-11 place-items-center rounded-xl bg-primary text-white">
-                    <f.icon className="size-5" />
+                <div key={f.title} className="rounded-2xl border border-border bg-background p-3.5 sm:p-5">
+                  <div className="mb-2 grid size-9 place-items-center rounded-xl bg-primary text-white sm:mb-3 sm:size-11">
+                    <f.icon className="size-4 sm:size-5" />
                   </div>
-                  <h3 className="font-semibold">{f.title}</h3>
-                  <p className="mt-1.5 text-sm leading-relaxed text-muted">{f.text}</p>
+                  <h3 className="text-sm font-semibold leading-snug sm:text-base">{f.title}</h3>
+                  <p className="mt-1.5 line-clamp-3 text-xs leading-relaxed text-muted sm:line-clamp-none sm:text-sm">{f.text}</p>
                 </div>
               ))}
             </div>
@@ -189,8 +199,8 @@ export default async function Home() {
         </section>
 
         {/* How it works */}
-        <section className="mx-auto w-full max-w-6xl px-4 py-20">
-          <h2 className="mb-10 text-center text-3xl font-bold tracking-tight">Start in 30 seconds</h2>
+        <section className="mx-auto w-full max-w-6xl px-4 py-10 sm:py-20">
+          <h2 className="mb-6 text-xl font-bold tracking-tight sm:mb-10 sm:text-center sm:text-3xl">Start in 30 seconds</h2>
           <ol className="grid gap-6 md:grid-cols-3">
             {[
               ["Pick a test", "Choose a free mock or your exam's test series. No signup needed for free tests."],
@@ -209,14 +219,14 @@ export default async function Home() {
         </section>
 
         {/* Pricing */}
-        <section id="pricing" className="bg-surface py-20">
-          <div className="mx-auto w-full max-w-6xl space-y-10 px-4">
-            <div className="mx-auto max-w-2xl space-y-2 text-center">
-              <p className="text-sm font-semibold uppercase tracking-wider text-primary">Pricing</p>
-              <h2 className="text-3xl font-bold tracking-tight">Cheaper than a single guide book</h2>
-              <p className="text-muted">No expensive coaching. Pay only for what you need — or nothing at all.</p>
+        <section id="pricing" className="bg-surface py-10 sm:py-20">
+          <div className="mx-auto w-full max-w-6xl space-y-5 px-4 sm:space-y-10">
+            <div className="mx-auto max-w-2xl space-y-1 sm:space-y-2 sm:text-center">
+              <p className="text-xs font-semibold uppercase tracking-wider text-primary sm:text-sm">Pricing</p>
+              <h2 className="text-xl font-bold tracking-tight sm:text-3xl">Cheaper than a single guide book</h2>
+              <p className="text-sm text-muted sm:text-base">No expensive coaching. Pay only for what you need — or nothing at all.</p>
             </div>
-            <div className="grid gap-5 md:grid-cols-3">
+            <div className="-mx-4 flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 pb-2 scrollbar-none md:mx-0 md:grid md:grid-cols-3 md:gap-5 md:overflow-visible md:px-0 md:pb-0">
               <Plan name="Free" price="₹0" note="forever" items={["Free mock tests", "Real CBT interface", "Solutions in Hindi & English", "HP rank on free tests"]} cta={{ href: DEMO, label: "Start free test" }} />
               <Plan name="Exam Test Series" price="₹49–99" note="per exam" soon items={["20–40 full mock tests", "Previous-year papers", "Sectional & topic tests", "Detailed analysis"]} />
               <Plan highlight name="All-Access Pass" price="₹299" note="per year" soon items={["Every Himachal exam", "All mock tests & PYQs", "HP GK & current affairs tests", "Best value for serious aspirants"]} />
@@ -225,12 +235,12 @@ export default async function Home() {
         </section>
 
         {/* FAQ */}
-        <section className="mx-auto w-full max-w-3xl space-y-8 px-4 py-20">
-          <h2 className="text-center text-3xl font-bold tracking-tight">Frequently asked questions</h2>
-          <div className="space-y-3">
+        <section className="mx-auto w-full max-w-3xl space-y-5 px-4 py-10 sm:space-y-8 sm:py-20">
+          <h2 className="text-xl font-bold tracking-tight sm:text-center sm:text-3xl">Frequently asked questions</h2>
+          <div className="space-y-2.5 sm:space-y-3">
             {faqs.map((f) => (
-              <details key={f.q} className={`${card} group p-5`}>
-                <summary className="flex cursor-pointer list-none items-center justify-between gap-4 font-semibold">
+              <details key={f.q} className={`${card} group p-4 sm:p-5`}>
+                <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-[15px] font-semibold sm:text-base">
                   {f.q}
                   <ChevronRight className="size-5 shrink-0 text-muted transition group-open:rotate-90" />
                 </summary>
@@ -241,10 +251,10 @@ export default async function Home() {
         </section>
 
         {/* CTA */}
-        <section className="px-4 pb-20">
-          <div className="mx-auto flex w-full max-w-6xl flex-col items-start gap-6 overflow-hidden rounded-3xl bg-linear-to-r from-[#133a9e] to-[#1e4fd8] p-8 text-white sm:flex-row sm:items-center sm:p-12">
+        <section className="px-4 pb-10 sm:pb-20">
+          <div className="mx-auto flex w-full max-w-6xl flex-col items-stretch gap-5 overflow-hidden rounded-3xl bg-linear-to-r from-[#133a9e] to-[#1e4fd8] p-6 text-white sm:flex-row sm:items-center sm:p-12">
             <div className="flex-1 space-y-2">
-              <h2 className="text-2xl font-bold sm:text-3xl">Take your first Himachal mock test now</h2>
+              <h2 className="text-xl font-bold sm:text-3xl">Take your first Himachal mock test now</h2>
               <p className="text-white/80">25 questions · 20 minutes · Hindi & English · No login</p>
             </div>
             <Link href={DEMO} className={btn("accent", "lg")}>
@@ -261,7 +271,7 @@ export default async function Home() {
 
 function Plan(props: { name: string; price: string; note: string; items: string[]; highlight?: boolean; soon?: boolean; cta?: { href: string; label: string } }) {
   return (
-    <div className={`relative flex flex-col rounded-2xl border p-6 ${props.highlight ? "border-primary bg-primary text-white shadow-xl" : "border-border bg-background"}`}>
+    <div className={`relative flex w-[82%] shrink-0 snap-center flex-col rounded-2xl border p-5 md:w-auto md:p-6 ${props.highlight ? "border-primary bg-primary text-white shadow-xl" : "border-border bg-background"}`}>
       {props.soon && (
         <span className={`absolute right-5 top-5 rounded-full px-2.5 py-1 text-xs font-semibold ${props.highlight ? "bg-accent text-[#1f1300]" : "bg-accent-soft text-accent-strong"}`}>
           Launching soon
