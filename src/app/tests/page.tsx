@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
-import { TestCard } from "@/components/test-card";
 import { getPublishedTests } from "@/modules/catalog/queries";
+import { TestGrid, TestsBrowser } from "./tests-browser";
 
 export const revalidate = 600;
 
@@ -23,11 +24,10 @@ export default async function TestsPage() {
           <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">Himachal mock tests</h1>
           <p className="text-muted">Real CBT exam interface · Hindi &amp; English · Instant result with solutions.</p>
         </div>
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {tests.map((t) => (
-            <TestCard key={t.slug} test={t} />
-          ))}
-        </div>
+        {/* The filters read the URL, so they render in the browser; the prerendered HTML keeps the full list for SEO. */}
+        <Suspense fallback={<TestGrid tests={tests} />}>
+          <TestsBrowser tests={tests} />
+        </Suspense>
         {tests.length === 0 && <p className="text-muted">New tests are being added. Check back soon.</p>}
       </main>
       <SiteFooter />
