@@ -10,11 +10,19 @@ describe("slugify", () => {
   });
 });
 
-const meta = { title: "JOA IT Mock 1", titleHi: "", slug: "joa-it-mock-1", type: "MOCK", examId: null, durationMin: 120, isFree: true, instructions: "" };
+const meta = { title: "JOA IT Mock 1", titleHi: "", slug: "joa-it-mock-1", type: "MOCK", examId: null, durationMin: 120, isFree: true, demoPercent: 0, instructions: "" };
 
 describe("validateTestMeta", () => {
   it("accepts valid details", () => {
     expect(validateTestMeta(meta).ok).toBe(true);
+  });
+
+  it("accepts a demo share up to the maximum and rejects anything that would give the test away", () => {
+    expect(validateTestMeta({ ...meta, isFree: false, demoPercent: 50 }).ok).toBe(true);
+    expect(validateTestMeta({ ...meta, isFree: false, demoPercent: 90 }).ok).toBe(true);
+    for (const demoPercent of [-1, 91, 100, 12.5]) {
+      expect(validateTestMeta({ ...meta, isFree: false, demoPercent }).ok, String(demoPercent)).toBe(false);
+    }
   });
 
   it("rejects bad slugs, durations and types", () => {

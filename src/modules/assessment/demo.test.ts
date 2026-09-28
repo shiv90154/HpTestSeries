@@ -1,38 +1,61 @@
 import { describe, expect, it } from "vitest";
-import { demoCount, demoDurationSec, planDemo } from "./demo";
+import { MAX_DEMO_PERCENT, demoCount, demoDurationSec, planDemo } from "./demo";
 
 describe("demoCount", () => {
-  it("gives the first half of a section, rounded up", () => {
-    expect(demoCount(30)).toBe(15);
-    expect(demoCount(15)).toBe(8);
-    expect(demoCount(5)).toBe(3);
-    expect(demoCount(2)).toBe(1);
+  it("gives the first share of a section, rounded up", () => {
+    expect(demoCount(30, 50)).toBe(15);
+    expect(demoCount(15, 50)).toBe(8);
+    expect(demoCount(5, 50)).toBe(3);
+    expect(demoCount(25, 30)).toBe(8);
+    expect(demoCount(25, 20)).toBe(5);
   });
 
-  it("makes a single-question section fully free and an empty one empty", () => {
-    expect(demoCount(1)).toBe(1);
-    expect(demoCount(0)).toBe(0);
+  it("is zero when the demo is off", () => {
+    expect(demoCount(30, 0)).toBe(0);
+    expect(demoCount(30, -5)).toBe(0);
+  });
+
+  it("never exceeds the section, and never gives away more than the maximum share", () => {
+    expect(demoCount(1, 50)).toBe(1);
+    expect(demoCount(0, 50)).toBe(0);
+    expect(demoCount(10, 100)).toBe(demoCount(10, MAX_DEMO_PERCENT));
+    expect(demoCount(10, MAX_DEMO_PERCENT)).toBe(9);
   });
 });
 
 describe("planDemo", () => {
-  it("splits the Patwari mock layout into about half free", () => {
-    const plan = planDemo([30, 20, 15, 15, 15, 5]);
+  it("splits the Patwari mock layout into about half free at 50%", () => {
+    const plan = planDemo([30, 20, 15, 15, 15, 5], 50);
     expect(plan.free).toEqual([15, 10, 8, 8, 8, 3]);
     expect(plan.locked).toEqual([15, 10, 7, 7, 7, 2]);
     expect(plan.freeTotal).toBe(52);
     expect(plan.lockedTotal).toBe(48);
+    expect(plan.available).toBe(true);
+  });
+
+  it("scales with the admin's percentage", () => {
+    expect(planDemo([25], 30).freeTotal).toBe(8);
+    expect(planDemo([25], 70).freeTotal).toBe(18);
+  });
+
+  it("is unavailable when the demo is off", () => {
+    const plan = planDemo([30, 20], 0);
+    expect(plan.available).toBe(false);
+    expect(plan.freeTotal).toBe(0);
+    expect(plan.lockedTotal).toBe(50);
+  });
+
+  it("is unavailable when nothing would stay locked", () => {
+    expect(planDemo([1, 1, 1], 50).available).toBe(false);
   });
 
   it("always keeps free + locked equal to the section size", () => {
-    for (const n of [0, 1, 2, 3, 7, 10, 99, 100]) {
-      const p = planDemo([n]);
-      expect(p.free[0] + p.locked[0]).toBe(n);
+    for (const percent of [10, 33, 50, 90]) {
+      for (const n of [0, 1, 2, 3, 7, 10, 25, 99, 100]) {
+        const p = planDemo([n], percent);
+        expect(p.free[0] + p.locked[0]).toBe(n);
+      }
     }
-  });
-
-  it("has nothing locked when every section has at most one question", () => {
-    expect(planDemo([1, 1, 1]).lockedTotal).toBe(0);
   });
 });
 

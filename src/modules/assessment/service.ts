@@ -77,6 +77,8 @@ export async function getTestMeta(slug: string) {
   const t = await loadFullTest(slug);
   if (!t) return null;
   const questionCount = t.sections.reduce((n, s) => n + s.questions.length, 0);
+  // Set per test in the admin panel; free tests and tests with nothing left to lock have no demo.
+  const demoPlan = planDemo(t.sections.map((s) => s.questions.length), t.isFree ? 0 : t.demoPercent);
   return {
     id: t.id,
     slug: t.slug,
@@ -84,6 +86,7 @@ export async function getTestMeta(slug: string) {
     titleHi: t.titleHi,
     type: t.type,
     isFree: t.isFree,
+    demo: demoPlan.available ? { percent: t.demoPercent, freeTotal: demoPlan.freeTotal, lockedTotal: demoPlan.lockedTotal } : null,
     durationSec: t.durationSec,
     instructions: t.instructions,
     questionCount,
@@ -313,11 +316,11 @@ export async function claimGuestAttempt(userId: string, slug: string, claim: Gue
 
 // ─────────────── Free demo of a paid test ───────────────
 
-/** The demo view of a paid test: only the free questions of each section, plus what is left locked. */
+/** The demo view of a paid test: only the free questions of each section, plus what is left locked. Null when the test has no demo. */
 async function demoView(t: FullTest) {
   if (t.isFree) return null;
-  const plan = planDemo(t.sections.map((s) => s.questions.length));
-  if (plan.freeTotal === 0 || plan.lockedTotal === 0) return null;
+  const plan = planDemo(t.sections.map((s) => s.questions.length), t.demoPercent);
+  if (!plan.available) return null;
   const view: FullTest = { ...t, sections: t.sections.map((s, i) => ({ ...s, questions: s.questions.slice(0, plan.free[i]) })) };
   const buy = await getBuyOptionForSeries(t.series.map((s) => s.seriesId));
   return { view, plan, buy, totalQuestions: plan.freeTotal + plan.lockedTotal };

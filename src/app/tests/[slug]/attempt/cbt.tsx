@@ -1047,7 +1047,7 @@ function Instructions(props: {
         {paper.demo && (
           <div className="space-y-1 rounded-xl border border-accent bg-accent-soft p-4 text-sm">
             <p className="font-semibold">
-              {hi ? "🎁 फ्री डेमो — हर सेक्शन का पहला आधा हिस्सा" : "🎁 Free demo — the first half of every section"}
+              {hi ? "🎁 फ्री डेमो — हर सेक्शन का शुरुआती हिस्सा" : "🎁 Free demo — the first part of every section"}
             </p>
             <p className="text-foreground/90">
               {hi

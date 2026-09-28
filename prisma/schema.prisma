@@ -311,6 +311,7 @@ model Test {
   durationSec  Int
   instructions String?
   isFree       Boolean       @default(false)
+  demoPercent  Int           @default(0) // paid tests only: 0 = no free demo, else the first N% of every section can be tried without paying
   status       ContentStatus @default(DRAFT)
   publishedAt  DateTime?
   version      Int           @default(1) // bumped on erratum; attempts record the version they took

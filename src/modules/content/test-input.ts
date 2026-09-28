@@ -1,6 +1,7 @@
 // Test builder input: metadata + structure validation and publish checks. Pure, so unit-tested.
 
 import { z } from "zod";
+import { MAX_DEMO_PERCENT } from "@/modules/assessment/demo";
 
 export const TEST_TYPES = ["MOCK", "PYQ", "SECTIONAL", "TOPIC", "DAILY"] as const;
 export const TYPE_LABEL: Record<(typeof TEST_TYPES)[number], string> = {
@@ -39,6 +40,12 @@ export const testMetaSchema = z.object({
   examId: z.string().nullable(),
   durationMin: z.number().int("Duration must be whole minutes").min(1, "Duration must be at least 1 minute").max(600, "Duration is too long"),
   isFree: z.boolean(),
+  /** Paid tests: share of every section that anyone can try for free. 0 = no free demo. */
+  demoPercent: z
+    .number()
+    .int("Demo share must be a whole number")
+    .min(0, "Demo share cannot be negative")
+    .max(MAX_DEMO_PERCENT, `Demo share can be at most ${MAX_DEMO_PERCENT}%, so something stays locked`),
   instructions: z.string().trim().max(5000, "Instructions are too long"),
 });
 

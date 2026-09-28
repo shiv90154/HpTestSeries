@@ -81,6 +81,8 @@ export type TestDef = {
   titleHi: string;
   type: "MOCK" | "SECTIONAL";
   durationSec: number;
+  /** Free demo share of every section (0 or omitted = no demo). Editable per test in the admin panel afterwards. */
+  demoPercent?: number;
   instructions: string;
   sections: { name: string; nameHi: string }[];
   questions: PatwariQuestion[];

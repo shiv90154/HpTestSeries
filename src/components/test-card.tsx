@@ -38,7 +38,7 @@ export function TestCard({ test }: { test: PublicTest }) {
         <Link href={`/tests/${test.slug}/attempt`} className={btn("primary", "md", "mt-auto")}>
           Start free test
         </Link>
-      ) : (
+      ) : test.hasDemo ? (
         <div className="mt-auto space-y-2">
           <Link href={`/tests/${test.slug}/demo`} className={btn("primary", "md", "w-full")}>
             Try free demo
@@ -47,6 +47,10 @@ export function TestCard({ test }: { test: PublicTest }) {
             Unlock full test
           </Link>
         </div>
+      ) : (
+        <Link href={`/tests/${test.slug}`} className={btn("outline", "md", "mt-auto")}>
+          Unlock test
+        </Link>
       )}
     </div>
   );

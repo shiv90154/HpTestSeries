@@ -28,13 +28,17 @@ export default async function AttemptPage({ params }: PageProps<"/tests/[slug]/a
               <Lock className="size-5" aria-hidden />
             </span>
             <h1 className="text-xl font-semibold">{meta.title}</h1>
-            <p className="text-muted">This test is part of a paid test series. Try the first half free, or unlock the full test.</p>
+            <p className="text-muted">
+              {meta.demo ? "This test is part of a paid test series. Try a free demo, or unlock the full test." : "This test is part of a paid test series. Unlock it to start."}
+            </p>
             <div className="flex flex-col gap-2">
-              <Link href={`/tests/${slug}/demo`} className={btn("primary", "lg")}>
-                Try free demo
-              </Link>
+              {meta.demo && (
+                <Link href={`/tests/${slug}/demo`} className={btn("primary", "lg")}>
+                  Try free demo
+                </Link>
+              )}
               {buy && (
-                <Link href={buy.href} className={btn("accent", "lg")}>
+                <Link href={buy.href} className={btn(meta.demo ? "accent" : "primary", "lg")}>
                   Unlock full test — {rupees(buy.priceInPaise)}
                 </Link>
               )}

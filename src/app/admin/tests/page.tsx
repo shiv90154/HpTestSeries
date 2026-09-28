@@ -41,6 +41,11 @@ export default async function TestsAdminPage() {
                   <span>{TYPE_LABEL[t.type]}</span>
                   <span>{t.exam?.name ?? "Common"}</span>
                   <span>{t.isFree ? "Free" : "Paid"}</span>
+                  {!t.isFree && (
+                    <span className={t.demoPercent > 0 ? "font-medium text-accent-strong" : undefined}>
+                      {t.demoPercent > 0 ? `Demo ${t.demoPercent}%` : "No demo"}
+                    </span>
+                  )}
                   <span>/tests/{t.slug}</span>
                 </div>
               </div>

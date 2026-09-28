@@ -6,6 +6,8 @@ import { TYPE_LABEL, slugify, type TestMetaInput } from "@/modules/content/test-
 import { ErrorList, input as inputCls, label as labelCls, panel } from "../ui";
 import { createTestAction, updateTestMetaAction } from "./actions";
 
+const DEMO_PRESETS = [20, 30, 40, 50, 60, 70, 80];
+
 type Props = {
   id: string | null;
   initial: TestMetaInput;
@@ -110,6 +112,31 @@ export function TestMetaForm({ id, initial, exams, slugLocked, readOnly }: Props
               Free for everyone
             </label>
           </div>
+        </div>
+        <div className="sm:col-span-2">
+          <label className={labelCls} htmlFor="demo">Free demo (paid tests only)</label>
+          <select
+            id="demo"
+            className={inputCls}
+            value={m.isFree ? 0 : m.demoPercent}
+            disabled={m.isFree}
+            onChange={(e) => set("demoPercent", Number(e.target.value))}
+          >
+            <option value={0}>Off — only buyers can attempt this test</option>
+            {[...new Set([...DEMO_PRESETS, m.demoPercent])]
+              .filter((p) => p > 0)
+              .sort((a, b) => a - b)
+              .map((p) => (
+                <option key={p} value={p}>
+                  On — first {p}% of every section is free for anyone
+                </option>
+              ))}
+          </select>
+          <p className="mt-1 text-xs text-muted">
+            {m.isFree
+              ? "Free tests don't need a demo."
+              : "When on, visitors get a “Try free demo” button, and a “Pay now” popup appears when the free part ends. Demos are not saved and never affect ranks. Keep it Off for tests you want people to pay for without trying."}
+          </p>
         </div>
         <div className="sm:col-span-2">
           <label className={labelCls} htmlFor="instructions">Instructions (optional, shown before the test starts)</label>

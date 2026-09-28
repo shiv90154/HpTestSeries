@@ -25,7 +25,7 @@ export default async function NewTestPage() {
         id={null}
         exams={exams}
         slugLocked={false}
-        initial={{ title: "", titleHi: "", slug: "", type: "MOCK", examId: null, durationMin: 60, isFree: false, instructions: "" }}
+        initial={{ title: "", titleHi: "", slug: "", type: "MOCK", examId: null, durationMin: 60, isFree: false, demoPercent: 0, instructions: "" }}
       />
     </div>
   );

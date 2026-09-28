@@ -8,7 +8,6 @@ import { SiteHeader } from "@/components/site-header";
 import { btn, card } from "@/components/ui";
 import { rupees } from "@/lib/money";
 import { site } from "@/lib/site";
-import { planDemo } from "@/modules/assessment/demo";
 import { getTestMeta } from "@/modules/assessment/service";
 import { getPublishedTests } from "@/modules/catalog/queries";
 import { getBuyOptionForSeries } from "@/modules/commerce/product-service";
@@ -36,9 +35,9 @@ export default async function TestDetailPage({ params }: PageProps<"/tests/[slug
   if (!t) notFound();
   const negatives = [...new Set(t.sections.map((s) => s.marksWrong))];
   const negativeLabel = negatives.length > 1 ? "Varies" : negatives[0] ? `−${negatives[0]}` : "None";
-  // Paid tests offer a free demo (first half of every section) and lead to the product that unlocks them.
-  const demo = t.isFree ? null : planDemo(t.sections.map((s) => s.count));
-  const hasDemo = !!demo && demo.freeTotal > 0 && demo.lockedTotal > 0;
+  // Paid tests lead to the product that unlocks them. A free demo is offered only when the admin switched it on for this test.
+  const demo = t.demo;
+  const hasDemo = !!demo;
   const buy = t.isFree ? null : await getBuyOptionForSeries(t.series.map((s) => s.seriesId));
 
   return (
@@ -84,9 +83,9 @@ export default async function TestDetailPage({ params }: PageProps<"/tests/[slug
 
         <header className="space-y-3">
           {t.isFree && <span className="rounded-md bg-success-soft px-2 py-1 text-xs font-bold text-success">FREE · NO LOGIN NEEDED</span>}
-          {hasDemo && (
+          {!t.isFree && (
             <span className="inline-flex items-center gap-1 rounded-md bg-accent-soft px-2 py-1 text-xs font-bold text-accent-strong">
-              <Lock className="size-3" aria-hidden /> PAID · FREE DEMO AVAILABLE
+              <Lock className="size-3" aria-hidden /> {hasDemo ? "PAID · FREE DEMO AVAILABLE" : "PAID"}
             </span>
           )}
           <h1 className="text-3xl font-bold tracking-tight">{t.title}</h1>
@@ -166,15 +165,24 @@ export default async function TestDetailPage({ params }: PageProps<"/tests/[slug
                 Already purchased? Start the full test
               </Link>
             </div>
+          ) : buy ? (
+            <div className="flex w-full flex-col gap-2 sm:w-auto">
+              <Link href={buy.href} className={btn("accent", "lg")}>
+                Unlock full test — {rupees(buy.priceInPaise)}
+              </Link>
+              <Link href={`/tests/${slug}/attempt`} className="text-center text-sm font-medium text-primary hover:underline">
+                Already purchased? Start the test
+              </Link>
+            </div>
           ) : (
             <Link href={`/tests/${slug}/attempt`} className={btn("primary", "lg")}>
               Start test now <ChevronRight className="size-5" />
             </Link>
           )}
         </div>
-        {hasDemo && demo && (
+        {demo && (
           <p className="-mt-4 text-sm text-muted">
-            The free demo has the first half of every section ({demo.freeTotal} of {demo.freeTotal + demo.lockedTotal} questions). It is not saved and does not affect your rank.
+            The free demo has the first {demo.percent}% of every section ({demo.freeTotal} of {demo.freeTotal + demo.lockedTotal} questions). It is not saved and does not affect your rank.
           </p>
         )}
       </main>

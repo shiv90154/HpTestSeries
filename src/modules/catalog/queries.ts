@@ -2,6 +2,7 @@ import "server-only";
 import { cache } from "react";
 import { db } from "@/lib/db";
 import type { PostCategory } from "@/generated/prisma/enums";
+import { planDemo } from "@/modules/assessment/demo";
 import { parseFaqs, parsePattern, parseSeo } from "@/modules/content/exam-content";
 
 export type CatalogExam = {
@@ -69,6 +70,8 @@ export type PublicTest = {
   questionCount: number;
   totalMarks: number;
   examName: string | null;
+  /** a paid test the admin has switched a free demo on for (and that has something left to lock) */
+  hasDemo: boolean;
 };
 
 export async function getPublishedTests(filter: { examId?: string | null } = {}): Promise<PublicTest[]> {
@@ -84,6 +87,7 @@ export async function getPublishedTests(filter: { examId?: string | null } = {})
       titleHi: true,
       type: true,
       isFree: true,
+      demoPercent: true,
       durationSec: true,
       exam: { select: { name: true } },
       sections: { select: { marksCorrect: true, _count: { select: { questions: true } } } },
@@ -99,6 +103,7 @@ export async function getPublishedTests(filter: { examId?: string | null } = {})
     questionCount: t.sections.reduce((n, s) => n + s._count.questions, 0),
     totalMarks: t.sections.reduce((n, s) => n + s._count.questions * Number(s.marksCorrect), 0),
     examName: t.exam?.name ?? null,
+    hasDemo: !t.isFree && planDemo(t.sections.map((s) => s._count.questions), t.demoPercent).available,
   }));
 }
 

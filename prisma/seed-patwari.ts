@@ -83,6 +83,7 @@ export async function seedPatwari(db: PrismaClient) {
           examId: exam.id,
           durationSec: def.durationSec,
           isFree: false,
+          demoPercent: def.demoPercent ?? 0,
           status: "PUBLISHED",
           publishedAt: new Date(),
           instructions: def.instructions,

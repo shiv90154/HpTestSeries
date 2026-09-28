@@ -107,6 +107,7 @@ export async function listTests() {
       type: true,
       status: true,
       isFree: true,
+      demoPercent: true,
       durationSec: true,
       updatedAt: true,
       exam: { select: { name: true } },
@@ -144,6 +145,7 @@ export async function getTestForBuilder(id: string) {
     examId: t.examId,
     durationMin: Math.round(t.durationSec / 60),
     isFree: t.isFree,
+    demoPercent: t.demoPercent,
     instructions: t.instructions ?? "",
   };
   const sections: BuilderSection[] = t.sections.map((s) => ({
@@ -165,6 +167,8 @@ function metaData(m: TestMetaInput) {
     examId: m.examId,
     durationSec: m.durationMin * 60,
     isFree: m.isFree,
+    // A free test has nothing to sell, so a demo makes no sense for it.
+    demoPercent: m.isFree ? 0 : m.demoPercent,
     instructions: m.instructions || null,
   };
 }
@@ -341,6 +345,7 @@ export async function duplicateTest(id: string, actorId: string): Promise<{ ok: 
         durationSec: t.durationSec,
         instructions: t.instructions,
         isFree: t.isFree,
+        demoPercent: t.demoPercent,
         status: "DRAFT",
       },
     });

@@ -1,12 +1,14 @@
-// Free demo of a paid test: the first half of every section is playable without paying.
-// Pure helpers only (no server imports) so the CBT client and the tests can share them.
+// Free demo of a paid test: the first N% of every section is playable without paying, where N is the
+// test's own `demoPercent` (set in the admin panel; 0 = no demo).
+// Pure helpers only (no server imports) so the CBT client, the pages and the tests can share them.
 
-/** Share of each section that is free in the demo. */
-export const DEMO_FRACTION = 0.5;
+/** Largest demo share an admin can set. The rest must stay locked or there would be nothing to buy. */
+export const MAX_DEMO_PERCENT = 90;
 
-/** Free questions in a section of `n` questions (rounded up, so a 1-question section is fully free). */
-export function demoCount(n: number): number {
-  return Math.min(n, Math.ceil(n * DEMO_FRACTION));
+/** Free questions in a section of `n` questions at `percent` (rounded up, so a 1-question section is fully free). */
+export function demoCount(n: number, percent: number): number {
+  if (percent <= 0) return 0;
+  return Math.min(n, Math.ceil((n * Math.min(percent, MAX_DEMO_PERCENT)) / 100));
 }
 
 export type DemoPlan = {
@@ -16,13 +18,17 @@ export type DemoPlan = {
   locked: number[];
   freeTotal: number;
   lockedTotal: number;
+  /** true when there is something to try and something left to buy */
+  available: boolean;
 };
 
-export function planDemo(sectionSizes: number[]): DemoPlan {
-  const free = sectionSizes.map(demoCount);
+export function planDemo(sectionSizes: number[], percent: number): DemoPlan {
+  const free = sectionSizes.map((n) => demoCount(n, percent));
   const locked = sectionSizes.map((n, i) => n - free[i]);
   const sum = (a: number[]) => a.reduce((x, y) => x + y, 0);
-  return { free, locked, freeTotal: sum(free), lockedTotal: sum(locked) };
+  const freeTotal = sum(free);
+  const lockedTotal = sum(locked);
+  return { free, locked, freeTotal, lockedTotal, available: freeTotal > 0 && lockedTotal > 0 };
 }
 
 /** Demo time is the same share of the full duration as the share of questions, in whole minutes (at least 1). */

@@ -6,7 +6,7 @@ import { Cbt } from "../attempt/cbt";
 
 export const metadata: Metadata = { title: "Free demo", robots: { index: false, follow: false } };
 
-/** Free demo of a paid test: first half of every section, then a "Pay now" popup. Nothing is saved. */
+/** Free demo of a paid test (only when the admin switched it on): the first part of every section, then a "Pay now" popup. Nothing is saved. */
 export default async function DemoPage({ params }: PageProps<"/tests/[slug]/demo">) {
   const { slug } = await params;
   const [meta, user] = await Promise.all([getTestMeta(slug), getCurrentUser()]);
