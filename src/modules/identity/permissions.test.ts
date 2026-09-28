@@ -16,6 +16,12 @@ describe("can", () => {
     expect(can("REVIEWER", "commerce:manage")).toBe(false);
     expect(can("ADMIN", "commerce:manage")).toBe(true);
   });
+
+  it("keeps the audit log admin-only", () => {
+    expect(can("ADMIN", "audit:view")).toBe(true);
+    expect(can("SUPPORT", "audit:view")).toBe(false);
+    expect(can("REVIEWER", "audit:view")).toBe(false);
+  });
 });
 
 describe("Indian mobile numbers", () => {

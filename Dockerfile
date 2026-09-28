@@ -27,5 +27,8 @@ ENV NODE_ENV=production NEXT_TELEMETRY_DISABLED=1
 COPY --from=builder --chown=node:node /app/.next/standalone ./
 COPY --from=builder --chown=node:node /app/.next/static ./.next/static
 COPY --from=builder --chown=node:node /app/public ./public
+# Uploaded question/blog images live here (a named volume in production, see deploy/docker-compose.yml).
+# Created in the image so the volume starts out owned by the node user.
+RUN mkdir -p /app/uploads && chown node:node /app/uploads
 USER node
 CMD ["node", "server.js"]

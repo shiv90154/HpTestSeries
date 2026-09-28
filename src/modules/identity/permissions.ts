@@ -7,14 +7,16 @@ export type Permission =
   | "content:edit"
   | "content:publish"
   | "users:manage"
-  | "commerce:manage";
+  | "commerce:manage"
+  /** who changed what, across content, money and users */
+  | "audit:view";
 
 const grants: Record<Role, readonly Permission[]> = {
   STUDENT: [],
   SUPPORT: ["admin:access", "users:manage"],
   EDITOR: ["admin:access", "content:edit"],
   REVIEWER: ["admin:access", "content:edit", "content:publish"],
-  ADMIN: ["admin:access", "content:edit", "content:publish", "users:manage", "commerce:manage"],
+  ADMIN: ["admin:access", "content:edit", "content:publish", "users:manage", "commerce:manage", "audit:view"],
 };
 
 export function can(role: Role | null | undefined, permission: Permission): boolean {

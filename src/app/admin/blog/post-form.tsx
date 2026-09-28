@@ -6,6 +6,7 @@ import { Markdown } from "@/components/markdown";
 import { FREE_MOCK_HREF } from "@/lib/site";
 import { CATEGORY_META, POST_CATEGORIES, readingMinutes, type PostInput } from "@/modules/content/post-input";
 import { slugify } from "@/modules/content/test-input";
+import { ImageUploadButton, withImage } from "../image-upload-button";
 import { FaqEditor, SeoFields } from "../seo-fields";
 import { ErrorList, input as inputCls, label as labelCls, panel } from "../ui";
 import { createPostAction, deletePostAction, setPostPublishedAction, updatePostAction } from "./actions";
@@ -147,7 +148,10 @@ export function PostForm({ id, status, canPublish, examOptions, initial }: Props
             </select>
           </div>
           <div>
-            <label className={labelCls} htmlFor="cover">Cover image URL (optional)</label>
+            <div className="flex items-center justify-between gap-2">
+              <label className={labelCls} htmlFor="cover">Cover image URL (optional)</label>
+              <ImageUploadButton label="Upload cover" onUploaded={(url) => set("coverImage", url)} />
+            </div>
             <input id="cover" className={inputCls} value={m.coverImage} placeholder="https://…" onChange={(e) => set("coverImage", e.target.value)} />
           </div>
           <div className="sm:col-span-2">
@@ -192,9 +196,12 @@ export function PostForm({ id, status, canPublish, examOptions, initial }: Props
               ))}
             </div>
           </div>
-          <p className="text-xs text-muted">
-            Markdown: ## heading, - list, **bold**, [link](/tests/…), tables with | pipes |. Aim for 600+ words and link to at least one exam page and one free test.
-          </p>
+          <div className="flex flex-wrap items-start justify-between gap-2">
+            <p className="text-xs text-muted">
+              Markdown: ## heading, - list, **bold**, [link](/tests/…), tables with | pipes |. Aim for 600+ words and link to at least one exam page and one free test.
+            </p>
+            <ImageUploadButton label="Insert image" onUploaded={(url) => set("content", withImage(m.content, url))} />
+          </div>
           {tab === "write" ? (
             <textarea
               rows={24}

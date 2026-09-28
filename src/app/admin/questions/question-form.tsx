@@ -4,6 +4,7 @@ import { Plus, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import { RichContent } from "@/components/rich-content";
+import { ImageUploadButton, withImage } from "../image-upload-button";
 import type { Taxonomy } from "@/modules/content/taxonomy";
 import { MAX_OPTIONS, MIN_OPTIONS, emptyQuestionInput, type Lang, type QuestionInput } from "@/modules/content/question-shape";
 import { ErrorList, input as inputCls, label as labelCls, panel } from "../ui";
@@ -185,7 +186,10 @@ export function QuestionForm({ id, initial, status, taxonomy, canPublish, canDel
           <div className={`grid gap-4 ${cols}`}>
             {langs.map((l) => (
               <div key={l}>
-                <label className={labelCls} htmlFor={`stem-${l}`}>Question — {LANG_LABEL[l]}</label>
+                <div className="flex items-center justify-between gap-2">
+                  <label className={labelCls} htmlFor={`stem-${l}`}>Question — {LANG_LABEL[l]}</label>
+                  <ImageUploadButton onUploaded={(url) => setText("stem", l, withImage(q.stem[l], url))} />
+                </div>
                 <textarea id={`stem-${l}`} rows={4} lang={l} className={`${inputCls} font-reading`} value={q.stem[l]} onChange={(e) => setText("stem", l, e.target.value)} />
               </div>
             ))}
@@ -225,7 +229,10 @@ export function QuestionForm({ id, initial, status, taxonomy, canPublish, canDel
           <div className={`grid gap-4 ${cols}`}>
             {langs.map((l) => (
               <div key={l}>
-                <label className={labelCls} htmlFor={`exp-${l}`}>Explanation — {LANG_LABEL[l]} (optional, shown in solutions)</label>
+                <div className="flex items-center justify-between gap-2">
+                  <label className={labelCls} htmlFor={`exp-${l}`}>Explanation — {LANG_LABEL[l]} (optional, shown in solutions)</label>
+                  <ImageUploadButton onUploaded={(url) => setText("explanation", l, withImage(q.explanation[l], url))} />
+                </div>
                 <textarea id={`exp-${l}`} rows={3} lang={l} className={`${inputCls} font-reading`} value={q.explanation[l]} onChange={(e) => setText("explanation", l, e.target.value)} />
               </div>
             ))}

@@ -45,6 +45,9 @@ services:
     environment:
       HOSTNAME: 127.0.0.1
       PORT: "3030"
+      UPLOAD_DIR: /app/uploads
+    volumes:
+      - uploads:/app/uploads # admin-uploaded images; survives rebuilds, backed up by deploy/backup.sh
     depends_on:
       db:
         condition: service_healthy
@@ -55,3 +58,4 @@ secrets:
 
 volumes:
   pgdata:
+  uploads:

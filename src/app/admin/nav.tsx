@@ -2,9 +2,9 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { AlertTriangle, ClipboardList, Flag, GraduationCap, HelpCircle, LayoutDashboard, Newspaper, Package, ShoppingCart, type LucideIcon } from "lucide-react";
+import { AlertTriangle, ClipboardList, Flag, GraduationCap, HelpCircle, LayoutDashboard, Newspaper, Package, ScrollText, ShieldAlert, ShoppingCart, type LucideIcon } from "lucide-react";
 
-export type AdminNavIconKey = "overview" | "questions" | "tests" | "exams" | "blog" | "reports" | "products" | "orders" | "errors";
+export type AdminNavIconKey = "overview" | "questions" | "tests" | "exams" | "blog" | "reports" | "products" | "orders" | "attempts" | "audit" | "errors";
 
 const ICONS: Record<AdminNavIconKey, LucideIcon> = {
   overview: LayoutDashboard,
@@ -15,6 +15,8 @@ const ICONS: Record<AdminNavIconKey, LucideIcon> = {
   reports: Flag,
   products: Package,
   orders: ShoppingCart,
+  attempts: ShieldAlert,
+  audit: ScrollText,
   errors: AlertTriangle,
 };
 
