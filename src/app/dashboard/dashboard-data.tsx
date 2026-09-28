@@ -1,10 +1,11 @@
-import { ArrowRight, BadgeCheck, BarChart3, Clock, PlayCircle, Target, Trophy, TrendingUp } from "lucide-react";
+import { ArrowRight, BadgeCheck, BarChart3, Clock, Flag, PlayCircle, Target, Trophy, TrendingUp } from "lucide-react";
 import Link from "next/link";
 import { AppHeader } from "@/components/app-header";
 import { TestCard } from "@/components/test-card";
 import { btn, card } from "@/components/ui";
 import { getDashboard } from "@/modules/analytics/dashboard";
 import { getMyPlans, type Plan } from "@/modules/commerce/purchases";
+import { getMyReports, type MyReport } from "@/modules/content/report-service";
 import type { requireUser } from "@/modules/identity/session";
 import { ProfileCard } from "./profile-card";
 import { ScoreTrend } from "./score-trend";
@@ -15,7 +16,7 @@ function greeting(): string {
 }
 
 export async function DashboardData({ user }: { user: Awaited<ReturnType<typeof requireUser>> }) {
-  const [d, plans] = await Promise.all([getDashboard(user.id), getMyPlans(user.id)]);
+  const [d, plans, reports] = await Promise.all([getDashboard(user.id), getMyPlans(user.id), getMyReports(user.id)]);
   // Profile comes from the DB (not the 5-minute session cookie cache) so edits show immediately.
   const firstName = d.profile.name.split(" ")[0];
   const needsProfile = d.profile.name === "Aspirant" || !d.profile.district;
@@ -200,6 +201,8 @@ export async function DashboardData({ user }: { user: Awaited<ReturnType<typeof 
           )}
         </section>
 
+        {reports.length > 0 && <MyReports reports={reports} />}
+
         {d.suggested.length > 0 && (
           <section className="space-y-4">
             <h2 className="text-lg font-semibold">Recommended for you</h2>
@@ -256,6 +259,34 @@ function MyPlans({ plans }: { plans: Plan[] }) {
           Purchase history &amp; receipts
         </Link>
       </div>
+    </section>
+  );
+}
+
+const REPORT_STATUS: Record<MyReport["status"], { label: string; cls: string }> = {
+  OPEN: { label: "Under review", cls: "bg-accent-soft text-accent-strong" },
+  FIXED: { label: "Fixed — thank you!", cls: "bg-success-soft text-success" },
+  REJECTED: { label: "Checked — no error found", cls: "bg-surface-muted text-muted" },
+};
+
+/** Closes the loop on "Report question": students see what happened to what they flagged. */
+function MyReports({ reports }: { reports: MyReport[] }) {
+  return (
+    <section className={`${card} p-5`}>
+      <h2 className="mb-3 flex items-center gap-2 font-semibold">
+        <Flag className="size-5 text-primary" /> Your question reports
+      </h2>
+      <ul className="divide-y divide-border">
+        {reports.map((r) => (
+          <li key={r.id} className="flex flex-wrap items-center gap-x-3 gap-y-1 py-3 first:pt-0 last:pb-0">
+            <p className="min-w-0 flex-1 text-sm">
+              <span className="line-clamp-1">{r.preview || "Question"}</span>
+              <span className="text-xs text-muted">Reported {date(r.createdAt)}</span>
+            </p>
+            <span className={`shrink-0 rounded-full px-2.5 py-1 text-xs font-semibold ${REPORT_STATUS[r.status].cls}`}>{REPORT_STATUS[r.status].label}</span>
+          </li>
+        ))}
+      </ul>
     </section>
   );
 }

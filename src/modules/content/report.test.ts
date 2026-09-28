@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { MAX_REPORT_NOTE, validateReport } from "./report";
+import { MAX_REPORT_NOTE, stemPreview, validateReport } from "./report";
 
 describe("validateReport", () => {
   it("accepts a reason with an optional note", () => {
@@ -19,5 +19,16 @@ describe("validateReport", () => {
     expect(validateReport({ questionId: "q1", reason: "TYPO", note: "x".repeat(MAX_REPORT_NOTE + 1) }).ok).toBe(false);
     expect(validateReport({ questionId: "", reason: "TYPO", note: "" }).ok).toBe(false);
     expect(validateReport(null).ok).toBe(false);
+  });
+});
+
+describe("stemPreview", () => {
+  it("strips markdown, images and maths delimiters", () => {
+    expect(stemPreview("**Which** river ![map](https://x/y.png) flows $x^2$ [here](/a)?\n\n> quote")).toBe("Which river flows x^2 here? quote");
+  });
+  it("truncates long stems with an ellipsis", () => {
+    const out = stemPreview("a ".repeat(200), 20);
+    expect(out.length).toBeLessThanOrEqual(20);
+    expect(out.endsWith("…")).toBe(true);
   });
 });

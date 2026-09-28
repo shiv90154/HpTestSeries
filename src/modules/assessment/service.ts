@@ -7,7 +7,9 @@ import { canAccessTest } from "@/modules/commerce/access";
 import { getBuyOptionForSeries } from "@/modules/commerce/product-service";
 import { demoDurationSec, planDemo } from "./demo";
 import { gradeAttempt, percentileFromRank, type GradingSection, type GradeResult } from "./grading";
-import type { Bilingual, Paper, ResultData, SubmittedAnswers } from "./types";
+import { signClaim, verifyClaim } from "./guest-claim";
+import { competitionRanks, publicName } from "./leaderboard";
+import type { Bilingual, GuestClaim, LeaderboardRow, Paper, ResultData, SubmittedAnswers } from "./types";
 
 /** Late submissions within this window still count (network delays at the deadline). */
 const SUBMIT_GRACE_MS = 90_000;
@@ -238,13 +240,75 @@ async function rankFor(testId: string, score: number): Promise<NonNullable<Resul
   };
 }
 
-/** Free tests without login: graded statelessly, nothing stored, no rank. */
-export async function gradeGuestAttempt(slug: string, answers: SubmittedAnswers): Promise<ResultData | null> {
+function claimSecret(): string {
+  const secret = process.env.BETTER_AUTH_SECRET;
+  if (!secret) throw new Error("BETTER_AUTH_SECRET is not set.");
+  return secret;
+}
+
+/**
+ * Free tests without login: graded statelessly, nothing stored, no rank. The result carries a signed
+ * claim so the guest can save it to their account if they log in afterwards.
+ */
+export async function gradeGuestAttempt(slug: string, answers: SubmittedAnswers, violations = 0): Promise<ResultData | null> {
   const t = await loadFullTest(slug);
   if (!t || !t.isFree) return null;
   const clean = sanitizeAnswers(t, answers);
   const grade = gradeAttempt(gradingSections(t), clean);
-  return buildResult(t, clean, grade, { attemptId: null, submittedAt: new Date(), rank: null, isFirstAttempt: false });
+  const gradedAt = Date.now();
+  const token = signClaim({ slug, answers: clean, gradedAt, violations }, claimSecret());
+  return {
+    ...buildResult(t, clean, grade, { attemptId: null, submittedAt: new Date(gradedAt), rank: null, isFirstAttempt: false }),
+    claim: { answers: clean, gradedAt, violations, token },
+  };
+}
+
+/** Saves a signed guest result as the student's attempt. Counts for rank only if it is their first on the test. */
+export async function claimGuestAttempt(userId: string, slug: string, claim: GuestClaim): Promise<{ attemptId: string } | { error: string }> {
+  const t = await loadFullTest(slug);
+  if (!t || !t.isFree) return { error: "This result can no longer be saved." };
+  const clean = sanitizeAnswers(t, claim.answers);
+  const check = verifyClaim({ slug, answers: clean, gradedAt: claim.gradedAt, violations: claim.violations }, claim.token, claimSecret());
+  if (check !== "ok") return { error: check === "expired" ? "This result is too old to save — take the test again while logged in." : "This result could not be verified." };
+
+  // The grading time identifies the guest result: it can be saved once, into one account.
+  const submittedAt = new Date(claim.gradedAt);
+  const already = await db.attempt.findFirst({ where: { testId: t.id, submittedAt }, select: { id: true, userId: true } });
+  if (already) return already.userId === userId ? { attemptId: already.id } : { error: "This result is already saved to another account." };
+
+  const grade = gradeAttempt(gradingSections(t), clean);
+  const startedAt = new Date(submittedAt.getTime() - grade.timeSpentSec * 1000);
+  const data = {
+    userId,
+    testId: t.id,
+    testVersion: t.version,
+    status: "SUBMITTED" as const,
+    startedAt,
+    deadlineAt: new Date(startedAt.getTime() + t.durationSec * 1000),
+    submittedAt,
+    answers: clean,
+    score: grade.score,
+    correct: grade.correct,
+    wrong: grade.wrong,
+    skipped: grade.skipped,
+    timeSpentSec: grade.timeSpentSec,
+    sectionStats: grade.sectionStats,
+    topicStats: grade.topicStats,
+    violationCount: claim.violations,
+    flagged: claim.violations >= VIOLATION_FLAG_THRESHOLD,
+  };
+  const previous = await db.attempt.count({ where: { userId, testId: t.id } });
+  try {
+    const a = await db.attempt.create({ data: { ...data, isFirst: previous === 0 }, select: { id: true } });
+    return { attemptId: a.id };
+  } catch (err) {
+    // Lost a race for the one first attempt per user+test (partial unique index): save it unranked.
+    if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === "P2002") {
+      const a = await db.attempt.create({ data: { ...data, isFirst: false }, select: { id: true } });
+      return { attemptId: a.id };
+    }
+    throw err;
+  }
 }
 
 // ─────────────── Free demo of a paid test ───────────────
@@ -398,6 +462,95 @@ export async function getAttemptResult(userId: string, attemptId: string): Promi
   const answers = attempt.answers as SubmittedAnswers;
   // Re-grading from stored answers keeps results correct after an erratum fix.
   const grade = gradeAttempt(gradingSections(t), answers);
-  const rank = attempt.isFirst ? await rankFor(t.id, Number(attempt.score ?? grade.score)) : null;
-  return buildResult(t, answers, grade, { attemptId: attempt.id, submittedAt: attempt.submittedAt ?? attempt.startedAt, rank, isFirstAttempt: attempt.isFirst });
+  const [rank, compare, leaderboard, nextTest] = await Promise.all([
+    attempt.isFirst ? rankFor(t.id, Number(attempt.score ?? grade.score)) : null,
+    sectionComparison(t.id),
+    topAttempts(t.id, userId),
+    nextTestFor(userId, t),
+  ]);
+  const result = buildResult(t, answers, grade, { attemptId: attempt.id, submittedAt: attempt.submittedAt ?? attempt.startedAt, rank, isFirstAttempt: attempt.isFirst });
+  return {
+    ...result,
+    sections: result.sections.map((s, i) => ({ ...s, ...compare.get(t.sections[i].id) })),
+    leaderboard,
+    nextTest,
+  };
+}
+
+/** What the shareable result image shows. Only the student who took the attempt can load it. */
+export async function getResultCard(userId: string, attemptId: string) {
+  const a = await db.attempt.findFirst({
+    where: { id: attemptId, userId, status: "SUBMITTED" },
+    select: {
+      testId: true,
+      isFirst: true,
+      score: true,
+      correct: true,
+      wrong: true,
+      user: { select: { name: true, district: true } },
+      test: { select: { title: true, sections: { select: { marksCorrect: true, _count: { select: { questions: true } } } } } },
+    },
+  });
+  if (!a) return null;
+  const score = Number(a.score ?? 0);
+  const attempted = (a.correct ?? 0) + (a.wrong ?? 0);
+  return {
+    name: publicName(a.user.name),
+    district: a.user.district && a.user.district !== "Outside HP" ? a.user.district : null,
+    testTitle: a.test.title,
+    score,
+    maxScore: a.test.sections.reduce((n, s) => n + s._count.questions * Number(s.marksCorrect), 0),
+    accuracy: attempted ? Math.round(((a.correct ?? 0) / attempted) * 100) : 0,
+    rank: a.isFirst ? await rankFor(a.testId, score) : null,
+  };
+}
+
+const rankedWhere = (testId: string) => ({ testId, isFirst: true, status: "SUBMITTED" as const, flagged: false });
+
+/** Per section: the topper's score and the average score of all ranked (first, unflagged) attempts. */
+async function sectionComparison(testId: string): Promise<Map<string, { topper: number; average: number }>> {
+  const [top, averages] = await Promise.all([
+    db.attempt.findFirst({ where: rankedWhere(testId), orderBy: [{ score: "desc" }, { submittedAt: "asc" }], select: { sectionStats: true } }),
+    db.$queryRaw<{ sectionId: string; average: number }[]>`
+      SELECT s.key AS "sectionId", AVG((s.value->>'score')::numeric)::float8 AS "average"
+      FROM "Attempt" a CROSS JOIN LATERAL jsonb_each(a."sectionStats") s
+      WHERE a."testId" = ${testId} AND a."isFirst" AND a."status" = 'SUBMITTED' AND NOT a."flagged" AND a."sectionStats" IS NOT NULL
+      GROUP BY s.key`,
+  ]);
+  const topStats = (top?.sectionStats ?? {}) as GradeResult["sectionStats"];
+  const out = new Map<string, { topper: number; average: number }>();
+  for (const { sectionId, average } of averages) {
+    out.set(sectionId, { topper: topStats[sectionId]?.score ?? 0, average: Math.round(average * 100) / 100 });
+  }
+  return out;
+}
+
+const LEADERBOARD_SIZE = 10;
+
+async function topAttempts(testId: string, userId: string): Promise<LeaderboardRow[]> {
+  const rows = await db.attempt.findMany({
+    where: rankedWhere(testId),
+    orderBy: [{ score: "desc" }, { submittedAt: "asc" }],
+    take: LEADERBOARD_SIZE,
+    select: { userId: true, score: true, user: { select: { name: true, district: true } } },
+  });
+  const ranks = competitionRanks(rows.map((r) => Number(r.score ?? 0)));
+  return rows.map((r, i) => ({
+    rank: ranks[i],
+    name: publicName(r.user.name),
+    district: r.user.district && r.user.district !== "Outside HP" ? r.user.district : null,
+    score: Number(r.score ?? 0),
+    isYou: r.userId === userId,
+  }));
+}
+
+/** A published test in the same exam the student hasn't attempted yet (free ones first), else any such test. */
+async function nextTestFor(userId: string, t: FullTest): Promise<ResultData["nextTest"]> {
+  const base = { status: "PUBLISHED" as const, id: { not: t.id }, attempts: { none: { userId } } };
+  const select = { slug: true, title: true, isFree: true } as const;
+  const orderBy = [{ isFree: "desc" as const }, { publishedAt: "asc" as const }];
+  return (
+    (t.examId ? await db.test.findFirst({ where: { ...base, examId: t.examId }, orderBy, select }) : null) ??
+    (await db.test.findFirst({ where: base, orderBy, select }))
+  );
 }

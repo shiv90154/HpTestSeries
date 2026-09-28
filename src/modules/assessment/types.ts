@@ -83,9 +83,38 @@ export type ResultData = {
   timeSpentSec: number;
   rank: { rank: number; total: number; percentile: number; topScore: number; avgScore: number } | null;
   isFirstAttempt: boolean;
-  sections: { name: string; score: number; maxScore: number; correct: number; wrong: number; skipped: number; timeSpentSec: number }[];
+  sections: {
+    name: string;
+    score: number;
+    maxScore: number;
+    correct: number;
+    wrong: number;
+    skipped: number;
+    timeSpentSec: number;
+    /** the topper's score in this section, and the average of all ranked attempts (logged-in results only) */
+    topper?: number;
+    average?: number;
+  }[];
   topics: { name: string; correct: number; wrong: number; skipped: number }[];
   questions: ResultQuestion[];
   /** Set when this is the result of a free demo: the rest of the test is locked. */
   demo?: { totalQuestions: number; lockedTotal: number; buy: DemoBuy | null };
+  /** Guest result of a free test: what the student needs to save it to their account after logging in. */
+  claim?: GuestClaim;
+  /** Top ranked first attempts on this test (logged-in results only). */
+  leaderboard?: LeaderboardRow[];
+  /** A test to take next: same exam, not attempted yet. */
+  nextTest?: { slug: string; title: string; isFree: boolean } | null;
 };
+
+export type LeaderboardRow = { rank: number; name: string; district: string | null; score: number; isYou: boolean };
+
+/** The server-signed answers of a guest attempt (see modules/assessment/guest-claim.ts). */
+export type GuestClaim = { answers: SubmittedAnswers; gradedAt: number; violations: number; token: string };
+
+export const guestClaimSchema = z.object({
+  answers: answersSchema,
+  gradedAt: z.number().int().positive(),
+  violations: z.number().int().min(0).max(100_000),
+  token: z.string().min(1).max(200),
+});

@@ -54,6 +54,39 @@ export async function sendResultReadyEmail(email: string, testTitle: string, att
   await sendEmail(email, resultReadyEmail(testTitle, attemptId), `[dev] Result-ready email for ${email}: ${testTitle}`);
 }
 
+function reportFixedEmail(questionPreview: string): { subject: string; text: string; html: string } {
+  const url = `${process.env.NEXT_PUBLIC_SITE_URL ?? ""}/dashboard`;
+  const subject = "The question you reported has been corrected — thank you!";
+  const text = [
+    "Thank you for reporting a problem with this question:",
+    "",
+    `"${questionPreview}"`,
+    "",
+    "Our team has checked and corrected it. Results that include it now use the corrected version.",
+    "",
+    `आपकी रिपोर्ट के लिए धन्यवाद — यह प्रश्न ठीक कर दिया गया है।`,
+    "",
+    url,
+  ].join("\n");
+  const escaped = questionPreview.replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]!);
+  const html = `<!doctype html><html><body style="margin:0;background:#f5f7fb;font-family:Arial,Helvetica,sans-serif;color:#0f1b33">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="padding:24px 12px"><tr><td align="center">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:440px;background:#ffffff;border:1px solid #dfe5ef;border-radius:16px;padding:28px">
+<tr><td style="font-size:18px;font-weight:bold;color:#1e4fd8">HP Test Series</td></tr>
+<tr><td style="padding-top:16px;font-size:15px">Thank you for reporting a problem with this question:</td></tr>
+<tr><td style="padding:12px 0;font-size:14px;color:#5b6b85;font-style:italic">&ldquo;${escaped}&rdquo;</td></tr>
+<tr><td style="font-size:15px">Our team has checked and corrected it. Results that include it now use the corrected version.</td></tr>
+<tr><td style="padding-top:12px;font-size:14px;color:#5b6b85">आपकी रिपोर्ट के लिए धन्यवाद — यह प्रश्न ठीक कर दिया गया है।</td></tr>
+<tr><td style="padding-top:16px"><a href="${url}" style="display:inline-block;background:#1e4fd8;color:#fff;padding:10px 18px;border-radius:8px;text-decoration:none;font-weight:600">Open dashboard</a></td></tr>
+</table></td></tr></table></body></html>`;
+  return { subject, text, html };
+}
+
+/** Best-effort thank-you when a reported question is fixed. */
+export async function sendReportFixedEmail(email: string, questionPreview: string): Promise<void> {
+  await sendEmail(email, reportFixedEmail(questionPreview), `[dev] Report-fixed email for ${email}`);
+}
+
 async function sendEmail(email: string, content: { subject: string; text: string; html: string }, devLogLine: string): Promise<boolean> {
   const apiKey = process.env.RESEND_API_KEY;
   const from = process.env.EMAIL_FROM;

@@ -34,10 +34,10 @@ export async function submitAttemptAction(
   return submitAttempt(user.id, id.parse(attemptId), parsed.data, violations !== undefined ? violationCount.parse(violations) : undefined);
 }
 
-export async function gradeGuestAction(slug: string, answers: unknown): Promise<ResultData | { error: string }> {
+export async function gradeGuestAction(slug: string, answers: unknown, violations?: number): Promise<ResultData | { error: string }> {
   const parsed = answersSchema.safeParse(answers);
   if (!parsed.success) return { error: "Could not read your answers. Please try again." };
-  const result = await gradeGuestAttempt(id.parse(slug), parsed.data);
+  const result = await gradeGuestAttempt(id.parse(slug), parsed.data, violations !== undefined ? violationCount.parse(violations) : 0);
   return result ?? { error: "Log in to take this test." };
 }
 

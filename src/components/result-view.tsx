@@ -1,9 +1,11 @@
 "use client";
 
 import confetti from "canvas-confetti";
-import { Award, CheckCircle2, Clock, Lock, LogIn, RotateCcw, Target, Trophy, XCircle } from "lucide-react";
+import { ArrowRight, Award, CheckCircle2, Clock, ImageDown, Lock, LogIn, RotateCcw, Target, Trophy, XCircle } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
+import { toast } from "sonner";
+import { track } from "@/components/analytics";
 import { RichContent } from "@/components/rich-content";
 import type { Bilingual, ResultData } from "@/modules/assessment/types";
 import { writeLangPref } from "@/lib/lang-pref";
@@ -18,6 +20,9 @@ type Filter = "all" | "correct" | "wrong" | "skipped";
 
 const pick = (t: Bilingual, lang: Lang) => t[lang] ?? t.en ?? t.hi ?? "";
 const pct = (n: number, d: number) => (d > 0 ? Math.round((n / d) * 100) : 0);
+
+/** Free tests open straight into the CBT; paid ones go to the test page (unlock / demo). */
+const nextTestHref = (t: NonNullable<ResultData["nextTest"]>) => (t.isFree ? `/tests/${t.slug}/attempt` : `/tests/${t.slug}`);
 
 function duration(sec: number): string {
   const m = Math.floor(sec / 60);
@@ -115,11 +120,19 @@ export function ResultView({
                   <Trophy className="size-4 text-accent" /> Want your HP rank?
                 </p>
                 <p className="text-sm text-white/90">
-                  Log in (free) to save results, see your rank among Himachal aspirants and track weak topics.
+                  {data.claim
+                    ? "Log in (free) to save this result to your account, get your rank among Himachal aspirants and track weak topics."
+                    : "Log in (free) to save results, see your rank among Himachal aspirants and track weak topics."}
                 </p>
-                <Link href={`/login?next=/tests/${data.test.slug}/attempt`} className={btn("accent", "sm")}>
-                  <LogIn className="size-4" /> Log in &amp; attempt for rank
-                </Link>
+                {data.claim ? (
+                  <Link href={`/login?next=${encodeURIComponent(`/tests/${data.test.slug}/result`)}`} className={btn("accent", "sm")}>
+                    <LogIn className="size-4" /> Log in &amp; save this result
+                  </Link>
+                ) : (
+                  <Link href={`/login?next=/tests/${data.test.slug}/attempt`} className={btn("accent", "sm")}>
+                    <LogIn className="size-4" /> Log in &amp; attempt for rank
+                  </Link>
+                )}
               </div>
             ) : (
               <div className="space-y-2 text-sm text-white/90">
@@ -144,7 +157,23 @@ export function ResultView({
               : `Maine "${data.test.title}" me ${data.score}/${data.maxScore} score kiya 🏔️ Tum bhi try karo — free mock test:`
           }
         />
+        {!isGuest && data.attemptId && <ResultCardButton attemptId={data.attemptId} url={`${site.url}/tests/${data.test.slug}`} />}
       </section>
+
+      {data.nextTest && (
+        <section className={`${card} flex flex-wrap items-center gap-3 p-5`}>
+          <div className="mr-auto min-w-0">
+            <p className="text-xs font-medium uppercase tracking-wider text-muted">Keep going — next test</p>
+            <p className="truncate font-semibold">{data.nextTest.title}</p>
+          </div>
+          <Link href={`/tests/${data.test.slug}/attempt`} className={btn("outline", "sm")}>
+            <RotateCcw className="size-4" /> Re-attempt
+          </Link>
+          <Link href={nextTestHref(data.nextTest)} className={btn("primary", "sm")}>
+            Start next test <ArrowRight className="size-4" />
+          </Link>
+        </section>
+      )}
 
       {/* Stat cards */}
       <section className="grid grid-cols-2 gap-3 sm:grid-cols-4">
@@ -176,6 +205,26 @@ export function ResultView({
                   <p className="text-xs text-muted">
                     {s.correct} correct · {s.wrong} wrong · {s.skipped} skipped
                   </p>
+                  {s.topper !== undefined && s.average !== undefined && (
+                    <div className="grid grid-cols-3 gap-2 pt-1 text-xs">
+                      {(
+                        [
+                          ["You", s.score, "bg-primary"],
+                          ["Topper", s.topper, "bg-accent"],
+                          ["Average", s.average, "bg-muted"],
+                        ] as const
+                      ).map(([label, value, bar]) => (
+                        <div key={label} className="space-y-1">
+                          <p className="flex justify-between gap-1 text-muted">
+                            {label} <span className="font-semibold tabular-nums text-foreground">{value}</span>
+                          </p>
+                          <div className="h-1.5 overflow-hidden rounded-full bg-surface-muted" aria-hidden>
+                            <div className={`h-full rounded-full ${bar}`} style={{ width: `${Math.max(0, pct(value, s.maxScore))}%` }} />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               );
             })}
@@ -215,6 +264,8 @@ export function ResultView({
           </ul>
         </section>
       </div>
+
+      {data.leaderboard && data.leaderboard.length > 0 && <Leaderboard rows={data.leaderboard} you={data.rank} yourScore={data.score} />}
 
       {/* Solutions */}
       <section className="space-y-4">
@@ -322,9 +373,15 @@ export function ResultView({
         <Link href={`/tests/${data.test.slug}/${data.demo ? "demo" : "attempt"}`} className={btn("outline")}>
           <RotateCcw className="size-4" /> Re-attempt
         </Link>
-        <Link href="/tests" className={btn("primary")}>
-          More mock tests
-        </Link>
+        {data.nextTest ? (
+          <Link href={nextTestHref(data.nextTest)} className={btn("primary")}>
+            Next: {data.nextTest.title} <ArrowRight className="size-4" />
+          </Link>
+        ) : (
+          <Link href="/tests" className={btn("primary")}>
+            More mock tests
+          </Link>
+        )}
         {!isGuest && (
           <Link href="/dashboard" className={btn("ghost")}>
             Go to dashboard
@@ -332,6 +389,84 @@ export function ResultView({
         )}
       </div>
     </div>
+  );
+}
+
+/**
+ * Shares the result as an image (score, rank, accuracy) — made for WhatsApp status and groups.
+ * Phones get the native share sheet with the picture attached; elsewhere the image is downloaded.
+ */
+function ResultCardButton({ attemptId, url }: { attemptId: string; url: string }) {
+  const [busy, setBusy] = useState(false);
+  async function share() {
+    setBusy(true);
+    try {
+      const res = await fetch(`/results/${attemptId}/card`);
+      if (!res.ok) throw new Error("card");
+      const file = new File([await res.blob()], "hp-test-series-result.png", { type: "image/png" });
+      if (navigator.canShare?.({ files: [file] })) {
+        try {
+          await navigator.share({ files: [file], text: `Mera result — tum bhi try karo: ${url}` });
+          track("share", { method: "result_card", content_type: "image", item_id: attemptId });
+        } catch {
+          // share sheet closed
+        }
+      } else {
+        const href = URL.createObjectURL(file);
+        const a = Object.assign(document.createElement("a"), { href, download: file.name });
+        a.click();
+        URL.revokeObjectURL(href);
+        track("share", { method: "result_card_download", content_type: "image", item_id: attemptId });
+      }
+    } catch {
+      toast.error("Couldn't create the result card. Please try again.");
+    } finally {
+      setBusy(false);
+    }
+  }
+  return (
+    <button
+      type="button"
+      onClick={share}
+      disabled={busy}
+      className="mt-3 inline-flex h-10 items-center gap-2 rounded-xl bg-accent px-4 text-sm font-semibold text-[#1f1300] hover:bg-accent-strong disabled:opacity-60"
+    >
+      <ImageDown className="size-4" /> {busy ? "Creating card…" : "Share result card (image)"}
+    </button>
+  );
+}
+
+/** Top first attempts on this test; the student's own row is added below when they're outside the top list. */
+function Leaderboard({ rows, you, yourScore }: { rows: NonNullable<ResultData["leaderboard"]>; you: ResultData["rank"]; yourScore: number }) {
+  const youListed = rows.some((r) => r.isYou);
+  const rowCls = (isYou: boolean) => `flex items-center gap-3 px-5 py-2.5 text-sm ${isYou ? "bg-primary-soft font-semibold" : ""}`;
+  return (
+    <section className={`${card} overflow-hidden`}>
+      <div className="flex items-center gap-2 border-b border-border px-5 py-4">
+        <Trophy className="size-5 text-accent-strong" />
+        <h2 className="font-semibold">Leaderboard</h2>
+        <span className="ml-auto text-xs text-muted">First attempts only</span>
+      </div>
+      <ol>
+        {rows.map((r, i) => (
+          <li key={i} className={`${rowCls(r.isYou)} border-b border-border last:border-b-0`}>
+            <span className={`w-8 shrink-0 tabular-nums ${r.rank <= 3 ? "font-bold text-accent-strong" : "text-muted"}`}>#{r.rank}</span>
+            <span className="min-w-0 flex-1 truncate">
+              {r.isYou ? "You" : r.name}
+              {r.district && <span className="font-normal text-muted"> · {r.district}</span>}
+            </span>
+            <span className="tabular-nums">{r.score}</span>
+          </li>
+        ))}
+        {!youListed && you && (
+          <li className={`${rowCls(true)} border-t-2 border-dashed border-border`}>
+            <span className="w-8 shrink-0 tabular-nums text-muted">#{you.rank}</span>
+            <span className="min-w-0 flex-1">You</span>
+            <span className="tabular-nums">{yourScore}</span>
+          </li>
+        )}
+      </ol>
+    </section>
   );
 }
 

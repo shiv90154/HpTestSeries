@@ -381,7 +381,7 @@ export function Cbt({
         if (document.fullscreenElement) void document.exitFullscreen().catch(() => {});
         router.replace(`/results/${attemptId}`);
       } else {
-        const res = await (demo ? gradeDemoAction : gradeGuestAction)(paper.slug, answers);
+        const res = demo ? await gradeDemoAction(paper.slug, answers) : await gradeGuestAction(paper.slug, answers, violationsRef.current);
         if ("error" in res) throw new Error(res.error);
         sessionStorage.setItem(`result:${paper.slug}`, JSON.stringify(res));
         track(demo ? "demo_submit" : "test_submit", { test_slug: paper.slug, guest: !candidate });
@@ -1068,8 +1068,8 @@ function Instructions(props: {
           <div className="flex flex-wrap items-center gap-3 rounded-xl border border-accent bg-accent-soft p-4 text-sm">
             <p className="flex-1">
               {hi
-                ? "आप बिना लॉगिन के टेस्ट दे रहे हैं। परिणाम सेव नहीं होगा और रैंक नहीं मिलेगी।"
-                : "You are taking this test as a guest. Your result won't be saved and you won't get an HP rank."}
+                ? "आप बिना लॉगिन के टेस्ट दे रहे हैं। टेस्ट के बाद भी लॉगिन करके अपना परिणाम सेव कर सकते हैं और रैंक पा सकते हैं।"
+                : "You are taking this test as a guest. You can log in even after finishing to save your result and get your HP rank."}
             </p>
             <Link
               href={`/login?next=${encodeURIComponent(`/tests/${paper.slug}/attempt`)}`}

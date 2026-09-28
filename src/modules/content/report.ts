@@ -42,3 +42,15 @@ export function validateReport(raw: unknown): { ok: true; value: ReportInput } |
   if (p.success) return { ok: true, value: p.data };
   return { ok: false, error: p.error.issues.some((i) => i.message === "note-required") ? "note-required" : "invalid" };
 }
+
+/** A one-line plain-text preview of a question stem (markdown, images and maths stripped) for lists and emails. */
+export function stemPreview(stem: string, max = 120): string {
+  const text = stem
+    .replace(/!\[[^\]]*\]\([^)]*\)/g, " ") // images
+    .replace(/\[([^\]]*)\]\([^)]*\)/g, "$1") // links → their text
+    .replace(/\$\$?([^$]*)\$\$?/g, "$1") // KaTeX delimiters
+    .replace(/[*_`#>|]/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
+  return text.length > max ? `${text.slice(0, max - 1).trimEnd()}…` : text;
+}
