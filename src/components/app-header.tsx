@@ -18,10 +18,12 @@ export function AppHeader({ user }: { user: { name: string; role: Role } }) {
             {isAdmin && <Link href="/admin" className="hover:text-primary">Admin</Link>}
           </nav>
           <div className="ml-auto flex items-center gap-3">
-            <span className="hidden text-sm font-medium sm:inline">{user.name}</span>
-            <span className="grid size-9 place-items-center rounded-full bg-primary text-sm font-semibold text-white">
-              {user.name.slice(0, 1).toUpperCase()}
-            </span>
+            <Link href="/profile" className="flex items-center gap-2 rounded-full hover:opacity-80" aria-label="My profile">
+              <span className="hidden text-sm font-medium sm:inline">{user.name}</span>
+              <span className="grid size-9 place-items-center rounded-full bg-primary text-sm font-semibold text-white">
+                {user.name.slice(0, 1).toUpperCase()}
+              </span>
+            </Link>
             <SignOutButton />
           </div>
         </div>
