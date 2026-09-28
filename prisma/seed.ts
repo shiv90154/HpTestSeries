@@ -9,6 +9,7 @@ import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "../src/generated/prisma/client";
 import { seedContent } from "./seed-content";
 import { DEMO_TEST_SLUG, seedDemoTest } from "./seed-demo";
+import { seedPatwari } from "./seed-patwari";
 
 const db = new PrismaClient({ adapter: new PrismaPg({ connectionString: process.env.DATABASE_URL }) });
 
@@ -106,6 +107,7 @@ const taxonomy: SubjectSeed[] = [
       ["economy", "Economy of Himachal"],
       ["polity-administration", "Polity & Administration"],
       ["personalities", "Famous Personalities"],
+      ["revenue", "Revenue & Land Records"],
     ],
   },
   { slug: "hp-current-affairs", name: "HP Current Affairs", nameHi: "हिमाचल समसामयिकी", topics: [] },
@@ -131,6 +133,11 @@ const taxonomy: SubjectSeed[] = [
       ["blood-relations", "Blood Relations"],
       ["syllogism", "Syllogism"],
       ["puzzles", "Puzzles & Seating"],
+      ["direction-sense", "Direction Sense"],
+      ["ranking", "Ranking & Order"],
+      ["analogy", "Analogy"],
+      ["odd-one-out", "Odd One Out"],
+      ["clock-calendar", "Clock & Calendar"],
     ],
   },
   {
@@ -144,6 +151,12 @@ const taxonomy: SubjectSeed[] = [
       ["profit-loss", "Profit & Loss"],
       ["time-work", "Time & Work"],
       ["interest", "Simple & Compound Interest"],
+      ["average", "Average"],
+      ["speed-distance", "Speed, Time & Distance"],
+      ["mensuration", "Mensuration"],
+      ["hcf-lcm", "HCF & LCM"],
+      ["simplification", "Simplification"],
+      ["ages", "Ages"],
     ],
   },
   {
@@ -236,10 +249,11 @@ async function main() {
   }
 
   await seedDemoTest(db);
+  const patwari = await seedPatwari(db);
   const content = await seedContent(db);
   console.log(
     `Seeded ${catalogue.length} bodies, ${taxonomy.length} subjects, the demo test "${DEMO_TEST_SLUG}", ` +
-      `content for ${content.filled} exams and ${content.created} new draft posts.`,
+      `${patwari.createdTests} new Patwari mock tests, content for ${content.filled} exams and ${content.created} new draft posts.`,
   );
 }
 
