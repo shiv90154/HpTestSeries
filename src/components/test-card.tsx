@@ -34,9 +34,20 @@ export function TestCard({ test }: { test: PublicTest }) {
           <Clock className="size-4" /> {test.durationMin} min
         </span>
       </div>
-      <Link href={`/tests/${test.slug}/attempt`} className={btn(test.isFree ? "primary" : "outline", "md", "mt-auto")}>
-        {test.isFree ? "Start free test" : "Unlock test"}
-      </Link>
+      {test.isFree ? (
+        <Link href={`/tests/${test.slug}/attempt`} className={btn("primary", "md", "mt-auto")}>
+          Start free test
+        </Link>
+      ) : (
+        <div className="mt-auto space-y-2">
+          <Link href={`/tests/${test.slug}/demo`} className={btn("primary", "md", "w-full")}>
+            Try free demo
+          </Link>
+          <Link href={`/tests/${test.slug}`} className="block text-center text-sm font-medium text-primary hover:underline">
+            Unlock full test
+          </Link>
+        </div>
+      )}
     </div>
   );
 }

@@ -1,7 +1,7 @@
 "use server";
 
 import { z } from "zod";
-import { gradeGuestAttempt, saveProgress, startAttempt, submitAttempt, type StartedAttempt } from "@/modules/assessment/service";
+import { gradeDemoAttempt, gradeGuestAttempt, saveProgress, startAttempt, submitAttempt, type StartedAttempt } from "@/modules/assessment/service";
 import { answersSchema, type ResultData } from "@/modules/assessment/types";
 import { getCurrentUser } from "@/modules/identity/session";
 
@@ -39,4 +39,11 @@ export async function gradeGuestAction(slug: string, answers: unknown): Promise<
   if (!parsed.success) return { error: "Could not read your answers. Please try again." };
   const result = await gradeGuestAttempt(id.parse(slug), parsed.data);
   return result ?? { error: "Log in to take this test." };
+}
+
+export async function gradeDemoAction(slug: string, answers: unknown): Promise<ResultData | { error: string }> {
+  const parsed = answersSchema.safeParse(answers);
+  if (!parsed.success) return { error: "Could not read your answers. Please try again." };
+  const result = await gradeDemoAttempt(id.parse(slug), parsed.data);
+  return result ?? { error: "This test has no free demo." };
 }

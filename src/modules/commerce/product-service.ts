@@ -24,6 +24,20 @@ export const listActiveProducts = cache(async (): Promise<PublicProduct[]> => {
   return products;
 });
 
+/**
+ * The product a visitor should buy to unlock a paid test: the cheapest active product that covers one of
+ * the test's series; if none does, the cheapest all-access pass. Null when nothing is on sale for it.
+ */
+export async function getBuyOptionForSeries(seriesIds: string[]) {
+  const select = { slug: true, title: true, priceInPaise: true, validityDays: true } as const;
+  const orderBy = { priceInPaise: "asc" } as const;
+  const product =
+    (seriesIds.length
+      ? await db.product.findFirst({ where: { isActive: true, items: { some: { seriesId: { in: seriesIds } } } }, orderBy, select })
+      : null) ?? (await db.product.findFirst({ where: { isActive: true, kind: "PASS" }, orderBy, select }));
+  return product ? { href: `/buy/${product.slug}`, title: product.title, priceInPaise: product.priceInPaise, validityDays: product.validityDays } : null;
+}
+
 /** An active product with what it unlocks, for the /buy page. Cached so metadata and page share one query. */
 export const getProductForSale = cache(async (slug: string) => {
   const product = await db.product.findUnique({

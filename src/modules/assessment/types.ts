@@ -19,6 +19,19 @@ export type PaperSection = {
   questions: PaperQuestion[];
 };
 
+/** Where "Pay now" leads for a paid test: the cheapest active product that unlocks it. */
+export type DemoBuy = { href: string; title: string; priceInPaise: number; validityDays: number | null };
+
+/** Present on a paper that is a free demo of a paid test (only the free questions are ever included). */
+export type DemoInfo = {
+  /** questions in the full test */
+  totalQuestions: number;
+  /** locked questions still behind the paywall, per section (same order as `Paper.sections`) */
+  lockedPerSection: number[];
+  lockedTotal: number;
+  buy: DemoBuy | null;
+};
+
 export type Paper = {
   slug: string;
   title: string;
@@ -28,6 +41,7 @@ export type Paper = {
   isFree: boolean;
   languages: ("en" | "hi")[];
   sections: PaperSection[];
+  demo?: DemoInfo;
 };
 
 /** Answers submitted by the client: only saved answers count (real CBT behaviour). */
@@ -72,4 +86,6 @@ export type ResultData = {
   sections: { name: string; score: number; maxScore: number; correct: number; wrong: number; skipped: number; timeSpentSec: number }[];
   topics: { name: string; correct: number; wrong: number; skipped: number }[];
   questions: ResultQuestion[];
+  /** Set when this is the result of a free demo: the rest of the test is locked. */
+  demo?: { totalQuestions: number; lockedTotal: number; buy: DemoBuy | null };
 };

@@ -4,6 +4,8 @@ import { db } from "@/lib/db";
 import { Prisma } from "@/generated/prisma/client";
 import { examLabel } from "@/modules/catalog/queries";
 import { canAccessTest } from "@/modules/commerce/access";
+import { getBuyOptionForSeries } from "@/modules/commerce/product-service";
+import { demoDurationSec, planDemo } from "./demo";
 import { gradeAttempt, percentileFromRank, type GradingSection, type GradeResult } from "./grading";
 import type { Bilingual, Paper, ResultData, SubmittedAnswers } from "./types";
 
@@ -97,8 +99,8 @@ export async function getTestMeta(slug: string) {
   };
 }
 
-export async function getPaper(slug: string): Promise<Paper | null> {
-  const t = await loadFullTest(slug);
+export async function getPaper(slug: string, override?: FullTest): Promise<Paper | null> {
+  const t = override ?? (await loadFullTest(slug));
   if (!t) return null;
   const langs = new Set<"en" | "hi">();
   const sections = t.sections.map((s) => ({
@@ -237,6 +239,43 @@ export async function gradeGuestAttempt(slug: string, answers: SubmittedAnswers)
   const clean = sanitizeAnswers(t, answers);
   const grade = gradeAttempt(gradingSections(t), clean);
   return buildResult(t, clean, grade, { attemptId: null, submittedAt: new Date(), rank: null, isFirstAttempt: false });
+}
+
+// ─────────────── Free demo of a paid test ───────────────
+
+/** The demo view of a paid test: only the free questions of each section, plus what is left locked. */
+async function demoView(t: FullTest) {
+  if (t.isFree) return null;
+  const plan = planDemo(t.sections.map((s) => s.questions.length));
+  if (plan.freeTotal === 0 || plan.lockedTotal === 0) return null;
+  const view: FullTest = { ...t, sections: t.sections.map((s, i) => ({ ...s, questions: s.questions.slice(0, plan.free[i]) })) };
+  const buy = await getBuyOptionForSeries(t.series.map((s) => s.seriesId));
+  return { view, plan, buy, totalQuestions: plan.freeTotal + plan.lockedTotal };
+}
+
+/** Paper for the free demo. Locked questions never leave the server. Null for free tests or nothing to lock. */
+export async function getDemoPaper(slug: string): Promise<Paper | null> {
+  const t = await loadFullTest(slug);
+  const demo = t && (await demoView(t));
+  if (!demo) return null;
+  const paper = await getPaper(slug, demo.view);
+  if (!paper) return null;
+  return {
+    ...paper,
+    durationSec: demoDurationSec(t.durationSec, demo.plan.freeTotal, demo.totalQuestions),
+    demo: { totalQuestions: demo.totalQuestions, lockedPerSection: demo.plan.locked, lockedTotal: demo.plan.lockedTotal, buy: demo.buy },
+  };
+}
+
+/** Grades a demo attempt statelessly (nothing stored, no rank), counting only the free questions. */
+export async function gradeDemoAttempt(slug: string, answers: SubmittedAnswers): Promise<ResultData | null> {
+  const t = await loadFullTest(slug);
+  const demo = t && (await demoView(t));
+  if (!demo) return null;
+  const clean = sanitizeAnswers(demo.view, answers);
+  const grade = gradeAttempt(gradingSections(demo.view), clean);
+  const result = buildResult(demo.view, clean, grade, { attemptId: null, submittedAt: new Date(), rank: null, isFirstAttempt: false });
+  return { ...result, demo: { totalQuestions: demo.totalQuestions, lockedTotal: demo.plan.lockedTotal, buy: demo.buy } };
 }
 
 // ─────────────── Logged-in attempts ───────────────

@@ -1,11 +1,12 @@
 "use client";
 
 import confetti from "canvas-confetti";
-import { Award, CheckCircle2, Clock, LogIn, RotateCcw, Target, Trophy, XCircle } from "lucide-react";
+import { Award, CheckCircle2, Clock, Lock, LogIn, RotateCcw, Target, Trophy, XCircle } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { RichContent } from "@/components/rich-content";
 import type { Bilingual, ResultData } from "@/modules/assessment/types";
+import { rupees } from "@/lib/money";
 import { site } from "@/lib/site";
 import { ReportQuestion } from "./report-question";
 import { ShareButtons } from "./share-buttons";
@@ -79,6 +80,16 @@ export function ResultView({ data, isGuest, loggedIn = !isGuest }: { data: Resul
                 <p className="text-sm text-white/85">
                   Better than <b>{data.rank.percentile}%</b> of candidates · Topper {data.rank.topScore} · Average {data.rank.avgScore}
                 </p>
+              </div>
+            ) : data.demo ? (
+              <div className="space-y-3">
+                <p className="flex items-center gap-2 text-sm text-white/80">
+                  <Lock className="size-4 text-accent" /> Free demo · {total} of {data.demo.totalQuestions} questions
+                </p>
+                <p className="text-sm text-white/90">
+                  Unlock the full test to attempt the other {data.demo.lockedTotal} questions and get your HP rank, solutions and topic analysis.
+                </p>
+                <UnlockButton demo={data.demo} size="sm" />
               </div>
             ) : isGuest ? (
               <div className="space-y-3">
@@ -275,10 +286,22 @@ export function ResultView({ data, isGuest, loggedIn = !isGuest }: { data: Resul
             );
           })}
         </ol>
+        {data.demo && (
+          <div className="space-y-3 rounded-2xl border border-accent bg-accent-soft p-6 text-center">
+            <span className="mx-auto grid size-11 place-items-center rounded-full bg-accent/25">
+              <Lock className="size-5 text-accent-strong" aria-hidden />
+            </span>
+            <p className="text-lg font-semibold">{data.demo.lockedTotal} more questions are locked</p>
+            <p className="mx-auto max-w-md text-sm text-foreground/85">
+              You solved the free half of this test. Unlock the rest to complete the full paper with detailed solutions and your rank among Himachal aspirants.
+            </p>
+            <UnlockButton demo={data.demo} size="lg" />
+          </div>
+        )}
       </section>
 
       <div className="flex flex-wrap gap-3">
-        <Link href={`/tests/${data.test.slug}/attempt`} className={btn("outline")}>
+        <Link href={`/tests/${data.test.slug}/${data.demo ? "demo" : "attempt"}`} className={btn("outline")}>
           <RotateCcw className="size-4" /> Re-attempt
         </Link>
         <Link href="/tests" className={btn("primary")}>
@@ -291,6 +314,18 @@ export function ResultView({ data, isGuest, loggedIn = !isGuest }: { data: Resul
         )}
       </div>
     </div>
+  );
+}
+
+function UnlockButton({ demo, size }: { demo: NonNullable<ResultData["demo"]>; size: "sm" | "lg" }) {
+  return demo.buy ? (
+    <Link href={demo.buy.href} className={btn("accent", size)}>
+      Pay now — {rupees(demo.buy.priceInPaise)}
+    </Link>
+  ) : (
+    <Link href="/tests" className={btn("accent", size)}>
+      See all tests
+    </Link>
   );
 }
 

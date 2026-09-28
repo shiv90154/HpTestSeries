@@ -1,4 +1,4 @@
-import { CheckCircle2, ChevronRight, Clock, FileText, Languages, MinusCircle } from "lucide-react";
+import { CheckCircle2, ChevronRight, Clock, FileText, Languages, Lock, MinusCircle } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -6,9 +6,12 @@ import { JsonLd } from "@/components/json-ld";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { btn, card } from "@/components/ui";
+import { rupees } from "@/lib/money";
 import { site } from "@/lib/site";
+import { planDemo } from "@/modules/assessment/demo";
 import { getTestMeta } from "@/modules/assessment/service";
 import { getPublishedTests } from "@/modules/catalog/queries";
+import { getBuyOptionForSeries } from "@/modules/commerce/product-service";
 
 export const revalidate = 600;
 
@@ -33,6 +36,10 @@ export default async function TestDetailPage({ params }: PageProps<"/tests/[slug
   if (!t) notFound();
   const negatives = [...new Set(t.sections.map((s) => s.marksWrong))];
   const negativeLabel = negatives.length > 1 ? "Varies" : negatives[0] ? `−${negatives[0]}` : "None";
+  // Paid tests offer a free demo (first half of every section) and lead to the product that unlocks them.
+  const demo = t.isFree ? null : planDemo(t.sections.map((s) => s.count));
+  const hasDemo = !!demo && demo.freeTotal > 0 && demo.lockedTotal > 0;
+  const buy = t.isFree ? null : await getBuyOptionForSeries(t.series.map((s) => s.seriesId));
 
   return (
     <>
@@ -77,6 +84,11 @@ export default async function TestDetailPage({ params }: PageProps<"/tests/[slug
 
         <header className="space-y-3">
           {t.isFree && <span className="rounded-md bg-success-soft px-2 py-1 text-xs font-bold text-success">FREE · NO LOGIN NEEDED</span>}
+          {hasDemo && (
+            <span className="inline-flex items-center gap-1 rounded-md bg-accent-soft px-2 py-1 text-xs font-bold text-accent-strong">
+              <Lock className="size-3" aria-hidden /> PAID · FREE DEMO AVAILABLE
+            </span>
+          )}
           <h1 className="text-3xl font-bold tracking-tight">{t.title}</h1>
           {t.titleHi && <p className="text-lg text-muted">{t.titleHi}</p>}
           {t.instructions && <p className="max-w-2xl text-foreground/85">{t.instructions}</p>}
@@ -140,10 +152,31 @@ export default async function TestDetailPage({ params }: PageProps<"/tests/[slug
           <p className="flex-1 text-sm">
             Real CBT interface with question palette, Mark for Review and a live timer. Switch between Hindi and English any time.
           </p>
-          <Link href={`/tests/${slug}/attempt`} className={btn("primary", "lg")}>
-            Start test now <ChevronRight className="size-5" />
-          </Link>
+          {hasDemo ? (
+            <div className="flex w-full flex-col gap-2 sm:w-auto">
+              <Link href={`/tests/${slug}/demo`} className={btn("primary", "lg")}>
+                Try free demo <ChevronRight className="size-5" />
+              </Link>
+              {buy && (
+                <Link href={buy.href} className={btn("accent", "lg")}>
+                  Unlock full test — {rupees(buy.priceInPaise)}
+                </Link>
+              )}
+              <Link href={`/tests/${slug}/attempt`} className="text-center text-sm font-medium text-primary hover:underline">
+                Already purchased? Start the full test
+              </Link>
+            </div>
+          ) : (
+            <Link href={`/tests/${slug}/attempt`} className={btn("primary", "lg")}>
+              Start test now <ChevronRight className="size-5" />
+            </Link>
+          )}
         </div>
+        {hasDemo && demo && (
+          <p className="-mt-4 text-sm text-muted">
+            The free demo has the first half of every section ({demo.freeTotal} of {demo.freeTotal + demo.lockedTotal} questions). It is not saved and does not affect your rank.
+          </p>
+        )}
       </main>
       <SiteFooter />
     </>

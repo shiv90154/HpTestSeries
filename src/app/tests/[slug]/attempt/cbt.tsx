@@ -1,15 +1,17 @@
 "use client";
 
-import { Clock, Grid3x3, Languages, LogIn, Maximize, X } from "lucide-react";
+import { Clock, Grid3x3, Languages, Lock, LogIn, Maximize, X } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 import { track } from "@/components/analytics";
 import { RichContent } from "@/components/rich-content";
+import { rupees } from "@/lib/money";
 import { useFocusTrap } from "@/lib/use-focus-trap";
 import type { Bilingual, Paper, SubmittedAnswers } from "@/modules/assessment/types";
-import { gradeGuestAction, saveProgressAction, startAttemptAction, submitAttemptAction } from "./actions";
+import { gradeDemoAction, gradeGuestAction, saveProgressAction, startAttemptAction, submitAttemptAction } from "./actions";
+import { DemoPaywall } from "./demo-paywall";
 import { OnboardingTour } from "./onboarding-tour";
 
 /** Short vibration on supported phones — a small confirmation on Save & Next / Submit taps. */
@@ -68,7 +70,10 @@ function writeStored(key: string, value: Stored | null) {
 
 export function Cbt({ paper, candidate }: { paper: Paper; candidate: { name: string } | null }) {
   const router = useRouter();
-  const storeKey = `cbt:${paper.slug}:${candidate ? "user" : "guest"}`;
+  // A demo is stateless like a guest attempt, even when the visitor is logged in: nothing is stored on the
+  // server, so it can't use up the "first attempt" that decides their HP rank.
+  const demo = paper.demo;
+  const storeKey = `cbt:${paper.slug}:${demo ? "demo" : candidate ? "user" : "guest"}`;
 
   const flat = useMemo(
     () =>
@@ -97,11 +102,13 @@ export function Cbt({ paper, candidate }: { paper: Paper; candidate: { name: str
   const [starting, setStarting] = useState(false);
   const [violations, setViolations] = useState(0);
   const [fullscreenLost, setFullscreenLost] = useState(false);
+  const [paywall, setPaywall] = useState<null | "locked" | "finished">(null);
 
   const shownAt = useRef(0); // set when the exam starts
   const dirty = useRef(false);
   const submittedRef = useRef(false);
   const violationsRef = useRef(0);
+  const leavingRef = useRef(false); // set when leaving for checkout: exiting fullscreen then is not a violation
   const lastViolationToastAt = useRef(0);
   const drawerRef = useRef<HTMLDivElement>(null);
   const confirmDialogRef = useRef<HTMLDivElement>(null);
@@ -144,6 +151,7 @@ export function Cbt({ paper, candidate }: { paper: Paper; candidate: { name: str
   // server, and surfaced to admins (flagged if excessive), but nothing here can stop a determined
   // cheater (e.g. a second device). See AGENTS.md-adjacent docs — this is a best-effort signal, not enforcement.
   const recordViolation = useCallback((message: string) => {
+    if (leavingRef.current) return;
     violationsRef.current += 1;
     setViolations(violationsRef.current);
     dirty.current = true;
@@ -224,7 +232,23 @@ export function Cbt({ paper, candidate }: { paper: Paper; candidate: { name: str
     else {
       setQs(commitTime(map));
       dirty.current = true;
+      if (demo) {
+        setPaywall("finished");
+        track("demo_paywall_view", { test_slug: paper.slug, reason: "finished" });
+      }
     }
+  }
+
+  function openLocked() {
+    setPaywall("locked");
+    track("demo_paywall_view", { test_slug: paper.slug, reason: "locked" });
+  }
+
+  /** Leaving for checkout: drop fullscreen quietly so the buy page isn't stuck in it. */
+  function payNow() {
+    leavingRef.current = true;
+    track("demo_pay_click", { test_slug: paper.slug });
+    if (document.fullscreenElement) void document.exitFullscreen().catch(() => {});
   }
 
   function clearResponse() {
@@ -240,7 +264,7 @@ export function Cbt({ paper, candidate }: { paper: Paper; candidate: { name: str
     try {
       let map: Record<string, QState> = {};
       let startAt = 0;
-      if (candidate) {
+      if (candidate && !demo) {
         const res = await startAttemptAction(paper.slug);
         if ("error" in res) throw new Error(res.error);
         setAttemptId(res.attemptId);
@@ -268,7 +292,7 @@ export function Cbt({ paper, candidate }: { paper: Paper; candidate: { name: str
       shownAt.current = Date.now();
       setNow(Date.now());
       setPhase("exam");
-      track("test_start", { test_slug: paper.slug, guest: !candidate });
+      track(demo ? "demo_start" : "test_start", { test_slug: paper.slug, guest: !candidate });
     } catch (err) {
       setError(err instanceof Error ? err.message : "Could not start the test.");
     } finally {
@@ -284,7 +308,7 @@ export function Cbt({ paper, candidate }: { paper: Paper; candidate: { name: str
     setPhase("submitting");
     const answers = toAnswers(commitTime(qs));
     try {
-      if (candidate && attemptId) {
+      if (candidate && attemptId && !demo) {
         const res = await submitAttemptAction(attemptId, answers, violationsRef.current);
         if ("error" in res) throw new Error(res.error);
         track("test_submit", { test_slug: paper.slug, guest: false });
@@ -292,10 +316,10 @@ export function Cbt({ paper, candidate }: { paper: Paper; candidate: { name: str
         if (document.fullscreenElement) void document.exitFullscreen().catch(() => {});
         router.replace(`/results/${attemptId}`);
       } else {
-        const res = await gradeGuestAction(paper.slug, answers);
+        const res = await (demo ? gradeDemoAction : gradeGuestAction)(paper.slug, answers);
         if ("error" in res) throw new Error(res.error);
         sessionStorage.setItem(`result:${paper.slug}`, JSON.stringify(res));
-        track("test_submit", { test_slug: paper.slug, guest: true });
+        track(demo ? "demo_submit" : "test_submit", { test_slug: paper.slug, guest: !candidate });
         writeStored(storeKey, null);
         if (document.fullscreenElement) void document.exitFullscreen().catch(() => {});
         router.replace(`/tests/${paper.slug}/result`);
@@ -305,7 +329,7 @@ export function Cbt({ paper, candidate }: { paper: Paper; candidate: { name: str
       setPhase("exam");
       toast.error(err instanceof Error ? err.message : "Submit failed. Check your internet and try again.");
     }
-  }, [attemptId, candidate, commitTime, paper.slug, qs, router, storeKey, toAnswers]);
+  }, [attemptId, candidate, commitTime, demo, paper.slug, qs, router, storeKey, toAnswers]);
 
   // Clock + auto-submit at time up. The interval always calls the latest submit via a ref.
   const submitRef = useRef(submit);
@@ -384,7 +408,7 @@ export function Cbt({ paper, candidate }: { paper: Paper; candidate: { name: str
         </div>
         <div className="min-w-0 text-sm">
           <p className="truncate font-semibold">{candidate?.name ?? "Guest candidate"}</p>
-          <p className="text-xs text-muted">{candidate ? "Result will be saved" : "Result not saved"}</p>
+          <p className="text-xs text-muted">{demo ? "Free demo · result not saved" : candidate ? "Result will be saved" : "Result not saved"}</p>
         </div>
       </div>
       <Legend counts={sectionCounts} />
@@ -398,7 +422,19 @@ export function Cbt({ paper, candidate }: { paper: Paper; candidate: { name: str
             <PaletteButton key={item.id} n={item.numberInSection} status={statusOf(qs[item.id])} current={i === cur} onClick={() => go(i)} />
           ) : null,
         )}
+        {Array.from({ length: demo?.lockedPerSection[q.sectionIndex] ?? 0 }, (_, k) => (
+          <LockedButton key={`locked-${k}`} n={section.questions.length + k + 1} onClick={openLocked} />
+        ))}
       </div>
+      {demo && (
+        <button
+          type="button"
+          onClick={openLocked}
+          className="mx-3 mb-3 flex items-center justify-center gap-2 rounded-lg bg-accent px-3 py-2.5 text-sm font-bold text-[#1f1300] hover:bg-accent-strong"
+        >
+          <Lock className="size-4" aria-hidden /> Unlock {demo.lockedTotal} more questions
+        </button>
+      )}
       <div className="border-t border-border p-3">
         <button
           type="button"
@@ -419,7 +455,19 @@ export function Cbt({ paper, candidate }: { paper: Paper; candidate: { name: str
         <p className="min-w-0 flex-1 truncate font-sans text-sm font-semibold sm:text-base">
           {lang === "hi" && paper.titleHi ? paper.titleHi : paper.title}
         </p>
-        {violations > 0 && (
+        {demo && (
+          <>
+            <span className="shrink-0 rounded-md bg-accent px-2 py-1 font-sans text-xs font-bold text-[#1f1300]">FREE DEMO</span>
+            <button
+              type="button"
+              onClick={openLocked}
+              className="hidden shrink-0 items-center gap-1.5 rounded-md bg-white/15 px-2.5 py-1 font-sans text-xs font-semibold hover:bg-white/25 sm:inline-flex"
+            >
+              <Lock className="size-3.5" aria-hidden /> Unlock full test
+            </button>
+          </>
+        )}
+        {violations > 0 && !demo && (
           <span
             className="hidden shrink-0 rounded-md bg-danger px-2 py-1 font-sans text-xs font-semibold text-white sm:inline"
             title="Tab switches, fullscreen exits and copy/paste attempts recorded this test"
@@ -641,6 +689,11 @@ export function Cbt({ paper, candidate }: { paper: Paper; candidate: { name: str
               <p className="mt-3 text-xs text-muted">
                 &ldquo;Answered &amp; Marked for Review&rdquo; questions will be evaluated. Unsaved selections are not counted.
               </p>
+              {demo && (
+                <p className="mt-2 rounded-lg bg-accent-soft px-3 py-2 text-xs text-foreground">
+                  This is a free demo: {demo.lockedTotal} more questions of the full {demo.totalQuestions}-question test are locked and won&apos;t be counted.
+                </p>
+              )}
             </div>
             <div className="flex items-center justify-end gap-3 border-t border-border p-4">
               <p className="mr-auto text-sm font-medium">Are you sure you want to submit the test?</p>
@@ -653,6 +706,20 @@ export function Cbt({ paper, candidate }: { paper: Paper; candidate: { name: str
             </div>
           </div>
         </div>
+      )}
+
+      {paywall && demo && phase === "exam" && (
+        <DemoPaywall
+          demo={demo}
+          hi={lang === "hi"}
+          finished={paywall === "finished"}
+          onClose={() => setPaywall(null)}
+          onSubmit={() => {
+            setPaywall(null);
+            setConfirmOpen(true);
+          }}
+          onPay={payNow}
+        />
       )}
 
       {phase === "submitting" && (
@@ -691,6 +758,20 @@ function PaletteButton({ n, status, current, onClick }: { n: number; status: Sta
       {status === "answeredMarked" && (
         <span className="absolute -bottom-0.5 -right-0.5 grid size-3.5 place-items-center rounded-full border-2 border-white bg-cbt-answered" />
       )}
+    </button>
+  );
+}
+
+function LockedButton({ n, onClick }: { n: number; onClick: () => void }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-label={`Question ${n}, locked. Unlock the full test to attempt it`}
+      className="relative grid h-10 place-items-center rounded-md border border-dashed border-[#c3cad6] bg-surface-muted text-sm font-semibold text-muted hover:border-accent hover:bg-accent-soft"
+    >
+      <Lock className="size-3.5" aria-hidden />
+      <span className="sr-only">{n}</span>
     </button>
   );
 }
@@ -817,7 +898,20 @@ function Instructions(props: {
           </section>
         )}
 
-        {!candidate && (
+        {paper.demo && (
+          <div className="space-y-1 rounded-xl border border-accent bg-accent-soft p-4 text-sm">
+            <p className="font-semibold">
+              {hi ? "🎁 फ्री डेमो — हर सेक्शन का पहला आधा हिस्सा" : "🎁 Free demo — the first half of every section"}
+            </p>
+            <p className="text-foreground/90">
+              {hi
+                ? `पूरे ${paper.demo.totalQuestions} प्रश्नों में से ${total} प्रश्न फ्री हैं। बाकी ${paper.demo.lockedTotal} प्रश्न पेमेंट करने पर खुलेंगे${paper.demo.buy ? ` (${rupees(paper.demo.buy.priceInPaise)})` : ""}। डेमो का रिज़ल्ट सेव नहीं होता और इससे आपकी रैंक पर कोई असर नहीं पड़ता।`
+                : `${total} of the ${paper.demo.totalQuestions} questions are free. The other ${paper.demo.lockedTotal} unlock when you pay${paper.demo.buy ? ` (${rupees(paper.demo.buy.priceInPaise)})` : ""}. A demo result isn't saved and doesn't affect your HP rank.`}
+            </p>
+          </div>
+        )}
+
+        {!candidate && !paper.demo && (
           <div className="flex flex-wrap items-center gap-3 rounded-xl border border-accent bg-accent-soft p-4 text-sm">
             <p className="flex-1">
               {hi
