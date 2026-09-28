@@ -1,9 +1,10 @@
-import { ArrowRight, BarChart3, Clock, PlayCircle, Target, Trophy, TrendingUp } from "lucide-react";
+import { ArrowRight, BadgeCheck, BarChart3, Clock, PlayCircle, Target, Trophy, TrendingUp } from "lucide-react";
 import Link from "next/link";
 import { AppHeader } from "@/components/app-header";
 import { TestCard } from "@/components/test-card";
 import { btn, card } from "@/components/ui";
 import { getDashboard } from "@/modules/analytics/dashboard";
+import { getMyPlans, type Plan } from "@/modules/commerce/purchases";
 import type { requireUser } from "@/modules/identity/session";
 import { ProfileCard } from "./profile-card";
 import { ScoreTrend } from "./score-trend";
@@ -14,7 +15,7 @@ function greeting(): string {
 }
 
 export async function DashboardData({ user }: { user: Awaited<ReturnType<typeof requireUser>> }) {
-  const d = await getDashboard(user.id);
+  const [d, plans] = await Promise.all([getDashboard(user.id), getMyPlans(user.id)]);
   // Profile comes from the DB (not the 5-minute session cookie cache) so edits show immediately.
   const firstName = d.profile.name.split(" ")[0];
   const needsProfile = d.profile.name === "Aspirant" || !d.profile.district;
@@ -60,6 +61,8 @@ export async function DashboardData({ user }: { user: Awaited<ReturnType<typeof 
             </Link>
           </section>
         )}
+
+        {plans.length > 0 && <MyPlans plans={plans} />}
 
         {/* Stats */}
         <section className="grid grid-cols-2 gap-3 lg:grid-cols-4">
@@ -209,6 +212,51 @@ export async function DashboardData({ user }: { user: Awaited<ReturnType<typeof 
         )}
       </main>
     </>
+  );
+}
+
+const date = (d: Date) => d.toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric", timeZone: "Asia/Kolkata" });
+
+/** What the student has paid for, so a purchase is visible right after checkout. */
+function MyPlans({ plans }: { plans: Plan[] }) {
+  const renewed = new Set(plans.filter((p) => p.upcoming).map((p) => p.slug));
+  return (
+    <section className={`${card} p-5`}>
+      <h2 className="mb-3 flex items-center gap-2 font-semibold">
+        <BadgeCheck className="size-5 text-primary" /> My plan
+      </h2>
+      <ul className="divide-y divide-border">
+        {plans.map((p) => (
+          <li key={`${p.slug}-${p.startsAt.toISOString()}`} className="flex flex-wrap items-center gap-3 py-3 first:pt-0 last:pb-0">
+            <div className="min-w-0 flex-1">
+              <p className="font-medium">{p.title}</p>
+              <p className={`text-sm ${!p.upcoming && p.daysLeft <= 7 ? "text-danger" : "text-muted"}`}>
+                {p.upcoming
+                  ? `Starts ${date(p.startsAt)} · valid till ${date(p.expiresAt)}`
+                  : `Valid till ${date(p.expiresAt)} · ${p.daysLeft} day${p.daysLeft === 1 ? "" : "s"} left`}
+              </p>
+            </div>
+            {p.upcoming ? (
+              <span className="rounded-full bg-primary-soft px-2.5 py-1 text-xs font-semibold text-primary">Renewal</span>
+            ) : p.daysLeft <= 7 && !renewed.has(p.slug) ? (
+              <Link href={`/buy/${p.slug}`} className={btn("accent", "sm")}>
+                Renew
+              </Link>
+            ) : (
+              <span className="rounded-full bg-success-soft px-2.5 py-1 text-xs font-semibold text-success">Active</span>
+            )}
+          </li>
+        ))}
+      </ul>
+      <div className="mt-4 flex flex-wrap gap-x-5 gap-y-2 text-sm font-medium">
+        <Link href="/tests" className="text-primary hover:underline">
+          Browse tests
+        </Link>
+        <Link href="/profile#purchases" className="text-muted hover:text-primary">
+          Purchase history &amp; receipts
+        </Link>
+      </div>
+    </section>
   );
 }
 

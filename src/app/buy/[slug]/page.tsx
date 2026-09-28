@@ -1,12 +1,13 @@
-import { CheckCircle2, ShieldCheck } from "lucide-react";
+import { BadgeCheck, CheckCircle2, ShieldCheck } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
-import { card } from "@/components/ui";
+import { btn, card } from "@/components/ui";
 import { examLabel } from "@/modules/catalog/queries";
 import { getProductForSale } from "@/modules/commerce/product-service";
+import { getOwnership } from "@/modules/commerce/purchases";
 import { getCurrentUser } from "@/modules/identity/session";
 import { BuyButton } from "./buy-button";
 
@@ -28,6 +29,8 @@ export default async function BuyPage({ params }: PageProps<"/buy/[slug]">) {
   const [product, user] = await Promise.all([getProductForSale(slug), getCurrentUser()]);
   if (!product) notFound();
 
+  const own = user ? await getOwnership(user.id, product.id) : ({ kind: "none" } as const);
+  const date = (d: Date) => d.toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric", timeZone: "Asia/Kolkata" });
   const rupees = (product.priceInPaise / 100).toLocaleString("en-IN");
   // Same precedence as fulfillOrder: a fixed end date wins over relative validity.
   const validity = product.validUntil
@@ -88,7 +91,27 @@ export default async function BuyPage({ params }: PageProps<"/buy/[slug]">) {
             </ul>
           </section>
 
-          <BuyButton productSlug={product.slug} user={user} />
+          {own.kind === "owned" ? (
+            <div className="space-y-3 rounded-xl border border-success bg-success-soft p-4 text-sm">
+              <p className="flex items-start gap-2 font-semibold text-success">
+                <BadgeCheck className="mt-0.5 size-4 shrink-0" /> You already have access until {date(own.until)}
+              </p>
+              {own.via !== "same" && <p className="text-foreground/85">It&apos;s included in your {own.viaTitle}.</p>}
+              <Link href="/tests" className={btn("primary", "md", "w-full")}>
+                Start practising
+              </Link>
+            </div>
+          ) : (
+            <>
+              {own.kind === "renewable" && (
+                <p className="rounded-xl bg-accent-soft p-3 text-sm">
+                  Your current access ends on <b>{date(own.until)}</b>. Renew now and the new period starts right after it — you
+                  don&apos;t lose any days.
+                </p>
+              )}
+              <BuyButton productSlug={product.slug} user={user} label={own.kind === "renewable" ? "Renew now" : undefined} />
+            </>
+          )}
           <div className="space-y-2 text-xs text-muted">
             <p className="flex items-center gap-1.5">
               <ShieldCheck className="size-4 text-success" /> Secure payment via Razorpay (UPI, cards, netbanking).

@@ -43,6 +43,7 @@ export const getProductForSale = cache(async (slug: string) => {
   const product = await db.product.findUnique({
     where: { slug },
     select: {
+      id: true,
       slug: true,
       title: true,
       titleHi: true,

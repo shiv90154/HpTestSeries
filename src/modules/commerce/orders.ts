@@ -2,6 +2,8 @@ import "server-only";
 import { Prisma } from "@/generated/prisma/client";
 import { db } from "@/lib/db";
 import { createRazorpayOrder, razorpayPublicKey, verifyCheckoutSignature } from "@/lib/razorpay";
+import { renewalStart } from "./ownership";
+import { getOwnership } from "./purchases";
 
 export type CheckoutOrder = {
   orderId: string;
@@ -15,6 +17,13 @@ export type CheckoutOrder = {
 export async function createOrderForProduct(userId: string, productSlug: string): Promise<CheckoutOrder | { error: string }> {
   const product = await db.product.findUnique({ where: { slug: productSlug } });
   if (!product || !product.isActive) return { error: "This product is not available." };
+
+  // The buy page hides the button in this case; this guards against a stale page or a double tab.
+  const own = await getOwnership(userId, product.id);
+  if (own.kind === "owned") {
+    const until = own.until.toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric", timeZone: "Asia/Kolkata" });
+    return { error: `You already have access${own.via === "same" ? "" : ` through ${own.viaTitle}`} until ${until}.` };
+  }
 
   const order = await db.order.create({
     data: { userId, productId: product.id, amountPaise: product.priceInPaise, status: "CREATED" },
@@ -78,7 +87,15 @@ export async function fulfillOrder(
   raw: Prisma.InputJsonValue,
 ): Promise<void> {
   const now = new Date();
-  const expiresAt = order.product.validUntil ?? new Date(now.getTime() + (order.product.validityDays ?? 365) * 86_400_000);
+  // A renewal bought before the current period ends starts when that period ends, so no paid days are lost.
+  const current = order.product.validUntil
+    ? []
+    : await db.entitlement.findMany({
+        where: { userId: order.userId, productId: order.productId, revokedAt: null, expiresAt: { gt: now }, NOT: { orderId: order.id } },
+        select: { productId: true, expiresAt: true, revokedAt: true },
+      });
+  const startsAt = renewalStart(order.productId, current, now);
+  const expiresAt = order.product.validUntil ?? new Date(startsAt.getTime() + (order.product.validityDays ?? 365) * 86_400_000);
 
   try {
     await db.$transaction([
@@ -94,7 +111,7 @@ export async function fulfillOrder(
           userId: order.userId,
           productId: order.productId,
           source: "PURCHASE",
-          startsAt: now,
+          startsAt,
           expiresAt,
           orderId: order.id,
         },

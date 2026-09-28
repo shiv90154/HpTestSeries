@@ -15,7 +15,15 @@ declare global {
   }
 }
 
-export function BuyButton({ productSlug, user }: { productSlug: string; user: { name: string; email: string; phoneNumber: string | null } | null }) {
+export function BuyButton({
+  productSlug,
+  user,
+  label = "Buy now",
+}: {
+  productSlug: string;
+  user: { name: string; email: string; phoneNumber: string | null } | null;
+  label?: string;
+}) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
 
@@ -78,7 +86,7 @@ export function BuyButton({ productSlug, user }: { productSlug: string; user: { 
     <>
       <Script src="https://checkout.razorpay.com/v1/checkout.js" strategy="lazyOnload" />
       <button onClick={pay} disabled={loading} className={btn("primary", "lg")}>
-        {loading ? "Please wait…" : "Buy now"}
+        {loading ? "Please wait…" : label}
       </button>
     </>
   );

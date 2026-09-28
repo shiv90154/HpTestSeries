@@ -1,8 +1,11 @@
-import { BadgeCheck, Calendar, Mail, Phone } from "lucide-react";
+import { BadgeCheck, Calendar, Mail, Phone, Receipt } from "lucide-react";
 import type { Metadata } from "next";
+import Link from "next/link";
 import { AppHeader } from "@/components/app-header";
 import { card } from "@/components/ui";
 import { db } from "@/lib/db";
+import { rupees } from "@/lib/money";
+import { getMyPurchases } from "@/modules/commerce/purchases";
 import { requireUser } from "@/modules/identity/session";
 import { ProfileForm } from "./profile-form";
 
@@ -10,10 +13,13 @@ export const metadata: Metadata = { title: "My Profile", robots: { index: false 
 
 export default async function ProfilePage() {
   const user = await requireUser("/profile");
+  const purchasesPromise = getMyPurchases(user.id);
   const profile = await db.user.findUniqueOrThrow({
     where: { id: user.id },
     select: { name: true, email: true, emailVerified: true, phoneNumber: true, phoneNumberVerified: true, district: true, preferredLang: true, createdAt: true },
   });
+
+  const purchases = await purchasesPromise;
 
   return (
     <>
@@ -64,6 +70,36 @@ export default async function ProfilePage() {
         <section className={`${card} p-5`}>
           <h2 className="mb-4 font-semibold">Edit details</h2>
           <ProfileForm name={profile.name} district={profile.district} preferredLang={profile.preferredLang} />
+        </section>
+
+        <section id="purchases" className={`${card} scroll-mt-24 p-5`}>
+          <h2 className="mb-3 font-semibold">Purchases</h2>
+          {purchases.length === 0 ? (
+            <p className="text-sm text-muted">
+              No purchases yet.{" "}
+              <Link href="/#pricing" className="font-medium text-primary hover:underline">
+                See plans
+              </Link>
+            </p>
+          ) : (
+            <ul className="divide-y divide-border">
+              {purchases.map((o) => (
+                <li key={o.id} className="flex items-center gap-3 py-3 first:pt-0 last:pb-0">
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate font-medium">{o.productTitle}</p>
+                    <p className="text-xs text-muted">
+                      {o.createdAt.toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric", timeZone: "Asia/Kolkata" })} ·{" "}
+                      {rupees(o.amountPaise)}
+                      {o.status === "REFUNDED" && <span className="font-semibold text-danger"> · Refunded</span>}
+                    </p>
+                  </div>
+                  <Link href={`/orders/${o.id}/receipt`} className="inline-flex shrink-0 items-center gap-1.5 text-sm font-medium text-primary hover:underline">
+                    <Receipt className="size-4" /> Receipt
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          )}
         </section>
       </main>
     </>
