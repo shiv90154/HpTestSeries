@@ -7,6 +7,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 import { track } from "@/components/analytics";
 import { RichContent } from "@/components/rich-content";
+import { useFocusTrap } from "@/lib/use-focus-trap";
 import type { Bilingual, Paper, SubmittedAnswers } from "@/modules/assessment/types";
 import { gradeGuestAction, saveProgressAction, startAttemptAction, submitAttemptAction } from "./actions";
 import { OnboardingTour } from "./onboarding-tour";
@@ -103,7 +104,11 @@ export function Cbt({ paper, candidate }: { paper: Paper; candidate: { name: str
   const violationsRef = useRef(0);
   const lastViolationToastAt = useRef(0);
   const drawerRef = useRef<HTMLDivElement>(null);
+  const confirmDialogRef = useRef<HTMLDivElement>(null);
   const swipeStartX = useRef<number | null>(null);
+
+  useFocusTrap(drawerRef, paletteOpen, () => setPaletteOpen(false));
+  useFocusTrap(confirmDialogRef, confirmOpen, () => setConfirmOpen(false));
 
   const q = flat[cur];
 
@@ -599,7 +604,7 @@ export function Cbt({ paper, candidate }: { paper: Paper; candidate: { name: str
       {/* Submit confirmation */}
       {confirmOpen && (
         <div className="fixed inset-0 z-50 grid place-items-center bg-black/50 p-4 font-sans" role="dialog" aria-modal="true" aria-labelledby="submit-title">
-          <div className="w-full max-w-2xl overflow-hidden rounded-xl bg-white shadow-2xl">
+          <div ref={confirmDialogRef} className="w-full max-w-2xl overflow-hidden rounded-xl bg-white shadow-2xl">
             <h2 id="submit-title" className="bg-cbt-header px-5 py-3 font-semibold text-white">
               Exam Summary
             </h2>

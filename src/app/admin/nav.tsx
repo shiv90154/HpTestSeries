@@ -33,7 +33,7 @@ function isActive(pathname: string, href: string) {
 export function AdminSidebarNav({ items }: { items: AdminNavItem[] }) {
   const pathname = usePathname();
   return (
-    <nav className="space-y-1">
+    <nav aria-label="Admin navigation" className="space-y-1">
       {items
         .filter((i) => i.show)
         .map(({ href, label, icon }) => {
@@ -60,7 +60,7 @@ export function AdminSidebarNav({ items }: { items: AdminNavItem[] }) {
 export function AdminMobileNav({ items }: { items: AdminNavItem[] }) {
   const pathname = usePathname();
   return (
-    <nav className="flex gap-1.5 overflow-x-auto px-3 pb-2.5">
+    <nav aria-label="Admin sections" className="flex gap-1.5 overflow-x-auto px-3 pb-2.5">
       {items
         .filter((i) => i.show)
         .map(({ href, label, icon }) => {

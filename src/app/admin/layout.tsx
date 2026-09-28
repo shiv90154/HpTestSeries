@@ -37,7 +37,7 @@ export default async function AdminLayout({ children }: LayoutProps<"/admin">) {
 
   return (
     <div className="flex min-h-screen flex-1 flex-col md:flex-row">
-      <aside className="hidden shrink-0 border-r border-border bg-surface md:flex md:w-64 md:flex-col">
+      <aside aria-label="Admin sidebar" className="hidden shrink-0 border-r border-border bg-surface md:flex md:w-64 md:flex-col">
         <div className="flex items-center gap-2.5 border-b border-border px-5 py-4">
           <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary text-sm font-bold text-primary-foreground">
             {initials}

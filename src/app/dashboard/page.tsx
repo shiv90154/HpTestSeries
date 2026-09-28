@@ -1,230 +1,35 @@
-import { ArrowRight, BarChart3, Clock, PlayCircle, Target, Trophy, TrendingUp } from "lucide-react";
 import type { Metadata } from "next";
-import Link from "next/link";
-import { AppHeader } from "@/components/app-header";
-import { TestCard } from "@/components/test-card";
-import { btn, card } from "@/components/ui";
-import { getDashboard } from "@/modules/analytics/dashboard";
+import { Suspense } from "react";
+import { SkeletonCard, SkeletonStatTile } from "@/components/skeleton";
 import { requireUser } from "@/modules/identity/session";
-import { ProfileCard } from "./profile-card";
-import { ScoreTrend } from "./score-trend";
+import { DashboardData } from "./dashboard-data";
 
 export const metadata: Metadata = { title: "Dashboard", robots: { index: false } };
 
-function greeting(): string {
-  const h = Number(new Date().toLocaleString("en-IN", { hour: "numeric", hour12: false, timeZone: "Asia/Kolkata" }));
-  return h < 12 ? "Good morning" : h < 17 ? "Good afternoon" : "Good evening";
+function DashboardSkeleton() {
+  return (
+    <main className="mx-auto w-full max-w-6xl flex-1 space-y-6 px-4 py-6 sm:py-8">
+      <SkeletonCard className="h-40" />
+      <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+        {Array.from({ length: 4 }).map((_, i) => (
+          <SkeletonStatTile key={i} />
+        ))}
+      </div>
+      <div className="grid gap-6 lg:grid-cols-[1.5fr_1fr]">
+        <SkeletonCard className="h-56" />
+        <SkeletonCard className="h-56" />
+      </div>
+      <SkeletonCard className="h-40" />
+    </main>
+  );
 }
 
 export default async function DashboardPage() {
   const user = await requireUser("/dashboard");
-  const d = await getDashboard(user.id);
-  // Profile comes from the DB (not the 5-minute session cookie cache) so edits show immediately.
-  const firstName = d.profile.name.split(" ")[0];
-  const needsProfile = d.profile.name === "Aspirant" || !d.profile.district;
 
   return (
-    <>
-      <AppHeader user={{ ...user, name: d.profile.name }} />
-      <main className="mx-auto w-full max-w-6xl flex-1 space-y-6 px-4 py-6 sm:py-8">
-        {/* Welcome */}
-        <section className="relative overflow-hidden rounded-3xl bg-linear-to-br from-[#133a9e] via-[#1e4fd8] to-[#3b6ef5] p-6 text-white sm:p-8">
-          <div className="pointer-events-none absolute -right-16 -top-16 size-64 rounded-full bg-white/10 blur-2xl" />
-          <div className="relative flex flex-col gap-5 sm:flex-row sm:items-end">
-            <div className="flex-1 space-y-1.5">
-              <p className="text-sm text-white/75">{greeting()},</p>
-              <h1 className="text-2xl font-bold sm:text-3xl">{firstName} 👋</h1>
-              <p className="text-white/85">
-                {d.stats.tests === 0
-                  ? "Start your first mock test and see where you stand among Himachal aspirants."
-                  : `You've taken ${d.stats.tests} test${d.stats.tests === 1 ? "" : "s"}. Keep the streak going!`}
-              </p>
-            </div>
-            <Link href={d.suggested[0] ? `/tests/${d.suggested[0].slug}/attempt` : "/tests"} className={btn("accent", "lg")}>
-              <PlayCircle className="size-5" /> {d.stats.tests === 0 ? "Start first test" : "Take a mock test"}
-            </Link>
-          </div>
-        </section>
-
-        {needsProfile && <ProfileCard name={d.profile.name} district={d.profile.district} />}
-
-        {/* Continue */}
-        {d.inProgress && (
-          <section className={`${card} flex flex-col gap-4 border-accent bg-accent-soft p-5 sm:flex-row sm:items-center`}>
-            <Clock className="size-8 shrink-0 text-accent-strong" />
-            <div className="flex-1">
-              <p className="font-semibold">Unfinished test: {d.inProgress.title}</p>
-              <p className="text-sm text-muted">
-                {d.inProgress.answered} answered · time left until{" "}
-                {d.inProgress.deadlineAt.toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit", timeZone: "Asia/Kolkata" })}
-              </p>
-            </div>
-            <Link href={`/tests/${d.inProgress.slug}/attempt`} className={btn("primary")}>
-              Resume test <ArrowRight className="size-4" />
-            </Link>
-          </section>
-        )}
-
-        {/* Stats */}
-        <section className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-          <Stat icon={<BarChart3 className="size-5 text-primary" />} label="Tests taken" value={`${d.stats.tests}`} />
-          <Stat icon={<TrendingUp className="size-5 text-success" />} label="Average score" value={`${d.stats.avgPercent}%`} sub={`Best ${d.stats.bestPercent}%`} />
-          <Stat icon={<Target className="size-5 text-accent-strong" />} label="Accuracy" value={`${d.stats.accuracy}%`} />
-          <Stat icon={<Clock className="size-5 text-cbt-marked" />} label="Practice time" value={`${d.stats.totalMinutes} min`} />
-        </section>
-
-        <div className="grid gap-6 lg:grid-cols-[1.5fr_1fr]">
-          <section className={`${card} p-5`}>
-            <h2 className="font-semibold">Score trend</h2>
-            <p className="mb-6 text-xs text-muted">Score % per test, oldest to newest</p>
-            <ScoreTrend points={d.trend} />
-          </section>
-
-          <section className={`${card} p-5`}>
-            <h2 className="font-semibold">Focus areas</h2>
-            <p className="mb-4 text-xs text-muted">Lowest accuracy (correct ÷ attempted) across your tests</p>
-            {d.weakTopics.length === 0 ? (
-              <p className="text-sm text-muted">Take a test to discover your weak topics.</p>
-            ) : (
-              <ul className="space-y-3.5">
-                {d.weakTopics.map((t) => (
-                  <li key={t.name} className="space-y-1">
-                    <div className="flex justify-between gap-3 text-sm">
-                      <span className="truncate">{t.name}</span>
-                      <span className={`font-semibold tabular-nums ${t.accuracy >= 70 ? "text-success" : t.accuracy >= 40 ? "text-accent-strong" : "text-danger"}`}>{t.accuracy}%</span>
-                    </div>
-                    <div className="h-1.5 overflow-hidden rounded-full bg-surface-muted">
-                      <div className={`h-full rounded-full ${t.accuracy >= 70 ? "bg-success" : t.accuracy >= 40 ? "bg-accent" : "bg-danger"}`} style={{ width: `${t.accuracy}%` }} />
-                    </div>
-                  </li>
-                ))}
-              </ul>
-            )}
-            {d.strongTopics.length > 0 && (
-              <p className="mt-5 text-xs text-muted">
-                Strong: <span className="text-foreground">{d.strongTopics.map((t) => t.name.split(" · ")[1]).join(", ")}</span>
-              </p>
-            )}
-          </section>
-        </div>
-
-        {/* Recent */}
-        <section className={`${card} overflow-hidden`}>
-          <div className="flex items-center justify-between border-b border-border px-5 py-4">
-            <h2 className="font-semibold">Recent tests</h2>
-            <Link href="/tests" className="text-sm font-medium text-primary">
-              All tests
-            </Link>
-          </div>
-          {d.recent.length === 0 ? (
-            <p className="px-5 py-8 text-center text-sm text-muted">No tests yet — your attempts will show up here.</p>
-          ) : (
-            <>
-              {/* Cards on mobile — a 5-column table with horizontal scroll is painful on a phone */}
-              <ul className="divide-y divide-border sm:hidden">
-                {d.recent.map((r) => (
-                  <li key={r.id}>
-                    <Link href={`/results/${r.id}`} className="flex flex-col gap-2 px-5 py-3.5 active:bg-surface-muted">
-                      <div className="flex items-start justify-between gap-3">
-                        <div className="min-w-0">
-                          <p className="truncate font-medium">{r.title}</p>
-                          <p className="text-xs text-muted">
-                            {r.submittedAt.toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}
-                            {!r.isFirst && " · re-attempt"}
-                          </p>
-                        </div>
-                        <p className="shrink-0 text-right tabular-nums">
-                          <b>{r.score}</b>
-                          <span className="text-muted">/{r.maxScore}</span>
-                        </p>
-                      </div>
-                      <div className="flex items-center gap-2 text-xs">
-                        <span className="rounded-full bg-surface-muted px-2 py-1 font-medium tabular-nums">{r.accuracy}% accuracy</span>
-                        {r.rank && (
-                          <span className="inline-flex items-center gap-1 rounded-full bg-accent-soft px-2 py-1 font-medium tabular-nums text-accent-strong">
-                            <Trophy className="size-3" /> #{r.rank.rank}/{r.rank.total}
-                          </span>
-                        )}
-                      </div>
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-
-              {/* Table on larger screens */}
-              <div className="hidden overflow-x-auto sm:block">
-                <table className="w-full min-w-[560px] text-sm">
-                  <thead className="bg-surface-muted text-left text-xs text-muted">
-                    <tr>
-                      <th className="px-5 py-2.5 font-medium">Test</th>
-                      <th className="px-5 py-2.5 text-right font-medium">Score</th>
-                      <th className="px-5 py-2.5 text-right font-medium">Accuracy</th>
-                      <th className="px-5 py-2.5 text-right font-medium">HP rank</th>
-                      <th className="px-5 py-2.5 font-medium" />
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {d.recent.map((r) => (
-                      <tr key={r.id} className="border-t border-border">
-                        <td className="px-5 py-3">
-                          <p className="font-medium">{r.title}</p>
-                          <p className="text-xs text-muted">
-                            {r.submittedAt.toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}
-                            {!r.isFirst && " · re-attempt"}
-                          </p>
-                        </td>
-                        <td className="px-5 py-3 text-right tabular-nums">
-                          <b>{r.score}</b>/{r.maxScore}
-                        </td>
-                        <td className="px-5 py-3 text-right tabular-nums">{r.accuracy}%</td>
-                        <td className="px-5 py-3 text-right tabular-nums">
-                          {r.rank ? (
-                            <span className="inline-flex items-center gap-1">
-                              <Trophy className="size-3.5 text-accent-strong" /> #{r.rank.rank}
-                              <span className="text-muted">/{r.rank.total}</span>
-                            </span>
-                          ) : (
-                            <span className="text-muted">—</span>
-                          )}
-                        </td>
-                        <td className="px-5 py-3 text-right">
-                          <Link href={`/results/${r.id}`} className="font-medium text-primary">
-                            Analysis
-                          </Link>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </>
-          )}
-        </section>
-
-        {d.suggested.length > 0 && (
-          <section className="space-y-4">
-            <h2 className="text-lg font-semibold">Recommended for you</h2>
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {d.suggested.map((t) => (
-                <TestCard key={t.slug} test={t} />
-              ))}
-            </div>
-          </section>
-        )}
-      </main>
-    </>
-  );
-}
-
-function Stat({ icon, label, value, sub }: { icon: React.ReactNode; label: string; value: string; sub?: string }) {
-  return (
-    <div className={`${card} p-4`}>
-      <div className="flex items-center gap-2 text-sm text-muted">
-        {icon}
-        {label}
-      </div>
-      <p className="mt-2 text-2xl font-semibold tabular-nums">{value}</p>
-      {sub && <p className="text-xs text-muted">{sub}</p>}
-    </div>
+    <Suspense fallback={<DashboardSkeleton />}>
+      <DashboardData user={user} />
+    </Suspense>
   );
 }
