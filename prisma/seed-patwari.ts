@@ -1,32 +1,19 @@
-// HP Patwari mock test series: 3 full-length mocks (100 questions each), one series and one paid product.
-// Idempotent: questions are matched by text hash; tests, the series and the product by slug, and are
-// only created when missing so later edits in the admin panel (price, titles, questions) are kept.
+// HP Patwari mock test series: 3 full mocks (100 questions each) and 14 subject tests (25 questions each),
+// all in one series and one paid product. Idempotent: questions are matched by text hash; tests, the series
+// and the product by slug, and are only created when missing so later edits in the admin panel (price,
+// titles, questions) are kept. Adding a new test = adding it to prisma/patwari/index.ts.
 
 import type { PrismaClient } from "../src/generated/prisma/client";
 import { questionTextHash } from "../src/modules/content/text-hash";
-import { mock1 } from "./patwari/mock1";
-import { mock2 } from "./patwari/mock2";
-import { mock3 } from "./patwari/mock3";
-import { SECTIONS, balanceAnswers, type Diff, type PatwariQuestion } from "./patwari/types";
+import { PATWARI_TESTS } from "./patwari";
+import { balanceAnswers, type Diff, type PatwariQuestion } from "./patwari/types";
 
 export const PATWARI_SERIES_SLUG = "hp-patwari-mock-test-series";
 export const PATWARI_PRODUCT_SLUG = "hp-patwari-mock-series";
-const PRICE_IN_PAISE = 149_00; // ₹149 for the 3-mock series
+const PRICE_IN_PAISE = 199_00; // ₹199 for the whole series
 const VALIDITY_DAYS = 180;
 
 const DIFFICULTY: Record<Diff, "EASY" | "MEDIUM" | "HARD"> = { E: "EASY", M: "MEDIUM", H: "HARD" };
-
-const MOCKS: { slug: string; n: number; questions: PatwariQuestion[] }[] = [
-  { slug: "hp-patwari-full-mock-1", n: 1, questions: mock1 },
-  { slug: "hp-patwari-full-mock-2", n: 2, questions: mock2 },
-  { slug: "hp-patwari-full-mock-3", n: 3, questions: mock3 },
-];
-
-const INSTRUCTIONS =
-  "Full-length HP Patwari mock: 100 questions, 100 marks, 90 minutes. Each correct answer gives 1 mark and each wrong answer " +
-  "deducts 0.25 marks. Sections: Himachal GK (30), General Knowledge (20), Reasoning (15), Mathematics (15), Hindi & English (15) " +
-  "and Revenue & Computer (5). The paper is set at a level slightly above the real exam, so treat it as tough practice. " +
-  "You can switch between Hindi and English at any time.";
 
 async function upsertQuestion(db: PrismaClient, q: PatwariQuestion, topicId: Map<string, string>): Promise<string> {
   const textHash = questionTextHash(q.en[0]);
@@ -74,14 +61,14 @@ export async function seedPatwari(db: PrismaClient) {
   const testIds: string[] = [];
   let createdTests = 0;
 
-  for (const mock of MOCKS) {
-    const existing = await db.test.findUnique({ where: { slug: mock.slug }, select: { id: true } });
+  for (const def of PATWARI_TESTS) {
+    const existing = await db.test.findUnique({ where: { slug: def.slug }, select: { id: true } });
     if (existing) {
       testIds.push(existing.id);
       continue;
     }
 
-    const questions = balanceAnswers(mock.questions);
+    const questions = balanceAnswers(def.questions);
     const questionIds: string[] = [];
     for (const q of questions) questionIds.push(await upsertQuestion(db, q, topicId));
 
@@ -89,18 +76,18 @@ export async function seedPatwari(db: PrismaClient) {
       const t = await tx.test.create({
         select: { id: true, sections: { select: { id: true, order: true } } },
         data: {
-          slug: mock.slug,
-          title: `HP Patwari Full Mock Test ${mock.n}`,
-          titleHi: `एचपी पटवारी फुल मॉक टेस्ट ${mock.n}`,
-          type: "MOCK",
+          slug: def.slug,
+          title: def.title,
+          titleHi: def.titleHi,
+          type: def.type,
           examId: exam.id,
-          durationSec: 90 * 60,
+          durationSec: def.durationSec,
           isFree: false,
           status: "PUBLISHED",
           publishedAt: new Date(),
-          instructions: INSTRUCTIONS,
+          instructions: def.instructions,
           sections: {
-            create: SECTIONS.map((s, order) => ({ name: s.name, nameHi: s.nameHi, order, marksCorrect: 1, marksWrong: 0.25 })),
+            create: def.sections.map((s, order) => ({ name: s.name, nameHi: s.nameHi, order, marksCorrect: 1, marksWrong: 0.25 })),
           },
         },
       });
@@ -125,11 +112,12 @@ export async function seedPatwari(db: PrismaClient) {
     create: {
       slug: PATWARI_SERIES_SLUG,
       examId: exam.id,
-      title: "HP Patwari Mock Test Series (3 Full Mocks)",
-      titleHi: "एचपी पटवारी मॉक टेस्ट सीरीज़ (3 फुल मॉक)",
+      title: "HP Patwari Mock Test Series (3 Full Mocks + 14 Subject Tests)",
+      titleHi: "एचपी पटवारी मॉक टेस्ट सीरीज़ (3 फुल मॉक + 14 विषय-वार टेस्ट)",
       description:
-        "Three full-length, exam-level HP Patwari mock tests with detailed solutions in Hindi and English. Each mock has 100 questions " +
-        "covering Himachal GK, General Knowledge, Reasoning, Mathematics, Hindi & English and Revenue & Computer.",
+        "Three full-length, exam-level HP Patwari mock tests (100 questions each) plus 14 subject-wise tests of 25 questions: " +
+        "Himachal GK, General Knowledge, Reasoning, Mathematics, Hindi, English and Revenue & Computer, two tests each. " +
+        "Every question has a detailed solution in Hindi and English.",
       status: "PUBLISHED",
     },
     select: { id: true },
@@ -144,8 +132,8 @@ export async function seedPatwari(db: PrismaClient) {
     update: {},
     create: {
       slug: PATWARI_PRODUCT_SLUG,
-      title: "HP Patwari Mock Test Series — 3 Full Mocks",
-      titleHi: "एचपी पटवारी मॉक टेस्ट सीरीज़ — 3 फुल मॉक",
+      title: "HP Patwari Mock Test Series — 3 Full Mocks + 14 Subject Tests",
+      titleHi: "एचपी पटवारी मॉक टेस्ट सीरीज़ — 3 फुल मॉक + 14 विषय-वार टेस्ट",
       kind: "SERIES",
       priceInPaise: PRICE_IN_PAISE,
       validityDays: VALIDITY_DAYS,

@@ -1,37 +1,50 @@
 import { describe, expect, it } from "vitest";
-import { mock1 } from "../../../prisma/patwari/mock1";
-import { SECTIONS, balanceAnswers, type PatwariQuestion } from "../../../prisma/patwari/types";
+import { PATWARI_TESTS } from "../../../prisma/patwari";
+import { SECTIONS, balanceAnswers } from "../../../prisma/patwari/types";
+import { taxonomy } from "../../../prisma/taxonomy";
 import { questionTextHash } from "./text-hash";
-
-const mocks: Record<string, PatwariQuestion[]> = { mock1 };
-
-async function loadOptional(name: string, file: string) {
-  try {
-    const mod = await import(/* @vite-ignore */ file);
-    mocks[name] = mod[name];
-  } catch {
-    /* mock not written yet */
-  }
-}
-await loadOptional("mock2", "../../../prisma/patwari/mock2");
-await loadOptional("mock3", "../../../prisma/patwari/mock3");
 
 const firstNumber = (s: string) => {
   const m = s.match(/-?\d[\d,]*\.?\d*/);
   return m ? Number(m[0].replaceAll(",", "")) : NaN;
 };
 
-describe.each(Object.entries(mocks))("HP Patwari %s", (_name, raw) => {
-  const qs = balanceAnswers(raw);
+const topics = new Set(taxonomy.flatMap((s) => s.topics.map(([slug]) => `${s.slug}/${slug}`)));
 
-  it("has 100 questions split by section", () => {
-    expect(qs).toHaveLength(100);
-    SECTIONS.forEach((sec, i) => expect(qs.filter((x) => x.s === i), sec.name).toHaveLength(sec.count));
+describe("HP Patwari series", () => {
+  it("has 3 full mocks and 14 subject tests with unique slugs", () => {
+    expect(PATWARI_TESTS.filter((t) => t.type === "MOCK")).toHaveLength(3);
+    expect(PATWARI_TESTS.filter((t) => t.type === "SECTIONAL")).toHaveLength(14);
+    expect(new Set(PATWARI_TESTS.map((t) => t.slug)).size).toBe(PATWARI_TESTS.length);
   });
 
-  it("keeps questions grouped by section in order", () => {
-    const order = qs.map((x) => x.s);
-    expect(order).toEqual([...order].sort((a, b) => a - b));
+  it("has no duplicate questions anywhere in the series", () => {
+    const hashes = PATWARI_TESTS.flatMap((t) => t.questions.map((x) => questionTextHash(x.en[0])));
+    expect(new Set(hashes).size).toBe(hashes.length);
+  });
+
+  it("only uses subjects and topics that exist in the seeded taxonomy", () => {
+    for (const t of PATWARI_TESTS) {
+      for (const x of t.questions) expect(topics.has(`${x.subject}/${x.topic}`), `${t.slug}: ${x.subject}/${x.topic}`).toBe(true);
+    }
+  });
+});
+
+describe.each(PATWARI_TESTS.map((t) => [t.slug, t] as const))("%s", (_slug, def) => {
+  const qs = balanceAnswers(def.questions);
+  const mock = def.type === "MOCK";
+
+  it("has the right number of questions per section", () => {
+    if (mock) {
+      expect(qs).toHaveLength(100);
+      SECTIONS.forEach((sec, i) => expect(qs.filter((x) => x.s === i), sec.name).toHaveLength(sec.count));
+      const order = qs.map((x) => x.s);
+      expect(order).toEqual([...order].sort((a, b) => a - b));
+    } else {
+      expect(qs).toHaveLength(25);
+      expect(def.sections).toHaveLength(1);
+      expect(qs.every((x) => x.s === 0)).toBe(true);
+    }
   });
 
   it("has 4 distinct options per language and a valid answer", () => {
@@ -50,24 +63,26 @@ describe.each(Object.entries(mocks))("HP Patwari %s", (_name, raw) => {
 
   it("balancing keeps the correct option's text unchanged in both languages", () => {
     qs.forEach((x, i) => {
-      expect(x.en[1][x.a], `#${i + 1}`).toBe(raw[i].en[1][raw[i].a]);
-      expect(x.hi[1][x.a], `#${i + 1}`).toBe(raw[i].hi[1][raw[i].a]);
+      expect(x.en[1][x.a], `#${i + 1}`).toBe(def.questions[i].en[1][def.questions[i].a]);
+      expect(x.hi[1][x.a], `#${i + 1}`).toBe(def.questions[i].hi[1][def.questions[i].a]);
     });
   });
 
   it("does not put the correct answer in one position too often", () => {
     const counts = [0, 1, 2, 3].map((p) => qs.filter((x) => x.a === p).length);
+    const [min, max] = mock ? [15, 35] : [3, 10];
     counts.forEach((c) => {
-      expect(c).toBeGreaterThanOrEqual(15);
-      expect(c).toBeLessThanOrEqual(35);
+      expect(c).toBeGreaterThanOrEqual(min);
+      expect(c).toBeLessThanOrEqual(max);
     });
   });
 
-  it("is hard-leaning: at least 35% hard and at most 15% easy", () => {
+  it("is exam-level or harder: enough hard questions and few easy ones", () => {
     const hard = qs.filter((x) => x.d === "H").length;
     const easy = qs.filter((x) => x.d === "E").length;
-    expect(hard).toBeGreaterThanOrEqual(35);
-    expect(easy).toBeLessThanOrEqual(15);
+    // Full mocks are the hard-leaning product; subject tests (Hindi, revenue terms) are naturally more medium.
+    expect(hard).toBeGreaterThanOrEqual(qs.length * (mock ? 0.35 : 0.15));
+    expect(easy).toBeLessThanOrEqual(qs.length * 0.15);
   });
 
   it("matches computed answers for maths questions", () => {
@@ -79,9 +94,13 @@ describe.each(Object.entries(mocks))("HP Patwari %s", (_name, raw) => {
   });
 });
 
-describe("HP Patwari series", () => {
-  it("has no duplicate questions across mocks", () => {
-    const hashes = Object.values(mocks).flatMap((qs) => qs.map((x) => questionTextHash(x.en[0])));
-    expect(new Set(hashes).size).toBe(hashes.length);
+describe("HP Patwari maths tests", () => {
+  it("check every numeric answer with a computed expression", () => {
+    for (const t of PATWARI_TESTS.filter((x) => x.slug.includes("-maths-"))) {
+      const numeric = t.questions.filter((x) => !x.en[1].some((o) => Number.isNaN(firstNumber(o))));
+      const unchecked = numeric.filter((x) => !x.chk);
+      // Ratio and "no gain/no loss" style questions have no single number to compute; everything else must.
+      expect(unchecked.length, `${t.slug}: ${unchecked.map((x) => x.en[0].slice(0, 40)).join(" | ")}`).toBeLessThanOrEqual(3);
+    }
   });
 });

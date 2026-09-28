@@ -42,7 +42,7 @@ export function q(
 }
 
 // Options that only make sense in a fixed position ("Both I and II", "None of these", …) must not be moved.
-const FIXED_ORDER = /\b(both|neither|none|all of|only|same|no change|either)\b/i;
+const FIXED_ORDER = /\b(both|neither|none|all of|only|same|no change|no error|either)\b/i;
 
 /**
  * Spreads the correct answer evenly over A–D. Moves options only in questions where the order does not
@@ -73,3 +73,15 @@ export function balanceAnswers(questions: PatwariQuestion[]): PatwariQuestion[] 
   });
   return out;
 }
+
+/** One test to seed: a full mock (six sections) or a single-subject sectional test. */
+export type TestDef = {
+  slug: string;
+  title: string;
+  titleHi: string;
+  type: "MOCK" | "SECTIONAL";
+  durationSec: number;
+  instructions: string;
+  sections: { name: string; nameHi: string }[];
+  questions: PatwariQuestion[];
+};

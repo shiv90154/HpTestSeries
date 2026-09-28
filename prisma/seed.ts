@@ -10,6 +10,7 @@ import { PrismaClient } from "../src/generated/prisma/client";
 import { seedContent } from "./seed-content";
 import { DEMO_TEST_SLUG, seedDemoTest } from "./seed-demo";
 import { seedPatwari } from "./seed-patwari";
+import { taxonomy } from "./taxonomy";
 
 const db = new PrismaClient({ adapter: new PrismaPg({ connectionString: process.env.DATABASE_URL }) });
 
@@ -90,118 +91,6 @@ const descriptions: Record<string, string> = {
   "hp-revenue/patwari":
     "Patwari posts in Himachal Pradesh are filled through a written objective examination as per the recruitment notification. General knowledge, Himachal GK, reasoning, mathematics and language form the core of the syllabus.",
 };
-
-type SubjectSeed = { slug: string; name: string; nameHi: string; topics: [slug: string, name: string][] };
-
-const taxonomy: SubjectSeed[] = [
-  {
-    slug: "hp-gk",
-    name: "Himachal GK",
-    nameHi: "हिमाचल सामान्य ज्ञान",
-    topics: [
-      ["history", "History of Himachal"],
-      ["geography", "Geography of Himachal"],
-      ["rivers-lakes", "Rivers & Lakes"],
-      ["districts", "Districts"],
-      ["culture-festivals", "Culture, Fairs & Festivals"],
-      ["economy", "Economy of Himachal"],
-      ["polity-administration", "Polity & Administration"],
-      ["personalities", "Famous Personalities"],
-      ["revenue", "Revenue & Land Records"],
-    ],
-  },
-  { slug: "hp-current-affairs", name: "HP Current Affairs", nameHi: "हिमाचल समसामयिकी", topics: [] },
-  {
-    slug: "general-studies",
-    name: "General Studies",
-    nameHi: "सामान्य अध्ययन",
-    topics: [
-      ["indian-history", "Indian History"],
-      ["indian-polity", "Indian Polity"],
-      ["indian-geography", "Indian Geography"],
-      ["indian-economy", "Indian Economy"],
-      ["general-science", "General Science"],
-    ],
-  },
-  {
-    slug: "reasoning",
-    name: "Reasoning",
-    nameHi: "तर्कशक्ति",
-    topics: [
-      ["series", "Series"],
-      ["coding-decoding", "Coding-Decoding"],
-      ["blood-relations", "Blood Relations"],
-      ["syllogism", "Syllogism"],
-      ["puzzles", "Puzzles & Seating"],
-      ["direction-sense", "Direction Sense"],
-      ["ranking", "Ranking & Order"],
-      ["analogy", "Analogy"],
-      ["odd-one-out", "Odd One Out"],
-      ["clock-calendar", "Clock & Calendar"],
-    ],
-  },
-  {
-    slug: "quant",
-    name: "Quantitative Aptitude",
-    nameHi: "गणित",
-    topics: [
-      ["number-system", "Number System"],
-      ["percentage", "Percentage"],
-      ["ratio-proportion", "Ratio & Proportion"],
-      ["profit-loss", "Profit & Loss"],
-      ["time-work", "Time & Work"],
-      ["interest", "Simple & Compound Interest"],
-      ["average", "Average"],
-      ["speed-distance", "Speed, Time & Distance"],
-      ["mensuration", "Mensuration"],
-      ["hcf-lcm", "HCF & LCM"],
-      ["simplification", "Simplification"],
-      ["ages", "Ages"],
-    ],
-  },
-  {
-    slug: "english",
-    name: "English",
-    nameHi: "अंग्रेज़ी",
-    topics: [
-      ["grammar", "Grammar"],
-      ["vocabulary", "Vocabulary"],
-      ["comprehension", "Comprehension"],
-    ],
-  },
-  {
-    slug: "hindi",
-    name: "Hindi",
-    nameHi: "हिंदी",
-    topics: [
-      ["vyakaran", "Vyakaran (Grammar)"],
-      ["shabdavali", "Shabdavali (Vocabulary)"],
-    ],
-  },
-  {
-    slug: "computer",
-    name: "Computer",
-    nameHi: "कंप्यूटर",
-    topics: [
-      ["fundamentals", "Computer Fundamentals"],
-      ["ms-office", "MS Office"],
-      ["internet-networking", "Internet & Networking"],
-      ["operating-systems", "Operating Systems"],
-      ["dbms", "DBMS"],
-      ["programming-basics", "Programming Basics"],
-    ],
-  },
-  {
-    slug: "pedagogy",
-    name: "Child Development & Pedagogy",
-    nameHi: "बाल विकास एवं शिक्षाशास्त्र",
-    topics: [
-      ["child-development", "Child Development"],
-      ["learning-theories", "Learning Theories"],
-      ["inclusive-education", "Inclusive Education"],
-    ],
-  },
-];
 
 async function main() {
   for (const [bi, body] of catalogue.entries()) {
