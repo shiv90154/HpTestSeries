@@ -8,6 +8,8 @@ import {
   duplicateTest,
   publishTest,
   randomPick,
+  restoreTest,
+  retireTest,
   saveTestStructure,
   searchBank,
   unpublishTest,
@@ -54,9 +56,10 @@ export async function saveTestStructureAction(id: string, raw: unknown): Promise
   return res;
 }
 
-export async function publishTestAction(id: string): Promise<Result> {
+/** Publishes now, or schedules the release when `at` (an ISO time) is given. */
+export async function publishTestAction(id: string, at?: string): Promise<Result> {
   const user = await requirePermission("content:publish");
-  const res = await publishTest(id, user.id);
+  const res = await publishTest(id, user.id, at ? new Date(at) : undefined);
   if (res.ok) refreshPublicPages();
   return res.ok ? { ok: true } : res;
 }
@@ -64,6 +67,20 @@ export async function publishTestAction(id: string): Promise<Result> {
 export async function unpublishTestAction(id: string): Promise<Result> {
   const user = await requirePermission("content:publish");
   const res = await unpublishTest(id, user.id);
+  if (res.ok) refreshPublicPages();
+  return res;
+}
+
+export async function retireTestAction(id: string): Promise<Result> {
+  const user = await requirePermission("content:publish");
+  const res = await retireTest(id, user.id);
+  if (res.ok) refreshPublicPages();
+  return res;
+}
+
+export async function restoreTestAction(id: string): Promise<Result> {
+  const user = await requirePermission("content:publish");
+  const res = await restoreTest(id, user.id);
   if (res.ok) refreshPublicPages();
   return res;
 }

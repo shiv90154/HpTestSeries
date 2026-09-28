@@ -3,6 +3,7 @@ import { cache } from "react";
 import { db } from "@/lib/db";
 import { Prisma } from "@/generated/prisma/client";
 import { examLabel } from "@/modules/catalog/queries";
+import { liveTestWhere, resultVisibleStatuses } from "@/modules/catalog/visibility";
 import { canAccessTest } from "@/modules/commerce/access";
 import { getBuyOptionForSeries } from "@/modules/commerce/product-service";
 import { demoDurationSec, planDemo } from "./demo";
@@ -38,8 +39,14 @@ const fullTestInclude = {
 
 type FullTest = Prisma.TestGetPayload<{ include: typeof fullTestInclude }>;
 
+/** A test students can see and start right now (published, scheduled time reached). */
 const loadFullTest = cache(async (slug: string): Promise<FullTest | null> =>
-  db.test.findFirst({ where: { slug, status: "PUBLISHED" }, include: fullTestInclude }),
+  db.test.findFirst({ where: { slug, ...liveTestWhere() }, include: fullTestInclude }),
+);
+
+/** For finishing and viewing attempts: also a test retired after students took it. */
+const loadTestForResults = cache(async (slug: string): Promise<FullTest | null> =>
+  db.test.findFirst({ where: { slug, status: { in: [...resultVisibleStatuses] } }, include: fullTestInclude }),
 );
 
 function bilingual(rows: { lang: string; text?: string; stem?: string; explanation?: string | null }[], key: "text" | "stem" | "explanation"): Bilingual {
@@ -437,7 +444,7 @@ export async function submitAttempt(
   if (!attempt) return { error: "Attempt not found." };
   if (attempt.status !== "IN_PROGRESS") return { ok: true }; // already submitted (double submit / retry)
 
-  const t = await loadFullTest(attempt.test.slug);
+  const t = await loadTestForResults(attempt.test.slug);
   if (!t) return { error: "Test not found." };
 
   // After the deadline (plus grace) only the last autosave counts — answers can't be changed late.
@@ -460,7 +467,7 @@ export async function getAttemptResult(userId: string, attemptId: string): Promi
     include: { test: { select: { slug: true } } },
   });
   if (!attempt) return null;
-  const t = await loadFullTest(attempt.test.slug);
+  const t = await loadTestForResults(attempt.test.slug);
   if (!t) return null;
   const answers = attempt.answers as SubmittedAnswers;
   // Re-grading from stored answers keeps results correct after an erratum fix.
@@ -549,7 +556,7 @@ async function topAttempts(testId: string, userId: string): Promise<LeaderboardR
 
 /** A published test in the same exam the student hasn't attempted yet (free ones first), else any such test. */
 async function nextTestFor(userId: string, t: FullTest): Promise<ResultData["nextTest"]> {
-  const base = { status: "PUBLISHED" as const, id: { not: t.id }, attempts: { none: { userId } } };
+  const base = { ...liveTestWhere(), id: { not: t.id }, attempts: { none: { userId } } };
   const select = { slug: true, title: true, isFree: true } as const;
   const orderBy = [{ isFree: "desc" as const }, { publishedAt: "asc" as const }];
   return (

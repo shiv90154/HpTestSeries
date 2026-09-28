@@ -1,6 +1,7 @@
 import "server-only";
 import { cache } from "react";
 import { db } from "@/lib/db";
+import { liveTestWhere } from "@/modules/catalog/visibility";
 import { validateProduct, type ProductInput } from "./product-input";
 
 type Fail = { ok: false; errors: string[] };
@@ -58,7 +59,7 @@ export const getProductForSale = cache(async (slug: string) => {
             select: {
               title: true,
               exam: { select: { name: true, body: { select: { slug: true } } } },
-              _count: { select: { tests: { where: { test: { status: "PUBLISHED" } } } } },
+              _count: { select: { tests: { where: { test: liveTestWhere() } } } },
             },
           },
         },
@@ -67,7 +68,7 @@ export const getProductForSale = cache(async (slug: string) => {
   });
   if (!product || !product.isActive) return null;
   // A pass covers every paid test, so there are no ProductItem rows to list.
-  const paidTestCount = product.kind === "PASS" ? await db.test.count({ where: { status: "PUBLISHED", isFree: false } }) : 0;
+  const paidTestCount = product.kind === "PASS" ? await db.test.count({ where: { ...liveTestWhere(), isFree: false } }) : 0;
   return {
     ...product,
     paidTestCount,

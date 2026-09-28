@@ -3,6 +3,7 @@
 import { ArrowDown, ArrowUp, Plus, Shuffle, Trash2, X } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState, useTransition } from "react";
+import { FREE_MOCK_SLUG } from "@/lib/site";
 import type { Taxonomy } from "@/modules/content/taxonomy";
 import type { BankQuestion, BuilderSection } from "@/modules/content/test-service";
 import { ErrorList, StatusBadge, input as inputCls, label as labelCls, panel } from "../ui";
@@ -11,6 +12,8 @@ import {
   duplicateTestAction,
   publishTestAction,
   randomPickAction,
+  restoreTestAction,
+  retireTestAction,
   saveTestStructureAction,
   searchBankAction,
   unpublishTestAction,
@@ -21,6 +24,8 @@ type Props = {
   slug: string;
   status: string;
   attempts: number;
+  /** set when the test is published with a future release time */
+  scheduledFor: Date | null;
   initialSections: BuilderSection[];
   taxonomy: Taxonomy;
   canPublish: boolean;
@@ -42,7 +47,7 @@ const emptyFilters: Filters = { q: "", subjectId: "", topicId: "", difficulty: "
 const small = "rounded-lg border border-border bg-surface px-3 py-1.5 text-sm font-medium hover:border-primary disabled:opacity-50";
 const iconBtn = "flex size-8 items-center justify-center rounded-lg text-muted hover:bg-surface-muted hover:text-foreground disabled:opacity-30";
 
-export function TestBuilder({ id, slug, status, attempts, initialSections, taxonomy, canPublish }: Props) {
+export function TestBuilder({ id, slug, status, attempts, scheduledFor, initialSections, taxonomy, canPublish }: Props) {
   const router = useRouter();
   const [sections, setSections] = useState(initialSections);
   const [dirty, setDirty] = useState(false);
@@ -55,6 +60,7 @@ export function TestBuilder({ id, slug, status, attempts, initialSections, taxon
   const [ticked, setTicked] = useState<Set<string>>(new Set());
   const [target, setTarget] = useState(0);
   const [randomCount, setRandomCount] = useState(10);
+  const [scheduleAt, setScheduleAt] = useState<string | null>(null); // datetime-local value while picking a release time
 
   const editable = status === "DRAFT";
   const inTest = useMemo(() => new Set(sections.flatMap((s) => s.questions.map((q) => q.id))), [sections]);
@@ -152,7 +158,13 @@ export function TestBuilder({ id, slug, status, attempts, initialSections, taxon
     <div className="space-y-5">
       {/* Summary + lifecycle */}
       <div className={`${panel} flex flex-wrap items-center gap-3`}>
-        <StatusBadge status={status} />
+        {scheduledFor ? (
+          <span className="inline-block rounded-md bg-accent-soft px-2 py-0.5 text-xs font-semibold text-accent-strong">
+            scheduled · {scheduledFor.toLocaleString("en-IN", { timeZone: "Asia/Kolkata", dateStyle: "medium", timeStyle: "short" })}
+          </span>
+        ) : (
+          <StatusBadge status={status === "ARCHIVED" ? "RETIRED" : status} />
+        )}
         <span className="text-sm">
           <b>{sections.length}</b> section{sections.length === 1 ? "" : "s"} · <b>{totalQs}</b> questions · <b>{totalMarks}</b> marks
           {attempts > 0 && <> · {attempts.toLocaleString("en-IN")} attempts</>}
@@ -165,22 +177,42 @@ export function TestBuilder({ id, slug, status, attempts, initialSections, taxon
             </button>
           )}
           {canPublish && editable && (
-            <button
-              type="button"
-              disabled={pending || dirty}
-              title={dirty ? "Save changes first" : undefined}
-              onClick={() => run(() => publishTestAction(id), "Published. Students can see it now.")}
-              className="rounded-lg bg-success px-4 py-1.5 text-sm font-medium text-white disabled:opacity-50"
-            >
-              Publish
-            </button>
+            <>
+              <button
+                type="button"
+                disabled={pending || dirty}
+                title={dirty ? "Save changes first" : undefined}
+                onClick={() => run(() => publishTestAction(id), "Published. Students can see it now.")}
+                className="rounded-lg bg-success px-4 py-1.5 text-sm font-medium text-white disabled:opacity-50"
+              >
+                Publish
+              </button>
+              <button type="button" disabled={pending || dirty} onClick={() => setScheduleAt(scheduleAt === null ? "" : null)} className={small}>
+                Schedule…
+              </button>
+            </>
           )}
-          {status === "PUBLISHED" && (
+          {canPublish && scheduledFor && (
+            <>
+              <button
+                type="button"
+                disabled={pending}
+                onClick={() => run(() => publishTestAction(id), "Released. Students can see it now.")}
+                className="rounded-lg bg-success px-4 py-1.5 text-sm font-medium text-white disabled:opacity-50"
+              >
+                Release now
+              </button>
+              <button type="button" disabled={pending} onClick={() => run(() => unpublishTestAction(id), "Schedule cancelled. It is a draft again.")} className={small}>
+                Cancel schedule
+              </button>
+            </>
+          )}
+          {status === "PUBLISHED" && !scheduledFor && (
             <a href={`/tests/${slug}`} target="_blank" className={small}>
               View live ↗
             </a>
           )}
-          {canPublish && status === "PUBLISHED" && (
+          {canPublish && status === "PUBLISHED" && !scheduledFor && attempts === 0 && (
             <button
               type="button"
               disabled={pending}
@@ -188,6 +220,28 @@ export function TestBuilder({ id, slug, status, attempts, initialSections, taxon
               className={small}
             >
               Unpublish
+            </button>
+          )}
+          {canPublish && status === "PUBLISHED" && !scheduledFor && attempts > 0 && (
+            <button
+              type="button"
+              disabled={pending}
+              onClick={() =>
+                confirm(
+                  `Retire this test? Students won't see it or be able to start it, but their past results stay available.${
+                    slug === FREE_MOCK_SLUG ? "\n\nWARNING: this is the site's featured free mock — the Free Mock links in the header, footer and home page will stop working. Change FREE_MOCK_SLUG first." : ""
+                  }`,
+                ) &&
+                run(() => retireTestAction(id), "Retired. It is hidden from students; past results still open.")
+              }
+              className={small}
+            >
+              Retire
+            </button>
+          )}
+          {canPublish && status === "ARCHIVED" && (
+            <button type="button" disabled={pending} onClick={() => run(() => restoreTestAction(id), "Restored. Students can see it again.")} className={small}>
+              Restore
             </button>
           )}
           <button
@@ -224,9 +278,39 @@ export function TestBuilder({ id, slug, status, attempts, initialSections, taxon
         </div>
       </div>
 
+      {scheduleAt !== null && editable && (
+        <div className={`${panel} flex flex-wrap items-end gap-3`}>
+          <div>
+            <label className={labelCls} htmlFor="schedule-at">
+              Release on (your local time)
+            </label>
+            <input id="schedule-at" type="datetime-local" className={inputCls} value={scheduleAt} onChange={(e) => setScheduleAt(e.target.value)} />
+          </div>
+          <button
+            type="button"
+            disabled={pending || !scheduleAt}
+            onClick={() =>
+              run(
+                () => publishTestAction(id, new Date(scheduleAt).toISOString()),
+                "Scheduled. It goes live at the chosen time (public pages refresh within about 10 minutes).",
+                () => setScheduleAt(null),
+              )
+            }
+            className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground disabled:opacity-50"
+          >
+            Schedule release
+          </button>
+          <p className="basis-full text-xs text-muted">Students can&apos;t see or start the test before then. The test is locked for editing once scheduled.</p>
+        </div>
+      )}
+
       {!editable && (
         <p className="rounded-xl border border-border bg-surface-muted p-3 text-sm text-muted">
-          Questions and sections of a published test are locked. {attempts > 0 ? "Duplicate it to make a new version." : "Unpublish it to make changes."}
+          {status === "ARCHIVED"
+            ? "This test is retired: students can't see or start it, but their past results still open. Restore it to make it live again."
+            : scheduledFor
+              ? "Questions and sections of a scheduled test are locked. Cancel the schedule to make changes."
+              : `Questions and sections of a published test are locked. ${attempts > 0 ? "Duplicate it to make a new version, or retire it to hide it." : "Unpublish it to make changes."}`}
         </p>
       )}
       <ErrorList errors={errors} />

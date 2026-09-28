@@ -4,6 +4,7 @@ import { db } from "@/lib/db";
 import type { PostCategory } from "@/generated/prisma/enums";
 import { planDemo } from "@/modules/assessment/demo";
 import { parseFaqs, parsePattern, parseSeo } from "@/modules/content/exam-content";
+import { liveTestWhere } from "./visibility";
 
 export type CatalogExam = {
   slug: string;
@@ -37,7 +38,7 @@ export const getCatalog = cache(async (): Promise<CatalogBody[]> => {
           name: true,
           nameHi: true,
           description: true,
-          _count: { select: { tests: { where: { status: "PUBLISHED" } } } },
+          _count: { select: { tests: { where: liveTestWhere() } } },
         },
       },
     },
@@ -77,7 +78,7 @@ export type PublicTest = {
 export async function getPublishedTests(filter: { examId?: string | null } = {}): Promise<PublicTest[]> {
   const tests = await db.test.findMany({
     where: {
-      status: "PUBLISHED",
+      ...liveTestWhere(),
       ...(filter.examId !== undefined && { OR: [{ examId: filter.examId }, { examId: null }] }),
     },
     orderBy: [{ isFree: "desc" }, { publishedAt: "desc" }],

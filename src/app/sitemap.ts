@@ -3,6 +3,7 @@ import { db } from "@/lib/db";
 import { LEGAL_LINKS } from "@/lib/business";
 import { site } from "@/lib/site";
 import { getAllExamParams, getAllPostSlugs } from "@/modules/catalog/queries";
+import { liveTestWhere } from "@/modules/catalog/visibility";
 import { CATEGORY_META } from "@/modules/content/post-input";
 
 export const revalidate = 3600;
@@ -10,7 +11,7 @@ export const revalidate = 3600;
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const [exams, tests, posts] = await Promise.all([
     getAllExamParams(),
-    db.test.findMany({ where: { status: "PUBLISHED" }, select: { slug: true, updatedAt: true } }),
+    db.test.findMany({ where: liveTestWhere(), select: { slug: true, updatedAt: true } }),
     getAllPostSlugs(),
   ]);
   const latestPost = posts.reduce<Date | undefined>((d, p) => (!d || p.updatedAt > d ? p.updatedAt : d), undefined);

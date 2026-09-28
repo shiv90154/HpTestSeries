@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { connection } from "next/server";
+import { isScheduled } from "@/modules/catalog/visibility";
 import { getTaxonomy } from "@/modules/content/taxonomy";
 import { getTestForBuilder } from "@/modules/content/test-service";
 import { can } from "@/modules/identity/permissions";
@@ -19,7 +20,8 @@ export default async function EditTestPage({ params }: PageProps<"/admin/tests/[
   const [t, taxonomy] = await Promise.all([getTestForBuilder(id), getTaxonomy()]);
   if (!t) notFound();
   const canPublish = can(user.role, "content:publish");
-  const published = t.status === "PUBLISHED";
+  // Scheduled and retired tests count as published here: their URL is public and their questions are locked.
+  const published = t.status !== "DRAFT";
 
   return (
     <div className="space-y-6">
@@ -54,6 +56,7 @@ export default async function EditTestPage({ params }: PageProps<"/admin/tests/[
         slug={t.meta.slug}
         status={t.status}
         attempts={t.attempts}
+        scheduledFor={isScheduled(t.status, t.publishedAt) ? t.publishedAt : null}
         initialSections={t.sections}
         taxonomy={taxonomy}
         canPublish={canPublish}

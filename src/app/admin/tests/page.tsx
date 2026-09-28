@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { connection } from "next/server";
+import { isScheduled } from "@/modules/catalog/visibility";
 import { TYPE_LABEL } from "@/modules/content/test-input";
 import { listTests } from "@/modules/content/test-service";
 import { requirePermission } from "@/modules/identity/session";
@@ -37,7 +38,7 @@ export default async function TestsAdminPage() {
                   {t.title}
                 </Link>
                 <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted">
-                  <StatusBadge status={t.status} />
+                  <StatusBadge status={isScheduled(t.status, t.publishedAt) ? "SCHEDULED" : t.status === "ARCHIVED" ? "RETIRED" : t.status} />
                   <span>{TYPE_LABEL[t.type]}</span>
                   <span>{t.exam?.name ?? "Common"}</span>
                   <span>{t.isFree ? "Free" : "Paid"}</span>

@@ -106,6 +106,7 @@ export async function listTests() {
       title: true,
       type: true,
       status: true,
+      publishedAt: true,
       isFree: true,
       demoPercent: true,
       durationSec: true,
@@ -260,7 +261,17 @@ export async function saveTestStructure(id: string, raw: unknown, actorId: strin
   return { ok: true };
 }
 
-export async function publishTest(id: string, actorId: string): Promise<{ ok: true; slug: string } | Fail> {
+/** Latest a release can be scheduled ahead. */
+const MAX_SCHEDULE_DAYS = 365;
+
+/**
+ * Publishes a draft now, or at `at` (a scheduled release: status PUBLISHED with a future publishedAt, which
+ * the public queries treat as not live yet — see modules/catalog/visibility.ts).
+ */
+export async function publishTest(id: string, actorId: string, at?: Date): Promise<{ ok: true; slug: string } | Fail> {
+  const now = new Date();
+  if (at && (Number.isNaN(at.getTime()) || at <= now)) return { ok: false, errors: ["Pick a release time in the future"] };
+  if (at && at.getTime() - now.getTime() > MAX_SCHEDULE_DAYS * 86_400_000) return { ok: false, errors: ["Releases can be scheduled up to a year ahead"] };
   const t = await db.test.findUnique({
     where: { id },
     select: {
@@ -301,9 +312,35 @@ export async function publishTest(id: string, actorId: string): Promise<{ ok: tr
     })),
   );
   if (problems.length) return { ok: false, errors: problems };
-  await db.test.update({ where: { id }, data: { status: "PUBLISHED", publishedAt: t.publishedAt ?? new Date() } });
-  await db.auditLog.create({ data: { actorId, entity: "test", entityId: id, action: "publish" } });
+  // A draft can be published or scheduled; a scheduled test can be released early ("publish now").
+  const scheduled = t.status === "PUBLISHED" && !!t.publishedAt && t.publishedAt > now;
+  if (t.status !== "DRAFT" && !(scheduled && !at)) return { ok: false, errors: ["This test is already live"] };
+  // Re-publishing keeps the original date (it orders "latest tests"), unless that date is a cancelled schedule.
+  const publishedAt = at ?? (t.publishedAt && t.publishedAt <= now ? t.publishedAt : now);
+  await db.test.update({ where: { id }, data: { status: "PUBLISHED", publishedAt } });
+  await db.auditLog.create({
+    data: { actorId, entity: "test", entityId: id, action: at ? "schedule" : "publish", ...(at && { diff: { at: at.toISOString() } }) },
+  });
   return { ok: true, slug: t.slug };
+}
+
+/**
+ * Hides a live test that students have already taken (it can't go back to draft: their results need it).
+ * Retired tests leave every list and can't be started; past results still open.
+ */
+export async function retireTest(id: string, actorId: string): Promise<{ ok: true } | Fail> {
+  const res = await db.test.updateMany({ where: { id, status: "PUBLISHED" }, data: { status: "ARCHIVED" } });
+  if (res.count === 0) return { ok: false, errors: ["Only a published test can be retired"] };
+  await db.auditLog.create({ data: { actorId, entity: "test", entityId: id, action: "retire" } });
+  return { ok: true };
+}
+
+/** Puts a retired test back live. */
+export async function restoreTest(id: string, actorId: string): Promise<{ ok: true } | Fail> {
+  const res = await db.test.updateMany({ where: { id, status: "ARCHIVED" }, data: { status: "PUBLISHED" } });
+  if (res.count === 0) return { ok: false, errors: ["Only a retired test can be restored"] };
+  await db.auditLog.create({ data: { actorId, entity: "test", entityId: id, action: "restore" } });
+  return { ok: true };
 }
 
 export async function unpublishTest(id: string, actorId: string): Promise<{ ok: true } | Fail> {
@@ -312,7 +349,7 @@ export async function unpublishTest(id: string, actorId: string): Promise<{ ok: 
   if (t._count.attempts > 0) {
     return {
       ok: false,
-      errors: [`${t._count.attempts} attempt(s) exist, so this test must stay live for their results. Duplicate it to make a new version.`],
+      errors: [`${t._count.attempts} attempt(s) exist, so it can't go back to draft. Retire it to hide it from students (their results stay), or duplicate it to make a new version.`],
     };
   }
   await db.test.update({ where: { id }, data: { status: "DRAFT" } });

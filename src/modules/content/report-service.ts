@@ -11,7 +11,8 @@ export async function submitQuestionReport(userId: string, raw: unknown): Promis
 
   // Only questions students can actually see (in a live test) can be reported.
   const [question, recent, existing] = await Promise.all([
-    db.question.findFirst({ where: { id: questionId, testQuestions: { some: { test: { status: "PUBLISHED" } } } }, select: { id: true } }),
+    // Retired tests included: students still open those results and may spot a mistake.
+    db.question.findFirst({ where: { id: questionId, testQuestions: { some: { test: { status: { in: ["PUBLISHED", "ARCHIVED"] } } } } }, select: { id: true } }),
     db.questionReport.count({ where: { userId, createdAt: { gt: new Date(Date.now() - 24 * 3600 * 1000) } } }),
     db.questionReport.findFirst({ where: { userId, questionId, status: "OPEN" }, select: { id: true } }),
   ]);

@@ -15,6 +15,8 @@ const statusStyle: Record<string, string> = {
   IN_REVIEW: "bg-accent-soft text-accent-strong",
   PUBLISHED: "bg-success-soft text-success",
   ARCHIVED: "bg-danger-soft text-danger",
+  RETIRED: "bg-surface-muted text-muted", // a test hidden after students took it
+  SCHEDULED: "bg-accent-soft text-accent-strong",
   // Order status
   CREATED: "bg-surface-muted text-muted",
   PAID: "bg-success-soft text-success",
