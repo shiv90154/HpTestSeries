@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { RichContent } from "@/components/rich-content";
 import type { Bilingual, ResultData } from "@/modules/assessment/types";
+import { writeLangPref } from "@/lib/lang-pref";
 import { rupees } from "@/lib/money";
 import { site } from "@/lib/site";
 import { ReportQuestion } from "./report-question";
@@ -24,9 +25,26 @@ function duration(sec: number): string {
   return m ? `${m}m ${s}s` : `${s}s`;
 }
 
-/** isGuest: result not saved to an account. loggedIn: can report questions (a guest may log in afterwards). */
-export function ResultView({ data, isGuest, loggedIn = !isGuest }: { data: ResultData; isGuest: boolean; loggedIn?: boolean }) {
-  const [lang, setLang] = useState<Lang>("en");
+/**
+ * isGuest: result not saved to an account. loggedIn: can report questions (a guest may log in afterwards).
+ * defaultLang: the student's profile language, or a guest's last pick on this device.
+ */
+export function ResultView({
+  data,
+  isGuest,
+  loggedIn = !isGuest,
+  defaultLang = "en",
+}: {
+  data: ResultData;
+  isGuest: boolean;
+  loggedIn?: boolean;
+  defaultLang?: Lang;
+}) {
+  const [lang, setLangState] = useState<Lang>(defaultLang);
+  const setLang = (l: Lang) => {
+    setLangState(l);
+    if (isGuest) writeLangPref(l);
+  };
   const [filter, setFilter] = useState<Filter>("all");
   const hasHindi = data.questions.some((q) => q.stem.hi);
 

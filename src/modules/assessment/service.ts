@@ -99,6 +99,12 @@ export async function getTestMeta(slug: string) {
   };
 }
 
+/** Admin "view as student": the paper of a test in any status, drafts included. */
+export async function getPreviewPaper(testId: string): Promise<Paper | null> {
+  const t = await db.test.findUnique({ where: { id: testId }, include: fullTestInclude });
+  return t ? getPaper(t.slug, t) : null;
+}
+
 export async function getPaper(slug: string, override?: FullTest): Promise<Paper | null> {
   const t = override ?? (await loadFullTest(slug));
   if (!t) return null;

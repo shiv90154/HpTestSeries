@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
 import { canUserAccessTest, getDemoPaper, getTestMeta } from "@/modules/assessment/service";
-import { getCurrentUser } from "@/modules/identity/session";
+import { getCurrentUser, getPreferredLang } from "@/modules/identity/session";
 import { Cbt } from "../attempt/cbt";
 
 export const metadata: Metadata = { title: "Free demo", robots: { index: false, follow: false } };
@@ -15,7 +15,7 @@ export default async function DemoPage({ params }: PageProps<"/tests/[slug]/demo
   // Free tests, and paid tests the user already owns, go straight to the real thing.
   if (meta.isFree || (await canUserAccessTest(user?.id ?? null, meta))) redirect(`/tests/${slug}/attempt`);
 
-  const paper = await getDemoPaper(slug);
+  const [paper, defaultLang] = await Promise.all([getDemoPaper(slug), user ? getPreferredLang(user.id) : undefined]);
   if (!paper) redirect(`/tests/${slug}`);
-  return <Cbt paper={paper} candidate={user ? { name: user.name } : null} />;
+  return <Cbt paper={paper} candidate={user ? { name: user.name } : null} defaultLang={defaultLang} />;
 }

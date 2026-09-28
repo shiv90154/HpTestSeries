@@ -2,6 +2,7 @@ import "server-only";
 import { headers } from "next/headers";
 import { notFound, redirect } from "next/navigation";
 import { cache } from "react";
+import { db } from "@/lib/db";
 import { auth } from "./auth";
 import { can, type Permission, type Role } from "./permissions";
 
@@ -25,6 +26,15 @@ export const getCurrentUser = cache(async (): Promise<CurrentUser | null> => {
     phoneNumber: u.phoneNumber ?? null,
     role: u.role ?? "STUDENT",
   };
+});
+
+/**
+ * The student's question language from their profile. Read from the DB, not the session: the session
+ * cookie caches user fields for minutes, and a just-changed preference should apply to the next test.
+ */
+export const getPreferredLang = cache(async (userId: string): Promise<"en" | "hi"> => {
+  const u = await db.user.findUnique({ where: { id: userId }, select: { preferredLang: true } });
+  return u?.preferredLang ?? "en";
 });
 
 /** Use in pages/actions that need a signed-in student. */

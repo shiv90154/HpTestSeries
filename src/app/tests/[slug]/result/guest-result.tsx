@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useSyncExternalStore } from "react";
 import { ResultView } from "@/components/result-view";
 import { btn } from "@/components/ui";
+import { readLangPref } from "@/lib/lang-pref";
 import type { ResultData } from "@/modules/assessment/types";
 
 // Guest results live only in this browser tab (sessionStorage); nothing is stored on the server.
@@ -34,5 +35,5 @@ export function GuestResult({ slug, loggedIn }: { slug: string; loggedIn: boolea
       </main>
     );
   }
-  return <ResultView data={JSON.parse(raw) as ResultData} isGuest loggedIn={loggedIn} />;
+  return <ResultView data={JSON.parse(raw) as ResultData} isGuest loggedIn={loggedIn} defaultLang={readLangPref() ?? undefined} />;
 }

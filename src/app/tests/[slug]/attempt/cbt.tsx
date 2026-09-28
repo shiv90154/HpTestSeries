@@ -1,12 +1,14 @@
 "use client";
 
-import { Clock, Grid3x3, Languages, Lock, LogIn, Maximize, X } from "lucide-react";
+import { Clock, Eye, Grid3x3, Languages, Lock, LogIn, Maximize, WifiOff, X } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import { toast } from "sonner";
 import { track } from "@/components/analytics";
+import { ReportQuestion } from "@/components/report-question";
 import { RichContent } from "@/components/rich-content";
+import { readLangPref, writeLangPref } from "@/lib/lang-pref";
 import { rupees } from "@/lib/money";
 import { useFocusTrap } from "@/lib/use-focus-trap";
 import type { Bilingual, Paper, SubmittedAnswers } from "@/modules/assessment/types";
@@ -32,6 +34,23 @@ type Status = "notVisited" | "notAnswered" | "answered" | "marked" | "answeredMa
 type Stored = { q: Record<string, QState>; cur: number; lang: Lang; deadline?: number; attemptId?: string };
 
 const AUTOSAVE_MS = 30_000;
+/** After time is up, how often a submit that didn't reach the server is retried (also retried on reconnect). */
+const SUBMIT_RETRY_MS = 20_000;
+
+function subscribeOnline(onChange: () => void) {
+  window.addEventListener("online", onChange);
+  window.addEventListener("offline", onChange);
+  return () => {
+    window.removeEventListener("online", onChange);
+    window.removeEventListener("offline", onChange);
+  };
+}
+
+/** A server action that never reached the server (no network) throws a TypeError from fetch. */
+function submitErrorText(err: unknown): string {
+  if (!navigator.onLine || err instanceof TypeError) return "No internet connection.";
+  return err instanceof Error ? err.message : "Submit failed.";
+}
 
 function statusOf(st: QState | undefined): Status {
   if (!st?.v) return "notVisited";
@@ -68,12 +87,27 @@ function writeStored(key: string, value: Stored | null) {
   }
 }
 
-export function Cbt({ paper, candidate }: { paper: Paper; candidate: { name: string } | null }) {
+export function Cbt({
+  paper,
+  candidate,
+  defaultLang,
+  preview,
+}: {
+  paper: Paper;
+  candidate: { name: string } | null;
+  /** The student's profile language; guests fall back to the language they last picked on this device. */
+  defaultLang?: Lang;
+  /** Admin "view as student": nothing is started, saved or submitted, and no anti-cheat tracking. */
+  preview?: { exitHref: string };
+}) {
   const router = useRouter();
   // A demo is stateless like a guest attempt, even when the visitor is logged in: nothing is stored on the
   // server, so it can't use up the "first attempt" that decides their HP rank.
   const demo = paper.demo;
-  const storeKey = `cbt:${paper.slug}:${demo ? "demo" : candidate ? "user" : "guest"}`;
+  const storeKey = `cbt:${paper.slug}:${preview ? "preview" : demo ? "demo" : candidate ? "user" : "guest"}`;
+  // Only a real logged-in attempt talks to the server while the test runs.
+  const serverAttempt = !!candidate && !demo && !preview;
+  const online = useSyncExternalStore(subscribeOnline, () => navigator.onLine, () => true);
 
   const flat = useMemo(
     () =>
@@ -89,7 +123,9 @@ export function Cbt({ paper, candidate }: { paper: Paper; candidate: { name: str
 
   const [phase, setPhase] = useState<"instructions" | "exam" | "submitting">("instructions");
   const [agreed, setAgreed] = useState(false);
-  const [lang, setLang] = useState<Lang>(paper.languages[0] ?? "en");
+  const [lang, setLangState] = useState<Lang>(() =>
+    defaultLang && paper.languages.includes(defaultLang) ? defaultLang : (paper.languages[0] ?? "en"),
+  );
   const [qs, setQs] = useState<Record<string, QState>>({});
   const [cur, setCur] = useState(0);
   const [selection, setSelection] = useState<string | undefined>();
@@ -103,9 +139,15 @@ export function Cbt({ paper, candidate }: { paper: Paper; candidate: { name: str
   const [violations, setViolations] = useState(0);
   const [fullscreenLost, setFullscreenLost] = useState(false);
   const [paywall, setPaywall] = useState<null | "locked" | "finished">(null);
+  /** Last autosave didn't reach the server; cleared by the next successful save. */
+  const [syncFailed, setSyncFailed] = useState(false);
+  /** Time is up but the submit didn't reach the server: stay on the submitting screen and keep retrying. */
+  const [submitIssue, setSubmitIssue] = useState<string | null>(null);
 
   const shownAt = useRef(0); // set when the exam starts
   const dirty = useRef(false);
+  const saving = useRef(false);
+  const qsRef = useRef(qs);
   const submittedRef = useRef(false);
   const violationsRef = useRef(0);
   const leavingRef = useRef(false); // set when leaving for checkout: exiting fullscreen then is not a violation
@@ -119,12 +161,21 @@ export function Cbt({ paper, candidate }: { paper: Paper; candidate: { name: str
 
   const q = flat[cur];
 
-  // Resume a guest attempt after a reload (logged-in attempts resume from the server on start).
+  // Language: the one used in this attempt before a reload wins; guests otherwise get their last pick on this device.
   useEffect(() => {
-    const saved = readStored(storeKey);
+    const saved = readStored(storeKey)?.lang ?? (candidate ? null : readLangPref());
     // eslint-disable-next-line react-hooks/set-state-in-effect -- one-time restore from localStorage
-    if (saved?.lang) setLang(saved.lang);
-  }, [storeKey]);
+    if (saved && paper.languages.includes(saved)) setLangState(saved);
+  }, [storeKey, candidate, paper.languages]);
+
+  function setLang(l: Lang) {
+    setLangState(l);
+    if (!candidate) writeLangPref(l);
+  }
+
+  useEffect(() => {
+    qsRef.current = qs;
+  });
 
   /** Adds time spent on the current question and returns the updated map. */
   const commitTime = useCallback(
@@ -164,19 +215,20 @@ export function Cbt({ paper, candidate }: { paper: Paper; candidate: { name: str
 
   // Tab switch / minimise detection.
   useEffect(() => {
-    if (phase !== "exam") return;
+    if (phase !== "exam" || preview) return;
     const onVisibility = () => {
       if (document.hidden) recordViolation("Tab switch detected — this has been recorded.");
     };
     document.addEventListener("visibilitychange", onVisibility);
     return () => document.removeEventListener("visibilitychange", onVisibility);
-  }, [phase, recordViolation]);
+  }, [phase, preview, recordViolation]);
 
-  // Right-click and copy/cut/paste are disabled during the exam.
+  // Right-click and copy/cut/paste are disabled during the exam (except in the report-a-question form).
   useEffect(() => {
-    if (phase !== "exam") return;
+    if (phase !== "exam" || preview) return;
     const block = (e: Event) => e.preventDefault();
     const onCopyLike = (e: Event) => {
+      if (e.target instanceof Element && e.target.closest("[data-allow-paste]")) return;
       e.preventDefault();
       recordViolation("Copying is not allowed during the test.");
     };
@@ -190,11 +242,11 @@ export function Cbt({ paper, candidate }: { paper: Paper; candidate: { name: str
       document.removeEventListener("cut", onCopyLike);
       document.removeEventListener("paste", onCopyLike);
     };
-  }, [phase, recordViolation]);
+  }, [phase, preview, recordViolation]);
 
   // Fullscreen enforcement: request it on entering the exam, flag when the student exits it.
   useEffect(() => {
-    if (phase !== "exam") return;
+    if (phase !== "exam" || preview) return;
     document.documentElement.requestFullscreen?.().catch(() => {});
     const onFullscreenChange = () => {
       const inFullscreen = !!document.fullscreenElement;
@@ -203,7 +255,7 @@ export function Cbt({ paper, candidate }: { paper: Paper; candidate: { name: str
     };
     document.addEventListener("fullscreenchange", onFullscreenChange);
     return () => document.removeEventListener("fullscreenchange", onFullscreenChange);
-  }, [phase, recordViolation]);
+  }, [phase, preview, recordViolation]);
 
   // Persist locally on every change so a reload or dead battery doesn't lose answers.
   useEffect(() => {
@@ -222,6 +274,8 @@ export function Cbt({ paper, candidate }: { paper: Paper; candidate: { name: str
     setSelection(next[target.id].s);
     setPaletteOpen(false);
     dirty.current = true;
+    // Moving to another section is a natural checkpoint: sync now instead of waiting for the timer.
+    if (target.sectionIndex !== q.sectionIndex) void flush(next);
   }
 
   function saveAndNext(mark: boolean) {
@@ -264,7 +318,7 @@ export function Cbt({ paper, candidate }: { paper: Paper; candidate: { name: str
     try {
       let map: Record<string, QState> = {};
       let startAt = 0;
-      if (candidate && !demo) {
+      if (serverAttempt) {
         const res = await startAttemptAction(paper.slug);
         if ("error" in res) throw new Error(res.error);
         setAttemptId(res.attemptId);
@@ -292,7 +346,7 @@ export function Cbt({ paper, candidate }: { paper: Paper; candidate: { name: str
       shownAt.current = Date.now();
       setNow(Date.now());
       setPhase("exam");
-      track(demo ? "demo_start" : "test_start", { test_slug: paper.slug, guest: !candidate });
+      if (!preview) track(demo ? "demo_start" : "test_start", { test_slug: paper.slug, guest: !candidate });
     } catch (err) {
       setError(err instanceof Error ? err.message : "Could not start the test.");
     } finally {
@@ -302,13 +356,24 @@ export function Cbt({ paper, candidate }: { paper: Paper; candidate: { name: str
 
   const submit = useCallback(async () => {
     if (submittedRef.current) return;
+    if (preview) {
+      submittedRef.current = true; // the clock would otherwise call this again every second at time-up
+      setConfirmOpen(false);
+      writeStored(storeKey, null);
+      toast.info("Preview only — nothing was submitted.");
+      router.push(preview.exitHref);
+      return;
+    }
     submittedRef.current = true;
     haptic();
     setConfirmOpen(false);
     setPhase("submitting");
-    const answers = toAnswers(commitTime(qs));
+    // On a retry the clock has already stopped: don't keep adding waiting time to the current question.
+    const map = submitIssue ? qs : commitTime(qs);
+    setQs(map);
+    const answers = toAnswers(map);
     try {
-      if (candidate && attemptId && !demo) {
+      if (serverAttempt && attemptId) {
         const res = await submitAttemptAction(attemptId, answers, violationsRef.current);
         if ("error" in res) throw new Error(res.error);
         track("test_submit", { test_slug: paper.slug, guest: false });
@@ -326,10 +391,17 @@ export function Cbt({ paper, candidate }: { paper: Paper; candidate: { name: str
       }
     } catch (err) {
       submittedRef.current = false;
+      const message = submitErrorText(err);
+      if (deadline !== null && Date.now() >= deadline) {
+        // Time is up: going back to the exam would re-trigger the auto-submit every second. Stay here and
+        // retry on reconnect / on a timer; the answers are also kept in localStorage.
+        setSubmitIssue(message);
+        return;
+      }
       setPhase("exam");
-      toast.error(err instanceof Error ? err.message : "Submit failed. Check your internet and try again.");
+      toast.error(`${message} Your answers are safe — please try submitting again.`);
     }
-  }, [attemptId, candidate, commitTime, demo, paper.slug, qs, router, storeKey, toAnswers]);
+  }, [attemptId, candidate, commitTime, deadline, demo, paper.slug, preview, qs, router, serverAttempt, storeKey, submitIssue, toAnswers]);
 
   // Clock + auto-submit at time up. The interval always calls the latest submit via a ref.
   const submitRef = useRef(submit);
@@ -346,26 +418,58 @@ export function Cbt({ paper, candidate }: { paper: Paper; candidate: { name: str
     return () => clearInterval(id);
   }, [phase, deadline]);
 
-  // Server autosave for logged-in attempts.
+  // Server autosave for logged-in attempts: every AUTOSAVE_MS, and right away when the tab is hidden, the
+  // section changes or the connection comes back. A failed save stays dirty so the next one retries it.
+  const flush = useCallback(async (map?: Record<string, QState>) => {
+    if (!attemptId || !dirty.current || saving.current || submittedRef.current) return;
+    dirty.current = false;
+    saving.current = true;
+    try {
+      await saveProgressAction(attemptId, toAnswers(map ?? qsRef.current), violationsRef.current);
+      setSyncFailed(false);
+    } catch {
+      dirty.current = true;
+      setSyncFailed(true);
+    } finally {
+      saving.current = false;
+    }
+  }, [attemptId, toAnswers]);
+
   useEffect(() => {
     if (phase !== "exam" || !attemptId) return;
-    const id = setInterval(() => {
-      if (!dirty.current) return;
-      dirty.current = false;
-      void saveProgressAction(attemptId, toAnswers(qs), violationsRef.current).catch(() =>
-        toast.error("Couldn't save your progress — check your internet connection."),
-      );
-    }, AUTOSAVE_MS);
-    return () => clearInterval(id);
-  }, [phase, attemptId, qs, toAnswers]);
+    const id = setInterval(() => void flush(), AUTOSAVE_MS);
+    const onHidden = () => {
+      if (document.hidden) void flush();
+    };
+    const onOnline = () => void flush();
+    document.addEventListener("visibilitychange", onHidden);
+    window.addEventListener("online", onOnline);
+    return () => {
+      clearInterval(id);
+      document.removeEventListener("visibilitychange", onHidden);
+      window.removeEventListener("online", onOnline);
+    };
+  }, [phase, attemptId, flush]);
+
+  // Time is up but the submit failed: retry when the connection returns, and every SUBMIT_RETRY_MS.
+  useEffect(() => {
+    if (!submitIssue) return;
+    const retry = () => void submitRef.current();
+    const id = setInterval(retry, SUBMIT_RETRY_MS);
+    window.addEventListener("online", retry);
+    return () => {
+      clearInterval(id);
+      window.removeEventListener("online", retry);
+    };
+  }, [submitIssue]);
 
   // Warn before closing the tab mid-exam.
   useEffect(() => {
-    if (phase !== "exam") return;
+    if (phase === "instructions" || preview) return;
     const handler = (e: BeforeUnloadEvent) => e.preventDefault();
     window.addEventListener("beforeunload", handler);
     return () => window.removeEventListener("beforeunload", handler);
-  }, [phase]);
+  }, [phase, preview]);
 
   const counts = useMemo(() => {
     const perSection = paper.sections.map(() => ({ notVisited: 0, notAnswered: 0, answered: 0, marked: 0, answeredMarked: 0 }));
@@ -392,6 +496,7 @@ export function Cbt({ paper, candidate }: { paper: Paper; candidate: { name: str
         onBegin={begin}
         starting={starting}
         error={error}
+        preview={!!preview}
       />
     );
   }
@@ -408,7 +513,9 @@ export function Cbt({ paper, candidate }: { paper: Paper; candidate: { name: str
         </div>
         <div className="min-w-0 text-sm">
           <p className="truncate font-semibold">{candidate?.name ?? "Guest candidate"}</p>
-          <p className="text-xs text-muted">{demo ? "Free demo · result not saved" : candidate ? "Result will be saved" : "Result not saved"}</p>
+          <p className="text-xs text-muted">
+            {preview ? "Admin preview · nothing is saved" : demo ? "Free demo · result not saved" : candidate ? "Result will be saved" : "Result not saved"}
+          </p>
         </div>
       </div>
       <Legend counts={sectionCounts} />
@@ -466,6 +573,25 @@ export function Cbt({ paper, candidate }: { paper: Paper; candidate: { name: str
               <Lock className="size-3.5" aria-hidden /> Unlock full test
             </button>
           </>
+        )}
+        {preview && (
+          <Link
+            href={preview.exitHref}
+            className="inline-flex shrink-0 items-center gap-1.5 rounded-md bg-accent px-2 py-1 font-sans text-xs font-bold text-[#1f1300]"
+          >
+            <Eye className="size-3.5" aria-hidden /> PREVIEW · Exit
+          </Link>
+        )}
+        {serverAttempt && (!online || syncFailed) && (
+          <span
+            role="status"
+            className="inline-flex shrink-0 items-center gap-1.5 rounded-md bg-danger px-2 py-1 font-sans text-xs font-semibold text-white"
+            title="Your answers are kept on this device and will be saved to the server when the connection is back."
+          >
+            <WifiOff className="size-3.5" aria-hidden />
+            <span className="hidden sm:inline">{online ? "Not saved to server" : "Offline — saved on this device"}</span>
+            <span className="sm:hidden">Offline</span>
+          </span>
         )}
         {violations > 0 && !demo && (
           <span
@@ -578,6 +704,12 @@ export function Cbt({ paper, candidate }: { paper: Paper; candidate: { name: str
                 );
               })}
             </fieldset>
+            {/* Logged-in students can flag a wrong question without leaving the test (guests: from the result page). */}
+            {candidate && !preview && (
+              <div className="mt-6 font-sans" data-allow-paste>
+                <ReportQuestion key={q.id} questionId={q.id} lang={lang} loginHref={null} />
+              </div>
+            )}
           </div>
 
           {/* Actions */}
@@ -723,11 +855,24 @@ export function Cbt({ paper, candidate }: { paper: Paper; candidate: { name: str
       )}
 
       {phase === "submitting" && (
-        <div className="fixed inset-0 z-50 grid place-items-center bg-white/90 font-sans">
-          <div className="text-center">
+        <div className="fixed inset-0 z-50 grid place-items-center bg-white/90 p-4 font-sans">
+          <div className="max-w-sm text-center">
             <div className="mx-auto size-10 animate-spin rounded-full border-4 border-primary-soft border-t-primary" />
-            <p className="mt-4 font-semibold">Submitting your test…</p>
+            <p className="mt-4 font-semibold">{submitIssue ? "Time is up — waiting to submit…" : "Submitting your test…"}</p>
             <p className="text-sm text-muted">Please don&apos;t close this page.</p>
+            {submitIssue && (
+              <div role="alert" className="mt-4 space-y-3 rounded-xl border border-danger bg-danger-soft p-4 text-left text-sm">
+                <p className="flex items-start gap-2 font-medium text-danger">
+                  <WifiOff className="mt-0.5 size-4 shrink-0" aria-hidden /> {submitIssue}
+                </p>
+                <p className="text-foreground/85">
+                  Your answers are kept on this device. We&apos;ll submit automatically as soon as you&apos;re back online.
+                </p>
+                <button type="button" onClick={() => void submit()} className="h-10 w-full rounded-lg bg-primary font-semibold text-white">
+                  Retry now
+                </button>
+              </div>
+            )}
           </div>
         </div>
       )}
@@ -811,8 +956,9 @@ function Instructions(props: {
   onBegin: () => void;
   starting: boolean;
   error: string | null;
+  preview: boolean;
 }) {
-  const { paper, candidate, lang, setLang, agreed, setAgreed, onBegin, starting, error } = props;
+  const { paper, candidate, lang, setLang, agreed, setAgreed, onBegin, starting, error, preview } = props;
   const total = paper.sections.reduce((n, s) => n + s.questions.length, 0);
   const hi = lang === "hi";
   const marksCorrect = paper.sections[0]?.marksCorrect ?? 1;
@@ -911,7 +1057,14 @@ function Instructions(props: {
           </div>
         )}
 
-        {!candidate && !paper.demo && (
+        {preview && (
+          <p className="rounded-xl border border-accent bg-accent-soft p-4 text-sm">
+            <b>Admin preview.</b> This is exactly what students see, including draft questions. Nothing is started, saved or
+            submitted, and fullscreen / tab-switch tracking is off.
+          </p>
+        )}
+
+        {!candidate && !paper.demo && !preview && (
           <div className="flex flex-wrap items-center gap-3 rounded-xl border border-accent bg-accent-soft p-4 text-sm">
             <p className="flex-1">
               {hi
