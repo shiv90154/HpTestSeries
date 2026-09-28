@@ -3,9 +3,8 @@
 import { Home, LayoutGrid, NotebookPen, Play, UserRound } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { FREE_MOCK_HREF } from "@/lib/site";
 import { authClient } from "@/modules/identity/auth-client";
-
-const FREE_MOCK = "/tests/hp-gk-free-mock-1";
 
 /** App-style tab bar for public pages on phones; the free mock sits in the middle as the main action. */
 export function PublicBottomNav() {
@@ -39,7 +38,7 @@ export function PublicBottomNav() {
             {t.label}
           </Link>
         ) : (
-          <Link key="free" href={FREE_MOCK} className="flex flex-col items-center justify-end gap-0.5 pb-2 text-[11px] font-semibold text-accent-strong">
+          <Link key="free" href={FREE_MOCK_HREF} className="flex flex-col items-center justify-end gap-0.5 pb-2 text-[11px] font-semibold text-accent-strong">
             <span className="-mt-6 grid size-13 place-items-center rounded-full bg-accent text-[#1f1300] shadow-lg ring-4 ring-surface">
               <Play className="size-6 fill-current" />
             </span>

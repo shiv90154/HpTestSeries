@@ -19,7 +19,7 @@ export function ProfileCard({ name, district }: { name: string; district: string
         </span>
         <div>
           <h2 className="font-semibold">Complete your profile</h2>
-          <p className="text-sm text-muted">Your name appears on your results, and your district will unlock district-wise ranks.</p>
+          <p className="text-sm text-muted">Your name appears on your results. Your district helps us understand which parts of Himachal our aspirants come from.</p>
         </div>
       </div>
       <form action={action} className="grid gap-3 sm:grid-cols-[1fr_1fr_auto]">

@@ -11,7 +11,7 @@ import { confirmPaymentAction, createOrderAction } from "./actions";
 
 declare global {
   interface Window {
-    Razorpay: new (options: Record<string, unknown>) => { open(): void };
+    Razorpay?: new (options: Record<string, unknown>) => { open(): void };
   }
 }
 
@@ -24,14 +24,22 @@ export function BuyButton({ productSlug, user }: { productSlug: string; user: { 
       router.push(`/login?next=${encodeURIComponent(`/buy/${productSlug}`)}`);
       return;
     }
+    // Checkout script loads lazily; bail out before creating an order that could never be paid.
+    const Razorpay = window.Razorpay;
+    if (!Razorpay) {
+      toast.error("Payment is still loading — please try again in a moment.");
+      return;
+    }
+    // Stays true while Razorpay Checkout is open, so a second tap can't create a second order.
     setLoading(true);
     try {
       const order = await createOrderAction(productSlug);
       if ("error" in order) {
         toast.error(order.error);
+        setLoading(false);
         return;
       }
-      const razorpay = new window.Razorpay({
+      const razorpay = new Razorpay({
         key: order.keyId,
         amount: order.amountPaise,
         currency: "INR",
@@ -39,7 +47,7 @@ export function BuyButton({ productSlug, user }: { productSlug: string; user: { 
         description: order.productTitle,
         order_id: order.razorpayOrderId,
         prefill: { name: user.name, email: user.email, contact: user.phoneNumber ?? undefined },
-        theme: { color: "#0f6f4e" },
+        theme: { color: site.themeColor },
         handler: async (response: { razorpay_payment_id: string; razorpay_order_id: string; razorpay_signature: string }) => {
           const result = await confirmPaymentAction({
             orderId: order.orderId,
@@ -48,6 +56,7 @@ export function BuyButton({ productSlug, user }: { productSlug: string; user: { 
           });
           if ("error" in result) {
             toast.error(`Payment received but could not be confirmed: ${result.error}`);
+            setLoading(false);
             return;
           }
           track("purchase", { transaction_id: order.orderId, value: order.amountPaise / 100, currency: "INR", item_name: order.productTitle });
@@ -61,7 +70,6 @@ export function BuyButton({ productSlug, user }: { productSlug: string; user: { 
       razorpay.open();
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Could not start payment.");
-    } finally {
       setLoading(false);
     }
   }

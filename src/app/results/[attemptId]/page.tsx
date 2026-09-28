@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { AppHeader } from "@/components/app-header";
 import { ResultView } from "@/components/result-view";
-import { SiteHeader } from "@/components/site-header";
 import { getAttemptResult } from "@/modules/assessment/service";
 import { requireUser } from "@/modules/identity/session";
 
@@ -14,7 +14,7 @@ export default async function ResultPage({ params }: PageProps<"/results/[attemp
   if (!data) notFound();
   return (
     <>
-      <SiteHeader />
+      <AppHeader user={user} />
       <ResultView data={data} isGuest={false} />
     </>
   );

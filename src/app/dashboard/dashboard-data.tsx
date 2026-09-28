@@ -33,7 +33,7 @@ export async function DashboardData({ user }: { user: Awaited<ReturnType<typeof 
               <p className="text-white/85">
                 {d.stats.tests === 0
                   ? "Start your first mock test and see where you stand among Himachal aspirants."
-                  : `You've taken ${d.stats.tests} test${d.stats.tests === 1 ? "" : "s"}. Keep the streak going!`}
+                  : `You've taken ${d.stats.tests} test${d.stats.tests === 1 ? "" : "s"}. Every mock sharpens your speed and accuracy — keep practising!`}
               </p>
             </div>
             <Link href={d.suggested[0] ? `/tests/${d.suggested[0].slug}/attempt` : "/tests"} className={btn("accent", "lg")}>

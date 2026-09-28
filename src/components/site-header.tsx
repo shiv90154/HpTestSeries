@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { AuthCta } from "./auth-cta";
+import { FREE_MOCK_HREF } from "@/lib/site";
 import { Logo } from "./logo";
 
 const nav = [
@@ -23,7 +24,7 @@ export function SiteHeader() {
         </nav>
         <div className="ml-auto flex items-center gap-2">
           <Link
-            href="/tests/hp-gk-free-mock-1"
+            href={FREE_MOCK_HREF}
             className="hidden rounded-xl px-3 py-2 text-sm font-semibold text-accent-strong hover:bg-accent-soft sm:inline-flex"
           >
             Free Mock

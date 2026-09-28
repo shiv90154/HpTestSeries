@@ -2,6 +2,7 @@ import "server-only";
 import { cache } from "react";
 import { db } from "@/lib/db";
 import { Prisma } from "@/generated/prisma/client";
+import { examLabel } from "@/modules/catalog/queries";
 import { canAccessTest } from "@/modules/commerce/access";
 import { gradeAttempt, percentileFromRank, type GradingSection, type GradeResult } from "./grading";
 import type { Bilingual, Paper, ResultData, SubmittedAnswers } from "./types";
@@ -28,6 +29,7 @@ const fullTestInclude = {
     },
   },
   series: { select: { seriesId: true } },
+  exam: { select: { slug: true, name: true, isActive: true, body: { select: { slug: true } } } },
 } satisfies Prisma.TestInclude;
 
 type FullTest = Prisma.TestGetPayload<{ include: typeof fullTestInclude }>;
@@ -90,6 +92,8 @@ export async function getTestMeta(slug: string) {
       marksWrong: Number(s.marksWrong),
     })),
     series: t.series,
+    // Hub pages exist only for active exams.
+    exam: t.exam?.isActive ? { name: examLabel(t.exam.body.slug, t.exam.name), href: `/${t.exam.body.slug}/${t.exam.slug}` } : null,
   };
 }
 

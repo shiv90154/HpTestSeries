@@ -9,11 +9,11 @@
 // the slug doesn't exist. Edits made in the admin panel are safe on re-seed.
 
 import type { PrismaClient } from "../src/generated/prisma/client";
+import { FREE_MOCK_HREF as FREE_MOCK } from "../src/lib/site";
 
 type Faq = { q: string; a: string };
 type ExamContent = { description: string; syllabus: string; faqs: Faq[] };
 
-const FREE_MOCK = "/tests/hp-gk-free-mock-1";
 
 const examContent: Record<string, ExamContent> = {
   "hppsc/hpas": {

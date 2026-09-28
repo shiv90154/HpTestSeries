@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { examLabel, getCatalog, getPublishedPosts } from "@/modules/catalog/queries";
-import { site } from "@/lib/site";
+import { FREE_MOCK_HREF, site } from "@/lib/site";
 import { LEGAL_LINKS, business } from "@/lib/business";
+import { AuthFooterLink } from "./auth-cta";
 import { Logo } from "./logo";
 import { PublicBottomNav } from "./public-bottom-nav";
 
@@ -33,7 +34,7 @@ export async function SiteFooter() {
           <h2 className="mb-4 text-sm font-semibold uppercase tracking-wider text-white">Practice</h2>
           <ul className="space-y-2.5 text-sm">
             <li>
-              <Link href="/tests/hp-gk-free-mock-1" className="hover:text-accent">
+              <Link href={FREE_MOCK_HREF} className="hover:text-accent">
                 Free HP GK Mock Test
               </Link>
             </li>
@@ -53,9 +54,7 @@ export async function SiteFooter() {
               </Link>
             </li>
             <li>
-              <Link href="/login" className="hover:text-accent">
-                Login / Sign up
-              </Link>
+              <AuthFooterLink className="hover:text-accent" />
             </li>
           </ul>
           {latest.items.length > 0 && (

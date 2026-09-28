@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import { Markdown } from "@/components/markdown";
+import { FREE_MOCK_HREF } from "@/lib/site";
 import { CATEGORY_META, POST_CATEGORIES, readingMinutes, type PostInput } from "@/modules/content/post-input";
 import { slugify } from "@/modules/content/test-input";
 import { FaqEditor, SeoFields } from "../seo-fields";
@@ -32,7 +33,7 @@ Short intro — kaunsi post, kitni vacancies, kab tak apply.
 ## Selection process
 ...
 
-[Free mock test do](/tests/hp-gk-free-mock-1)`;
+[Free mock test do](${FREE_MOCK_HREF})`;
 
 export function PostForm({ id, status, canPublish, examOptions, initial }: Props) {
   const router = useRouter();

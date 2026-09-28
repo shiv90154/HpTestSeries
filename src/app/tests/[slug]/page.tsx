@@ -31,7 +31,8 @@ export default async function TestDetailPage({ params }: PageProps<"/tests/[slug
   const { slug } = await params;
   const t = await getTestMeta(slug);
   if (!t) notFound();
-  const negative = t.sections.find((s) => s.marksWrong > 0)?.marksWrong;
+  const negatives = [...new Set(t.sections.map((s) => s.marksWrong))];
+  const negativeLabel = negatives.length > 1 ? "Varies" : negatives[0] ? `−${negatives[0]}` : "None";
 
   return (
     <>
@@ -79,6 +80,11 @@ export default async function TestDetailPage({ params }: PageProps<"/tests/[slug
           <h1 className="text-3xl font-bold tracking-tight">{t.title}</h1>
           {t.titleHi && <p className="text-lg text-muted">{t.titleHi}</p>}
           {t.instructions && <p className="max-w-2xl text-foreground/85">{t.instructions}</p>}
+          {t.exam && (
+            <Link href={t.exam.href} className="inline-flex items-center gap-1 text-sm font-medium text-primary hover:underline">
+              {t.exam.name} exam — pattern, syllabus &amp; all tests <ChevronRight className="size-4" />
+            </Link>
+          )}
         </header>
 
         <dl className="grid grid-cols-2 gap-3 sm:grid-cols-4">
@@ -86,7 +92,7 @@ export default async function TestDetailPage({ params }: PageProps<"/tests/[slug
             [FileText, `${t.questionCount}`, "Questions"],
             [Clock, `${Math.round(t.durationSec / 60)} min`, "Duration"],
             [CheckCircle2, `${t.maxScore}`, "Total marks"],
-            [MinusCircle, negative ? `−${negative}` : "None", "Negative marking"],
+            [MinusCircle, negativeLabel, "Negative marking"],
           ].map(([Icon, v, l]) => {
             const I = Icon as typeof FileText;
             return (
@@ -106,8 +112,9 @@ export default async function TestDetailPage({ params }: PageProps<"/tests/[slug
             <thead className="bg-surface-muted text-left text-xs text-muted">
               <tr>
                 <th className="px-5 py-2">Section</th>
-                <th className="px-5 py-2 text-right">Questions</th>
-                <th className="px-5 py-2 text-right">Marks each</th>
+                <th className="px-3 py-2 text-right sm:px-5">Questions</th>
+                <th className="px-3 py-2 text-right sm:px-5">Correct</th>
+                <th className="px-3 py-2 text-right sm:px-5">Wrong</th>
               </tr>
             </thead>
             <tbody>
@@ -115,10 +122,13 @@ export default async function TestDetailPage({ params }: PageProps<"/tests/[slug
                 <tr key={s.name} className="border-t border-border">
                   <td className="px-5 py-3">
                     {s.name}
-                    {s.nameHi && <span className="ml-2 text-muted">{s.nameHi}</span>}
+                    {s.nameHi && <span className="block text-xs text-muted sm:ml-2 sm:inline sm:text-sm">{s.nameHi}</span>}
                   </td>
-                  <td className="px-5 py-3 text-right tabular-nums">{s.count}</td>
-                  <td className="px-5 py-3 text-right tabular-nums">+{s.marksCorrect}</td>
+                  <td className="px-3 py-3 text-right tabular-nums sm:px-5">{s.count}</td>
+                  <td className="px-3 py-3 text-right tabular-nums text-success sm:px-5">+{s.marksCorrect}</td>
+                  <td className={`px-3 py-3 text-right tabular-nums sm:px-5 ${s.marksWrong ? "text-danger" : "text-muted"}`}>
+                    {s.marksWrong ? `−${s.marksWrong}` : "0"}
+                  </td>
                 </tr>
               ))}
             </tbody>

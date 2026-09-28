@@ -17,14 +17,13 @@ import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { btn, card } from "@/components/ui";
 import { organizationNode } from "@/lib/schema";
-import { site } from "@/lib/site";
+import { FREE_MOCK_HREF, site } from "@/lib/site";
 import { getCatalog, getPublishedPosts } from "@/modules/catalog/queries";
 import { faqPageJsonLd } from "@/modules/content/exam-content";
 import { listActiveProducts } from "@/modules/commerce/product-service";
 
 export const revalidate = 3600;
 
-const DEMO = "/tests/hp-gk-free-mock-1";
 
 const features = [
   {
@@ -115,7 +114,7 @@ export default async function Home() {
               <p className="text-[15px] text-white/85 sm:text-lg">{site.taglineHi}</p>
               {/* Phones: full-width, thumb-sized buttons stacked like an app; larger screens: inline */}
               <div className="grid gap-2.5 sm:flex sm:flex-wrap sm:gap-3">
-                <Link href={DEMO} className={btn("accent", "lg", "w-full sm:w-auto")}>
+                <Link href={FREE_MOCK_HREF} className={btn("accent", "lg", "w-full sm:w-auto")}>
                   Start free mock test <ChevronRight className="size-5" />
                 </Link>
                 <Link href="/exams" className={btn("white", "lg", "w-full sm:w-auto")}>
@@ -198,7 +197,7 @@ export default async function Home() {
                 Most aspirants lose marks to exam-day nerves and an unfamiliar screen, not lack of knowledge. Every test here runs
                 on the same CBT pattern used in Himachal recruitment exams, so the real exam feels like just another mock.
               </p>
-              <Link href={DEMO} className={btn("primary", "md", "w-full sm:w-auto")}>
+              <Link href={FREE_MOCK_HREF} className={btn("primary", "md", "w-full sm:w-auto")}>
                 Try the CBT interface <ChevronRight className="size-4" />
               </Link>
             </div>
@@ -267,7 +266,7 @@ export default async function Home() {
               <p className="text-sm text-muted sm:text-base">No expensive coaching. Pay only for what you need — or nothing at all.</p>
             </div>
             <div className="-mx-4 flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 pb-2 scrollbar-none md:mx-0 md:grid md:grid-cols-3 md:gap-5 md:overflow-visible md:px-0 md:pb-0">
-              <Plan name="Free" price="₹0" note="forever" items={["Free mock tests", "Real CBT interface", "Solutions in Hindi & English", "HP rank on free tests"]} cta={{ href: DEMO, label: "Start free test" }} />
+              <Plan name="Free" price="₹0" note="forever" items={["Free mock tests", "Real CBT interface", "Solutions in Hindi & English", "HP rank on free tests"]} cta={{ href: FREE_MOCK_HREF, label: "Start free test" }} />
               {products.length > 0 ? (
                 products.slice(0, 2).map((p, i, shown) => (
                   <Plan
@@ -313,7 +312,7 @@ export default async function Home() {
               <h2 className="text-xl font-bold sm:text-3xl">Take your first Himachal mock test now</h2>
               <p className="text-white/80">25 questions · 20 minutes · Hindi & English · No login</p>
             </div>
-            <Link href={DEMO} className={btn("accent", "lg")}>
+            <Link href={FREE_MOCK_HREF} className={btn("accent", "lg")}>
               Start free mock <Clock className="size-5" />
             </Link>
           </div>

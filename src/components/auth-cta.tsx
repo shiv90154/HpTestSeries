@@ -18,3 +18,17 @@ export function AuthCta() {
     </Link>
   );
 }
+
+/** Footer account link: login for visitors, dashboard for signed-in students. */
+export function AuthFooterLink({ className }: { className?: string }) {
+  const { data } = authClient.useSession();
+  return data ? (
+    <Link href="/dashboard" className={className}>
+      My Dashboard
+    </Link>
+  ) : (
+    <Link href="/login" className={className}>
+      Login / Sign up
+    </Link>
+  );
+}

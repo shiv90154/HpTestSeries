@@ -4,7 +4,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Logo } from "@/components/logo";
 import { Mountains } from "@/components/mountains";
-import { safeNextPath } from "@/lib/site";
+import { FREE_MOCK_HREF, safeNextPath } from "@/lib/site";
 import { emailLoginEnabled, googleLoginEnabled, phoneLoginEnabled } from "@/modules/identity/login-methods";
 import { getCurrentUser } from "@/modules/identity/session";
 import { LoginForm } from "./login-form";
@@ -67,7 +67,7 @@ export default async function LoginPage({ searchParams }: PageProps<"/login">) {
           )}
           <p className="text-center text-sm text-muted">
             Just want to try?{" "}
-            <Link href="/tests/hp-gk-free-mock-1" className="font-semibold text-primary">
+            <Link href={FREE_MOCK_HREF} className="font-semibold text-primary">
               Take a free mock without login
             </Link>
           </p>

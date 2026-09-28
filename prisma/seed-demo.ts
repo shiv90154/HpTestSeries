@@ -2,6 +2,7 @@
 // Idempotent: questions are matched by text hash, the test by slug.
 
 import type { PrismaClient } from "../src/generated/prisma/client";
+import { FREE_MOCK_SLUG } from "../src/lib/site";
 import { questionTextHash } from "../src/modules/content/text-hash";
 
 type Lang = { q: string; o: [string, string, string, string]; e: string };
@@ -15,7 +16,7 @@ type DemoQuestion = {
   hi: Lang;
 };
 
-export const DEMO_TEST_SLUG = "hp-gk-free-mock-1";
+export const DEMO_TEST_SLUG = FREE_MOCK_SLUG;
 
 const sections = [
   { name: "Himachal GK", nameHi: "हिमाचल सामान्य ज्ञान" },

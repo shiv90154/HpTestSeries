@@ -16,7 +16,13 @@ export const site = {
     "Himachal test series",
   ],
   url: process.env.NEXT_PUBLIC_SITE_URL ?? "https://hptestseries.in",
+  /** Brand blue (--primary) for places outside our CSS: browser chrome, Razorpay Checkout. */
+  themeColor: "#1e4fd8",
 } as const;
+
+/** The free no-login mock linked from the header, footer, home and login pages (seeded by prisma/seed-demo.ts). */
+export const FREE_MOCK_SLUG = "hp-gk-free-mock-1";
+export const FREE_MOCK_HREF = `/tests/${FREE_MOCK_SLUG}`;
 
 /** Only allow same-site relative redirects (blocks open redirects like `//evil.com` or `https://…`). */
 export function safeNextPath(next: string | string[] | undefined, fallback = "/dashboard"): string {

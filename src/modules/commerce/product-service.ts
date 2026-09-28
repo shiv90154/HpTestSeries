@@ -24,6 +24,42 @@ export const listActiveProducts = cache(async (): Promise<PublicProduct[]> => {
   return products;
 });
 
+/** An active product with what it unlocks, for the /buy page. Cached so metadata and page share one query. */
+export const getProductForSale = cache(async (slug: string) => {
+  const product = await db.product.findUnique({
+    where: { slug },
+    select: {
+      slug: true,
+      title: true,
+      titleHi: true,
+      kind: true,
+      priceInPaise: true,
+      validityDays: true,
+      validUntil: true,
+      isActive: true,
+      items: {
+        select: {
+          series: {
+            select: {
+              title: true,
+              exam: { select: { name: true, body: { select: { slug: true } } } },
+              _count: { select: { tests: { where: { test: { status: "PUBLISHED" } } } } },
+            },
+          },
+        },
+      },
+    },
+  });
+  if (!product || !product.isActive) return null;
+  // A pass covers every paid test, so there are no ProductItem rows to list.
+  const paidTestCount = product.kind === "PASS" ? await db.test.count({ where: { status: "PUBLISHED", isFree: false } }) : 0;
+  return {
+    ...product,
+    paidTestCount,
+    series: product.items.map(({ series: s }) => ({ title: s.title, examName: s.exam.name, bodySlug: s.exam.body.slug, testCount: s._count.tests })),
+  };
+});
+
 export type ProductListItem = {
   id: string;
   slug: string;
