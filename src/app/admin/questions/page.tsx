@@ -47,11 +47,12 @@ export default async function QuestionsPage({ searchParams }: PageProps<"/admin/
       <form className="flex flex-wrap gap-2 text-sm" action="/admin/questions" aria-label="Filter questions">
         <input
           name="q"
+          aria-label="Search question text"
           defaultValue={q}
           placeholder="Search question text (English or Hindi)"
           className="min-w-56 flex-1 rounded-lg border border-border bg-surface px-3 py-2"
         />
-        <select name="subject" defaultValue={subject ?? ""} className="rounded-lg border border-border bg-surface px-3 py-2">
+        <select name="subject" aria-label="Subject" defaultValue={subject ?? ""} className="rounded-lg border border-border bg-surface px-3 py-2">
           <option value="">All subjects</option>
           {subjects.map((s) => (
             <option key={s.slug} value={s.slug}>
@@ -59,7 +60,7 @@ export default async function QuestionsPage({ searchParams }: PageProps<"/admin/
             </option>
           ))}
         </select>
-        <select name="status" defaultValue={status ?? ""} className="rounded-lg border border-border bg-surface px-3 py-2">
+        <select name="status" aria-label="Status" defaultValue={status ?? ""} className="rounded-lg border border-border bg-surface px-3 py-2">
           <option value="">All statuses</option>
           {Object.values(ContentStatus).map((s) => (
             <option key={s} value={s}>

@@ -46,7 +46,7 @@ export function ProfileForm({ name, district, preferredLang }: { name: string; d
           </label>
           <label className={`${field} flex w-auto cursor-pointer items-center gap-2 px-4 has-checked:border-primary has-checked:bg-primary-soft`}>
             <input type="radio" name="preferredLang" value="hi" defaultChecked={preferredLang === "hi"} className="accent-primary" />
-            हिन्दी
+            <span lang="hi">हिन्दी</span>
           </label>
         </div>
       </fieldset>

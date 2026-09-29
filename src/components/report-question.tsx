@@ -28,7 +28,7 @@ export function ReportQuestion({ questionId, lang, loginHref }: { questionId: st
 
   if (sent) {
     return (
-      <p role="status" className="flex items-center gap-1.5 text-sm text-success">
+      <p role="status" lang={lang === "hi" ? "hi" : undefined} className="flex items-center gap-1.5 text-sm text-success">
         <CheckCircle2 className="size-4" /> {T.thanks[lang]}
       </p>
     );
@@ -37,11 +37,11 @@ export function ReportQuestion({ questionId, lang, loginHref }: { questionId: st
   if (!open) {
     const cls = "inline-flex items-center gap-1.5 text-sm font-medium text-muted hover:text-danger";
     return loginHref ? (
-      <Link href={loginHref} className={cls}>
+      <Link href={loginHref} lang={lang === "hi" ? "hi" : undefined} className={cls}>
         <Flag className="size-4" /> {T.login[lang]}
       </Link>
     ) : (
-      <button type="button" onClick={() => setOpen(true)} className={cls}>
+      <button type="button" onClick={() => setOpen(true)} lang={lang === "hi" ? "hi" : undefined} className={cls}>
         <Flag className="size-4" /> {T.report[lang]}
       </button>
     );
@@ -59,7 +59,7 @@ export function ReportQuestion({ questionId, lang, loginHref }: { questionId: st
   }
 
   return (
-    <form onSubmit={submit} className="space-y-3 rounded-xl border border-border bg-surface-muted p-4 text-sm">
+    <form onSubmit={submit} lang={lang === "hi" ? "hi" : undefined} className="space-y-3 rounded-xl border border-border bg-surface-muted p-4 text-sm">
       <fieldset disabled={pending} className="space-y-3">
         <legend className="mb-2 font-semibold">{T.title[lang]}</legend>
         <div className="grid gap-2 sm:grid-cols-2">

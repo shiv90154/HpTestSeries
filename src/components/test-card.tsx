@@ -5,7 +5,9 @@ import { btn, card } from "./ui";
 
 const typeLabel: Record<string, string> = { MOCK: "Full mock", PYQ: "Previous year", SECTIONAL: "Sectional", TOPIC: "Topic test", DAILY: "Daily quiz" };
 
-export function TestCard({ test }: { test: PublicTest }) {
+/** `headingLevel`: 2 on pages where the cards sit straight under the page <h1> (the /tests list), 3 under a section <h2>. */
+export function TestCard({ test, headingLevel = 3 }: { test: PublicTest; headingLevel?: 2 | 3 }) {
+  const Heading = headingLevel === 2 ? "h2" : "h3";
   return (
     <div className={`${card} flex flex-col gap-4 p-5`}>
       <div className="flex items-center gap-2 text-xs font-semibold">
@@ -13,18 +15,22 @@ export function TestCard({ test }: { test: PublicTest }) {
         {test.isFree ? (
           <span className="rounded-md bg-success-soft px-2 py-1 text-success">FREE</span>
         ) : (
-          <span className="flex items-center gap-1 rounded-md bg-accent-soft px-2 py-1 text-accent-strong">
+          <span className="flex items-center gap-1 rounded-md bg-accent-soft px-2 py-1 text-accent-ink">
             <Lock className="size-3" /> PAID
           </span>
         )}
       </div>
       <div>
-        <h3 className="font-semibold leading-snug">
+        <Heading className="font-semibold leading-snug">
           <Link href={`/tests/${test.slug}`} className="hover:text-primary">
             {test.title}
           </Link>
-        </h3>
-        {test.titleHi && <p className="text-sm text-muted">{test.titleHi}</p>}
+        </Heading>
+        {test.titleHi && (
+          <p lang="hi" className="text-sm text-muted">
+            {test.titleHi}
+          </p>
+        )}
       </div>
       <div className="flex gap-4 text-sm text-muted">
         <span className="flex items-center gap-1.5">

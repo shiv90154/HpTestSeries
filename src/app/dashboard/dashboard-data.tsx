@@ -49,7 +49,7 @@ export async function DashboardData({ user }: { user: Awaited<ReturnType<typeof 
         {/* Continue */}
         {d.inProgress && (
           <section className={`${card} flex flex-col gap-4 border-accent bg-accent-soft p-5 sm:flex-row sm:items-center`}>
-            <Clock className="size-8 shrink-0 text-accent-strong" />
+            <Clock className="size-8 shrink-0 text-accent-ink" />
             <div className="flex-1">
               <p className="font-semibold">Unfinished test: {d.inProgress.title}</p>
               <p className="text-sm text-muted">
@@ -69,7 +69,7 @@ export async function DashboardData({ user }: { user: Awaited<ReturnType<typeof 
         <section className="grid grid-cols-2 gap-3 lg:grid-cols-4">
           <Stat icon={<BarChart3 className="size-5 text-primary" />} label="Tests taken" value={`${d.stats.tests}`} />
           <Stat icon={<TrendingUp className="size-5 text-success" />} label="Average score" value={`${d.stats.avgPercent}%`} sub={`Best ${d.stats.bestPercent}%`} />
-          <Stat icon={<Target className="size-5 text-accent-strong" />} label="Accuracy" value={`${d.stats.accuracy}%`} />
+          <Stat icon={<Target className="size-5 text-accent-ink" />} label="Accuracy" value={`${d.stats.accuracy}%`} />
           <Stat icon={<Clock className="size-5 text-cbt-marked" />} label="Practice time" value={`${d.stats.totalMinutes} min`} />
         </section>
 
@@ -91,7 +91,7 @@ export async function DashboardData({ user }: { user: Awaited<ReturnType<typeof 
                   <li key={t.name} className="space-y-1">
                     <div className="flex justify-between gap-3 text-sm">
                       <span className="truncate">{t.name}</span>
-                      <span className={`font-semibold tabular-nums ${t.accuracy >= 70 ? "text-success" : t.accuracy >= 40 ? "text-accent-strong" : "text-danger"}`}>{t.accuracy}%</span>
+                      <span className={`font-semibold tabular-nums ${t.accuracy >= 70 ? "text-success" : t.accuracy >= 40 ? "text-accent-ink" : "text-danger"}`}>{t.accuracy}%</span>
                     </div>
                     <div className="h-1.5 overflow-hidden rounded-full bg-surface-muted">
                       <div className={`h-full rounded-full ${t.accuracy >= 70 ? "bg-success" : t.accuracy >= 40 ? "bg-accent" : "bg-danger"}`} style={{ width: `${t.accuracy}%` }} />
@@ -141,7 +141,7 @@ export async function DashboardData({ user }: { user: Awaited<ReturnType<typeof 
                       <div className="flex items-center gap-2 text-xs">
                         <span className="rounded-full bg-surface-muted px-2 py-1 font-medium tabular-nums">{r.accuracy}% accuracy</span>
                         {r.rank && (
-                          <span className="inline-flex items-center gap-1 rounded-full bg-accent-soft px-2 py-1 font-medium tabular-nums text-accent-strong">
+                          <span className="inline-flex items-center gap-1 rounded-full bg-accent-soft px-2 py-1 font-medium tabular-nums text-accent-ink">
                             <Trophy className="size-3" /> #{r.rank.rank}/{r.rank.total}
                           </span>
                         )}
@@ -180,7 +180,7 @@ export async function DashboardData({ user }: { user: Awaited<ReturnType<typeof 
                         <td className="px-5 py-3 text-right tabular-nums">
                           {r.rank ? (
                             <span className="inline-flex items-center gap-1">
-                              <Trophy className="size-3.5 text-accent-strong" /> #{r.rank.rank}
+                              <Trophy className="size-3.5 text-accent-ink" /> #{r.rank.rank}
                               <span className="text-muted">/{r.rank.total}</span>
                             </span>
                           ) : (
@@ -264,7 +264,7 @@ function MyPlans({ plans }: { plans: Plan[] }) {
 }
 
 const REPORT_STATUS: Record<MyReport["status"], { label: string; cls: string }> = {
-  OPEN: { label: "Under review", cls: "bg-accent-soft text-accent-strong" },
+  OPEN: { label: "Under review", cls: "bg-accent-soft text-accent-ink" },
   FIXED: { label: "Fixed — thank you!", cls: "bg-success-soft text-success" },
   REJECTED: { label: "Checked — no error found", cls: "bg-surface-muted text-muted" },
 };

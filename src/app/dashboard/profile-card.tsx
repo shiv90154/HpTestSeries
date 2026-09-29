@@ -23,8 +23,8 @@ export function ProfileCard({ name, district }: { name: string; district: string
         </div>
       </div>
       <form action={action} className="grid gap-3 sm:grid-cols-[1fr_1fr_auto]">
-        <input name="name" defaultValue={name === "Aspirant" ? "" : name} placeholder="Your full name" className={field} required minLength={2} maxLength={60} autoComplete="name" />
-        <select name="district" defaultValue={district ?? ""} className={field} required>
+        <input name="name" defaultValue={name === "Aspirant" ? "" : name} placeholder="Your full name" aria-label="Full name" className={field} required minLength={2} maxLength={60} autoComplete="name" />
+        <select name="district" aria-label="District" defaultValue={district ?? ""} className={field} required>
           <option value="" disabled>
             Select your district
           </option>

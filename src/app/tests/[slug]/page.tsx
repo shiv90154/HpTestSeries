@@ -84,12 +84,16 @@ export default async function TestDetailPage({ params }: PageProps<"/tests/[slug
         <header className="space-y-3">
           {t.isFree && <span className="rounded-md bg-success-soft px-2 py-1 text-xs font-bold text-success">FREE · NO LOGIN NEEDED</span>}
           {!t.isFree && (
-            <span className="inline-flex items-center gap-1 rounded-md bg-accent-soft px-2 py-1 text-xs font-bold text-accent-strong">
+            <span className="inline-flex items-center gap-1 rounded-md bg-accent-soft px-2 py-1 text-xs font-bold text-accent-ink">
               <Lock className="size-3" aria-hidden /> {hasDemo ? "PAID · FREE DEMO AVAILABLE" : "PAID"}
             </span>
           )}
           <h1 className="text-3xl font-bold tracking-tight">{t.title}</h1>
-          {t.titleHi && <p className="text-lg text-muted">{t.titleHi}</p>}
+          {t.titleHi && (
+            <p lang="hi" className="text-lg text-muted">
+              {t.titleHi}
+            </p>
+          )}
           {t.instructions && <p className="max-w-2xl text-foreground/85">{t.instructions}</p>}
           {t.exam && (
             <Link href={t.exam.href} className="inline-flex items-center gap-1 text-sm font-medium text-primary hover:underline">
@@ -133,7 +137,11 @@ export default async function TestDetailPage({ params }: PageProps<"/tests/[slug
                 <tr key={s.name} className="border-t border-border">
                   <td className="px-5 py-3">
                     {s.name}
-                    {s.nameHi && <span className="block text-xs text-muted sm:ml-2 sm:inline sm:text-sm">{s.nameHi}</span>}
+                    {s.nameHi && (
+                      <span lang="hi" className="block text-xs text-muted sm:ml-2 sm:inline sm:text-sm">
+                        {s.nameHi}
+                      </span>
+                    )}
                   </td>
                   <td className="px-3 py-3 text-right tabular-nums sm:px-5">{s.count}</td>
                   <td className="px-3 py-3 text-right tabular-nums text-success sm:px-5">+{s.marksCorrect}</td>

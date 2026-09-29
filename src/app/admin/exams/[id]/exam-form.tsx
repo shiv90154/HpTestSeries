@@ -59,7 +59,7 @@ export function ExamForm({ id, path, initial }: { id: string; path: string; init
           <div>
             <label className={labelCls} htmlFor="description">
               Description (markdown) — {words} words incl. syllabus{" "}
-              <span className={words >= 300 ? "text-success" : "text-accent-strong"}>{words >= 300 ? "✓ good length" : "· aim for 300+"}</span>
+              <span className={words >= 300 ? "text-success" : "text-accent-ink"}>{words >= 300 ? "✓ good length" : "· aim for 300+"}</span>
             </label>
             <textarea id="description" rows={10} className={`${inputCls} font-mono`} value={m.description} onChange={(e) => set("description", e.target.value)} />
           </div>
@@ -140,7 +140,7 @@ export function ExamForm({ id, path, initial }: { id: string; path: string; init
         <section className={`${panel} space-y-3`}>
           <h2 className="font-semibold">Syllabus (markdown)</h2>
           <p className="text-xs text-muted">Use ## headings per subject and - bullet lists. Tables work too.</p>
-          <textarea rows={14} className={`${inputCls} font-mono`} value={m.syllabus} onChange={(e) => set("syllabus", e.target.value)} />
+          <textarea aria-label="Syllabus (markdown)" rows={14} className={`${inputCls} font-mono`} value={m.syllabus} onChange={(e) => set("syllabus", e.target.value)} />
         </section>
 
         <section className={`${panel} space-y-3`}>

@@ -18,20 +18,27 @@
   --primary-foreground: #ffffff;
 
   --accent: #f59e0b;
-  --accent-strong: #d97706;
+  --accent-strong: #d97706; /* hover fill for accent buttons only: too light for text */
+  --accent-ink: #b05109; /* accent-coloured TEXT and icons */
   --accent-soft: #fff4dc;
 
-  --success: #16a34a;
+  /*
+   * Text colours below meet WCAG AA (4.5:1) on white, --background, --surface-muted and their own *-soft
+   * fill. src/app/contrast.test.ts fails `npm test` if a token edit breaks that.
+   */
+  --success: #157d3c;
   --success-soft: #e7f7ec;
-  --danger: #dc2626;
+  --danger: #cf2020;
   --danger-soft: #fdecec;
 
-  /* CBT question palette */
-  --cbt-answered: #22a447;
-  --cbt-not-answered: #e0412f;
+  /* CBT question palette (white text sits on the answered / not-answered / submit fills) */
+  --cbt-answered: #157d3c;
+  --cbt-not-answered: #cf3527;
   --cbt-marked: #6d3fc4;
   --cbt-not-visited: #e6e9ef;
   --cbt-header: #1c3f8f;
+  --cbt-submit: #1c74a8;
+  --cbt-submit-strong: #17689a;
 }
 
 @theme inline {
@@ -47,6 +54,7 @@
   --color-primary-foreground: var(--primary-foreground);
   --color-accent: var(--accent);
   --color-accent-strong: var(--accent-strong);
+  --color-accent-ink: var(--accent-ink);
   --color-accent-soft: var(--accent-soft);
   --color-success: var(--success);
   --color-success-soft: var(--success-soft);
@@ -57,6 +65,8 @@
   --color-cbt-marked: var(--cbt-marked);
   --color-cbt-not-visited: var(--cbt-not-visited);
   --color-cbt-header: var(--cbt-header);
+  --color-cbt-submit: var(--cbt-submit);
+  --color-cbt-submit-strong: var(--cbt-submit-strong);
 
   --font-sans: var(--font-poppins), var(--font-noto-devanagari), system-ui, sans-serif;
   --font-reading: var(--font-noto-sans), var(--font-noto-devanagari), system-ui, sans-serif;

@@ -30,7 +30,7 @@ export function DemoPaywall(props: {
     : [`All ${lockedTotal} remaining questions`, "Detailed solution for every question (Hindi + English)", "Your HP rank and topic-wise analysis"];
 
   return (
-    <div className="fixed inset-0 z-[60] grid place-items-center bg-black/55 p-4 font-sans" role="dialog" aria-modal="true" aria-labelledby="paywall-title">
+    <div lang={hi ? "hi" : undefined} className="fixed inset-0 z-[60] grid place-items-center bg-black/55 p-4 font-sans" role="dialog" aria-modal="true" aria-labelledby="paywall-title">
       <div ref={ref} className="relative w-full max-w-md overflow-hidden rounded-2xl bg-white shadow-2xl">
         <button type="button" onClick={onClose} className="absolute right-3 top-3 rounded-md p-1.5 text-white/85 hover:bg-white/15" aria-label={hi ? "बंद करें" : "Close"}>
           <X className="size-5" />

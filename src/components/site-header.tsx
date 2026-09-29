@@ -25,7 +25,7 @@ export function SiteHeader() {
         <div className="ml-auto flex items-center gap-2">
           <Link
             href={FREE_MOCK_HREF}
-            className="hidden rounded-xl px-3 py-2 text-sm font-semibold text-accent-strong hover:bg-accent-soft sm:inline-flex"
+            className="hidden rounded-xl px-3 py-2 text-sm font-semibold text-accent-ink hover:bg-accent-soft sm:inline-flex"
           >
             Free Mock
           </Link>

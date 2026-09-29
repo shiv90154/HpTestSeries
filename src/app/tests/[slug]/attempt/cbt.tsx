@@ -62,6 +62,11 @@ function pick(text: Bilingual, lang: Lang): string {
   return text[lang] ?? text.en ?? text.hi ?? "";
 }
 
+/** The language `pick` really returned (it falls back when a translation is missing): used for the `lang` attribute. */
+function pickLang(text: Bilingual, lang: Lang): Lang {
+  return text[lang] ? lang : text.en ? "en" : "hi";
+}
+
 function fmt(ms: number): string {
   const s = Math.max(0, Math.floor(ms / 1000));
   const h = Math.floor(s / 3600);
@@ -519,7 +524,7 @@ export function Cbt({
         </div>
       </div>
       <Legend counts={sectionCounts} />
-      <div className="bg-cbt-header px-3 py-2 text-sm font-semibold text-white">
+      <div className="bg-cbt-header px-3 py-2 text-sm font-semibold text-white" lang={lang === "hi" && section.nameHi ? "hi" : undefined}>
         {lang === "hi" && section.nameHi ? section.nameHi : section.name}
       </div>
       <p className="px-3 pt-3 text-xs font-medium text-muted">Choose a question</p>
@@ -546,7 +551,7 @@ export function Cbt({
         <button
           type="button"
           onClick={() => setConfirmOpen(true)}
-          className="h-11 w-full rounded-lg bg-[#2a9ad6] font-semibold text-white hover:bg-[#1f86bd]"
+          className="h-11 w-full rounded-lg bg-cbt-submit font-semibold text-white hover:bg-cbt-submit-strong"
         >
           Submit
         </button>
@@ -559,9 +564,9 @@ export function Cbt({
       <OnboardingTour />
       {/* Header */}
       <header className="flex items-center gap-3 bg-cbt-header px-3 py-2 text-white sm:px-4">
-        <p className="min-w-0 flex-1 truncate font-sans text-sm font-semibold sm:text-base">
+        <h1 className="min-w-0 flex-1 truncate font-sans text-sm font-semibold sm:text-base" lang={lang === "hi" && paper.titleHi ? "hi" : undefined}>
           {lang === "hi" && paper.titleHi ? paper.titleHi : paper.title}
-        </p>
+        </h1>
         {demo && (
           <>
             <span className="shrink-0 rounded-md bg-accent px-2 py-1 font-sans text-xs font-bold text-[#1f1300]">FREE DEMO</span>
@@ -622,13 +627,14 @@ export function Cbt({
       </header>
 
       {/* Section tabs + language */}
-      <div id="cbt-section-tabs" className="flex items-center gap-2 border-b border-border bg-surface-muted px-2">
+      <section id="cbt-section-tabs" aria-label="Sections and language" className="flex items-center gap-2 border-b border-border bg-surface-muted px-2">
         <div className="flex min-w-0 flex-1 overflow-x-auto">
           {paper.sections.map((s, si) => (
             <button
               key={s.id}
               type="button"
               onClick={() => go(firstIndexOfSection[si])}
+              lang={lang === "hi" && s.nameHi ? "hi" : undefined}
               className={`whitespace-nowrap border-b-2 px-3 py-2.5 font-sans text-sm font-medium ${si === q.sectionIndex ? "border-primary bg-white text-primary" : "border-transparent text-muted hover:text-foreground"}`}
             >
               {lang === "hi" && s.nameHi ? s.nameHi : s.name}
@@ -638,18 +644,21 @@ export function Cbt({
         {paper.languages.length > 1 && (
           <label className="flex shrink-0 items-center gap-1.5 font-sans text-xs text-muted">
             <Languages className="size-4" aria-hidden />
-            <span className="hidden sm:inline">View in</span>
+            {/* sr-only (not hidden) on phones, so the select keeps its name when the text is not shown */}
+            <span className="sr-only sm:not-sr-only">View in</span>
             <select
               value={lang}
               onChange={(e) => setLang(e.target.value as Lang)}
               className="rounded-md border border-border bg-white px-2 py-1 text-sm text-foreground"
             >
               <option value="en">English</option>
-              <option value="hi">हिंदी</option>
+              <option value="hi" lang="hi">
+                हिंदी
+              </option>
             </select>
           </label>
         )}
-      </div>
+      </section>
 
       {fullscreenLost && (
         <div className="flex items-center gap-3 bg-danger-soft px-4 py-2 font-sans text-sm text-danger">
@@ -681,7 +690,7 @@ export function Cbt({
           </div>
 
           <div className="flex-1 overflow-y-auto px-4 py-5 sm:px-6">
-            <RichContent text={pick(q.stem, lang)} className="text-base leading-relaxed sm:text-[17px]" />
+            <RichContent text={pick(q.stem, lang)} lang={pickLang(q.stem, lang)} className="text-base leading-relaxed sm:text-[17px]" />
             <fieldset className="mt-6 space-y-2.5">
               <legend className="sr-only">Options</legend>
               {q.options.map((o, i) => {
@@ -699,7 +708,7 @@ export function Cbt({
                       onChange={() => setSelection(o.id)}
                     />
                     <span className="font-sans text-sm font-semibold text-muted">{String.fromCharCode(65 + i)}.</span>
-                    <RichContent text={pick(o.text, lang)} className="flex-1 leading-relaxed" />
+                    <RichContent text={pick(o.text, lang)} lang={pickLang(o.text, lang)} className="flex-1 leading-relaxed" />
                   </label>
                 );
               })}
@@ -788,7 +797,8 @@ export function Cbt({
             <h2 id="submit-title" className="bg-cbt-header px-5 py-3 font-semibold text-white">
               Exam Summary
             </h2>
-            <div className="overflow-x-auto p-4">
+            {/* focusable so keyboard users can scroll the wide table sideways */}
+            <div className="overflow-x-auto p-4" tabIndex={0} role="region" aria-label="Exam summary by section">
               <table className="w-full min-w-[560px] text-center text-sm">
                 <thead className="bg-surface-muted text-xs text-muted">
                   <tr>
@@ -967,7 +977,9 @@ function Instructions(props: {
   return (
     <div className="flex min-h-dvh flex-col bg-white">
       <header className="flex items-center gap-3 bg-cbt-header px-4 py-3 text-white">
-        <p className="flex-1 truncate font-semibold">{hi && paper.titleHi ? paper.titleHi : paper.title}</p>
+        <p className="flex-1 truncate font-semibold" lang={hi && paper.titleHi ? "hi" : undefined}>
+          {hi && paper.titleHi ? paper.titleHi : paper.title}
+        </p>
         {paper.languages.length > 1 && (
           <select
             value={lang}
@@ -976,12 +988,14 @@ function Instructions(props: {
             aria-label="Instructions language"
           >
             <option value="en">English</option>
-            <option value="hi">हिंदी</option>
+            <option value="hi" lang="hi">
+              हिंदी
+            </option>
           </select>
         )}
       </header>
 
-      <main className="mx-auto w-full max-w-3xl flex-1 space-y-6 px-4 py-6">
+      <main className="mx-auto w-full max-w-3xl flex-1 space-y-6 px-4 py-6" lang={hi ? "hi" : undefined}>
         <h1 className="text-xl font-semibold">{hi ? "कृपया निर्देशों को ध्यान से पढ़ें" : "Please read the instructions carefully"}</h1>
 
         <div className="grid grid-cols-3 gap-3 text-center text-sm">
@@ -1027,13 +1041,17 @@ function Instructions(props: {
               </>
             )}
           </ol>
-          <Legend counts={{ answered: 0, notAnswered: 0, notVisited: 0, marked: 0, answeredMarked: 0 }} />
+          <div lang="en">
+            <Legend counts={{ answered: 0, notAnswered: 0, notVisited: 0, marked: 0, answeredMarked: 0 }} />
+          </div>
         </section>
 
         {paper.instructions && (
           <section className="space-y-2 text-sm">
             <h2 className="font-semibold">{hi ? "इस टेस्ट के बारे में" : "About this test"}</h2>
-            <p className="text-foreground/90">{paper.instructions}</p>
+            <p className="text-foreground/90" lang={hi ? "en" : undefined}>
+              {paper.instructions}
+            </p>
             <ul className="list-disc space-y-1 pl-5 text-foreground/90">
               {paper.sections.map((s) => (
                 <li key={s.id}>

@@ -27,7 +27,7 @@ export function Logo({ light = false, href = "/", tagline = true }: { light?: bo
           HP <span className={light ? "text-accent" : "text-primary"}>Test Series</span>
         </span>
         {tagline && (
-          <span className={`mt-1 hidden whitespace-nowrap text-[11px] font-medium sm:block ${light ? "text-white/75" : "text-muted"}`}>
+          <span lang="hi" className={`mt-1 hidden whitespace-nowrap text-[11px] font-medium sm:block ${light ? "text-white/75" : "text-muted"}`}>
             हिमाचल की परीक्षा तैयारी
           </span>
         )}

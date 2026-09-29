@@ -19,6 +19,8 @@ type Lang = "en" | "hi";
 type Filter = "all" | "correct" | "wrong" | "skipped";
 
 const pick = (t: Bilingual, lang: Lang) => t[lang] ?? t.en ?? t.hi ?? "";
+/** The language `pick` really returned (it falls back when a translation is missing), for the `lang` attribute. */
+const pickLang = (t: Bilingual, lang: Lang): Lang => (t[lang] ? lang : t.en ? "en" : "hi");
 const pct = (n: number, d: number) => (d > 0 ? Math.round((n / d) * 100) : 0);
 
 /** Free tests open straight into the CBT; paid ones go to the test page (unlock / demo). */
@@ -65,7 +67,14 @@ export function ResultView({
     const scorePct = pct(data.score, data.maxScore);
     if (!(data.rank && data.rank.rank <= 3) && scorePct < 80) return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    confetti({ particleCount: 120, spread: 80, origin: { y: 0.3 }, colors: ["#1e4fd8", "#f59e0b", "#16a34a"] });
+    // The library's default canvas is announced by screen readers; draw on one that is hidden from them.
+    const canvas = document.createElement("canvas");
+    canvas.setAttribute("aria-hidden", "true");
+    Object.assign(canvas.style, { position: "fixed", inset: "0", width: "100%", height: "100%", pointerEvents: "none", zIndex: "100" });
+    document.body.appendChild(canvas);
+    const fire = confetti.create(canvas, { resize: true });
+    void Promise.resolve(fire({ particleCount: 120, spread: 80, origin: { y: 0.3 }, colors: ["#1e4fd8", "#f59e0b", "#16a34a"] })).finally(() => canvas.remove());
+    return () => canvas.remove();
     // eslint-disable-next-line react-hooks/exhaustive-deps -- fire once when the result mounts
   }, []);
 
@@ -75,7 +84,7 @@ export function ResultView({
   );
 
   return (
-    <div className="mx-auto w-full max-w-5xl space-y-6 px-4 py-6 sm:py-10">
+    <main className="mx-auto w-full max-w-5xl space-y-6 px-4 py-6 sm:py-10">
       {/* Score header */}
       <section className="overflow-hidden rounded-3xl bg-linear-to-br from-[#133a9e] via-[#1e4fd8] to-[#3b6ef5] text-white shadow-lg">
         <div className="grid gap-6 p-6 sm:grid-cols-[1.2fr_1fr] sm:p-8">
@@ -180,7 +189,7 @@ export function ResultView({
         <Stat icon={<CheckCircle2 className="size-5 text-success" />} label="Correct" value={`${data.correct}`} sub={`of ${total}`} />
         <Stat icon={<XCircle className="size-5 text-danger" />} label="Wrong" value={`${data.wrong}`} sub={`${data.skipped} skipped`} />
         <Stat icon={<Target className="size-5 text-primary" />} label="Accuracy" value={`${accuracy}%`} sub={`${attempted} attempted`} />
-        <Stat icon={<Clock className="size-5 text-accent-strong" />} label="Time taken" value={duration(data.timeSpentSec)} sub={`of ${Math.round(data.test.durationSec / 60)} min`} />
+        <Stat icon={<Clock className="size-5 text-accent-ink" />} label="Time taken" value={duration(data.timeSpentSec)} sub={`of ${Math.round(data.test.durationSec / 60)} min`} />
       </section>
 
       <div className="grid gap-6 lg:grid-cols-[1.4fr_1fr]">
@@ -251,7 +260,7 @@ export function ResultView({
                 <li key={t.name} className="space-y-1">
                   <div className="flex justify-between text-sm">
                     <span>{t.name}</span>
-                    <span className={`font-semibold tabular-nums ${a >= 70 ? "text-success" : a >= 40 ? "text-accent-strong" : "text-danger"}`}>
+                    <span className={`font-semibold tabular-nums ${a >= 70 ? "text-success" : a >= 40 ? "text-accent-ink" : "text-danger"}`}>
                       {a}% <span className="font-normal text-muted">({t.correct}/{attempted})</span>
                     </span>
                   </div>
@@ -280,7 +289,7 @@ export function ResultView({
                   onClick={() => setLang(l)}
                   className={`rounded-lg px-3 py-1.5 font-medium ${lang === l ? "bg-primary text-white" : "text-muted"}`}
                 >
-                  {l === "en" ? "English" : "हिंदी"}
+                  <span lang={l === "hi" ? "hi" : undefined}>{l === "en" ? "English" : "हिंदी"}</span>
                 </button>
               ))}
             </div>
@@ -322,7 +331,7 @@ export function ResultView({
                   </span>
                   <span className="text-muted">{duration(q.timeSec)}</span>
                 </div>
-                <RichContent text={pick(q.stem, lang)} className="font-reading leading-relaxed" />
+                <RichContent text={pick(q.stem, lang)} lang={pickLang(q.stem, lang)} className="font-reading leading-relaxed" />
                 <ul className="mt-4 space-y-2 font-reading text-[15px]">
                   {q.options.map((opt, i) => {
                     const isCorrect = opt.id === q.correctOptionId;
@@ -333,7 +342,7 @@ export function ResultView({
                         className={`flex items-start gap-3 rounded-lg border px-3.5 py-2.5 ${isCorrect ? "border-success bg-success-soft" : isChosen ? "border-danger bg-danger-soft" : "border-border"}`}
                       >
                         <span className="font-sans text-sm font-semibold text-muted">{String.fromCharCode(65 + i)}.</span>
-                        <RichContent text={pick(opt.text, lang)} className="flex-1" />
+                        <RichContent text={pick(opt.text, lang)} lang={pickLang(opt.text, lang)} className="flex-1" />
                         {isCorrect && <CheckCircle2 className="size-5 shrink-0 text-success" aria-label="Correct answer" />}
                         {isChosen && !isCorrect && <XCircle className="size-5 shrink-0 text-danger" aria-label="Your answer" />}
                       </li>
@@ -345,7 +354,7 @@ export function ResultView({
                     <p className="mb-1 flex items-center gap-1.5 font-semibold text-primary">
                       <Award className="size-4" /> Explanation
                     </p>
-                    <RichContent text={pick(q.explanation, lang)} className="font-reading" />
+                    <RichContent text={pick(q.explanation, lang)} lang={pickLang(q.explanation, lang)} className="font-reading" />
                   </div>
                 )}
                 <div className="mt-4 border-t border-border pt-3">
@@ -358,7 +367,7 @@ export function ResultView({
         {data.demo && (
           <div className="space-y-3 rounded-2xl border border-accent bg-accent-soft p-6 text-center">
             <span className="mx-auto grid size-11 place-items-center rounded-full bg-accent/25">
-              <Lock className="size-5 text-accent-strong" aria-hidden />
+              <Lock className="size-5 text-accent-ink" aria-hidden />
             </span>
             <p className="text-lg font-semibold">{data.demo.lockedTotal} more questions are locked</p>
             <p className="mx-auto max-w-md text-sm text-foreground/85">
@@ -388,7 +397,7 @@ export function ResultView({
           </Link>
         )}
       </div>
-    </div>
+    </main>
   );
 }
 
@@ -443,14 +452,14 @@ function Leaderboard({ rows, you, yourScore }: { rows: NonNullable<ResultData["l
   return (
     <section className={`${card} overflow-hidden`}>
       <div className="flex items-center gap-2 border-b border-border px-5 py-4">
-        <Trophy className="size-5 text-accent-strong" />
+        <Trophy className="size-5 text-accent-ink" />
         <h2 className="font-semibold">Leaderboard</h2>
         <span className="ml-auto text-xs text-muted">First attempts only</span>
       </div>
       <ol>
         {rows.map((r, i) => (
           <li key={i} className={`${rowCls(r.isYou)} border-b border-border last:border-b-0`}>
-            <span className={`w-8 shrink-0 tabular-nums ${r.rank <= 3 ? "font-bold text-accent-strong" : "text-muted"}`}>#{r.rank}</span>
+            <span className={`w-8 shrink-0 tabular-nums ${r.rank <= 3 ? "font-bold text-accent-ink" : "text-muted"}`}>#{r.rank}</span>
             <span className="min-w-0 flex-1 truncate">
               {r.isYou ? "You" : r.name}
               {r.district && <span className="font-normal text-muted"> · {r.district}</span>}

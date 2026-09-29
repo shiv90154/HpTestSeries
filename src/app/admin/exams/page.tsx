@@ -54,5 +54,5 @@ export default async function ExamsAdminPage() {
 }
 
 function Badge({ ok, children }: { ok: boolean; children: React.ReactNode }) {
-  return <span className={`rounded-md px-2 py-0.5 font-semibold ${ok ? "bg-success-soft text-success" : "bg-accent-soft text-accent-strong"}`}>{children}</span>;
+  return <span className={`rounded-md px-2 py-0.5 font-semibold ${ok ? "bg-success-soft text-success" : "bg-accent-soft text-accent-ink"}`}>{children}</span>;
 }

@@ -47,6 +47,7 @@ export function ImportForm() {
         <input
           type="file"
           accept=".csv,text/csv"
+          aria-label="Questions CSV file"
           onChange={(e) => {
             setFile(e.target.files?.[0] ?? null);
             setPreview(null);

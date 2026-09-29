@@ -17,7 +17,8 @@ export default function NotFound() {
         <div className="space-y-2">
           <p className="text-sm font-semibold uppercase tracking-wider text-primary">Error 404</p>
           <h1 className="text-2xl font-bold sm:text-3xl">Page not found</h1>
-          <p className="text-muted">यह पेज नहीं मिला। The link may be old or mistyped — the test or post may have moved.</p>
+          <p className="text-muted">
+            <span lang="hi">यह पेज नहीं मिला।</span> The link may be old or mistyped — the test or post may have moved.</p>
         </div>
         <div className="grid w-full gap-2.5 sm:flex sm:w-auto sm:flex-wrap sm:justify-center">
           <Link href={FREE_MOCK_HREF} className={btn("accent", "md", "w-full sm:w-auto")}>

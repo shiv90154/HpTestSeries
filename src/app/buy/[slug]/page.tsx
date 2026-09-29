@@ -46,7 +46,11 @@ export default async function BuyPage({ params }: PageProps<"/buy/[slug]">) {
         <div className={`${card} space-y-6 p-6`}>
           <div>
             <h1 className="text-2xl font-bold">{product.title}</h1>
-            {product.titleHi && <p className="text-muted">{product.titleHi}</p>}
+            {product.titleHi && (
+              <p lang="hi" className="text-muted">
+                {product.titleHi}
+              </p>
+            )}
           </div>
           <div>
             <p className="text-4xl font-bold tabular-nums">

@@ -12,16 +12,16 @@ export const panel = "rounded-xl border border-border bg-surface p-4";
 const statusStyle: Record<string, string> = {
   // Content status
   DRAFT: "bg-surface-muted text-muted",
-  IN_REVIEW: "bg-accent-soft text-accent-strong",
+  IN_REVIEW: "bg-accent-soft text-accent-ink",
   PUBLISHED: "bg-success-soft text-success",
   ARCHIVED: "bg-danger-soft text-danger",
   RETIRED: "bg-surface-muted text-muted", // a test hidden after students took it
-  SCHEDULED: "bg-accent-soft text-accent-strong",
+  SCHEDULED: "bg-accent-soft text-accent-ink",
   // Order status
   CREATED: "bg-surface-muted text-muted",
   PAID: "bg-success-soft text-success",
   FAILED: "bg-danger-soft text-danger",
-  REFUNDED: "bg-accent-soft text-accent-strong",
+  REFUNDED: "bg-accent-soft text-accent-ink",
 };
 
 export function StatusBadge({ status }: { status: string }) {

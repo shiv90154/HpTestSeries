@@ -16,7 +16,9 @@ export async function SiteFooter() {
         <div className="space-y-4">
           <Logo light />
           <p className="max-w-sm text-sm leading-relaxed text-slate-400">{site.description}</p>
-          <p className="text-sm text-slate-400">{site.taglineHi}</p>
+          <p lang="hi" className="text-sm text-slate-400">
+            {site.taglineHi}
+          </p>
         </div>
         <div>
           <h2 className="mb-4 text-sm font-semibold uppercase tracking-wider text-white">Exams</h2>
@@ -102,7 +104,7 @@ export async function SiteFooter() {
         </div>
       </div>
       <div className="border-t border-white/10">
-        <p className="mx-auto w-full max-w-6xl px-4 py-5 text-xs text-slate-500">
+        <p className="mx-auto w-full max-w-6xl px-4 py-5 text-xs text-slate-400">
           © {new Date().getFullYear()} {site.name}. An independent practice platform — not affiliated with HPPSC, HPRCA, HPBOSE,
           HP Police or any government body.
         </p>

@@ -24,7 +24,7 @@ export default async function AttemptPage({ params }: PageProps<"/tests/[slug]/a
         <SiteHeader />
         <main className="mx-auto grid w-full max-w-md flex-1 place-items-center px-4 py-12 text-center">
           <div className={`${card} w-full space-y-4 p-6`}>
-            <span className="mx-auto grid size-12 place-items-center rounded-full bg-accent-soft text-accent-strong">
+            <span className="mx-auto grid size-12 place-items-center rounded-full bg-accent-soft text-accent-ink">
               <Lock className="size-5" aria-hidden />
             </span>
             <h1 className="text-xl font-semibold">{meta.title}</h1>

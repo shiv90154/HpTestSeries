@@ -43,7 +43,7 @@ export function ShareButtons({ url, text, label = "Share with friends" }: { url:
           href={`https://wa.me/?text=${encodeURIComponent(message)}`}
           target="_blank"
           rel="noopener noreferrer"
-          className={`${btnCls} text-[#128c7e]`}
+          className={`${btnCls} text-[#118376]`}
           onClick={() => log("whatsapp")}
         >
           <svg viewBox="0 0 24 24" aria-hidden className="size-4 fill-current">
@@ -55,7 +55,7 @@ export function ShareButtons({ url, text, label = "Share with friends" }: { url:
           href={`https://t.me/share/url?url=${encodeURIComponent(url)}&text=${encodeURIComponent(text)}`}
           target="_blank"
           rel="noopener noreferrer"
-          className={`${btnCls} text-[#229ed9]`}
+          className={`${btnCls} text-[#1b7caa]`}
           onClick={() => log("telegram")}
         >
           <Send className="size-4" /> Telegram

@@ -111,7 +111,9 @@ export default async function Home() {
               <h1 className="text-[28px] font-bold leading-[1.2] tracking-tight sm:text-5xl sm:leading-[1.15]">
                 Crack Himachal govt exams with <span className="text-accent">real CBT</span> mock tests
               </h1>
-              <p className="text-[15px] text-white/85 sm:text-lg">{site.taglineHi}</p>
+              <p lang="hi" className="text-[15px] text-white/85 sm:text-lg">
+                {site.taglineHi}
+              </p>
               {/* Phones: full-width, thumb-sized buttons stacked like an app; larger screens: inline */}
               <div className="grid gap-2.5 sm:flex sm:flex-wrap sm:gap-3">
                 <Link href={FREE_MOCK_HREF} className={btn("accent", "lg", "w-full sm:w-auto")}>
@@ -178,7 +180,11 @@ export default async function Home() {
                   </div>
                   <div>
                     <h3 className="text-lg font-semibold">{e.name}</h3>
-                    {e.nameHi && <p className="text-sm text-muted">{e.nameHi}</p>}
+                    {e.nameHi && (
+                      <p lang="hi" className="text-sm text-muted">
+                        {e.nameHi}
+                      </p>
+                    )}
                   </div>
                   <p className="mt-auto text-xs text-muted">{b.name}</p>
                 </Link>
@@ -331,7 +337,7 @@ function Plan(props: { name: string; price: string; note: string; items: string[
         <span className="absolute -top-3 left-5 rounded-full bg-primary px-2.5 py-1 text-xs font-semibold text-white">Best value</span>
       )}
       {props.soon && (
-        <span className="absolute right-5 top-5 rounded-full bg-accent-soft px-2.5 py-1 text-xs font-semibold text-accent-strong">Launching soon</span>
+        <span className="absolute right-5 top-5 rounded-full bg-accent-soft px-2.5 py-1 text-xs font-semibold text-accent-ink">Launching soon</span>
       )}
       <h3 className="flex items-center gap-2 font-semibold">
         <BadgeIndianRupee className="size-5 text-primary" /> {props.name}

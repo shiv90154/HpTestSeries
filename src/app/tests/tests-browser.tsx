@@ -139,7 +139,7 @@ export function TestGrid({ tests }: { tests: PublicTest[] }) {
   return (
     <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
       {tests.map((t) => (
-        <TestCard key={t.slug} test={t} />
+        <TestCard key={t.slug} test={t} headingLevel={2} />
       ))}
     </div>
   );

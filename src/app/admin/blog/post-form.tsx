@@ -135,7 +135,7 @@ export function PostForm({ id, status, canPublish, examOptions, initial }: Props
                 }}
               />
             </div>
-            {published && <p className="mt-1 text-xs text-accent-strong">Changing the URL of a published post breaks links Google already has.</p>}
+            {published && <p className="mt-1 text-xs text-accent-ink">Changing the URL of a published post breaks links Google already has.</p>}
           </div>
           <div>
             <label className={labelCls} htmlFor="category">Category</label>

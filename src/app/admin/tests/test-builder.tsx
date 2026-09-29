@@ -159,7 +159,7 @@ export function TestBuilder({ id, slug, status, attempts, scheduledFor, initialS
       {/* Summary + lifecycle */}
       <div className={`${panel} flex flex-wrap items-center gap-3`}>
         {scheduledFor ? (
-          <span className="inline-block rounded-md bg-accent-soft px-2 py-0.5 text-xs font-semibold text-accent-strong">
+          <span className="inline-block rounded-md bg-accent-soft px-2 py-0.5 text-xs font-semibold text-accent-ink">
             scheduled · {scheduledFor.toLocaleString("en-IN", { timeZone: "Asia/Kolkata", dateStyle: "medium", timeStyle: "short" })}
           </span>
         ) : (
@@ -169,7 +169,7 @@ export function TestBuilder({ id, slug, status, attempts, scheduledFor, initialS
           <b>{sections.length}</b> section{sections.length === 1 ? "" : "s"} · <b>{totalQs}</b> questions · <b>{totalMarks}</b> marks
           {attempts > 0 && <> · {attempts.toLocaleString("en-IN")} attempts</>}
         </span>
-        {notPublished > 0 && <span className="text-sm text-accent-strong">{notPublished} question(s) not published yet</span>}
+        {notPublished > 0 && <span className="text-sm text-accent-ink">{notPublished} question(s) not published yet</span>}
         <div className="ml-auto flex flex-wrap gap-2">
           {editable && (
             <button type="button" onClick={save} disabled={pending || !dirty} className="rounded-lg bg-primary px-4 py-1.5 text-sm font-medium text-primary-foreground disabled:opacity-50">
@@ -327,20 +327,20 @@ export function TestBuilder({ id, slug, status, attempts, scheduledFor, initialS
             <div className="flex flex-wrap items-end gap-3">
               <span className="flex size-8 items-center justify-center rounded-lg bg-primary-soft text-sm font-semibold text-primary">{i + 1}</span>
               <div className="min-w-40 flex-1">
-                <label className={labelCls}>Section name</label>
-                <input className={inputCls} value={s.name} onChange={(e) => patchSection(i, { name: e.target.value })} />
+                <label className={labelCls} htmlFor={`sec-${i}-name`}>Section name</label>
+                <input id={`sec-${i}-name`} className={inputCls} value={s.name} onChange={(e) => patchSection(i, { name: e.target.value })} />
               </div>
               <div className="min-w-40 flex-1">
-                <label className={labelCls}>Hindi name</label>
-                <input lang="hi" className={inputCls} value={s.nameHi} onChange={(e) => patchSection(i, { nameHi: e.target.value })} />
+                <label className={labelCls} htmlFor={`sec-${i}-hi`}>Hindi name</label>
+                <input id={`sec-${i}-hi`} lang="hi" className={inputCls} value={s.nameHi} onChange={(e) => patchSection(i, { nameHi: e.target.value })} />
               </div>
               <div className="w-24">
-                <label className={labelCls}>+ Correct</label>
-                <input type="number" step="0.25" min={0} className={inputCls} value={s.marksCorrect} onChange={(e) => patchSection(i, { marksCorrect: Number(e.target.value) })} />
+                <label className={labelCls} htmlFor={`sec-${i}-plus`}>+ Correct</label>
+                <input id={`sec-${i}-plus`} type="number" step="0.25" min={0} className={inputCls} value={s.marksCorrect} onChange={(e) => patchSection(i, { marksCorrect: Number(e.target.value) })} />
               </div>
               <div className="w-24">
-                <label className={labelCls}>− Wrong</label>
-                <input type="number" step="0.01" min={0} className={inputCls} value={s.marksWrong} onChange={(e) => patchSection(i, { marksWrong: Number(e.target.value) })} />
+                <label className={labelCls} htmlFor={`sec-${i}-minus`}>− Wrong</label>
+                <input id={`sec-${i}-minus`} type="number" step="0.01" min={0} className={inputCls} value={s.marksWrong} onChange={(e) => patchSection(i, { marksWrong: Number(e.target.value) })} />
               </div>
               {editable && (
                 <div className="flex">
@@ -429,38 +429,38 @@ export function TestBuilder({ id, slug, status, attempts, scheduledFor, initialS
               search();
             }}
           >
-            <input className={`${inputCls} sm:col-span-2`} placeholder="Search text (English or Hindi)" value={filters.q} onChange={(e) => setFilters({ ...filters, q: e.target.value })} />
-            <select className={inputCls} value={filters.subjectId} onChange={(e) => setFilters({ ...filters, subjectId: e.target.value, topicId: "" })}>
+            <input aria-label="Search text" className={`${inputCls} sm:col-span-2`} placeholder="Search text (English or Hindi)" value={filters.q} onChange={(e) => setFilters({ ...filters, q: e.target.value })} />
+            <select aria-label="Subject" className={inputCls} value={filters.subjectId} onChange={(e) => setFilters({ ...filters, subjectId: e.target.value, topicId: "" })}>
               <option value="">All subjects</option>
               {taxonomy.subjects.map((s) => (
                 <option key={s.id} value={s.id}>{s.name}</option>
               ))}
             </select>
-            <select className={inputCls} value={filters.topicId} disabled={!filters.subjectId} onChange={(e) => setFilters({ ...filters, topicId: e.target.value })}>
+            <select aria-label="Topic" className={inputCls} value={filters.topicId} disabled={!filters.subjectId} onChange={(e) => setFilters({ ...filters, topicId: e.target.value })}>
               <option value="">All topics</option>
               {topics.map((t) => (
                 <option key={t.id} value={t.id}>{t.name}</option>
               ))}
             </select>
-            <select className={inputCls} value={filters.difficulty} onChange={(e) => setFilters({ ...filters, difficulty: e.target.value })}>
+            <select aria-label="Difficulty" className={inputCls} value={filters.difficulty} onChange={(e) => setFilters({ ...filters, difficulty: e.target.value })}>
               <option value="">Any difficulty</option>
               <option value="EASY">Easy</option>
               <option value="MEDIUM">Medium</option>
               <option value="HARD">Hard</option>
             </select>
-            <select className={inputCls} value={filters.status} onChange={(e) => setFilters({ ...filters, status: e.target.value })}>
+            <select aria-label="Status" className={inputCls} value={filters.status} onChange={(e) => setFilters({ ...filters, status: e.target.value })}>
               <option value="PUBLISHED">Published only</option>
               <option value="">Any status (except archived)</option>
               <option value="IN_REVIEW">In review</option>
               <option value="DRAFT">Draft</option>
             </select>
-            <select className={inputCls} value={filters.source} onChange={(e) => setFilters({ ...filters, source: e.target.value, sourceExamId: "" })}>
+            <select aria-label="Source" className={inputCls} value={filters.source} onChange={(e) => setFilters({ ...filters, source: e.target.value, sourceExamId: "" })}>
               <option value="">Original + PYQ</option>
               <option value="ORIGINAL">Original only</option>
               <option value="PYQ">PYQ only</option>
             </select>
             {filters.source === "PYQ" ? (
-              <select className={inputCls} value={filters.sourceExamId} onChange={(e) => setFilters({ ...filters, sourceExamId: e.target.value })}>
+              <select aria-label="PYQ exam" className={inputCls} value={filters.sourceExamId} onChange={(e) => setFilters({ ...filters, sourceExamId: e.target.value })}>
                 <option value="">Any exam</option>
                 {taxonomy.exams.map((e) => (
                   <option key={e.id} value={e.id}>{e.body} — {e.name}</option>
@@ -479,7 +479,7 @@ export function TestBuilder({ id, slug, status, attempts, scheduledFor, initialS
               </button>
               <span className="flex items-center gap-2 whitespace-nowrap text-sm">
                 or pick
-                <input type="number" min={1} max={200} className={`${inputCls} w-20`} value={randomCount} onChange={(e) => setRandomCount(Number(e.target.value))} />
+                <input type="number" min={1} max={200} aria-label="How many questions to pick at random" className={`${inputCls} w-20`} value={randomCount} onChange={(e) => setRandomCount(Number(e.target.value))} />
                 at random
                 <button type="button" disabled={pending || randomCount < 1} onClick={autoPick} className={`${small} flex items-center gap-1 whitespace-nowrap`}>
                   <Shuffle className="size-4" /> Auto-pick

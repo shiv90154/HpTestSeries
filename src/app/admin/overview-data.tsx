@@ -56,7 +56,7 @@ export async function OverviewData() {
     <>
       {missing.length > 0 && (
         <p role="alert" className="flex items-start gap-2.5 rounded-xl border border-accent bg-accent-soft p-4 text-sm">
-          <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-accent-strong" />
+          <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-accent-ink" />
           <span>
             <b>Before launch:</b> the Contact and policy pages are missing your {missing.join(", ")}. Fill them in{" "}
             <code>src/lib/business.ts</code> — Razorpay will not approve the account without them.

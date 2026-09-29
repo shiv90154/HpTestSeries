@@ -41,7 +41,11 @@ export default async function ExamsPage() {
           <section key={b.slug} className="space-y-4">
             <div>
               <h2 className="text-xl font-semibold">{b.name}</h2>
-              {b.nameHi && <p className="text-sm text-muted">{b.nameHi}</p>}
+              {b.nameHi && (
+                <p lang="hi" className="text-sm text-muted">
+                  {b.nameHi}
+                </p>
+              )}
             </div>
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {b.exams.map((e) => (
@@ -51,7 +55,9 @@ export default async function ExamsPage() {
                   </span>
                   <span className="min-w-0 flex-1">
                     <span className="block font-semibold">{e.name} Mock Test</span>
-                    <span className="block text-sm text-muted">{e.nameHi}</span>
+                    <span lang="hi" className="block text-sm text-muted">
+                      {e.nameHi}
+                    </span>
                   </span>
                   <ChevronRight className="size-5 text-muted group-hover:text-primary" />
                 </Link>

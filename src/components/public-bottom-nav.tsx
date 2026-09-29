@@ -38,7 +38,7 @@ export function PublicBottomNav() {
             {t.label}
           </Link>
         ) : (
-          <Link key="free" href={FREE_MOCK_HREF} className="flex flex-col items-center justify-end gap-0.5 pb-2 text-[11px] font-semibold text-accent-strong">
+          <Link key="free" href={FREE_MOCK_HREF} className="flex flex-col items-center justify-end gap-0.5 pb-2 text-[11px] font-semibold text-accent-ink">
             <span className="-mt-6 grid size-13 place-items-center rounded-full bg-accent text-[#1f1300] shadow-lg ring-4 ring-surface">
               <Play className="size-6 fill-current" />
             </span>
