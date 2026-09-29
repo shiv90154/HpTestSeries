@@ -93,6 +93,9 @@ export default async function ProfilePage() {
                       {o.status === "REFUNDED" && <span className="font-semibold text-danger"> · Refunded</span>}
                     </p>
                   </div>
+                  <Link href="/refund-request" className="shrink-0 text-xs text-muted hover:text-primary hover:underline">
+                    Refund?
+                  </Link>
                   <Link href={`/orders/${o.id}/receipt`} className="inline-flex shrink-0 items-center gap-1.5 text-sm font-medium text-primary hover:underline">
                     <Receipt className="size-4" /> Receipt
                   </Link>

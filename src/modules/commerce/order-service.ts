@@ -3,6 +3,7 @@ import { db } from "@/lib/db";
 
 export type OrderListItem = {
   id: string;
+  userId: string;
   userName: string;
   userEmail: string;
   productTitle: string;
@@ -19,6 +20,7 @@ export async function listOrders(limit = 200): Promise<OrderListItem[]> {
     take: limit,
     select: {
       id: true,
+      userId: true,
       amountPaise: true,
       status: true,
       razorpayOrderId: true,
@@ -30,6 +32,7 @@ export async function listOrders(limit = 200): Promise<OrderListItem[]> {
   });
   return orders.map((o) => ({
     id: o.id,
+    userId: o.userId,
     userName: o.user.name,
     userEmail: o.user.email,
     productTitle: o.product.title,

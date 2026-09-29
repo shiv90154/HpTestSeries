@@ -53,7 +53,7 @@ export default async function BuyPage({ params }: PageProps<"/buy/[slug]">) {
               ₹{rupees}
               {validity && <span className="ml-2 text-sm font-normal text-muted">{validity}</span>}
             </p>
-            <p className="mt-1 text-xs text-muted">One-time payment · inclusive of all taxes · no auto-renewal</p>
+            <p className="mt-1 text-xs text-muted">One-time payment · final price, nothing extra · no auto-renewal</p>
           </div>
 
           <section className="space-y-3">
@@ -109,7 +109,7 @@ export default async function BuyPage({ params }: PageProps<"/buy/[slug]">) {
                   don&apos;t lose any days.
                 </p>
               )}
-              <BuyButton productSlug={product.slug} user={user} label={own.kind === "renewable" ? "Renew now" : undefined} />
+              <BuyButton productSlug={product.slug} pricePaise={product.priceInPaise} user={user} label={own.kind === "renewable" ? "Renew now" : undefined} />
             </>
           )}
           <div className="space-y-2 text-xs text-muted">

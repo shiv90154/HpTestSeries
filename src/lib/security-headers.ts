@@ -47,4 +47,4 @@ export function securityHeaders(isDev: boolean): Header[] {
 }
 
 /** Signed-in areas whose HTML must never land in a shared cache. */
-export const privatePaths = ["/admin/:path*", "/dashboard/:path*", "/results/:path*", "/buy/:path*", "/preview/:path*", "/orders/:path*", "/profile/:path*"];
+export const privatePaths = ["/admin/:path*", "/dashboard/:path*", "/results/:path*", "/buy/:path*", "/preview/:path*", "/orders/:path*", "/profile/:path*", "/verify-2fa", "/refund-request"];

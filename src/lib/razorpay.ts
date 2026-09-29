@@ -35,6 +35,17 @@ export async function createRazorpayOrder(opts: { amountPaise: number; receipt: 
   return res.json();
 }
 
+export type RazorpayPayment = { id: string; status: string; amount: number; currency: string; order_id: string };
+
+/** Payments made against one order (used to recover payments whose webhook never arrived). */
+export async function fetchOrderPayments(razorpayOrderId: string): Promise<RazorpayPayment[]> {
+  const res = await fetch(`https://api.razorpay.com/v1/orders/${encodeURIComponent(razorpayOrderId)}/payments`, {
+    headers: { Authorization: auth() },
+  });
+  if (!res.ok) throw new Error(`Razorpay payments lookup failed (${res.status}): ${await res.text()}`);
+  return ((await res.json()) as { items: RazorpayPayment[] }).items;
+}
+
 /** Verifies the signature Razorpay Checkout returns to the client after a successful payment. */
 export function verifyCheckoutSignature(opts: { razorpayOrderId: string; razorpayPaymentId: string; razorpaySignature: string }): boolean {
   if (!KEY_SECRET) throw new Error("RAZORPAY_KEY_SECRET is not set.");

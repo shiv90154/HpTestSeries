@@ -3,7 +3,7 @@ import { betterAuth } from "better-auth";
 import { APIError } from "better-auth/api";
 import { prismaAdapter } from "better-auth/adapters/prisma";
 import { nextCookies } from "better-auth/next-js";
-import { emailOTP, phoneNumber } from "better-auth/plugins";
+import { emailOTP, phoneNumber, twoFactor } from "better-auth/plugins";
 import { db } from "@/lib/db";
 import { consumeRateLimit } from "@/lib/rate-limit";
 import { isValidIndianMobile } from "./permissions";
@@ -122,6 +122,8 @@ export const auth = betterAuth({
         getTempName: () => "Aspirant",
       },
     }),
+    // Staff-only, opt-in TOTP. Used through server actions (see two-factor.ts for how it is enforced).
+    twoFactor({ issuer: "HP Test Series", allowPasswordless: true }),
     nextCookies(), // must be last: lets server actions set auth cookies
   ],
 });

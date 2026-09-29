@@ -1,7 +1,7 @@
 import "server-only";
 
 // Which sign-in options the login page offers. Google + email OTP are free and need no DLT
-// registration; phone OTP waits for MSG91/DLT approval in production.
+// registration; phone OTP is off until explicitly enabled.
 
 /** Better Auth sends codes in the background and reports success even if sending fails, so only offer
  * email login where mail can actually go out (always in development: codes print to the terminal). */
@@ -10,10 +10,7 @@ export const emailLoginEnabled = (!!process.env.RESEND_API_KEY && !!process.env.
 export const googleLoginEnabled = !!process.env.GOOGLE_CLIENT_ID && !!process.env.GOOGLE_CLIENT_SECRET;
 
 /**
- * PHONE_LOGIN=on|off overrides. By default phone login is offered once MSG91 is configured, and
- * always in development (codes print to the terminal) so existing phone-based staff accounts still work.
+ * Phone (SMS OTP) login is OFF unless PHONE_LOGIN=on. Students sign in with Google or an email code; turn
+ * this on only after MSG91 + DLT approval (and set MSG91_AUTH_KEY / MSG91_OTP_TEMPLATE_ID).
  */
-export const phoneLoginEnabled =
-  process.env.PHONE_LOGIN === "on" ||
-  (process.env.PHONE_LOGIN !== "off" &&
-    ((!!process.env.MSG91_AUTH_KEY && !!process.env.MSG91_OTP_TEMPLATE_ID) || process.env.NODE_ENV !== "production"));
+export const phoneLoginEnabled = process.env.PHONE_LOGIN === "on";

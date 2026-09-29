@@ -4,6 +4,7 @@ import { notFound, redirect } from "next/navigation";
 import { cache } from "react";
 import { db } from "@/lib/db";
 import { auth } from "./auth";
+import { hasPassedTwoFactor, isTwoFactorEnabled } from "./two-factor";
 import { can, type Permission, type Role } from "./permissions";
 
 export type CurrentUser = {
@@ -49,5 +50,9 @@ export async function requirePermission(permission: Permission, returnTo?: strin
   const user = await requireUser(returnTo);
   // 404 rather than 403: do not reveal that admin routes exist.
   if (!can(user.role, permission)) notFound();
+  // Staff who turned on 2FA must pass it (once per 12 hours) before any admin page or action works.
+  if ((await isTwoFactorEnabled(user.id)) && !(await hasPassedTwoFactor(user.id))) {
+    redirect(`/verify-2fa?next=${encodeURIComponent(returnTo ?? "/admin")}`);
+  }
   return user;
 }

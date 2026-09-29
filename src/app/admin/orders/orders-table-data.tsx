@@ -1,4 +1,5 @@
 import { connection } from "next/server";
+import Link from "next/link";
 import { StatusBadge } from "../ui";
 import { Table } from "../table";
 import { listOrders } from "@/modules/commerce/order-service";
@@ -21,7 +22,7 @@ export async function OrdersTableData() {
             header: "User",
             render: (o) => (
               <>
-                <div>{o.userName}</div>
+                <Link href={`/admin/users/${o.userId}`} className="hover:text-primary hover:underline">{o.userName}</Link>
                 <div className="text-xs text-muted">{o.userEmail}</div>
               </>
             ),

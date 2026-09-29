@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 import { requirePermission } from "@/modules/identity/session";
 import { SkeletonTableRow } from "@/components/skeleton";
+import { ReconcileButton } from "./reconcile-button";
 import { OrdersTableData } from "./orders-table-data";
 
 export const metadata: Metadata = { title: "Orders" };
@@ -35,7 +36,10 @@ export default async function OrdersAdminPage() {
 
   return (
     <div className="space-y-5">
-      <h1 className="text-xl font-semibold">Orders</h1>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <h1 className="text-xl font-semibold">Orders</h1>
+        <ReconcileButton />
+      </div>
       <Suspense fallback={<OrdersTableSkeleton />}>
         <OrdersTableData />
       </Suspense>

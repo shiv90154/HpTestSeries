@@ -61,6 +61,10 @@ export default function RefundPolicyPage() {
       </p>
 
       <h2>5. How to request a refund</h2>
+      <p>
+        The quickest way is the <Link href="/refund-request">refund request page</Link>: it shows your orders and opens WhatsApp or
+        email with the order details already filled in. Or do it by hand:
+      </p>
       <ol>
         <li>
           Email <a href={`mailto:${biz("email")}`}>{biz("email")}</a> from your registered email, or mention your registered mobile

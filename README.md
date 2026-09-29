@@ -35,7 +35,8 @@ Rows are validated first; nothing is saved until you confirm. Imports land as **
 ## Scripts
 | Script | Purpose |
 |---|---|
-| `npm test` | Unit tests (grading, access control, permissions, CSV import) |
+| `npm test` | Unit tests (grading, access control, permissions, CSV import, coupons) |
+| `npm run test:integration` | Payment flow against the local DB + Razorpay **test** API (needs `rzp_test_` keys in `.env`; refuses live keys) |
 | `npm run typecheck` | Generate Next route types, then `tsc` |
 | `npm run db:migrate` / `db:seed` / `db:studio` | Prisma workflows |
 | `npm run set-role -- <phone\|email> <ROLE>` | Grant a staff role |
@@ -60,3 +61,12 @@ src/app/admin/                admin panel (layout-guarded; every action re-check
 - **Auth:** phone OTP (MSG91, DLT template with an `otp` variable) + optional Google. OTP limits: 3 sends / 10 min per
   phone, 20 / 10 min per IP (loose on purpose — mobile carriers share IPs via CGNAT). Max 2 sessions per user.
 - **Prisma 7:** `migrate dev` no longer runs `generate`; use `npm run db:migrate`, which does both.
+- **Payments:** Razorpay Checkout → client callback unlocks access instantly; the webhook (`/api/razorpay/webhook`) is the
+  safety net; `POST /api/cron/reconcile` (Bearer `CRON_SECRET`) recovers payments both missed. Crontab on the server:
+  `*/15 * * * * curl -fsS -X POST -H "Authorization: Bearer $CRON_SECRET" https://hptestseries.in/api/cron/reconcile`
+- **Refunds are manual:** students use `/refund-request` (opens WhatsApp/email with the order filled in). The owner refunds from the
+  Razorpay dashboard, then clicks *Mark refunded* on the user's admin page to end their access.
+- **Coupons:** `/admin/coupons` (percent or flat, max uses, expiry, partner tag). One use per student; 100% = free access.
+- **Admin 2FA (optional):** each staff member can turn on an authenticator-app code at `/admin/security`.
+- **Login:** Google + email code. Phone/SMS login is off unless `PHONE_LOGIN=on`.
+- **No GST:** the seller is not GST-registered, so receipts are plain payment receipts.

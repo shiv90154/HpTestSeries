@@ -71,6 +71,8 @@ export async function getReceipt(userId: string, orderId: string) {
     select: {
       id: true,
       amountPaise: true,
+      discountPaise: true,
+      coupon: { select: { code: true } },
       status: true,
       createdAt: true,
       razorpayOrderId: true,
@@ -86,6 +88,8 @@ export async function getReceipt(userId: string, orderId: string) {
     id: order.id,
     status: order.status as "PAID" | "REFUNDED",
     amountPaise: order.amountPaise,
+    discountPaise: order.discountPaise,
+    couponCode: order.coupon?.code ?? null,
     orderedAt: order.createdAt,
     paidAt: payment?.createdAt ?? order.createdAt,
     razorpayOrderId: order.razorpayOrderId,

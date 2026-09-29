@@ -6,8 +6,9 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { track } from "@/components/analytics";
 import { btn } from "@/components/ui";
+import { rupees } from "@/lib/money";
 import { site } from "@/lib/site";
-import { confirmPaymentAction, createOrderAction } from "./actions";
+import { confirmPaymentAction, createOrderAction, quoteCouponAction } from "./actions";
 
 declare global {
   interface Window {
@@ -15,17 +16,49 @@ declare global {
   }
 }
 
+type Quote = { code: string; discountPaise: number; finalPaise: number };
+
 export function BuyButton({
   productSlug,
+  pricePaise,
   user,
   label = "Buy now",
 }: {
   productSlug: string;
+  pricePaise: number;
   user: { name: string; email: string; phoneNumber: string | null } | null;
   label?: string;
 }) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const [code, setCode] = useState("");
+  const [quote, setQuote] = useState<Quote | null>(null);
+  const [couponError, setCouponError] = useState<string | null>(null);
+  const [checking, setChecking] = useState(false);
+
+  async function applyCode() {
+    if (!user) {
+      router.push(`/login?next=${encodeURIComponent(`/buy/${productSlug}`)}`);
+      return;
+    }
+    setChecking(true);
+    setCouponError(null);
+    try {
+      const res = await quoteCouponAction(productSlug, code);
+      if ("error" in res) {
+        setQuote(null);
+        setCouponError(res.error);
+      } else setQuote(res);
+    } finally {
+      setChecking(false);
+    }
+  }
+
+  function removeCode() {
+    setQuote(null);
+    setCode("");
+    setCouponError(null);
+  }
 
   async function pay() {
     if (!user) {
@@ -41,12 +74,21 @@ export function BuyButton({
     // Stays true while Razorpay Checkout is open, so a second tap can't create a second order.
     setLoading(true);
     try {
-      const order = await createOrderAction(productSlug);
+      const order = await createOrderAction(productSlug, quote?.code);
       if ("error" in order) {
         toast.error(order.error);
         setLoading(false);
         return;
       }
+      if ("free" in order) {
+        track("purchase", { transaction_id: order.orderId, value: 0, currency: "INR", item_name: productSlug });
+        toast.success("Coupon applied! Access unlocked.");
+        router.push("/dashboard");
+        router.refresh();
+        return;
+      }
+      // Phone-only accounts carry a placeholder address that can never receive mail; don't hand it to Razorpay.
+      const realEmail = user.email.endsWith(".invalid") ? undefined : user.email;
       const razorpay = new Razorpay({
         key: order.keyId,
         amount: order.amountPaise,
@@ -54,7 +96,7 @@ export function BuyButton({
         name: site.name,
         description: order.productTitle,
         order_id: order.razorpayOrderId,
-        prefill: { name: user.name, email: user.email, contact: user.phoneNumber ?? undefined },
+        prefill: { name: user.name, email: realEmail, contact: user.phoneNumber ?? undefined },
         theme: { color: site.themeColor },
         handler: async (response: { razorpay_payment_id: string; razorpay_order_id: string; razorpay_signature: string }) => {
           const result = await confirmPaymentAction({
@@ -63,7 +105,7 @@ export function BuyButton({
             razorpaySignature: response.razorpay_signature,
           });
           if ("error" in result) {
-            toast.error(`Payment received but could not be confirmed: ${result.error}`);
+            toast.error(`Payment received but could not be confirmed: ${result.error}. If money was deducted, access unlocks automatically within a few minutes.`);
             setLoading(false);
             return;
           }
@@ -82,12 +124,51 @@ export function BuyButton({
     }
   }
 
+  const payLabel = quote ? (quote.finalPaise === 0 ? "Get it free" : `${label} · ${rupees(quote.finalPaise)}`) : label;
+
   return (
-    <>
+    <div className="space-y-4">
       <Script src="https://checkout.razorpay.com/v1/checkout.js" strategy="lazyOnload" />
-      <button onClick={pay} disabled={loading} className={btn("primary", "lg")}>
-        {loading ? "Please wait…" : label}
+
+      {quote ? (
+        <p className="flex items-center justify-between gap-3 rounded-xl border border-success bg-success-soft p-3 text-sm">
+          <span>
+            <b>{quote.code}</b> applied — you save {rupees(quote.discountPaise)}
+            <span className="block text-xs text-muted">
+              {rupees(pricePaise)} → <b className="text-foreground">{rupees(quote.finalPaise)}</b>
+            </span>
+          </span>
+          <button type="button" onClick={removeCode} className="text-xs font-medium text-muted underline">
+            Remove
+          </button>
+        </p>
+      ) : (
+        <div className="space-y-1.5">
+          <div className="flex gap-2">
+            <input
+              value={code}
+              onChange={(e) => setCode(e.target.value.toUpperCase())}
+              placeholder="Coupon code"
+              aria-label="Coupon code"
+              autoCapitalize="characters"
+              maxLength={24}
+              className="h-11 min-w-0 flex-1 rounded-xl border border-border bg-surface px-3 text-sm outline-none focus:border-primary"
+            />
+            <button type="button" onClick={applyCode} disabled={!code.trim() || checking} className={btn("outline", "md")}>
+              {checking ? "Checking…" : "Apply"}
+            </button>
+          </div>
+          {couponError && (
+            <p role="alert" className="text-xs text-danger">
+              {couponError}
+            </p>
+          )}
+        </div>
+      )}
+
+      <button onClick={pay} disabled={loading} className={btn("primary", "lg", "w-full")}>
+        {loading ? "Please wait…" : payLabel}
       </button>
-    </>
+    </div>
   );
 }

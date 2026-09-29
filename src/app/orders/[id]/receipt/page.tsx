@@ -15,7 +15,7 @@ const IST = { timeZone: "Asia/Kolkata" } as const;
 const day = (d: Date) => d.toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric", ...IST });
 const dayTime = (d: Date) => d.toLocaleString("en-IN", { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit", ...IST });
 
-// A payment receipt, not a GST tax invoice: that needs a GSTIN on it (BLUEPRINT §17, once registered).
+// A payment receipt, not a GST tax invoice: the seller has no GSTIN yet, so no GST is charged or shown.
 export default async function ReceiptPage({ params }: PageProps<"/orders/[id]/receipt">) {
   const { id } = await params;
   const user = await requireUser(`/orders/${id}/receipt`);
@@ -76,8 +76,14 @@ export default async function ReceiptPage({ params }: PageProps<"/orders/[id]/re
                   {r.access && ` · ${day(r.access.startsAt)} – ${day(r.access.expiresAt)}`}
                 </p>
               </td>
-              <td className="py-3 text-right tabular-nums">{rupees(r.amountPaise)}</td>
+              <td className="py-3 text-right tabular-nums">{rupees(r.amountPaise + r.discountPaise)}</td>
             </tr>
+            {r.discountPaise > 0 && (
+              <tr className="border-b border-border">
+                <td className="py-2 text-muted">Coupon{r.couponCode ? ` ${r.couponCode}` : ""}</td>
+                <td className="py-2 text-right tabular-nums text-success">−{rupees(r.discountPaise)}</td>
+              </tr>
+            )}
           </tbody>
           <tfoot>
             <tr>
@@ -86,7 +92,7 @@ export default async function ReceiptPage({ params }: PageProps<"/orders/[id]/re
             </tr>
             <tr>
               <td colSpan={2} className="pt-1 text-right text-xs text-muted">
-                Inclusive of all applicable taxes
+                No GST charged (seller not registered under GST)
               </td>
             </tr>
           </tfoot>
@@ -97,7 +103,7 @@ export default async function ReceiptPage({ params }: PageProps<"/orders/[id]/re
             Paid on: <span className="text-foreground">{dayTime(r.paidAt)}</span>
           </p>
           <p>
-            Paid via: <span className="text-foreground">Razorpay</span>
+            Paid via: <span className="text-foreground">{r.amountPaise === 0 ? "100% coupon (nothing to pay)" : "Razorpay"}</span>
           </p>
           {r.razorpayPaymentId && (
             <p className="break-all">

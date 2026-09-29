@@ -35,9 +35,11 @@ model User {
   role                Role      @default(STUDENT)
   preferredLang       Lang      @default(en)
   district            String?
+  twoFactorEnabled    Boolean   @default(false) // staff-only TOTP, see modules/identity/two-factor.ts
   createdAt           DateTime  @default(now())
   updatedAt           DateTime  @updatedAt
 
+  twoFactor      TwoFactor?
   sessions       Session[]
   accounts       Account[]
   attempts       Attempt[]
@@ -97,6 +99,20 @@ model Verification {
 
   @@index([identifier])
   @@map("verification")
+}
+
+// Better Auth twoFactor plugin table (TOTP secret + backup codes, both encrypted by Better Auth).
+model TwoFactor {
+  id                      String    @id @default(cuid())
+  secret                  String
+  backupCodes             String
+  userId                  String    @unique
+  user                    User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  verified                Boolean   @default(true)
+  failedVerificationCount Int       @default(0)
+  lockedUntil             DateTime?
+
+  @@map("twoFactor")
 }
 
 // Better Auth rate-limit counters (rateLimit.storage = "database"; memory is useless on serverless).
@@ -453,7 +469,8 @@ model Order {
   user            User        @relation(fields: [userId], references: [id])
   productId       String
   product         Product     @relation(fields: [productId], references: [id])
-  amountPaise     Int
+  amountPaise     Int // what the student pays (after any coupon)
+  discountPaise   Int         @default(0) // list price minus amountPaise
   couponId        String?
   coupon          Coupon?     @relation(fields: [couponId], references: [id])
   status          OrderStatus @default(CREATED)

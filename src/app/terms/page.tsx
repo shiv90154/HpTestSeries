@@ -43,7 +43,7 @@ export default function TermsPage() {
 
       <h2>3. Purchases and access</h2>
       <ul>
-        <li>Prices are in Indian Rupees and include applicable GST unless stated otherwise.</li>
+        <li>Prices are in Indian Rupees and are the final amount payable. We are not currently registered under GST, so no GST is charged.</li>
         <li>
           Each series or pass shows its validity (a number of days, or until a fixed date). Access ends when the validity
           ends, and tests cannot be attempted after that.
