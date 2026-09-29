@@ -1,9 +1,9 @@
 "use client";
 
 import confetti from "canvas-confetti";
-import { ArrowRight, Award, CheckCircle2, Clock, ImageDown, Lock, LogIn, RotateCcw, Target, Trophy, XCircle } from "lucide-react";
+import { ArrowRight, Award, CheckCircle2, Clock, Grid3x3, ImageDown, Lock, LogIn, RotateCcw, Target, Trophy, XCircle } from "lucide-react";
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 import { track } from "@/components/analytics";
 import { RichContent } from "@/components/rich-content";
@@ -26,6 +26,15 @@ const pct = (n: number, d: number) => (d > 0 ? Math.round((n / d) * 100) : 0);
 /** Free tests open straight into the CBT; paid ones go to the test page (unlock / demo). */
 const nextTestHref = (t: NonNullable<ResultData["nextTest"]>) => (t.isFree ? `/tests/${t.slug}/attempt` : `/tests/${t.slug}`);
 
+type Outcome = Exclude<Filter, "all">;
+const OUTCOME_LABEL: Record<Outcome, string> = { correct: "Correct", wrong: "Wrong", skipped: "Skipped" };
+const JUMP_TONE: Record<Outcome, string> = {
+  correct: "bg-success-soft text-success",
+  wrong: "bg-danger-soft text-danger",
+  skipped: "bg-surface-muted text-muted",
+};
+const JUMP_DOT: Record<Outcome, string> = { correct: "bg-success", wrong: "bg-danger", skipped: "bg-muted" };
+
 function duration(sec: number): string {
   const m = Math.floor(sec / 60);
   const s = sec % 60;
@@ -35,17 +44,20 @@ function duration(sec: number): string {
 /**
  * isGuest: result not saved to an account. loggedIn: can report questions (a guest may log in afterwards).
  * defaultLang: the student's profile language, or a guest's last pick on this device.
+ * askName: the signed-in student still has the placeholder name, which is what others see on the leaderboard.
  */
 export function ResultView({
   data,
   isGuest,
   loggedIn = !isGuest,
   defaultLang = "en",
+  askName = false,
 }: {
   data: ResultData;
   isGuest: boolean;
   loggedIn?: boolean;
   defaultLang?: Lang;
+  askName?: boolean;
 }) {
   const [lang, setLangState] = useState<Lang>(defaultLang);
   const setLang = (l: Lang) => {
@@ -59,8 +71,37 @@ export function ResultView({
   const accuracy = pct(data.correct, attempted);
   const total = data.questions.length;
 
-  const outcome = (q: ResultData["questions"][number]): Exclude<Filter, "all"> =>
+  const outcome = (q: ResultData["questions"][number]): Outcome =>
     !q.chosenOptionId ? "skipped" : q.chosenOptionId === q.correctOptionId ? "correct" : "wrong";
+
+  const jumpRef = useRef<HTMLElement>(null);
+  const listRef = useRef<HTMLOListElement>(null);
+  /** The "Jump to question" pill: shown while reading solutions once the question grid has scrolled away. */
+  const [showJumpPill, setShowJumpPill] = useState(false);
+  useEffect(() => {
+    const jump = jumpRef.current;
+    const list = listRef.current;
+    if (!jump || !list) return;
+    let jumpInView = true;
+    let listInView = false;
+    const io = new IntersectionObserver((entries) => {
+      for (const e of entries) {
+        if (e.target === jump) jumpInView = e.isIntersecting;
+        else listInView = e.isIntersecting;
+      }
+      setShowJumpPill(!jumpInView && listInView);
+    });
+    io.observe(jump);
+    io.observe(list);
+    return () => io.disconnect();
+  }, []);
+
+  function jumpTo(n: number) {
+    const el = document.getElementById(`q-${n}`);
+    if (!el) return;
+    el.scrollIntoView({ block: "start" });
+    el.focus({ preventScroll: true }); // keyboard and screen-reader users continue from the question itself
+  }
 
   // A little celebration for a strong result — top-3 rank or a clearly good score.
   useEffect(() => {
@@ -274,7 +315,14 @@ export function ResultView({
         </section>
       </div>
 
-      {data.leaderboard && data.leaderboard.length > 0 && <Leaderboard rows={data.leaderboard} you={data.rank} yourScore={data.score} />}
+      {data.leaderboard && data.leaderboard.length > 0 && (
+        <Leaderboard
+          rows={data.leaderboard}
+          you={data.rank}
+          yourScore={data.score}
+          nameHref={askName && data.attemptId ? `/welcome?next=${encodeURIComponent(`/results/${data.attemptId}`)}` : null}
+        />
+      )}
 
       {/* Solutions */}
       <section className="space-y-4">
@@ -287,7 +335,8 @@ export function ResultView({
                   key={l}
                   type="button"
                   onClick={() => setLang(l)}
-                  className={`rounded-lg px-3 py-1.5 font-medium ${lang === l ? "bg-primary text-white" : "text-muted"}`}
+                  aria-pressed={lang === l}
+                  className={`inline-flex h-10 items-center rounded-lg px-3.5 font-medium ${lang === l ? "bg-primary text-white" : "text-muted"}`}
                 >
                   <span lang={l === "hi" ? "hi" : undefined}>{l === "en" ? "English" : "हिंदी"}</span>
                 </button>
@@ -308,18 +357,55 @@ export function ResultView({
               key={f}
               type="button"
               onClick={() => setFilter(f)}
-              className={`whitespace-nowrap rounded-full border px-4 py-1.5 font-medium ${filter === f ? "border-primary bg-primary-soft text-primary" : "border-border bg-surface text-muted"}`}
+              aria-pressed={filter === f}
+              className={`inline-flex h-10 shrink-0 items-center whitespace-nowrap rounded-full border px-4 font-medium ${filter === f ? "border-primary bg-primary-soft text-primary" : "border-border bg-surface text-muted"}`}
             >
               {label}
             </button>
           ))}
         </div>
 
-        <ol className="space-y-4">
+        {/* Jump to question: with every solution open the list runs to many screens on a phone */}
+        {total > 1 && (
+          <nav ref={jumpRef} aria-label="Jump to question" className={`${card} scroll-mt-24 p-4`}>
+            <div className="mb-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted">
+              <p className="mr-auto text-sm font-semibold text-foreground">Jump to question</p>
+              {(["correct", "wrong", "skipped"] as const).map((o) => (
+                <span key={o} className="flex items-center gap-1.5">
+                  <span className={`size-2.5 rounded-full ${JUMP_DOT[o]}`} aria-hidden /> {OUTCOME_LABEL[o]}
+                </span>
+              ))}
+            </div>
+            <ol className="grid grid-cols-[repeat(auto-fill,minmax(2.5rem,1fr))] gap-1.5">
+              {shown.map((q) => {
+                const o = outcome(q);
+                return (
+                  <li key={q.id}>
+                    <button
+                      type="button"
+                      onClick={() => jumpTo(q.number)}
+                      aria-label={`Question ${q.number}, ${OUTCOME_LABEL[o]}`}
+                      className={`grid h-10 w-full place-items-center rounded-lg text-sm font-semibold tabular-nums ${JUMP_TONE[o]}`}
+                    >
+                      {q.number}
+                    </button>
+                  </li>
+                );
+              })}
+            </ol>
+          </nav>
+        )}
+
+        <ol ref={listRef} className="space-y-4">
           {shown.map((q) => {
             const o = outcome(q);
             return (
-              <li key={q.id} className={`${card} p-5`}>
+              <li
+                key={q.id}
+                id={`q-${q.number}`}
+                tabIndex={-1}
+                className={`${card} scroll-mt-24 p-5 outline-none focus-visible:ring-2 focus-visible:ring-primary`}
+              >
                 <div className="mb-3 flex flex-wrap items-center gap-2 text-xs">
                   <span className="rounded-md bg-surface-muted px-2 py-1 font-semibold">Q{q.number}</span>
                   <span className="text-muted">{q.section}</span>
@@ -397,6 +483,20 @@ export function ResultView({
           </Link>
         )}
       </div>
+
+      {showJumpPill && (
+        <button
+          type="button"
+          onClick={() => {
+            jumpRef.current?.scrollIntoView({ block: "start" });
+            jumpRef.current?.querySelector("button")?.focus({ preventScroll: true });
+          }}
+          // Above the phone bottom tab bar (4rem); bottom-right corner on larger screens.
+          className="fixed bottom-[calc(5rem+env(safe-area-inset-bottom))] right-4 z-30 inline-flex h-11 items-center gap-2 rounded-full bg-primary px-4 text-sm font-semibold text-primary-foreground shadow-lg hover:bg-primary-strong md:bottom-6"
+        >
+          <Grid3x3 className="size-4" aria-hidden /> Jump to question
+        </button>
+      )}
     </main>
   );
 }
@@ -445,8 +545,21 @@ function ResultCardButton({ attemptId, url }: { attemptId: string; url: string }
   );
 }
 
-/** Top first attempts on this test; the student's own row is added below when they're outside the top list. */
-function Leaderboard({ rows, you, yourScore }: { rows: NonNullable<ResultData["leaderboard"]>; you: ResultData["rank"]; yourScore: number }) {
+/**
+ * Top first attempts on this test; the student's own row is added below when they're outside the top list.
+ * nameHref: where to add a real name, while the student still shows up as "Aspirant".
+ */
+function Leaderboard({
+  rows,
+  you,
+  yourScore,
+  nameHref,
+}: {
+  rows: NonNullable<ResultData["leaderboard"]>;
+  you: ResultData["rank"];
+  yourScore: number;
+  nameHref: string | null;
+}) {
   const youListed = rows.some((r) => r.isYou);
   const rowCls = (isYou: boolean) => `flex items-center gap-3 px-5 py-2.5 text-sm ${isYou ? "bg-primary-soft font-semibold" : ""}`;
   return (
@@ -475,6 +588,14 @@ function Leaderboard({ rows, you, yourScore }: { rows: NonNullable<ResultData["l
           </li>
         )}
       </ol>
+      {nameHref && (
+        <p className="flex flex-wrap items-center gap-x-3 border-t border-border bg-accent-soft px-5 py-2 text-sm">
+          Other students see you as &ldquo;Aspirant&rdquo;.
+          <Link href={nameHref} className="inline-flex min-h-10 items-center font-semibold text-primary underline underline-offset-2">
+            Add your name
+          </Link>
+        </p>
+      )}
     </section>
   );
 }

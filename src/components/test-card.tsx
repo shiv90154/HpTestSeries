@@ -45,11 +45,11 @@ export function TestCard({ test, headingLevel = 3 }: { test: PublicTest; heading
           Start free test
         </Link>
       ) : test.hasDemo ? (
-        <div className="mt-auto space-y-2">
+        <div className="mt-auto space-y-1">
           <Link href={`/tests/${test.slug}/demo`} className={btn("primary", "md", "w-full")}>
             Try free demo
           </Link>
-          <Link href={`/tests/${test.slug}`} className="block text-center text-sm font-medium text-primary hover:underline">
+          <Link href={`/tests/${test.slug}`} className="flex min-h-10 items-center justify-center text-sm font-medium text-primary hover:underline">
             Unlock full test
           </Link>
         </div>

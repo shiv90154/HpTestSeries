@@ -2,6 +2,7 @@ import { CheckCircle2, ChevronRight, Clock, FileText, Languages, Lock, MinusCirc
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { Breadcrumbs } from "@/components/breadcrumbs";
 import { JsonLd } from "@/components/json-ld";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
@@ -68,18 +69,14 @@ export default async function TestDetailPage({ params }: PageProps<"/tests/[slug
         ]}
       />
       <SiteHeader />
-      <main className="mx-auto w-full max-w-4xl flex-1 space-y-8 px-4 py-10">
-        <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-sm text-muted">
-          <Link href="/" className="hover:text-primary">
-            Home
-          </Link>
-          <ChevronRight className="size-4" />
-          <Link href="/tests" className="hover:text-primary">
-            Mock Tests
-          </Link>
-          <ChevronRight className="size-4" />
-          <span className="truncate text-foreground">{t.title}</span>
-        </nav>
+      <main className="mx-auto w-full max-w-4xl flex-1 space-y-8 px-4 pb-10 pt-7">
+        <Breadcrumbs
+          links={[
+            { href: "/", label: "Home" },
+            { href: "/tests", label: "Mock Tests" },
+          ]}
+          current={t.title}
+        />
 
         <header className="space-y-3">
           {t.isFree && <span className="rounded-md bg-success-soft px-2 py-1 text-xs font-bold text-success">FREE · NO LOGIN NEEDED</span>}
@@ -169,7 +166,7 @@ export default async function TestDetailPage({ params }: PageProps<"/tests/[slug
                   Unlock full test — {rupees(buy.priceInPaise)}
                 </Link>
               )}
-              <Link href={`/tests/${slug}/attempt`} className="text-center text-sm font-medium text-primary hover:underline">
+              <Link href={`/tests/${slug}/attempt`} className="flex min-h-10 items-center justify-center text-center text-sm font-medium text-primary hover:underline">
                 Already purchased? Start the full test
               </Link>
             </div>
@@ -178,7 +175,7 @@ export default async function TestDetailPage({ params }: PageProps<"/tests/[slug
               <Link href={buy.href} className={btn("accent", "lg")}>
                 Unlock full test — {rupees(buy.priceInPaise)}
               </Link>
-              <Link href={`/tests/${slug}/attempt`} className="text-center text-sm font-medium text-primary hover:underline">
+              <Link href={`/tests/${slug}/attempt`} className="flex min-h-10 items-center justify-center text-center text-sm font-medium text-primary hover:underline">
                 Already purchased? Start the test
               </Link>
             </div>

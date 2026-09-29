@@ -8,12 +8,13 @@ export function FaqList({ faqs }: { faqs: Faq[] }) {
   return (
     <div className="space-y-3">
       {faqs.map((f) => (
-        <details key={f.q} className={`${card} group p-5`}>
-          <summary className="flex cursor-pointer list-none items-center justify-between gap-4 font-semibold">
+        <details key={f.q} className={`${card} group`}>
+          {/* The padding sits on <summary> so the whole card row is the tap target, not just the text */}
+          <summary className="flex cursor-pointer list-none items-center justify-between gap-4 p-5 font-semibold">
             {f.q}
             <ChevronRight className="size-5 shrink-0 text-muted transition group-open:rotate-90" />
           </summary>
-          <Markdown text={f.a} className="mt-3 text-sm text-muted" />
+          <Markdown text={f.a} className="-mt-2 px-5 pb-5 text-sm text-muted" />
         </details>
       ))}
     </div>

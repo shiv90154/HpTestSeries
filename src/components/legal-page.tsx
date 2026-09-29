@@ -1,6 +1,6 @@
-import { ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { LEGAL_LINKS, business } from "@/lib/business";
+import { Breadcrumbs } from "./breadcrumbs";
 import { SiteFooter } from "./site-footer";
 import { SiteHeader } from "./site-header";
 import { card } from "./ui";
@@ -14,23 +14,17 @@ export function LegalPage({ title, intro, children, showUpdated = true }: { titl
   return (
     <>
       <SiteHeader />
-      <main className="mx-auto w-full max-w-3xl flex-1 space-y-6 px-4 py-10">
-        <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-sm text-muted">
-          <Link href="/" className="hover:text-primary">
-            Home
-          </Link>
-          <ChevronRight className="size-4" />
-          <span className="text-foreground">{title}</span>
-        </nav>
+      <main className="mx-auto w-full max-w-3xl flex-1 space-y-6 px-4 pb-10 pt-7">
+        <Breadcrumbs links={[{ href: "/", label: "Home" }]} current={title} />
         <header className="space-y-2">
           <h1 className="text-3xl font-bold tracking-tight">{title}</h1>
           {showUpdated && <p className="text-sm text-muted">Last updated: {updated}</p>}
           {intro && <p className="text-muted">{intro}</p>}
         </header>
         <article className={`${card} ${prose} p-6 sm:p-8`}>{children}</article>
-        <nav aria-label="Policies" className="flex flex-wrap gap-x-5 gap-y-2 text-sm">
+        <nav aria-label="Policies" className="flex flex-wrap gap-x-5 text-sm">
           {LEGAL_LINKS.map((l) => (
-            <Link key={l.href} href={l.href} className="text-muted hover:text-primary">
+            <Link key={l.href} href={l.href} className="inline-flex min-h-10 items-center text-muted hover:text-primary">
               {l.label}
             </Link>
           ))}

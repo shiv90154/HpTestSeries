@@ -31,7 +31,7 @@ export function PostList({
             {CATEGORY_META[c].label}
           </Chip>
         ))}
-        <a href="/blog/feed.xml" className="ml-auto flex items-center gap-1.5 self-center text-sm text-muted hover:text-primary">
+        <a href="/blog/feed.xml" className="ml-auto flex min-h-10 items-center gap-1.5 text-sm text-muted hover:text-primary">
           <Rss className="size-4" /> RSS
         </a>
       </nav>
@@ -51,7 +51,7 @@ export function PostList({
       {pages > 1 && (
         <nav aria-label="Pagination" className="flex items-center justify-center gap-3 text-sm">
           {page > 1 && (
-            <Link href={pageHref(page - 1)} rel="prev" className="flex items-center gap-1 rounded-lg border border-border px-3 py-2 hover:border-primary">
+            <Link href={pageHref(page - 1)} rel="prev" className="flex h-10 items-center gap-1 rounded-lg border border-border px-3.5 hover:border-primary">
               <ChevronLeft className="size-4" /> Newer
             </Link>
           )}
@@ -59,7 +59,7 @@ export function PostList({
             Page {page} of {pages}
           </span>
           {page < pages && (
-            <Link href={pageHref(page + 1)} rel="next" className="flex items-center gap-1 rounded-lg border border-border px-3 py-2 hover:border-primary">
+            <Link href={pageHref(page + 1)} rel="next" className="flex h-10 items-center gap-1 rounded-lg border border-border px-3.5 hover:border-primary">
               Older <ChevronRight className="size-4" />
             </Link>
           )}
@@ -74,7 +74,7 @@ function Chip({ href, active, children }: { href: string; active: boolean; child
     <Link
       href={href}
       aria-current={active ? "page" : undefined}
-      className={`rounded-full border px-3.5 py-1.5 text-sm font-medium ${active ? "border-primary bg-primary text-primary-foreground" : "border-border bg-surface hover:border-primary hover:text-primary"}`}
+      className={`inline-flex h-10 items-center rounded-full border px-4 text-sm font-medium ${active ? "border-primary bg-primary text-primary-foreground" : "border-border bg-surface hover:border-primary hover:text-primary"}`}
     >
       {children}
     </Link>

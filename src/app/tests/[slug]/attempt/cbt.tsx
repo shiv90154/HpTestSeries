@@ -148,6 +148,8 @@ export function Cbt({
   const [syncFailed, setSyncFailed] = useState(false);
   /** Time is up but the submit didn't reach the server: stay on the submitting screen and keep retrying. */
   const [submitIssue, setSubmitIssue] = useState<string | null>(null);
+  /** The browser / phone Back button was pressed mid-exam: "Leave the test?" */
+  const [leaveOpen, setLeaveOpen] = useState(false);
 
   const shownAt = useRef(0); // set when the exam starts
   const dirty = useRef(false);
@@ -160,9 +162,14 @@ export function Cbt({
   const drawerRef = useRef<HTMLDivElement>(null);
   const confirmDialogRef = useRef<HTMLDivElement>(null);
   const swipeStartX = useRef<number | null>(null);
+  const leaveDialogRef = useRef<HTMLDivElement>(null);
+  const guardRef = useRef(false); // our extra history entry (see "Back button" below) is the current one
+  const ignorePopRef = useRef(false); // the next popstate comes from our own history.back()
+  const onBackRef = useRef<() => void>(() => {});
 
   useFocusTrap(drawerRef, paletteOpen, () => setPaletteOpen(false));
   useFocusTrap(confirmDialogRef, confirmOpen, () => setConfirmOpen(false));
+  useFocusTrap(leaveDialogRef, leaveOpen, () => setLeaveOpen(false));
 
   const q = flat[cur];
 
@@ -310,6 +317,19 @@ export function Cbt({
     if (document.fullscreenElement) void document.exitFullscreen().catch(() => {});
   }
 
+  /** "Leave test" in the Back dialog (or Back pressed again): go where Back would have gone. */
+  function leave() {
+    leavingRef.current = true; // not a violation, and no "Leave site?" prompt on top of our own
+    setLeaveOpen(false);
+    dirty.current = true;
+    void flush();
+    if (document.fullscreenElement) void document.exitFullscreen().catch(() => {});
+    // Nothing to go back to (e.g. opened from a WhatsApp link in a new tab): fall back to the test page.
+    const fallback = setTimeout(() => router.replace(`/tests/${paper.slug}`), 400);
+    window.addEventListener("popstate", () => clearTimeout(fallback), { once: true });
+    window.history.go(guardRef.current ? -2 : -1);
+  }
+
   function clearResponse() {
     setSelection(undefined);
     const st = qs[q.id] ?? { v: true, m: false, t: 0 };
@@ -359,6 +379,30 @@ export function Cbt({
     }
   }
 
+  /** Puts our extra history entry (same URL) on top, so the next Back press stays on this page. */
+  const armGuard = useCallback(() => {
+    window.history.pushState({ cbtGuard: true }, "");
+    guardRef.current = true;
+  }, []);
+
+  /** Takes our extra entry off the history stack before leaving for the result, so Back from there skips the test. */
+  const dropGuard = useCallback(async () => {
+    if (!guardRef.current) return;
+    guardRef.current = false;
+    ignorePopRef.current = true;
+    await new Promise<void>((resolve) => {
+      const done = () => {
+        window.removeEventListener("popstate", done);
+        clearTimeout(timer);
+        ignorePopRef.current = false;
+        resolve();
+      };
+      const timer = setTimeout(done, 500);
+      window.addEventListener("popstate", done);
+      window.history.back();
+    });
+  }, []);
+
   const submit = useCallback(async () => {
     if (submittedRef.current) return;
     if (preview) {
@@ -384,6 +428,7 @@ export function Cbt({
         track("test_submit", { test_slug: paper.slug, guest: false });
         writeStored(storeKey, null);
         if (document.fullscreenElement) void document.exitFullscreen().catch(() => {});
+        await dropGuard();
         router.replace(`/results/${attemptId}`);
       } else {
         const res = demo ? await gradeDemoAction(paper.slug, answers) : await gradeGuestAction(paper.slug, answers, violationsRef.current);
@@ -392,6 +437,7 @@ export function Cbt({
         track(demo ? "demo_submit" : "test_submit", { test_slug: paper.slug, guest: !candidate });
         writeStored(storeKey, null);
         if (document.fullscreenElement) void document.exitFullscreen().catch(() => {});
+        await dropGuard();
         router.replace(`/tests/${paper.slug}/result`);
       }
     } catch (err) {
@@ -406,7 +452,7 @@ export function Cbt({
       setPhase("exam");
       toast.error(`${message} Your answers are safe — please try submitting again.`);
     }
-  }, [attemptId, candidate, commitTime, deadline, demo, paper.slug, preview, qs, router, serverAttempt, storeKey, submitIssue, toAnswers]);
+  }, [attemptId, candidate, commitTime, deadline, demo, dropGuard, paper.slug, preview, qs, router, serverAttempt, storeKey, submitIssue, toAnswers]);
 
   // Clock + auto-submit at time up. The interval always calls the latest submit via a ref.
   const submitRef = useRef(submit);
@@ -471,10 +517,46 @@ export function Cbt({
   // Warn before closing the tab mid-exam.
   useEffect(() => {
     if (phase === "instructions" || preview) return;
-    const handler = (e: BeforeUnloadEvent) => e.preventDefault();
+    const handler = (e: BeforeUnloadEvent) => {
+      if (!leavingRef.current) e.preventDefault();
+    };
     window.addEventListener("beforeunload", handler);
     return () => window.removeEventListener("beforeunload", handler);
   }, [phase, preview]);
+
+  // Back button: one press used to drop the student out of the exam without a word (it resumes, but it is
+  // alarming). An extra history entry for this same URL absorbs the press; then Back closes whatever panel
+  // is open, or asks "Leave the test?". Pressing Back again in that dialog leaves.
+  useEffect(() => {
+    onBackRef.current = () => {
+      if (phase === "submitting") return armGuard(); // "Please don't close this page"
+      if (leaveOpen) return leave();
+      armGuard();
+      if (paletteOpen) setPaletteOpen(false);
+      else if (confirmOpen) setConfirmOpen(false);
+      else if (paywall) setPaywall(null);
+      else setLeaveOpen(true);
+    };
+  });
+  useEffect(() => {
+    if (phase === "instructions" || preview) return;
+    if (!guardRef.current) {
+      // After a reload mid-exam the current entry is still the one we pushed before it.
+      if ((window.history.state as { cbtGuard?: boolean } | null)?.cbtGuard) guardRef.current = true;
+      else armGuard();
+    }
+    const onPopState = () => {
+      if (ignorePopRef.current) {
+        ignorePopRef.current = false;
+        return;
+      }
+      if (leavingRef.current) return;
+      guardRef.current = false;
+      onBackRef.current();
+    };
+    window.addEventListener("popstate", onPopState);
+    return () => window.removeEventListener("popstate", onPopState);
+  }, [phase, preview, armGuard]);
 
   const counts = useMemo(() => {
     const perSection = paper.sections.map(() => ({ notVisited: 0, notAnswered: 0, answered: 0, marked: 0, answeredMarked: 0 }));
@@ -508,6 +590,8 @@ export function Cbt({
 
   const remaining = deadline ? deadline - now : 0;
   const section = paper.sections[q.sectionIndex];
+  // A free demo shows only part of each section; its locked questions still count (they are in the palette too).
+  const sectionSize = section.questions.length + (demo?.lockedPerSection[q.sectionIndex] ?? 0);
   const sectionCounts = counts.perSection[q.sectionIndex];
 
   const palette = (
@@ -676,8 +760,11 @@ export function Cbt({
       <div className="flex min-h-0 flex-1">
         {/* Question */}
         <main className="flex min-w-0 flex-1 flex-col">
-          <div className="flex items-center justify-between border-b border-border px-4 py-2.5 font-sans text-sm">
-            <span className="font-semibold">Question No. {q.numberInSection}</span>
+          <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1 border-b border-border px-4 py-2.5 font-sans text-sm">
+            <span className="font-semibold">
+              Question No. {q.numberInSection}
+              <span className="font-normal text-muted"> of {sectionSize}</span>
+            </span>
             <span className="text-xs text-muted">
               Marks: <span className="font-semibold text-success">+{section.marksCorrect}</span>
               {section.marksWrong > 0 && (
@@ -721,36 +808,45 @@ export function Cbt({
             )}
           </div>
 
-          {/* Actions */}
+          {/* Actions. Phones: two rows whose buttons are sized by their labels (an even 2x2 grid broke
+              "Mark for Review & Next" over two lines); Save & Next gets the widest button. */}
           <div className="border-t border-border bg-surface-muted p-2 pb-[calc(0.5rem+env(safe-area-inset-bottom))] font-sans sm:p-3">
-            <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap sm:items-center">
-              <button
-                id="cbt-mark-btn"
-                type="button"
-                onClick={() => saveAndNext(true)}
-                className="cbt-btn border border-cbt-marked bg-white text-cbt-marked hover:bg-[#f3eefc]"
-              >
-                Mark for Review &amp; Next
-              </button>
-              <button type="button" onClick={clearResponse} className="cbt-btn border border-border bg-white hover:bg-surface-muted">
-                Clear Response
-              </button>
-              <button
-                type="button"
-                onClick={() => go(cur - 1)}
-                disabled={cur === 0}
-                className="cbt-btn border border-border bg-white disabled:opacity-40 sm:ml-auto"
-              >
-                Back
-              </button>
-              <button
-                id="cbt-save-btn"
-                type="button"
-                onClick={() => saveAndNext(false)}
-                className="cbt-btn bg-cbt-answered text-white hover:brightness-95"
-              >
-                Save &amp; Next
-              </button>
+            <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center">
+              <div className="flex gap-2">
+                <button
+                  id="cbt-mark-btn"
+                  type="button"
+                  onClick={() => saveAndNext(true)}
+                  className="cbt-btn flex-auto whitespace-nowrap border border-cbt-marked bg-white px-2.5 text-cbt-marked hover:bg-[#f3eefc] sm:flex-none sm:px-4"
+                >
+                  Mark for Review &amp; Next
+                </button>
+                <button
+                  type="button"
+                  onClick={clearResponse}
+                  className="cbt-btn flex-auto whitespace-nowrap border border-border bg-white px-2.5 hover:bg-surface-muted sm:flex-none sm:px-4"
+                >
+                  Clear Response
+                </button>
+              </div>
+              <div className="flex gap-2 sm:ml-auto">
+                <button
+                  type="button"
+                  onClick={() => go(cur - 1)}
+                  disabled={cur === 0}
+                  className="cbt-btn flex-1 border border-border bg-white disabled:opacity-40 sm:flex-none"
+                >
+                  Back
+                </button>
+                <button
+                  id="cbt-save-btn"
+                  type="button"
+                  onClick={() => saveAndNext(false)}
+                  className="cbt-btn flex-[2] bg-cbt-answered text-white hover:brightness-95 sm:flex-none"
+                >
+                  Save &amp; Next
+                </button>
+              </div>
             </div>
           </div>
         </main>
@@ -862,6 +958,37 @@ export function Cbt({
           }}
           onPay={payNow}
         />
+      )}
+
+      {/* Browser / phone Back pressed during the exam */}
+      {leaveOpen && phase === "exam" && (
+        <div
+          className="fixed inset-0 z-[60] grid place-items-center bg-black/50 p-4 font-sans"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="leave-title"
+          aria-describedby="leave-text"
+          lang={lang === "hi" ? "hi" : undefined}
+        >
+          <div ref={leaveDialogRef} className="w-full max-w-sm rounded-xl bg-white p-5 shadow-2xl">
+            <h2 id="leave-title" className="text-lg font-semibold">
+              {lang === "hi" ? "टेस्ट छोड़ना चाहते हैं?" : "Leave the test?"}
+            </h2>
+            <p id="leave-text" className="mt-2 text-sm leading-relaxed text-foreground/85">
+              {lang === "hi"
+                ? "आपके सेव किए उत्तर सुरक्षित हैं, पर टाइमर चलता रहेगा। समय खत्म होने से पहले लौटकर वहीं से जारी रख सकते हैं।"
+                : "Your saved answers are safe, but the timer keeps running. Come back before it ends to continue where you left off."}
+            </p>
+            <div className="mt-5 flex flex-col gap-2 sm:flex-row-reverse">
+              <button type="button" onClick={() => setLeaveOpen(false)} className="cbt-btn h-11 w-full bg-primary text-white sm:flex-1">
+                {lang === "hi" ? "टेस्ट जारी रखें" : "Continue test"}
+              </button>
+              <button type="button" onClick={leave} className="cbt-btn h-11 w-full border border-border bg-white text-danger sm:flex-1">
+                {lang === "hi" ? "टेस्ट छोड़ें" : "Leave test"}
+              </button>
+            </div>
+          </div>
+        </div>
       )}
 
       {phase === "submitting" && (
@@ -1098,30 +1225,44 @@ function Instructions(props: {
           </div>
         )}
 
-        <label className="flex items-start gap-3 rounded-xl border border-border p-4 text-sm">
-          <input type="checkbox" checked={agreed} onChange={(e) => setAgreed(e.target.checked)} className="mt-0.5 size-4 accent-[var(--primary)]" />
-          <span>
-            {hi
-              ? "मैंने सभी निर्देश पढ़ और समझ लिए हैं। मैं परीक्षा शुरू करने के लिए तैयार हूँ।"
-              : "I have read and understood all the instructions. I am ready to begin the test."}
-          </span>
-        </label>
-
-        {error && (
-          <p role="alert" className="rounded-lg bg-danger-soft px-4 py-3 text-sm text-danger">
-            {error}
-          </p>
-        )}
-
-        <button
-          type="button"
-          onClick={onBegin}
-          disabled={!agreed || starting}
-          className="h-12 w-full rounded-xl bg-primary font-semibold text-white disabled:opacity-50 sm:w-auto sm:px-10"
-        >
-          {starting ? (hi ? "शुरू हो रहा है…" : "Starting…") : hi ? "मैं शुरू करने के लिए तैयार हूँ" : "I am ready to begin"}
-        </button>
       </main>
+
+      {/* Sticky, so the start button is always in reach: the instructions run to a few screens on a phone. */}
+      <div
+        className="sticky bottom-0 z-10 border-t border-border bg-white px-4 pb-[calc(0.75rem+env(safe-area-inset-bottom))] pt-3 shadow-[0_-4px_16px_rgba(15,27,51,0.06)]"
+        lang={hi ? "hi" : undefined}
+      >
+        <div className="mx-auto w-full max-w-3xl space-y-3">
+          {error && (
+            <p role="alert" className="rounded-lg bg-danger-soft px-4 py-3 text-sm text-danger">
+              {error}
+            </p>
+          )}
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+            <label className="flex flex-1 cursor-pointer items-start gap-3 text-sm">
+              <input
+                type="checkbox"
+                checked={agreed}
+                onChange={(e) => setAgreed(e.target.checked)}
+                className="mt-0.5 size-5 shrink-0 accent-[var(--primary)]"
+              />
+              <span>
+                {hi
+                  ? "मैंने सभी निर्देश पढ़ और समझ लिए हैं। मैं परीक्षा शुरू करने के लिए तैयार हूँ।"
+                  : "I have read and understood all the instructions. I am ready to begin the test."}
+              </span>
+            </label>
+            <button
+              type="button"
+              onClick={onBegin}
+              disabled={!agreed || starting}
+              className="h-12 w-full shrink-0 rounded-xl bg-primary font-semibold text-white disabled:opacity-50 sm:w-auto sm:px-10"
+            >
+              {starting ? (hi ? "शुरू हो रहा है…" : "Starting…") : hi ? "मैं शुरू करने के लिए तैयार हूँ" : "I am ready to begin"}
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

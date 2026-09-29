@@ -38,7 +38,9 @@ export function AppDesktopNav({ showAdmin }: { showAdmin: boolean }) {
 /** Fixed bottom tab bar for mobile — easier thumb-reach than a scrolling top nav strip. */
 export function BottomNav({ showAdmin }: { showAdmin: boolean }) {
   const pathname = usePathname();
-  const items = showAdmin ? [DASHBOARD, TESTS, EXAMS, PROFILE, ADMIN] : [DASHBOARD, TESTS, EXAMS, PROFILE];
+  // Five tabs at most (a sixth squeezes "Dashboard" past its 60px column on a 360px phone): staff get Admin
+  // in place of Exam Updates.
+  const items = showAdmin ? [DASHBOARD, TESTS, EXAMS, PROFILE, ADMIN] : [DASHBOARD, TESTS, EXAMS, UPDATES, PROFILE];
 
   return (
     <nav

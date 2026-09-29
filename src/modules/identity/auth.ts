@@ -6,7 +6,7 @@ import { nextCookies } from "better-auth/next-js";
 import { emailOTP, phoneNumber, twoFactor } from "better-auth/plugins";
 import { db } from "@/lib/db";
 import { consumeRateLimit } from "@/lib/rate-limit";
-import { isValidIndianMobile } from "./permissions";
+import { isValidIndianMobile, PLACEHOLDER_NAME } from "./permissions";
 import { sendOtpEmail } from "./email";
 import { googleLoginEnabled, phoneLoginEnabled } from "./login-methods";
 import { sendOtpSms } from "./sms";
@@ -119,7 +119,7 @@ export const auth = betterAuth({
       signUpOnVerification: {
         // Placeholder email (never mailed); users can link Google later.
         getTempEmail: (phone) => `${phone.replace(/^\+/, "")}@phone.invalid`,
-        getTempName: () => "Aspirant",
+        getTempName: () => PLACEHOLDER_NAME,
       },
     }),
     // Staff-only, opt-in TOTP. Used through server actions (see two-factor.ts for how it is enforced).

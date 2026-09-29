@@ -6,6 +6,10 @@ import { AuthFooterLink } from "./auth-cta";
 import { Logo } from "./logo";
 import { PublicBottomNav } from "./public-bottom-nav";
 
+/** Footer links are 40px tall so they are easy to tap on phones. */
+const link = "inline-block py-2.5 hover:text-accent";
+const heading = "mb-2 text-sm font-semibold uppercase tracking-wider text-white";
+
 export async function SiteFooter() {
   const [catalog, latest] = await Promise.all([getCatalog(), getPublishedPosts({ take: 4 })]);
   const exams = catalog.flatMap((b) => b.exams);
@@ -21,11 +25,11 @@ export async function SiteFooter() {
           </p>
         </div>
         <div>
-          <h2 className="mb-4 text-sm font-semibold uppercase tracking-wider text-white">Exams</h2>
-          <ul className="space-y-2.5 text-sm">
+          <h2 className={heading}>Exams</h2>
+          <ul className="text-sm">
             {exams.map((e) => (
               <li key={e.href}>
-                <Link href={e.href} className="hover:text-accent">
+                <Link href={e.href} className={link}>
                   {examLabel(e.bodySlug, e.name)} Mock Test
                 </Link>
               </li>
@@ -33,39 +37,39 @@ export async function SiteFooter() {
           </ul>
         </div>
         <div>
-          <h2 className="mb-4 text-sm font-semibold uppercase tracking-wider text-white">Practice</h2>
-          <ul className="space-y-2.5 text-sm">
+          <h2 className={heading}>Practice</h2>
+          <ul className="text-sm">
             <li>
-              <Link href={FREE_MOCK_HREF} className="hover:text-accent">
+              <Link href={FREE_MOCK_HREF} className={link}>
                 Free HP GK Mock Test
               </Link>
             </li>
             <li>
-              <Link href="/tests" className="hover:text-accent">
+              <Link href="/tests" className={link}>
                 All Mock Tests
               </Link>
             </li>
             <li>
-              <Link href="/exams" className="hover:text-accent">
+              <Link href="/exams" className={link}>
                 All Himachal Exams
               </Link>
             </li>
             <li>
-              <Link href="/blog" className="hover:text-accent">
+              <Link href="/blog" className={link}>
                 Exam Updates &amp; Notifications
               </Link>
             </li>
             <li>
-              <AuthFooterLink className="hover:text-accent" />
+              <AuthFooterLink className={link} />
             </li>
           </ul>
           {latest.items.length > 0 && (
             <>
-              <h2 className="mb-4 mt-8 text-sm font-semibold uppercase tracking-wider text-white">Latest updates</h2>
-              <ul className="space-y-2.5 text-sm">
+              <h2 className={`${heading} mt-8`}>Latest updates</h2>
+              <ul className="text-sm">
                 {latest.items.map((p) => (
                   <li key={p.slug}>
-                    <Link href={`/blog/${p.slug}`} className="line-clamp-2 hover:text-accent">
+                    <Link href={`/blog/${p.slug}`} className="line-clamp-2 py-2.5 hover:text-accent">
                       {p.title}
                     </Link>
                   </li>
@@ -75,27 +79,27 @@ export async function SiteFooter() {
           )}
         </div>
         <div>
-          <h2 className="mb-4 text-sm font-semibold uppercase tracking-wider text-white">Help</h2>
-          <ul className="space-y-2.5 text-sm">
+          <h2 className={heading}>Help</h2>
+          <ul className="text-sm">
             {LEGAL_LINKS.map((l) => (
               <li key={l.href}>
-                <Link href={l.href} className="hover:text-accent">
+                <Link href={l.href} className={link}>
                   {l.label}
                 </Link>
               </li>
             ))}
           </ul>
-          <ul className="mt-5 space-y-2 text-sm text-slate-400">
+          <ul className="mt-3 text-sm text-slate-400">
             {business.email && (
               <li>
-                <a href={`mailto:${business.email}`} className="break-all hover:text-accent">
+                <a href={`mailto:${business.email}`} className={`${link} break-all`}>
                   {business.email}
                 </a>
               </li>
             )}
             {business.phone && (
               <li>
-                <a href={`tel:${business.phone.replace(/[^\d+]/g, "")}`} className="hover:text-accent">
+                <a href={`tel:${business.phone.replace(/[^\d+]/g, "")}`} className={link}>
                   {business.phone}
                 </a>
               </li>

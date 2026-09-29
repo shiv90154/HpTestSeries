@@ -2,6 +2,7 @@ import { CheckCircle2, ChevronRight } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { Breadcrumbs } from "@/components/breadcrumbs";
 import { FaqList } from "@/components/faq-list";
 import { JsonLd } from "@/components/json-ld";
 import { Markdown } from "@/components/markdown";
@@ -86,18 +87,15 @@ export default async function ExamPage({ params }: PageProps<"/[body]/[exam]">) 
       <SiteHeader />
       <main className="flex-1">
         <section className="relative overflow-hidden bg-linear-to-br from-[#0b1f5c] via-[#133a9e] to-[#1e4fd8] text-white">
-          <div className="relative mx-auto w-full max-w-6xl space-y-5 px-4 pb-28 pt-10">
-            <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-sm text-white/70">
-              <Link href="/" className="hover:text-white">
-                Home
-              </Link>
-              <ChevronRight className="size-4" />
-              <Link href="/exams" className="hover:text-white">
-                Exams
-              </Link>
-              <ChevronRight className="size-4" />
-              <span className="text-white">{name}</span>
-            </nav>
+          <div className="relative mx-auto w-full max-w-6xl space-y-5 px-4 pb-28 pt-7">
+            <Breadcrumbs
+              light
+              links={[
+                { href: "/", label: "Home" },
+                { href: "/exams", label: "Exams" },
+              ]}
+              current={name}
+            />
             <p className="inline-block rounded-lg bg-white/10 px-3 py-1 text-xs font-semibold ring-1 ring-white/20">{data.body.name}</p>
             <h1 className="max-w-3xl text-3xl font-bold leading-tight tracking-tight sm:text-4xl">
               {name} Mock Test {year()}

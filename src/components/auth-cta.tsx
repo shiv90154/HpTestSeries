@@ -7,13 +7,16 @@ import { btn } from "./ui";
 /** Keeps public pages static: the session is checked in the browser, not during render. */
 export function AuthCta() {
   const { data, isPending } = authClient.useSession();
-  if (isPending) return <span className="h-9 w-24" />;
+  if (isPending) return <span className="h-11 w-20" />;
   return data ? (
-    <Link href="/dashboard" className={btn("primary", "sm")}>
-      Dashboard
-    </Link>
+    // Phones reach the dashboard from the Account tab of the bottom bar, which leaves room for the menu button.
+    <span className="hidden sm:block">
+      <Link href="/dashboard" className={btn("primary", "md")}>
+        Dashboard
+      </Link>
+    </span>
   ) : (
-    <Link href="/login" className={btn("primary", "sm")}>
+    <Link href="/login" className={btn("primary", "md")}>
       Login
     </Link>
   );

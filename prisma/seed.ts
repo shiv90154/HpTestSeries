@@ -9,7 +9,9 @@ import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "../src/generated/prisma/client";
 import { seedContent } from "./seed-content";
 import { DEMO_TEST_SLUG, seedDemoTest } from "./seed-demo";
+import { seedJoaIt } from "./seed-joa-it";
 import { seedPatwari } from "./seed-patwari";
+import { seedPolice } from "./seed-police";
 import { taxonomy } from "./taxonomy";
 
 const db = new PrismaClient({ adapter: new PrismaPg({ connectionString: process.env.DATABASE_URL }) });
@@ -139,10 +141,14 @@ async function main() {
 
   await seedDemoTest(db);
   const patwari = await seedPatwari(db);
+  const police = await seedPolice(db);
+  const joaIt = await seedJoaIt(db);
   const content = await seedContent(db);
   console.log(
     `Seeded ${catalogue.length} bodies, ${taxonomy.length} subjects, the demo test "${DEMO_TEST_SLUG}", ` +
-      `${patwari.createdTests} new Patwari mock tests, content for ${content.filled} exams and ${content.created} new draft posts.`,
+      `${patwari.createdTests} new Patwari tests, ${police.createdTests} new Police Constable tests, ` +
+      `${joaIt.createdTests} new JOA IT tests, ` +
+      `content for ${content.filled} exams and ${content.created} new draft posts.`,
   );
 }
 

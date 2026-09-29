@@ -14,7 +14,7 @@ const ACCESS = [
 ] as const;
 
 const chip = (active: boolean) =>
-  `whitespace-nowrap rounded-full border px-3.5 py-1.5 text-sm font-medium transition-colors ${
+  `inline-flex h-10 shrink-0 items-center whitespace-nowrap rounded-full border px-4 text-sm font-medium transition-colors ${
     active ? "border-primary bg-primary-soft text-primary" : "border-border bg-surface text-muted hover:text-foreground"
   }`;
 

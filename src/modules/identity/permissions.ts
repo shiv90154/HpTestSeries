@@ -36,3 +36,6 @@ export function normalizeIndianMobile(input: string): string | null {
   const e164 = `+91${digits}`;
   return isValidIndianMobile(e164) ? e164 : null;
 }
+
+/** Name of an account created by an email or SMS code, until the student types their own (see /welcome). */
+export const PLACEHOLDER_NAME = "Aspirant";

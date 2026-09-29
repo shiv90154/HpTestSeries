@@ -59,7 +59,20 @@ export default async function LoginPage({ searchParams }: PageProps<"/login">) {
             </p>
           )}
           {googleLoginEnabled || emailLoginEnabled || phoneLoginEnabled ? (
-            <LoginForm next={next} googleEnabled={googleLoginEnabled} emailEnabled={emailLoginEnabled} phoneEnabled={phoneLoginEnabled} />
+            <>
+              <LoginForm next={next} googleEnabled={googleLoginEnabled} emailEnabled={emailLoginEnabled} phoneEnabled={phoneLoginEnabled} />
+              <p className="-mt-4 text-center text-xs leading-relaxed text-muted">
+                By continuing, you agree to our{" "}
+                <Link href="/terms" className="font-medium text-foreground underline underline-offset-2 hover:text-primary">
+                  Terms of use
+                </Link>{" "}
+                and{" "}
+                <Link href="/privacy" className="font-medium text-foreground underline underline-offset-2 hover:text-primary">
+                  Privacy policy
+                </Link>
+                .
+              </p>
+            </>
           ) : (
             <p className="rounded-xl border border-accent bg-accent-soft p-4 text-sm">
               Login is being set up and will open shortly. Meanwhile, free mock tests work without an account.

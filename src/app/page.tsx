@@ -16,11 +16,12 @@ import { PostCard } from "@/components/post-card";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { btn, card } from "@/components/ui";
+import { rupees } from "@/lib/money";
 import { organizationNode } from "@/lib/schema";
 import { FREE_MOCK_HREF, site } from "@/lib/site";
 import { getCatalog, getPublishedPosts } from "@/modules/catalog/queries";
 import { faqPageJsonLd } from "@/modules/content/exam-content";
-import { listActiveProducts } from "@/modules/commerce/product-service";
+import { listActiveProducts, type PublicProduct } from "@/modules/commerce/product-service";
 
 export const revalidate = 3600;
 
@@ -80,6 +81,11 @@ const faqs = [
 export default async function Home() {
   const [catalog, products, latest] = await Promise.all([getCatalog(), listActiveProducts(), getPublishedPosts({ take: 3 })]);
   const examCount = catalog.reduce((n, b) => n + b.exams.length, 0);
+  // Pricing: Free, then every exam series (one card, or a "from ₹X" card listing them all), then the
+  // cheapest all-access pass. Products arrive sorted by price.
+  const pass = products.find((p) => p.kind === "PASS");
+  const series = products.filter((p) => p.kind !== "PASS");
+  const planCount = products.length === 0 ? 3 : 1 + (series.length > 0 ? 1 : 0) + (pass ? 1 : 0);
 
   return (
     <>
@@ -165,7 +171,7 @@ export default async function Home() {
               </h2>
               <p className="hidden text-muted sm:block">Pick your exam to see free tests, previous-year style questions and the full test series.</p>
             </div>
-            <Link href="/exams" className="shrink-0 text-sm font-semibold text-primary sm:hidden">
+            <Link href="/exams" className="inline-flex min-h-10 shrink-0 items-center text-sm font-semibold text-primary sm:hidden">
               See all
             </Link>
           </div>
@@ -207,14 +213,17 @@ export default async function Home() {
                 Try the CBT interface <ChevronRight className="size-4" />
               </Link>
             </div>
-            <div className="grid grid-cols-2 gap-3 sm:gap-4">
+            {/* Phones: one card per row with the icon beside the text, so every line is readable (no clipping) */}
+            <div className="grid gap-3 sm:grid-cols-2 sm:gap-4">
               {features.map((f) => (
-                <div key={f.title} className="rounded-2xl border border-border bg-background p-3.5 sm:p-5">
-                  <div className="mb-2 grid size-9 place-items-center rounded-xl bg-primary text-white sm:mb-3 sm:size-11">
-                    <f.icon className="size-4 sm:size-5" />
+                <div key={f.title} className="flex gap-3.5 rounded-2xl border border-border bg-background p-4 sm:block sm:p-5">
+                  <div className="grid size-10 shrink-0 place-items-center rounded-xl bg-primary text-white sm:mb-3 sm:size-11">
+                    <f.icon className="size-5" />
                   </div>
-                  <h3 className="text-sm font-semibold leading-snug sm:text-base">{f.title}</h3>
-                  <p className="mt-1.5 line-clamp-3 text-xs leading-relaxed text-muted sm:line-clamp-none sm:text-sm">{f.text}</p>
+                  <div>
+                    <h3 className="text-[15px] font-semibold leading-snug sm:text-base">{f.title}</h3>
+                    <p className="mt-1 text-sm leading-relaxed text-muted sm:mt-1.5">{f.text}</p>
+                  </div>
                 </div>
               ))}
             </div>
@@ -264,31 +273,47 @@ export default async function Home() {
         )}
 
         {/* Pricing */}
-        <section id="pricing" className="bg-surface py-10 sm:py-20">
+        <section id="pricing" className="scroll-mt-14 bg-surface py-10 sm:py-20 md:scroll-mt-16">
           <div className="mx-auto w-full max-w-6xl space-y-5 px-4 sm:space-y-10">
             <div className="mx-auto max-w-2xl space-y-1 sm:space-y-2 sm:text-center">
               <p className="text-xs font-semibold uppercase tracking-wider text-primary sm:text-sm">Pricing</p>
               <h2 className="text-xl font-bold tracking-tight sm:text-3xl">Cheaper than a single guide book</h2>
               <p className="text-sm text-muted sm:text-base">No expensive coaching. Pay only for what you need — or nothing at all.</p>
             </div>
-            <div className="-mx-4 flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 pb-2 scrollbar-none md:mx-0 md:grid md:grid-cols-3 md:gap-5 md:overflow-visible md:px-0 md:pb-0">
+            {/* Stacked on phones: a sideways-scrolling row showed only the edge of the paid plan */}
+            <div className={`grid gap-5 ${planCount === 3 ? "md:grid-cols-3" : "mx-auto max-w-4xl md:grid-cols-2"}`}>
               <Plan name="Free" price="₹0" note="forever" items={["Free mock tests", "Real CBT interface", "Solutions in Hindi & English", "HP rank on free tests"]} cta={{ href: FREE_MOCK_HREF, label: "Start free test" }} />
-              {products.length > 0 ? (
-                products.slice(0, 2).map((p, i, shown) => (
-                  <Plan
-                    key={p.slug}
-                    highlight={i === shown.length - 1}
-                    name={p.title}
-                    price={`₹${(p.priceInPaise / 100).toLocaleString("en-IN")}`}
-                    note={p.validityDays ? `valid ${p.validityDays} days` : "one-time"}
-                    items={PLAN_ITEMS[p.kind] ?? PLAN_ITEMS.SERIES}
-                    cta={{ href: `/buy/${p.slug}`, label: "Buy now" }}
-                  />
-                ))
-              ) : (
+              {series.length === 1 && <Plan {...productPlan(series[0])} badge={pass ? undefined : "Recommended"} />}
+              {series.length > 1 && (
+                <Plan
+                  name="Exam test series"
+                  price={rupees(series[0].priceInPaise)}
+                  note="onwards, per exam"
+                  items={PLAN_ITEMS.SERIES}
+                  badge={pass ? undefined : "Recommended"}
+                >
+                  <ul className="mt-6 space-y-2" aria-label="Choose your exam">
+                    {series.map((p) => (
+                      <li key={p.slug}>
+                        <Link
+                          href={`/buy/${p.slug}`}
+                          className="flex min-h-11 items-center justify-between gap-3 rounded-xl border border-border px-3.5 py-2 text-sm font-medium hover:border-primary hover:text-primary"
+                        >
+                          {p.title}
+                          <span className="flex shrink-0 items-center gap-1 font-semibold">
+                            {rupees(p.priceInPaise)} <ChevronRight className="size-4" aria-hidden />
+                          </span>
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                </Plan>
+              )}
+              {pass && <Plan {...productPlan(pass)} badge="Best value" />}
+              {products.length === 0 && (
                 <>
                   <Plan name="Exam Test Series" price="₹49–99" note="per exam" soon items={["20–40 full mock tests", "Previous-year papers", "Sectional & topic tests", "Detailed analysis"]} />
-                  <Plan highlight name="All-Access Pass" price="₹299" note="per year" soon items={["Every Himachal exam", "All mock tests & PYQs", "HP GK & current affairs tests", "Best value for serious aspirants"]} />
+                  <Plan badge="Best value" name="All-Access Pass" price="₹299" note="per year" soon items={["Every Himachal exam", "All mock tests & PYQs", "HP GK & current affairs tests", "Best value for serious aspirants"]} />
                 </>
               )}
             </div>
@@ -300,12 +325,13 @@ export default async function Home() {
           <h2 className="text-xl font-bold tracking-tight sm:text-center sm:text-3xl">Frequently asked questions</h2>
           <div className="space-y-2.5 sm:space-y-3">
             {faqs.map((f) => (
-              <details key={f.q} className={`${card} group p-4 sm:p-5`}>
-                <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-[15px] font-semibold sm:text-base">
+              <details key={f.q} className={`${card} group`}>
+                {/* The padding sits on <summary> so the whole card row is the tap target, not just the text */}
+                <summary className="flex cursor-pointer list-none items-center justify-between gap-4 p-4 text-[15px] font-semibold sm:p-5 sm:text-base">
                   {f.q}
                   <ChevronRight className="size-5 shrink-0 text-muted transition group-open:rotate-90" />
                 </summary>
-                <p className="mt-3 text-sm leading-relaxed text-muted">{f.a}</p>
+                <p className="-mt-1 px-4 pb-4 text-sm leading-relaxed text-muted sm:px-5 sm:pb-5">{f.a}</p>
               </details>
             ))}
           </div>
@@ -330,11 +356,32 @@ export default async function Home() {
   );
 }
 
-function Plan(props: { name: string; price: string; note: string; items: string[]; highlight?: boolean; soon?: boolean; cta?: { href: string; label: string } }) {
+/** Card for one product on sale (an exam series, a pack or the all-access pass). */
+function productPlan(p: PublicProduct) {
+  return {
+    name: p.title,
+    price: rupees(p.priceInPaise),
+    note: p.validityDays ? `valid ${p.validityDays} days` : "one-time",
+    items: PLAN_ITEMS[p.kind] ?? PLAN_ITEMS.SERIES,
+    cta: { href: `/buy/${p.slug}`, label: "Buy now" },
+  };
+}
+
+/** A pricing card. `badge` highlights it (the plan we recommend); `children` go below the feature list. */
+function Plan(props: {
+  name: string;
+  price: string;
+  note: string;
+  items: string[];
+  badge?: string;
+  soon?: boolean;
+  cta?: { href: string; label: string };
+  children?: React.ReactNode;
+}) {
   return (
-    <div className={`relative flex w-[82%] shrink-0 snap-center flex-col rounded-2xl border bg-background p-5 md:w-auto md:p-6 ${props.highlight ? "border-primary shadow-xl" : "border-border"}`}>
-      {props.highlight && (
-        <span className="absolute -top-3 left-5 rounded-full bg-primary px-2.5 py-1 text-xs font-semibold text-white">Best value</span>
+    <div className={`relative flex flex-col rounded-2xl border bg-background p-5 md:p-6 ${props.badge ? "border-primary shadow-xl" : "border-border"}`}>
+      {props.badge && (
+        <span className="absolute -top-3 left-5 rounded-full bg-primary px-2.5 py-1 text-xs font-semibold text-white">{props.badge}</span>
       )}
       {props.soon && (
         <span className="absolute right-5 top-5 rounded-full bg-accent-soft px-2.5 py-1 text-xs font-semibold text-accent-ink">Launching soon</span>
@@ -353,6 +400,7 @@ function Plan(props: { name: string; price: string; note: string; items: string[
           </li>
         ))}
       </ul>
+      {props.children}
       {props.cta && (
         <Link href={props.cta.href} className={`${btn("primary")} mt-6`}>
           {props.cta.label}

@@ -1,7 +1,8 @@
-import { CalendarDays, CheckCircle2, ChevronRight, Clock, RefreshCw } from "lucide-react";
+import { CalendarDays, CheckCircle2, Clock, RefreshCw } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { Breadcrumbs } from "@/components/breadcrumbs";
 import { FaqList } from "@/components/faq-list";
 import { JsonLd } from "@/components/json-ld";
 import { Markdown } from "@/components/markdown";
@@ -88,21 +89,15 @@ export default async function PostPage({ params }: PageProps<"/blog/[slug]">) {
         ]}
       />
       <SiteHeader />
-      <main className="mx-auto grid w-full max-w-6xl flex-1 gap-10 px-4 py-10 lg:grid-cols-[1fr_300px]">
+      <main className="mx-auto grid w-full max-w-6xl flex-1 gap-10 px-4 pb-10 pt-7 lg:grid-cols-[1fr_300px]">
         <article className="min-w-0 space-y-6">
-          <nav aria-label="Breadcrumb" className="flex flex-wrap items-center gap-1.5 text-sm text-muted">
-            <Link href="/" className="hover:text-primary">
-              Home
-            </Link>
-            <ChevronRight className="size-4" />
-            <Link href="/blog" className="hover:text-primary">
-              Exam Updates
-            </Link>
-            <ChevronRight className="size-4" />
-            <Link href={`/blog/category/${cat.slug}`} className="hover:text-primary">
-              {cat.label}
-            </Link>
-          </nav>
+          <Breadcrumbs
+            links={[
+              { href: "/", label: "Home" },
+              { href: "/blog", label: "Exam Updates" },
+              { href: `/blog/category/${cat.slug}`, label: cat.label },
+            ]}
+          />
 
           <header className="space-y-3">
             <h1 className="text-3xl font-bold leading-tight tracking-tight sm:text-4xl">{post.title}</h1>

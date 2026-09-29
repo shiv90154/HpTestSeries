@@ -75,6 +75,7 @@ export const taxonomy: SubjectSeed[] = [
       ["geometry", "Geometry"],
       ["partnership", "Partnership"],
       ["mixture-alligation", "Mixture & Alligation"],
+      ["data-interpretation", "Data Interpretation"],
     ],
   },
   {
@@ -122,6 +123,10 @@ export const taxonomy: SubjectSeed[] = [
       ["hardware", "Hardware & Memory"],
       ["shortcuts", "Keyboard Shortcuts"],
       ["security", "Cyber Security"],
+      ["software", "Computer Software"],
+      ["number-system", "Number System"],
+      ["web-technologies", "Web Technologies (HTML & PHP)"],
+      ["digital-literacy", "Digital Literacy & e-Governance"],
     ],
   },
   {

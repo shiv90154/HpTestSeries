@@ -1,9 +1,11 @@
 // Leaderboard presentation rules — pure, so they can be unit tested.
 
+import { PLACEHOLDER_NAME } from "@/modules/identity/permissions";
+
 /** Public name on a leaderboard: first name plus last-name initial ("Rahul Sharma" → "Rahul S."). */
 export function publicName(fullName: string): string {
   const parts = fullName.trim().split(/\s+/).filter(Boolean);
-  if (parts.length === 0) return "Aspirant";
+  if (parts.length === 0) return PLACEHOLDER_NAME;
   if (parts.length === 1) return parts[0];
   return `${parts[0]} ${parts[parts.length - 1][0].toUpperCase()}.`;
 }

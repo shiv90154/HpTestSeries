@@ -4,7 +4,7 @@ import { Mail, Smartphone } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState, type FormEvent } from "react";
 import { authClient } from "@/modules/identity/auth-client";
-import { normalizeIndianMobile } from "@/modules/identity/permissions";
+import { normalizeIndianMobile, PLACEHOLDER_NAME } from "@/modules/identity/permissions";
 
 type Method = "email" | "phone";
 type Step = { kind: "enter" } | { kind: "code"; to: string };
@@ -28,8 +28,8 @@ const channels = {
     },
     invalid: "Enter a valid email address.",
     send: (to: string) => authClient.emailOtp.sendVerificationOtp({ email: to, type: "sign-in" }),
-    // Name is only used when the account is created; the dashboard then asks for the real name.
-    verify: (to: string, code: string) => authClient.signIn.emailOtp({ email: to, otp: code, name: "Aspirant" }),
+    // Name is only used when the account is created; /welcome then asks for the real name.
+    verify: (to: string, code: string) => authClient.signIn.emailOtp({ email: to, otp: code, name: PLACEHOLDER_NAME }),
     sentTo: (to: string) => `Enter the 6-digit code sent to ${to}`,
     hint: "Can’t find it? Check your Spam or Promotions folder.",
     change: "Change email",
@@ -108,9 +108,10 @@ export function LoginForm({ next, googleEnabled, emailEnabled, phoneEnabled }: {
         setStep({ kind: "code", to });
         setValue("");
       } else {
-        const { error } = await ch.verify(step.to, value.trim());
+        const { data, error } = await ch.verify(step.to, value.trim());
         if (error) throw new Error(error.status === 429 ? "Too many attempts. Try again in a few minutes." : "That code is incorrect or has expired.");
-        router.replace(next);
+        // New code accounts are called "Aspirant" (also on leaderboards) until the student gives their name.
+        router.replace(data?.user.name === PLACEHOLDER_NAME ? `/welcome?next=${encodeURIComponent(next)}` : next);
         router.refresh();
       }
     });

@@ -2,8 +2,8 @@
 
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
-import { db } from "@/lib/db";
 import { HP_DISTRICTS } from "@/lib/districts";
+import { saveOwnProfile } from "@/modules/identity/profile";
 import { requireUser } from "@/modules/identity/session";
 
 const profileSchema = z.object({
@@ -20,8 +20,7 @@ export async function updateProfileDetailsAction(_: unknown, formData: FormData)
     preferredLang: formData.get("preferredLang"),
   });
   if (!parsed.success) return { error: parsed.error.issues[0]?.message ?? "Please check the form." };
-  await db.user.update({ where: { id: user.id }, data: parsed.data });
-  // Session cookie cache holds the old name for up to 5 minutes; drop it so headers/dashboard update now.
+  await saveOwnProfile(user.id, parsed.data);
   revalidatePath("/profile");
   revalidatePath("/dashboard");
   return { ok: true };
