@@ -42,8 +42,12 @@ export default function ContactPage() {
         </Row>
         <Row icon={<MapPin className="size-5" />} label="Address">
           {biz("legalName")}
-          <br />
-          {biz("address")}
+          {business.address && (
+            <>
+              <br />
+              {business.address}
+            </>
+          )}
         </Row>
       </div>
 

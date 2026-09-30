@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Logo } from "@/components/logo";
-import { biz } from "@/lib/business";
+import { biz, business } from "@/lib/business";
 import { rupees } from "@/lib/money";
 import { site } from "@/lib/site";
 import { getReceipt } from "@/modules/commerce/purchases";
@@ -40,7 +40,7 @@ export default async function ReceiptPage({ params }: PageProps<"/orders/[id]/re
             <Logo />
             <div className="text-xs leading-relaxed text-muted">
               <p className="font-semibold text-foreground">{biz("legalName")}</p>
-              <p>{biz("address")}</p>
+              {business.address && <p>{business.address}</p>}
               <p>
                 {biz("email")} · {biz("phone")}
               </p>

@@ -4,17 +4,17 @@
 
 export const business = {
   /** Legal name exactly as on PAN (proprietor's name, or the company/LLP name) */
-  legalName: "Shiv Kumar",
+  legalName: "Nikhil Sharma",
   /** Support email, e.g. support@hptestseries.in */
-  email: "shiva90154@gmail.com",
+  email: "nikhhilsharma787683@gmail.com",
   /** Support phone in +91 format */
-  phone: "+91 90154 84696",
-  /** Full postal address with PIN code */
-  address: "Village Bhalat, Post Office Harsour, Hamirpur, Himachal Pradesh 174305",
+  phone: "+91 78768 35326",
+  /** Full postal address with PIN code — optional; left out of pages while empty */
+  address: "",
   /** City whose courts have jurisdiction, e.g. "Shimla" */
   jurisdictionCity: "Hamirpur",
   /** Grievance Officer (IT Rules 2021 / DPDP Act 2023) — can be the owner */
-  grievanceOfficer: "Shiv Kumar",
+  grievanceOfficer: "Nikhil Sharma",
   supportHours: "Monday to Saturday, 10:00 AM – 6:00 PM IST",
   /** Date the current policies took effect (YYYY-MM-DD) */
   policiesUpdated: "2026-09-27",
@@ -32,7 +32,7 @@ const labels: Record<keyof typeof business, string> = {
 };
 
 export function missingBusinessDetails(): string[] {
-  return (Object.keys(business) as (keyof typeof business)[]).filter((k) => !business[k].trim()).map((k) => labels[k]);
+  return (Object.keys(business) as (keyof typeof business)[]).filter((k) => k !== "address" && !business[k].trim()).map((k) => labels[k]);
 }
 
 /** Value for display, or a visible placeholder so a missing detail is obvious in review. */

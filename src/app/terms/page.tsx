@@ -106,7 +106,7 @@ export default function TermsPage() {
 
       <h2>10. Contact</h2>
       <p>
-        {biz("legalName")}, {biz("address")}. Email <a href={`mailto:${biz("email")}`}>{biz("email")}</a>, phone {biz("phone")}.
+        {biz("legalName")}. Email <a href={`mailto:${biz("email")}`}>{biz("email")}</a>, phone {biz("phone")}.
         Grievance Officer: {biz("grievanceOfficer")}.
       </p>
     </LegalPage>

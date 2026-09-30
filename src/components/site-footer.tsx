@@ -7,7 +7,7 @@ import { Logo } from "./logo";
 import { PublicBottomNav } from "./public-bottom-nav";
 
 /** Footer links are 40px tall so they are easy to tap on phones. */
-const link = "inline-block py-2.5 hover:text-accent";
+const link = "inline-block py-2.5 hover:text-accent md:py-1.5";
 const heading = "mb-2 text-sm font-semibold uppercase tracking-wider text-white";
 
 export async function SiteFooter() {
@@ -16,7 +16,7 @@ export async function SiteFooter() {
 
   return (
     <footer className="mt-auto bg-[#0b1733] pb-[calc(4rem+env(safe-area-inset-bottom))] text-slate-300 md:pb-0">
-      <div className="mx-auto grid w-full max-w-6xl gap-8 px-4 py-10 md:gap-10 md:py-14 sm:grid-cols-2 md:grid-cols-[1.4fr_1fr_1fr_1fr]">
+      <div className="mx-auto grid w-full max-w-7xl gap-8 px-4 py-10 sm:grid-cols-2 lg:grid-cols-[1.5fr_1.2fr_1fr_1.2fr_1fr] lg:gap-10 lg:py-12">
         <div className="space-y-4">
           <Logo light />
           <p className="max-w-sm text-sm leading-relaxed text-slate-400">{site.description}</p>
@@ -63,21 +63,21 @@ export async function SiteFooter() {
               <AuthFooterLink className={link} />
             </li>
           </ul>
-          {latest.items.length > 0 && (
-            <>
-              <h2 className={`${heading} mt-8`}>Latest updates</h2>
-              <ul className="text-sm">
-                {latest.items.map((p) => (
-                  <li key={p.slug}>
-                    <Link href={`/blog/${p.slug}`} className="line-clamp-2 py-2.5 hover:text-accent">
-                      {p.title}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </>
-          )}
         </div>
+        {latest.items.length > 0 && (
+          <div>
+            <h2 className={heading}>Latest updates</h2>
+            <ul className="text-sm">
+              {latest.items.map((p) => (
+                <li key={p.slug} className="py-2 md:py-1.5">
+                  <Link href={`/blog/${p.slug}`} className="line-clamp-2 leading-snug hover:text-accent">
+                    {p.title}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
         <div>
           <h2 className={heading}>Help</h2>
           <ul className="text-sm">
@@ -108,7 +108,7 @@ export async function SiteFooter() {
         </div>
       </div>
       <div className="border-t border-white/10">
-        <p className="mx-auto w-full max-w-6xl px-4 py-5 text-xs text-slate-400">
+        <p className="mx-auto w-full max-w-7xl px-4 py-5 text-xs text-slate-400">
           © {new Date().getFullYear()} {site.name}. An independent practice platform — not affiliated with HPPSC, HPRCA, HPBOSE,
           HP Police or any government body.
         </p>

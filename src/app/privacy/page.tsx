@@ -124,7 +124,7 @@ export default function PrivacyPage() {
       <h2>10. Grievance Officer</h2>
       <p>
         For any complaint about your personal data, contact our Grievance Officer: <strong>{biz("grievanceOfficer")}</strong>,{" "}
-        <a href={`mailto:${biz("email")}`}>{biz("email")}</a>, {biz("address")}. We acknowledge complaints within 24 hours and
+        <a href={`mailto:${biz("email")}`}>{biz("email")}</a>. We acknowledge complaints within 24 hours and
         resolve them within 15 days. If you are not satisfied, you may approach the Data Protection Board of India. See also our{" "}
         <Link href="/contact">contact page</Link>.
       </p>

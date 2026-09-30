@@ -10,6 +10,7 @@ import {
   Trophy,
 } from "lucide-react";
 import Link from "next/link";
+import { CbtPreview } from "@/components/cbt-preview";
 import { JsonLd } from "@/components/json-ld";
 import { Mountains } from "@/components/mountains";
 import { PostCard } from "@/components/post-card";
@@ -406,61 +407,6 @@ function Plan(props: {
           {props.cta.label}
         </Link>
       )}
-    </div>
-  );
-}
-
-/** Static illustration of the CBT screen for the hero. */
-function CbtPreview() {
-  const palette = ["a", "a", "n", "m", "a", "am", "v", "n", "a", "v", "v", "v", "v", "v", "v"];
-  const style: Record<string, string> = {
-    a: "bg-cbt-answered text-white rounded-b-[10px] rounded-t-sm",
-    n: "bg-cbt-not-answered text-white rounded-t-[10px] rounded-b-sm",
-    m: "bg-cbt-marked text-white rounded-full",
-    am: "bg-cbt-marked text-white rounded-full ring-2 ring-cbt-answered",
-    v: "bg-cbt-not-visited text-foreground rounded-sm border border-[#c3cad6]",
-  };
-  return (
-    <div className="relative hidden lg:block" aria-hidden="true">
-      <div className="absolute -inset-4 rotate-2 rounded-3xl bg-white/10" />
-      <div className="relative overflow-hidden rounded-2xl bg-white text-foreground shadow-2xl">
-        <div className="flex items-center justify-between bg-cbt-header px-4 py-2.5 text-sm text-white">
-          <span className="font-semibold">HPRCA JOA IT — Mock Test 3</span>
-          <span className="flex items-center gap-1.5 rounded bg-white/15 px-2 py-0.5 font-mono">
-            <Clock className="size-3.5" /> 01:24:37
-          </span>
-        </div>
-        <div className="flex border-b border-border bg-surface-muted text-xs">
-          <span className="border-b-2 border-primary bg-white px-3 py-2 font-semibold text-primary">Himachal GK</span>
-          <span className="px-3 py-2 text-muted">Reasoning</span>
-          <span className="px-3 py-2 text-muted">Computer</span>
-        </div>
-        <div className="grid grid-cols-[1fr_150px]">
-          <div className="space-y-3 p-4 text-sm">
-            <p className="font-semibold">Question No. 6</p>
-            <p className="font-reading">The Chandra and Bhaga rivers meet at which place to form the Chandrabhaga?</p>
-            {["Tandi", "Keylong", "Udaipur", "Kaza"].map((o, i) => (
-              <div key={o} className={`flex items-center gap-2 rounded-md border px-3 py-1.5 font-reading ${i === 0 ? "border-primary bg-primary-soft" : "border-border"}`}>
-                <span className={`size-3.5 rounded-full border-2 ${i === 0 ? "border-primary bg-primary" : "border-[#b7c3d8]"}`} /> {o}
-              </div>
-            ))}
-            <div className="flex gap-2 pt-1 text-[11px] font-semibold">
-              <span className="rounded border border-cbt-marked px-2 py-1.5 text-cbt-marked">Mark for Review &amp; Next</span>
-              <span className="ml-auto rounded bg-cbt-answered px-2 py-1.5 text-white">Save &amp; Next</span>
-            </div>
-          </div>
-          <div className="border-l border-border p-3">
-            <p className="mb-2 text-[11px] font-medium text-muted">Question palette</p>
-            <div className="grid grid-cols-4 gap-1.5 text-[10px] font-semibold">
-              {palette.map((s, i) => (
-                <span key={i} className={`grid h-6 place-items-center ${style[s]}`}>
-                  {i + 1}
-                </span>
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
     </div>
   );
 }

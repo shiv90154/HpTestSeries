@@ -18,6 +18,14 @@ const chip = (active: boolean) =>
     active ? "border-primary bg-primary-soft text-primary" : "border-border bg-surface text-muted hover:text-foreground"
   }`;
 
+const examTab = (active: boolean) =>
+  `inline-flex h-12 shrink-0 items-center gap-2 whitespace-nowrap rounded-xl border px-5 text-base font-semibold transition-colors ${
+    active ? "border-primary bg-primary text-white" : "border-border bg-surface text-foreground hover:border-primary"
+  }`;
+
+/** "Patwari" -> "HP Patwari"; names that already carry the department (HP TET, JOA IT) are left alone. */
+const examTitle = (name: string) => (/^(HP|JOA|HPAS)/.test(name) ? name : `HP ${name}`);
+
 /**
  * Search and filters for the test list. State lives in the URL (?exam=&type=&access=&q=) so a filtered list
  * can be shared and survives Back; it is written with history.replaceState, which Next keeps in sync
@@ -74,14 +82,14 @@ export function TestsBrowser({ tests }: { tests: PublicTest[] }) {
           />
         </label>
 
-        {exams.length > 1 && (
+        {exams.length > 0 && (
           <div className="flex gap-2 overflow-x-auto pb-1" role="group" aria-label="Exam">
-            <button type="button" className={chip(!exam)} onClick={() => setParam("exam", "")} aria-pressed={!exam}>
-              All exams
+            <button type="button" className={examTab(!exam)} onClick={() => setParam("exam", "")} aria-pressed={!exam}>
+              All exams <span className="text-xs opacity-70">{tests.length}</span>
             </button>
             {exams.map((e) => (
-              <button key={e} type="button" className={chip(exam === e)} onClick={() => setParam("exam", exam === e ? "" : e)} aria-pressed={exam === e}>
-                {e}
+              <button key={e} type="button" className={examTab(exam === e)} onClick={() => setParam("exam", exam === e ? "" : e)} aria-pressed={exam === e}>
+                {examTitle(e)} <span className="text-xs opacity-70">{tests.filter((t) => t.examName === e).length}</span>
               </button>
             ))}
           </div>
@@ -129,17 +137,31 @@ export function TestsBrowser({ tests }: { tests: PublicTest[] }) {
         )}
       </div>
 
-      <TestGrid tests={shown} />
+      {exam ? (
+        <TestGrid tests={shown} />
+      ) : (
+        // With no exam picked, list the tests exam by exam so each exam's mocks sit together.
+        [...exams, null].map((e) => {
+          const group = shown.filter((t) => t.examName === e);
+          if (group.length === 0) return null;
+          return (
+            <section key={e ?? "general"} className="space-y-3">
+              <h2 className="text-xl font-bold">{e ? `${examTitle(e)} mock tests` : "General tests for all exams"}</h2>
+              <TestGrid tests={group} headingLevel={3} />
+            </section>
+          );
+        })
+      )}
       {shown.length === 0 && tests.length > 0 && <p className="py-10 text-center text-muted">No tests match these filters.</p>}
     </div>
   );
 }
 
-export function TestGrid({ tests }: { tests: PublicTest[] }) {
+export function TestGrid({ tests, headingLevel = 2 }: { tests: PublicTest[]; headingLevel?: 2 | 3 }) {
   return (
     <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
       {tests.map((t) => (
-        <TestCard key={t.slug} test={t} headingLevel={2} />
+        <TestCard key={t.slug} test={t} headingLevel={headingLevel} />
       ))}
     </div>
   );
