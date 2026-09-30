@@ -56,6 +56,16 @@ const PLAN_ITEMS: Record<string, string[]> = {
   PASS: ["Every Himachal exam", "All mock tests & PYQs", "HP GK & current affairs tests", "Best value for serious aspirants"],
 };
 
+/** Exams from the notification feed that have no test series yet; shown as "launching soon" once a series for them exists this drops off. */
+const UPCOMING_EXAMS = [
+  { name: "HPRCA Clerk", match: /clerk/i },
+  { name: "HP TET", match: /tet/i },
+  { name: "HPPSC HPAS", match: /hpas/i },
+  { name: "HPPSC Assistant Professor", match: /assistant professor/i },
+  { name: "HPPSC ADO (Agriculture Development Officer)", match: /ado|agriculture/i },
+  { name: "PGIMER Nursing Officer", match: /pgimer|nursing/i },
+];
+
 const faqs = [
   {
     q: "Can I take a mock test without logging in?",
@@ -86,7 +96,8 @@ export default async function Home() {
   // cheapest all-access pass. Products arrive sorted by price.
   const pass = products.find((p) => p.kind === "PASS");
   const series = products.filter((p) => p.kind !== "PASS");
-  const planCount = products.length === 0 ? 3 : 1 + (series.length > 0 ? 1 : 0) + (pass ? 1 : 0);
+  const upcoming = UPCOMING_EXAMS.filter((e) => !series.some((p) => e.match.test(p.title)));
+  const planCount = products.length === 0 ? 3 : 1 + series.length + (pass ? 1 : 0);
 
   return (
     <>
@@ -282,34 +293,11 @@ export default async function Home() {
               <p className="text-sm text-muted sm:text-base">No expensive coaching. Pay only for what you need — or nothing at all.</p>
             </div>
             {/* Stacked on phones: a sideways-scrolling row showed only the edge of the paid plan */}
-            <div className={`grid gap-5 ${planCount === 3 ? "md:grid-cols-3" : "mx-auto max-w-4xl md:grid-cols-2"}`}>
+            <div className={`grid gap-5 ${planCount >= 4 ? "sm:grid-cols-2 lg:grid-cols-4" : planCount === 3 ? "md:grid-cols-3" : "mx-auto max-w-4xl md:grid-cols-2"}`}>
               <Plan name="Free" price="₹0" note="forever" items={["Free mock tests", "Real CBT interface", "Solutions in Hindi & English", "HP rank on free tests"]} cta={{ href: FREE_MOCK_HREF, label: "Start free test" }} />
-              {series.length === 1 && <Plan {...productPlan(series[0])} badge={pass ? undefined : "Recommended"} />}
-              {series.length > 1 && (
-                <Plan
-                  name="Exam test series"
-                  price={rupees(series[0].priceInPaise)}
-                  note="onwards, per exam"
-                  items={PLAN_ITEMS.SERIES}
-                  badge={pass ? undefined : "Recommended"}
-                >
-                  <ul className="mt-6 space-y-2" aria-label="Choose your exam">
-                    {series.map((p) => (
-                      <li key={p.slug}>
-                        <Link
-                          href={`/buy/${p.slug}`}
-                          className="flex min-h-11 items-center justify-between gap-3 rounded-xl border border-border px-3.5 py-2 text-sm font-medium hover:border-primary hover:text-primary"
-                        >
-                          {p.title}
-                          <span className="flex shrink-0 items-center gap-1 font-semibold">
-                            {rupees(p.priceInPaise)} <ChevronRight className="size-4" aria-hidden />
-                          </span>
-                        </Link>
-                      </li>
-                    ))}
-                  </ul>
-                </Plan>
-              )}
+              {series.map((p) => (
+                <Plan key={p.slug} {...productPlan(p)} badge={series.length === 1 && !pass ? "Recommended" : undefined} />
+              ))}
               {pass && <Plan {...productPlan(pass)} badge="Best value" />}
               {products.length === 0 && (
                 <>
@@ -318,6 +306,19 @@ export default async function Home() {
                 </>
               )}
             </div>
+            {upcoming.length > 0 && (
+              <div className="space-y-3">
+                <h3 className="text-sm font-semibold sm:text-center">More exams launching soon</h3>
+                <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                  {upcoming.map((e) => (
+                    <li key={e.name} className="flex min-h-11 items-center justify-between gap-3 rounded-xl border border-border bg-background px-3.5 py-2 text-sm font-medium">
+                      {e.name}
+                      <span className="shrink-0 rounded-full bg-accent-soft px-2.5 py-1 text-xs font-semibold text-accent-ink">Soon</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
           </div>
         </section>
 
@@ -359,11 +360,14 @@ export default async function Home() {
 
 /** Card for one product on sale (an exam series, a pack or the all-access pass). */
 function productPlan(p: PublicProduct) {
+  // "HP Patwari Mock Test Series — 3 Full Mocks + 14 Subject Tests": the part after the dash becomes the first bullet
+  const [name, detail] = p.title.split(/\s+[—–]\s+/);
+  const items = PLAN_ITEMS[p.kind] ?? PLAN_ITEMS.SERIES;
   return {
-    name: p.title,
+    name,
     price: rupees(p.priceInPaise),
     note: p.validityDays ? `valid ${p.validityDays} days` : "one-time",
-    items: PLAN_ITEMS[p.kind] ?? PLAN_ITEMS.SERIES,
+    items: detail ? [detail, ...items.filter((i) => i !== "Full mock tests")] : items,
     cta: { href: `/buy/${p.slug}`, label: "Buy now" },
   };
 }
