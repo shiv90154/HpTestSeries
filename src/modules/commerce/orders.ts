@@ -1,4 +1,5 @@
 import "server-only";
+import { randomBytes } from "node:crypto";
 import { Prisma } from "@/generated/prisma/client";
 import { db } from "@/lib/db";
 import { logError } from "@/lib/logger";
@@ -21,7 +22,7 @@ export type CreateOrderResult = CheckoutOrder | { free: true; orderId: string } 
 
 type OrderForFulfilment = {
   id: string;
-  userId: string;
+  userId: string | null; // null: guest order, access is granted when it is claimed (claimGuestOrders)
   productId: string;
   couponId: string | null;
   product: { validUntil: Date | null; validityDays: number | null };
@@ -97,12 +98,36 @@ export async function createOrderForProduct(userId: string, productSlug: string,
 }
 
 /**
+ * Checkout for a buyer who is not logged in. The order belongs to nobody yet: the caller keeps the returned
+ * `claimToken` in the buyer's browser, and once they sign in claimGuestOrders() attaches the order to their
+ * account and grants the access. Coupons need an account (per-user limits), so guests pay the list price.
+ */
+export async function createGuestOrderForProduct(productSlug: string): Promise<(CheckoutOrder & { claimToken: string }) | { error: string }> {
+  const product = await db.product.findUnique({ where: { slug: productSlug } });
+  if (!product || !product.isActive) return { error: "This product is not available." };
+  if (product.priceInPaise <= 0) return { error: "Please log in to get this product." };
+
+  const claimToken = randomBytes(24).toString("base64url");
+  const order = await db.order.create({
+    data: { userId: null, claimToken, productId: product.id, amountPaise: product.priceInPaise, status: "CREATED" },
+  });
+  try {
+    const rpOrder = await createRazorpayOrder({ amountPaise: order.amountPaise, receipt: order.id, notes: { guest: "1", productSlug } });
+    await db.order.update({ where: { id: order.id }, data: { razorpayOrderId: rpOrder.id } });
+    return { orderId: order.id, razorpayOrderId: rpOrder.id, amountPaise: order.amountPaise, keyId: razorpayPublicKey(), productTitle: product.title, claimToken };
+  } catch (err) {
+    await db.order.update({ where: { id: order.id }, data: { status: "FAILED" } });
+    throw err;
+  }
+}
+
+/**
  * Confirms a payment reported by Razorpay Checkout's client-side handler, so access unlocks
  * immediately. The Razorpay webhook (commerce/webhook.ts) is the source of truth and also covers
  * payments whose callback never arrives (tab closed, network drop).
  */
 export async function confirmCheckoutPayment(opts: {
-  userId: string;
+  userId: string | null; // null: the buyer is not logged in (guest order)
   orderId: string;
   razorpayPaymentId: string;
   razorpaySignature: string;
@@ -120,7 +145,16 @@ export async function confirmCheckoutPayment(opts: {
   });
   if (!valid) return { error: "Payment signature could not be verified." };
 
-  await fulfillOrder(order, opts.razorpayPaymentId, opts);
+  // The signature already proves the payment. For a guest order also ask Razorpay who paid, so the buyer can
+  // still claim it from another device by email; failing to reach Razorpay must not fail a verified payment.
+  let raw: Prisma.InputJsonValue = opts;
+  if (order.userId === null) {
+    const payment = await fetchOrderPayments(order.razorpayOrderId)
+      .then((ps) => ps.find((p) => p.id === opts.razorpayPaymentId))
+      .catch(() => undefined);
+    if (payment) raw = payment as unknown as Prisma.InputJsonValue;
+  }
+  await fulfillOrder(order, opts.razorpayPaymentId, raw);
   return { ok: true };
 }
 
@@ -130,20 +164,12 @@ export async function confirmCheckoutPayment(opts: {
  * for orders a 100% coupon made free.
  */
 export async function fulfillOrder(order: OrderForFulfilment, razorpayPaymentId: string | null, raw: Prisma.InputJsonValue): Promise<void> {
-  const now = new Date();
-  // A renewal bought before the current period ends starts when that period ends, so no paid days are lost.
-  const current = order.product.validUntil
-    ? []
-    : await db.entitlement.findMany({
-        where: { userId: order.userId, productId: order.productId, revokedAt: null, expiresAt: { gt: now }, NOT: { orderId: order.id } },
-        select: { productId: true, expiresAt: true, revokedAt: true },
-      });
-  const startsAt = renewalStart(order.productId, current, now);
-  const expiresAt = order.product.validUntil ?? new Date(startsAt.getTime() + (order.product.validityDays ?? 365) * 86_400_000);
+  const grant = order.userId ? await entitlementGrant(order.userId, order) : null;
+  const payerEmail = order.userId ? undefined : payerEmailFrom(raw);
 
   try {
     await db.$transaction([
-      db.order.update({ where: { id: order.id }, data: { status: "PAID" } }),
+      db.order.update({ where: { id: order.id }, data: { status: "PAID", ...(payerEmail && { payerEmail }) } }),
       ...(razorpayPaymentId
         ? [
             db.payment.upsert({
@@ -153,25 +179,97 @@ export async function fulfillOrder(order: OrderForFulfilment, razorpayPaymentId:
             }),
           ]
         : []),
-      db.entitlement.upsert({
-        where: { orderId: order.id },
-        create: {
-          userId: order.userId,
-          productId: order.productId,
-          source: razorpayPaymentId ? "PURCHASE" : "COUPON_FREE",
-          startsAt,
-          expiresAt,
-          orderId: order.id,
-        },
-        update: {},
-      }),
+      // A guest order has nobody to give access to yet; claimGuestOrders() does it once they sign in.
+      ...(grant && order.userId
+        ? [
+            db.entitlement.upsert({
+              where: { orderId: order.id },
+              create: { userId: order.userId, productId: order.productId, source: razorpayPaymentId ? "PURCHASE" : "COUPON_FREE", orderId: order.id, ...grant },
+              update: {},
+            }),
+          ]
+        : []),
     ]);
   } catch (err) {
     // A concurrent fulfilment of the same payment won the unique-key race; it already did the work.
     if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === "P2002") return;
     throw err;
   }
-  if (order.couponId) await recordRedemption(order.couponId).catch((e) => logError(e, { path: "coupon-redemption", userId: order.userId }));
+  if (order.couponId) await recordRedemption(order.couponId).catch((e) => logError(e, { path: "coupon-redemption", userId: order.userId ?? undefined }));
+  // A guest order may have been claimed while this payment was being recorded; then it is owed its access now.
+  if (!order.userId) await grantIfPaid(order.id);
+}
+
+/** Grants the access of a PAID order that now has an owner. Idempotent (one entitlement per order). */
+async function grantIfPaid(orderId: string): Promise<boolean> {
+  const order = await db.order.findUnique({ where: { id: orderId }, include: { product: true } });
+  if (!order?.userId || order.status !== "PAID") return false;
+  const grant = await entitlementGrant(order.userId, order);
+  try {
+    await db.entitlement.upsert({
+      where: { orderId },
+      create: { userId: order.userId, productId: order.productId, source: "PURCHASE", orderId, ...grant },
+      update: {},
+    });
+  } catch (err) {
+    // The other side of the claim/payment race already created it.
+    if (!(err instanceof Prisma.PrismaClientKnownRequestError && err.code === "P2002")) throw err;
+  }
+  return true;
+}
+
+/** When the access an order buys starts and ends for `userId`. */
+async function entitlementGrant(userId: string, order: Pick<OrderForFulfilment, "id" | "productId" | "product">): Promise<{ startsAt: Date; expiresAt: Date }> {
+  const now = new Date();
+  // A renewal bought before the current period ends starts when that period ends, so no paid days are lost.
+  const current = order.product.validUntil
+    ? []
+    : await db.entitlement.findMany({
+        where: { userId, productId: order.productId, revokedAt: null, expiresAt: { gt: now }, NOT: { orderId: order.id } },
+        select: { productId: true, expiresAt: true, revokedAt: true },
+      });
+  const startsAt = renewalStart(order.productId, current, now);
+  const expiresAt = order.product.validUntil ?? new Date(startsAt.getTime() + (order.product.validityDays ?? 365) * 86_400_000);
+  return { startsAt, expiresAt };
+}
+
+/** The buyer's email as Razorpay recorded it (payment entities carry `email`); ignores placeholder values. */
+function payerEmailFrom(raw: Prisma.InputJsonValue): string | undefined {
+  const email = raw && typeof raw === "object" && !Array.isArray(raw) ? (raw as Record<string, unknown>).email : undefined;
+  if (typeof email !== "string") return undefined;
+  const e = email.trim().toLowerCase();
+  return e.includes("@") && !e.endsWith(".invalid") ? e : undefined;
+}
+
+/**
+ * Attaches the guest orders a just-signed-in student paid for to their account and grants the access.
+ * An order matches by the claim token in this browser's cookie (any status: the webhook may still be on its
+ * way, and fulfillOrder then grants access to the now-owned order), or, once paid, by the email the buyer
+ * gave Razorpay — which only counts because the account's email was verified by the login code / Google.
+ * Safe to call repeatedly: an order is claimed by exactly one account, once.
+ */
+export async function claimGuestOrders(user: { id: string; email: string }, tokens: string[]): Promise<{ claimed: number; unlocked: number }> {
+  const email = user.email.toLowerCase();
+  const byEmail = email.endsWith(".invalid") ? [] : [{ status: "PAID" as const, payerEmail: email }];
+  const matches = [...(tokens.length ? [{ claimToken: { in: tokens } }] : []), ...byEmail];
+  if (!matches.length) return { claimed: 0, unlocked: 0 };
+  const candidates = await db.order.findMany({ where: { userId: null, OR: matches }, include: { product: true }, take: 20 });
+
+  let claimed = 0;
+  let unlocked = 0;
+  for (const order of candidates) {
+    try {
+      // The `userId: null` guard makes the claim atomic: of two racing claimers only one updates a row.
+      const { count } = await db.order.updateMany({ where: { id: order.id, userId: null }, data: { userId: user.id, claimedAt: new Date() } });
+      if (count !== 1) continue;
+      claimed++;
+      // Status is read after the claim: a payment landing at the same moment is then covered by one side or the other.
+      if (await grantIfPaid(order.id)) unlocked++;
+    } catch (err) {
+      await logError(err, { path: "guest-claim", userId: user.id });
+    }
+  }
+  return { claimed, unlocked };
 }
 
 /**
@@ -201,7 +299,7 @@ export async function reconcilePendingOrders(): Promise<{ checked: number; recov
       }
     } catch (err) {
       errors++;
-      await logError(err, { path: "reconcile", userId: order.userId });
+      await logError(err, { path: "reconcile", userId: order.userId ?? undefined });
     }
   }
   return { checked: pending.length, recovered, errors };

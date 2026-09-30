@@ -37,7 +37,7 @@ export async function handleRazorpayWebhook(rawBody: string, signature: string |
   if (!paymentMatchesOrder(event, order)) {
     await logError(
       new Error(`Razorpay payment ${event.razorpayPaymentId} paid ${event.amountPaise} ${event.currency}, order ${order.id} expects ${order.amountPaise} INR`),
-      { path: "/api/razorpay/webhook", userId: order.userId },
+      { path: "/api/razorpay/webhook", userId: order.userId ?? undefined },
     );
     return 200;
   }

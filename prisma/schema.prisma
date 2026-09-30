@@ -465,8 +465,8 @@ model Coupon {
 
 model Order {
   id              String      @id @default(cuid())
-  userId          String
-  user            User        @relation(fields: [userId], references: [id])
+  userId          String? // null = guest checkout, not yet attached to an account (see commerce/guest-claim.ts)
+  user            User?       @relation(fields: [userId], references: [id])
   productId       String
   product         Product     @relation(fields: [productId], references: [id])
   amountPaise     Int // what the student pays (after any coupon)
@@ -475,6 +475,9 @@ model Order {
   coupon          Coupon?     @relation(fields: [couponId], references: [id])
   status          OrderStatus @default(CREATED)
   razorpayOrderId String?     @unique
+  claimToken      String?     @unique // secret held in the guest buyer's browser cookie; proves they placed the order
+  payerEmail      String? // email typed into Razorpay Checkout; lets a guest buyer claim from another device
+  claimedAt       DateTime? // when a guest order was attached to an account
   createdAt       DateTime    @default(now())
   updatedAt       DateTime    @updatedAt
 
@@ -483,6 +486,7 @@ model Order {
 
   @@index([userId, createdAt])
   @@index([status, createdAt])
+  @@index([payerEmail])
 }
 
 model Payment {

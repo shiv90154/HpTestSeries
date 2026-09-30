@@ -9,7 +9,7 @@ const KEY_SECRET = process.env.RAZORPAY_KEY_SECRET ?? "";
 const WEBHOOK_SECRET = process.env.RAZORPAY_WEBHOOK_SECRET!;
 
 const { db } = await import("@/lib/db");
-const { confirmCheckoutPayment, createOrderForProduct, reconcilePendingOrders } = await import("./orders");
+const { claimGuestOrders, confirmCheckoutPayment, createGuestOrderForProduct, createOrderForProduct, reconcilePendingOrders } = await import("./orders");
 const { handleRazorpayWebhook } = await import("./webhook");
 const { quoteCoupon } = await import("./coupon-service");
 
@@ -53,6 +53,10 @@ afterAll(async () => {
   await db.payment.deleteMany({ where: { order: { userId: { in: userIds } } } });
   await db.order.deleteMany({ where: { userId: { in: userIds } } });
   await db.coupon.deleteMany({ where: { id: { in: couponIds } } });
+  // Guest orders that were never claimed have no user to be cleaned up by.
+  await db.payment.deleteMany({ where: { order: { productId } } });
+  await db.entitlement.deleteMany({ where: { productId } });
+  await db.order.deleteMany({ where: { productId } });
   await db.product.delete({ where: { id: productId } });
   await db.user.deleteMany({ where: { id: { in: userIds } } });
   await db.rateLimit.deleteMany({ where: { key: { in: userIds.map((id) => `order:${id}`) } } });
@@ -96,6 +100,53 @@ describe("checkout callback path (real Razorpay test API)", () => {
     // Already owns it -> a second purchase is refused.
     const again = await createOrderForProduct(userId, productSlug);
     expect(again).toHaveProperty("error");
+  });
+});
+
+describe("guest checkout (pay first, sign in later)", () => {
+  it("holds a paid guest order without access, then grants it to the account that claims it", async () => {
+    const order = await createGuestOrderForProduct(productSlug);
+    if ("error" in order) throw new Error(order.error);
+    expect(order.claimToken).toMatch(/^[A-Za-z0-9_-]{32}$/);
+    expect(await db.order.findUnique({ where: { id: order.orderId } })).toMatchObject({ userId: null, status: "CREATED" });
+
+    // A signed-in user can't confirm a guest order as their own.
+    const stranger = await newUser("g-stranger");
+    const pay = "pay_g1" + tag;
+    const sig = checkoutSig(order.razorpayOrderId, pay);
+    expect(await confirmCheckoutPayment({ userId: stranger, orderId: order.orderId, razorpayPaymentId: pay, razorpaySignature: sig })).toEqual({ error: "Order not found." });
+
+    expect(await confirmCheckoutPayment({ userId: null, orderId: order.orderId, razorpayPaymentId: pay, razorpaySignature: sig })).toEqual({ ok: true });
+    expect(await db.order.findUnique({ where: { id: order.orderId } })).toMatchObject({ userId: null, status: "PAID" });
+    expect(await db.entitlement.count({ where: { orderId: order.orderId } })).toBe(0);
+
+    // The wrong token claims nothing; the right one attaches the order and unlocks it, exactly once.
+    const buyer = await newUser("g-buyer");
+    const buyerEmail = `it-${tag}-g-buyer@example.com`;
+    expect(await claimGuestOrders({ id: buyer, email: buyerEmail }, ["x".repeat(32)])).toEqual({ claimed: 0, unlocked: 0 });
+    expect(await claimGuestOrders({ id: buyer, email: buyerEmail }, [order.claimToken])).toEqual({ claimed: 1, unlocked: 1 });
+    expect(await db.entitlement.findUnique({ where: { orderId: order.orderId } })).toMatchObject({ userId: buyer, productId, source: "PURCHASE" });
+    expect(await claimGuestOrders({ id: stranger, email: "s@example.com" }, [order.claimToken])).toEqual({ claimed: 0, unlocked: 0 });
+    expect(await db.entitlement.count({ where: { orderId: order.orderId } })).toBe(1);
+  });
+
+  it("claims an order still awaiting its webhook, and the webhook then grants the access", async () => {
+    const order = await createGuestOrderForProduct(productSlug);
+    if ("error" in order) throw new Error(order.error);
+    const buyer = await newUser("g-early");
+    expect(await claimGuestOrders({ id: buyer, email: `it-${tag}-g-early@example.com` }, [order.claimToken])).toEqual({ claimed: 1, unlocked: 0 });
+
+    const w = webhook("payment.captured", { rpOrderId: order.razorpayOrderId, paymentId: "pay_g2" + tag, amount: P_PRICE });
+    expect(await handleRazorpayWebhook(w.body, w.sig)).toBe(200);
+    expect(await db.entitlement.findUnique({ where: { orderId: order.orderId } })).toMatchObject({ userId: buyer });
+  });
+
+  it("lets the email given to Razorpay claim a paid order without the cookie", async () => {
+    const order = await createGuestOrderForProduct(productSlug);
+    if ("error" in order) throw new Error(order.error);
+    await db.order.update({ where: { id: order.orderId }, data: { status: "PAID", payerEmail: `it-${tag}-g-mail@example.com` } });
+    const buyer = await newUser("g-mail");
+    expect(await claimGuestOrders({ id: buyer, email: `IT-${tag}-g-mail@example.com` }, [])).toEqual({ claimed: 1, unlocked: 1 });
   });
 });
 

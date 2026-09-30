@@ -8,7 +8,7 @@ import { track } from "@/components/analytics";
 import { btn } from "@/components/ui";
 import { rupees } from "@/lib/money";
 import { site } from "@/lib/site";
-import { confirmPaymentAction, createOrderAction, quoteCouponAction } from "./actions";
+import { confirmPaymentAction, createGuestOrderAction, createOrderAction, quoteCouponAction } from "./actions";
 
 declare global {
   interface Window {
@@ -61,20 +61,18 @@ export function BuyButton({
   }
 
   async function pay() {
-    if (!user) {
-      router.push(`/login?next=${encodeURIComponent(`/buy/${productSlug}`)}`);
-      return;
-    }
     // Checkout script loads lazily; bail out before creating an order that could never be paid.
     const Razorpay = window.Razorpay;
     if (!Razorpay) {
       toast.error("Payment is still loading — please try again in a moment.");
       return;
     }
+    const guest = !user;
     // Stays true while Razorpay Checkout is open, so a second tap can't create a second order.
     setLoading(true);
     try {
-      const order = await createOrderAction(productSlug, quote?.code);
+      // Not logged in: the order is created anyway and attached to the account on the next login (/claim).
+      const order = guest ? await createGuestOrderAction(productSlug) : await createOrderAction(productSlug, quote?.code);
       if ("error" in order) {
         toast.error(order.error);
         setLoading(false);
@@ -88,7 +86,7 @@ export function BuyButton({
         return;
       }
       // Phone-only accounts carry a placeholder address that can never receive mail; don't hand it to Razorpay.
-      const realEmail = user.email.endsWith(".invalid") ? undefined : user.email;
+      const realEmail = user && !user.email.endsWith(".invalid") ? user.email : undefined;
       const razorpay = new Razorpay({
         key: order.keyId,
         amount: order.amountPaise,
@@ -96,20 +94,30 @@ export function BuyButton({
         name: site.name,
         description: order.productTitle,
         order_id: order.razorpayOrderId,
-        prefill: { name: user.name, email: realEmail, contact: user.phoneNumber ?? undefined },
+        prefill: user ? { name: user.name, email: realEmail, contact: user.phoneNumber ?? undefined } : undefined,
         theme: { color: site.themeColor },
         handler: async (response: { razorpay_payment_id: string; razorpay_order_id: string; razorpay_signature: string }) => {
-          const result = await confirmPaymentAction({
-            orderId: order.orderId,
-            razorpayPaymentId: response.razorpay_payment_id,
-            razorpaySignature: response.razorpay_signature,
-          });
+          const result = await confirmPaymentAction(
+            { orderId: order.orderId, razorpayPaymentId: response.razorpay_payment_id, razorpaySignature: response.razorpay_signature },
+            guest,
+          );
           if ("error" in result) {
-            toast.error(`Payment received but could not be confirmed: ${result.error}. If money was deducted, access unlocks automatically within a few minutes.`);
-            setLoading(false);
+            toast.error(
+              guest
+                ? `Payment received but could not be confirmed: ${result.error}. Don't pay again — log in and your access is added automatically within a few minutes.`
+                : `Payment received but could not be confirmed: ${result.error}. If money was deducted, access unlocks automatically within a few minutes.`,
+            );
+            if (guest) router.push("/claim");
+            else setLoading(false);
             return;
           }
           track("purchase", { transaction_id: order.orderId, value: order.amountPaise / 100, currency: "INR", item_name: order.productTitle });
+          if (guest) {
+            // /claim asks them to log in or sign up, then attaches this purchase to that account.
+            toast.success("Payment successful! Log in or sign up to unlock your access.");
+            router.push("/claim");
+            return;
+          }
           toast.success("Payment successful! Access unlocked.");
           router.push("/dashboard");
           router.refresh();
@@ -169,6 +177,11 @@ export function BuyButton({
       <button onClick={pay} disabled={loading} className={btn("primary", "lg", "w-full")}>
         {loading ? "Please wait…" : payLabel}
       </button>
+      {!user && (
+        <p className="text-center text-xs text-muted">
+          No login needed to pay. Right after payment you log in or sign up, and your access is added to that account automatically.
+        </p>
+      )}
     </div>
   );
 }

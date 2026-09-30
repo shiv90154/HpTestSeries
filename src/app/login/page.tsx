@@ -18,6 +18,7 @@ export default async function LoginPage({ searchParams }: PageProps<"/login">) {
   const sp = await searchParams;
   const next = safeNextPath(sp.next);
   const googleFailed = sp.error === "google";
+  const paidAsGuest = next === "/claim"; // came straight from paying without an account
   if (await getCurrentUser()) redirect(next);
 
   return (
@@ -53,6 +54,12 @@ export default async function LoginPage({ searchParams }: PageProps<"/login">) {
               New here? Your account is created automatically.
             </p>
           </div>
+          {paidAsGuest && (
+            <p role="status" className="rounded-xl border border-success bg-success-soft p-3 text-sm">
+              <b>Payment received.</b> Log in or sign up now and your purchase is added to your account automatically. Use the
+              email you paid with, if you can.
+            </p>
+          )}
           {googleFailed && (
             <p role="alert" className="rounded-xl border border-danger bg-danger-soft p-3 text-sm text-danger">
               Google sign-in did not complete. Please try again, or use an email code.

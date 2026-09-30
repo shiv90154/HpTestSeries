@@ -3,7 +3,7 @@ import { db } from "@/lib/db";
 
 export type OrderListItem = {
   id: string;
-  userId: string;
+  userId: string | null; // null: guest order nobody has claimed yet
   userName: string;
   userEmail: string;
   productTitle: string;
@@ -24,6 +24,7 @@ export async function listOrders(limit = 200): Promise<OrderListItem[]> {
       amountPaise: true,
       status: true,
       razorpayOrderId: true,
+      payerEmail: true,
       createdAt: true,
       user: { select: { name: true, email: true } },
       product: { select: { title: true } },
@@ -33,8 +34,8 @@ export async function listOrders(limit = 200): Promise<OrderListItem[]> {
   return orders.map((o) => ({
     id: o.id,
     userId: o.userId,
-    userName: o.user.name,
-    userEmail: o.user.email,
+    userName: o.user?.name ?? "Guest (not signed up yet)",
+    userEmail: o.user?.email ?? o.payerEmail ?? "",
     productTitle: o.product.title,
     amountPaise: o.amountPaise,
     status: o.status,

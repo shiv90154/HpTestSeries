@@ -15,7 +15,7 @@ function greeting(): string {
   return h < 12 ? "Good morning" : h < 17 ? "Good afternoon" : "Good evening";
 }
 
-export async function DashboardData({ user }: { user: Awaited<ReturnType<typeof requireUser>> }) {
+export async function DashboardData({ user, purchaseNotice }: { user: Awaited<ReturnType<typeof requireUser>>; purchaseNotice: "unlocked" | "pending" | null }) {
   const [d, plans, reports] = await Promise.all([getDashboard(user.id), getMyPlans(user.id), getMyReports(user.id)]);
   // Profile comes from the DB (not the 5-minute session cookie cache) so edits show immediately.
   const firstName = d.profile.name.split(" ")[0];
@@ -25,6 +25,14 @@ export async function DashboardData({ user }: { user: Awaited<ReturnType<typeof 
     <>
       <AppHeader user={{ ...user, name: d.profile.name }} />
       <main className="mx-auto w-full max-w-6xl flex-1 space-y-6 px-4 py-6 sm:py-8">
+        {purchaseNotice && (
+          <p role="status" className="flex items-start gap-2 rounded-2xl border border-success bg-success-soft p-4 text-sm font-medium">
+            <BadgeCheck className="mt-0.5 size-5 shrink-0 text-success" aria-hidden />
+            {purchaseNotice === "unlocked"
+              ? "Payment received — your purchase is now unlocked on this account."
+              : "Payment received — it's being confirmed by the bank. Your access appears here automatically within a few minutes."}
+          </p>
+        )}
         {/* Welcome */}
         <section className="relative overflow-hidden rounded-3xl bg-linear-to-br from-[#133a9e] via-[#1e4fd8] to-[#3b6ef5] p-6 text-white sm:p-8">
           <div className="pointer-events-none absolute -right-16 -top-16 size-64 rounded-full bg-white/10 blur-2xl" />

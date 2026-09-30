@@ -49,7 +49,7 @@ export default async function ExamsPage() {
             </div>
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {b.exams.map((e) => (
-                <Link key={e.href} href={e.href} className={`${card} group flex items-center gap-4 p-5 hover:border-primary`}>
+                <Link key={e.href} href={e.href} className={`${card} group flex items-center gap-4 p-5 transition duration-200 ease-out hover:-translate-y-0.5 hover:border-primary hover:shadow-md motion-reduce:transition-none motion-reduce:hover:translate-y-0`}>
                   <span className="grid size-12 shrink-0 place-items-center rounded-xl bg-primary-soft text-sm font-bold text-primary">
                     {e.name.slice(0, 2).toUpperCase()}
                   </span>
@@ -59,7 +59,7 @@ export default async function ExamsPage() {
                       {e.nameHi}
                     </span>
                   </span>
-                  <ChevronRight className="size-5 text-muted group-hover:text-primary" />
+                  <ChevronRight className="size-5 text-muted transition duration-200 group-hover:translate-x-0.5 group-hover:text-primary motion-reduce:transition-none" />
                 </Link>
               ))}
             </div>

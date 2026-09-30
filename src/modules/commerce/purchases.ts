@@ -82,7 +82,7 @@ export async function getReceipt(userId: string, orderId: string) {
       payments: { orderBy: { createdAt: "asc" }, take: 1, select: { razorpayPaymentId: true, createdAt: true } },
     },
   });
-  if (!order) return null;
+  if (!order?.user) return null; // queried by userId, so a guest order (no user) never matches
   const payment = order.payments[0] ?? null;
   return {
     id: order.id,

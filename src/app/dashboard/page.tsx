@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import { SkeletonCard, SkeletonStatTile } from "@/components/skeleton";
+import { claimGuestOrdersForUser } from "@/modules/commerce/guest-session";
 import { requireUser } from "@/modules/identity/session";
 import { DashboardData } from "./dashboard-data";
 
@@ -24,12 +25,16 @@ function DashboardSkeleton() {
   );
 }
 
-export default async function DashboardPage() {
+export default async function DashboardPage({ searchParams }: PageProps<"/dashboard">) {
   const user = await requireUser("/dashboard");
+  // Catches a guest purchase that did not go through /claim (e.g. they logged in on another device).
+  const { unlocked } = await claimGuestOrdersForUser(user);
+  const purchase = (await searchParams).purchase;
+  const notice = unlocked > 0 || purchase === "unlocked" ? "unlocked" : purchase === "pending" ? "pending" : null;
 
   return (
     <Suspense fallback={<DashboardSkeleton />}>
-      <DashboardData user={user} />
+      <DashboardData user={user} purchaseNotice={notice} />
     </Suspense>
   );
 }

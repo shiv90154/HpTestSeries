@@ -22,7 +22,11 @@ export async function OrdersTableData() {
             header: "User",
             render: (o) => (
               <>
-                <Link href={`/admin/users/${o.userId}`} className="hover:text-primary hover:underline">{o.userName}</Link>
+                {o.userId ? (
+                  <Link href={`/admin/users/${o.userId}`} className="hover:text-primary hover:underline">{o.userName}</Link>
+                ) : (
+                  <span className="italic">{o.userName}</span>
+                )}
                 <div className="text-xs text-muted">{o.userEmail}</div>
               </>
             ),
