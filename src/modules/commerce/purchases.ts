@@ -1,5 +1,7 @@
 import "server-only";
 import { db } from "@/lib/db";
+import { liveTestWhere } from "@/modules/catalog/visibility";
+import { canAccessTest } from "./access";
 import { ownershipFor, type OwnedEntitlement, type Ownership } from "./ownership";
 
 /** The student's unrevoked entitlements that haven't expired (including renewals that start later). */
@@ -98,4 +100,22 @@ export async function getReceipt(userId: string, orderId: string) {
     product: order.product,
     access: order.entitlement,
   };
+}
+
+/**
+ * Slugs of the paid tests this student can open right now. The public test list and test pages are cached and
+ * identical for everyone, so they ask for this (/api/me/access) to show "Start test" instead of "Unlock".
+ * Same rule as the attempt page: assessment/service.ts canUserAccessTest.
+ */
+export async function getAccessibleTestSlugs(userId: string): Promise<string[]> {
+  const [entitlements, tests] = await Promise.all([
+    db.entitlement.findMany({
+      where: { userId, revokedAt: null, expiresAt: { gt: new Date() } },
+      select: { startsAt: true, expiresAt: true, revokedAt: true, product: { select: { kind: true, items: { select: { seriesId: true } } } } },
+    }),
+    db.test.findMany({ where: { ...liveTestWhere(), isFree: false }, select: { slug: true, series: { select: { seriesId: true } } } }),
+  ]);
+  if (!entitlements.length) return [];
+  const owned = entitlements.map((e) => ({ ...e, product: { kind: e.product.kind, seriesIds: e.product.items.map((i) => i.seriesId) } }));
+  return tests.filter((t) => canAccessTest({ isFree: false, seriesIds: t.series.map((s) => s.seriesId) }, owned)).map((t) => t.slug);
 }

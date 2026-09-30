@@ -7,6 +7,7 @@ import { MobileMenu } from "./mobile-menu";
 const nav = [
   { href: "/exams", label: "Exams" },
   { href: "/tests", label: "Mock Tests" },
+  { href: "/previous-year-papers", label: "Previous Papers" },
   { href: "/blog", label: "Exam Updates" },
   { href: "/#pricing", label: "Pricing" },
 ];

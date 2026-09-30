@@ -1,10 +1,17 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { updateExam } from "@/modules/content/exam-service";
+import { createExam, updateExam } from "@/modules/content/exam-service";
 import { requirePermission } from "@/modules/identity/session";
 
 type Result = { ok: true } | { ok: false; errors: string[] };
+
+export async function createExamAction(raw: unknown): Promise<{ ok: true; id: string } | { ok: false; errors: string[] }> {
+  const user = await requirePermission("content:edit");
+  const res = await createExam(raw, user.id);
+  if (res.ok) revalidatePath("/", "layout");
+  return res;
+}
 
 export async function updateExamAction(id: string, raw: unknown): Promise<Result> {
   const user = await requirePermission("content:edit");

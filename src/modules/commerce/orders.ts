@@ -238,7 +238,8 @@ function payerEmailFrom(raw: Prisma.InputJsonValue): string | undefined {
   const email = raw && typeof raw === "object" && !Array.isArray(raw) ? (raw as Record<string, unknown>).email : undefined;
   if (typeof email !== "string") return undefined;
   const e = email.trim().toLowerCase();
-  return e.includes("@") && !e.endsWith(".invalid") ? e : undefined;
+  // Razorpay fills "void@razorpay.com" when the buyer gave no email (UPI / netbanking); it identifies nobody.
+  return e.includes("@") && !e.endsWith(".invalid") && !e.endsWith("@razorpay.com") ? e : undefined;
 }
 
 /**
@@ -249,6 +250,14 @@ function payerEmailFrom(raw: Prisma.InputJsonValue): string | undefined {
  * Safe to call repeatedly: an order is claimed by exactly one account, once.
  */
 export async function claimGuestOrders(user: { id: string; email: string }, tokens: string[]): Promise<{ claimed: number; unlocked: number }> {
+  const result = await attachGuestOrders(user, tokens);
+  // The login redirect chain can render the claim step twice (e.g. router.replace + router.refresh); the second
+  // pass finds nothing left to claim but must still report the purchase as unlocked, so count recent claims too.
+  const recent = await db.order.count({ where: { userId: user.id, status: "PAID", claimedAt: { gt: new Date(Date.now() - 2 * 60_000) } } });
+  return { claimed: result.claimed, unlocked: Math.max(result.unlocked, recent) };
+}
+
+async function attachGuestOrders(user: { id: string; email: string }, tokens: string[]): Promise<{ claimed: number; unlocked: number }> {
   const email = user.email.toLowerCase();
   const byEmail = email.endsWith(".invalid") ? [] : [{ status: "PAID" as const, payerEmail: email }];
   const matches = [...(tokens.length ? [{ claimToken: { in: tokens } }] : []), ...byEmail];

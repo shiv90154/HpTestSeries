@@ -219,8 +219,8 @@ export default async function ExamPage({ params }: PageProps<"/[body]/[exam]">) 
             </section>
           </div>
 
-          <aside className="space-y-6">
-            <div className={`${card} space-y-4 p-5 lg:sticky lg:top-24`}>
+          <aside className="space-y-6 lg:sticky lg:top-24 lg:self-start">
+            <div className={`${card} space-y-4 p-5`}>
               <h2 className="font-semibold">What you get</h2>
               <ul className="space-y-2.5 text-sm">
                 {["Real CBT exam interface", "Hindi & English questions", "Detailed solutions", "Rank among HP aspirants", "Section & topic analysis"].map((t) => (

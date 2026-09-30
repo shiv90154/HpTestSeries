@@ -86,9 +86,12 @@ export type ProductListItem = {
   isActive: boolean;
   orderCount: number;
   entitlementCount: number;
+  /** What buying it opens, for the admin list: every paid test (PASS) or the included series with their test counts. */
+  unlocks: { all: boolean; paidTestCount: number; series: { title: string; testCount: number }[] };
 };
 
 export async function listProducts(): Promise<ProductListItem[]> {
+  const paidTestCount = await db.test.count({ where: { ...liveTestWhere(), isFree: false } });
   const products = await db.product.findMany({
     orderBy: { createdAt: "desc" },
     select: {
@@ -100,9 +103,15 @@ export async function listProducts(): Promise<ProductListItem[]> {
       validityDays: true,
       isActive: true,
       _count: { select: { orders: true, entitlements: true } },
+      items: { select: { series: { select: { title: true, _count: { select: { tests: { where: liveTestWhere() } } } } } } },
     },
   });
   return products.map((p) => ({
+    unlocks: {
+      all: p.kind === "PASS",
+      paidTestCount,
+      series: p.items.map((i) => ({ title: i.series.title, testCount: i.series._count.tests })),
+    },
     id: p.id,
     slug: p.slug,
     title: p.title,
@@ -134,12 +143,12 @@ export async function getProductForEdit(id: string) {
   };
 }
 
-export async function listSeriesOptions(): Promise<{ id: string; title: string; examName: string }[]> {
+export async function listSeriesOptions(): Promise<{ id: string; title: string; examName: string; testCount: number }[]> {
   const series = await db.testSeries.findMany({
     orderBy: { title: "asc" },
-    select: { id: true, title: true, exam: { select: { name: true } } },
+    select: { id: true, title: true, exam: { select: { name: true } }, _count: { select: { tests: { where: liveTestWhere() } } } },
   });
-  return series.map((s) => ({ id: s.id, title: s.title, examName: s.exam.name }));
+  return series.map((s) => ({ id: s.id, title: s.title, examName: s.exam.name, testCount: s._count.tests }));
 }
 
 async function checkSlugFree(slug: string, excludeId: string | null): Promise<boolean> {

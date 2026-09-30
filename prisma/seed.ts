@@ -9,6 +9,7 @@ import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "../src/generated/prisma/client";
 import { seedContent } from "./seed-content";
 import { DEMO_TEST_SLUG, seedDemoTest } from "./seed-demo";
+import { seedHpasFree } from "./seed-hpas";
 import { seedJoaIt } from "./seed-joa-it";
 import { seedPatwari } from "./seed-patwari";
 import { seedPolice } from "./seed-police";
@@ -143,11 +144,12 @@ async function main() {
   const patwari = await seedPatwari(db);
   const police = await seedPolice(db);
   const joaIt = await seedJoaIt(db);
+  const hpas = await seedHpasFree(db);
   const content = await seedContent(db);
   console.log(
     `Seeded ${catalogue.length} bodies, ${taxonomy.length} subjects, the demo test "${DEMO_TEST_SLUG}", ` +
       `${patwari.createdTests} new Patwari tests, ${police.createdTests} new Police Constable tests, ` +
-      `${joaIt.createdTests} new JOA IT tests, ` +
+      `${joaIt.createdTests} new JOA IT tests, ${hpas.createdTests} new free HPAS tests, ` +
       `content for ${content.filled} exams and ${content.created} new draft posts.`,
   );
 }

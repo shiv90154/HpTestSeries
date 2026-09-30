@@ -51,6 +51,13 @@ export default async function ProductsAdminPage() {
                   </a>
                 </div>
               </div>
+              <p className={`basis-full text-xs ${p.unlocks.all ? "font-medium text-danger" : "text-muted"}`}>
+                {p.unlocks.all
+                  ? `Unlocks EVERY paid test (${p.unlocks.paidTestCount}), for all exams. Only use this for a real all-access pass.`
+                  : p.unlocks.series.length
+                    ? `Unlocks only: ${p.unlocks.series.map((s) => `${s.title} (${s.testCount} tests)`).join(", ")}`
+                    : "Unlocks nothing yet: no series selected."}
+              </p>
               <span className="text-muted tabular-nums">
                 ₹{(p.priceInPaise / 100).toLocaleString("en-IN")} · {p.orderCount} orders · {p.entitlementCount} active grants
               </span>

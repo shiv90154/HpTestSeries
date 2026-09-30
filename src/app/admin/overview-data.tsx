@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { missingBusinessDetails } from "@/lib/business";
 import { db } from "@/lib/db";
+import { OverviewCharts } from "./overview-charts";
 
 export async function OverviewData() {
   await connection(); // always render per request; counts must be live
@@ -81,6 +82,8 @@ export async function OverviewData() {
           );
         })}
       </dl>
+
+      <OverviewCharts />
 
       <div className="rounded-xl border border-border bg-surface p-4">
         <h2 className="mb-3 text-sm font-semibold text-muted">Quick actions</h2>

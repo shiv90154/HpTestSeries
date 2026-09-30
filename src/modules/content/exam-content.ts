@@ -51,6 +51,37 @@ export function validateExam(raw: unknown): Result<ExamInput> {
   return { ok: false, errors: [...new Set(p.error.issues.map((i) => i.message))] };
 }
 
+const slugField = z
+  .string()
+  .trim()
+  .toLowerCase()
+  .min(2, "Slug is required")
+  .max(60)
+  .regex(/^[a-z0-9]+(-[a-z0-9]+)*$/, "Slug can only have lowercase letters, numbers and hyphens");
+
+/** New exam: either an existing body (bodyId) or a new one (newBody). Content is filled in on the edit page. */
+export const newExamSchema = z
+  .object({
+    name: z.string().trim().min(2, "Exam name is required").max(120),
+    slug: slugField,
+    bodyId: z.string().trim(),
+    newBody: z.object({ name: z.string().trim().max(120), slug: z.string().trim().toLowerCase().max(60) }),
+  })
+  .superRefine((v, ctx) => {
+    if (v.bodyId) return;
+    if (!v.newBody.name) ctx.addIssue({ code: "custom", message: "Pick a conducting body or enter a new one" });
+    if (!/^[a-z0-9]+(-[a-z0-9]+)*$/.test(v.newBody.slug)) {
+      ctx.addIssue({ code: "custom", message: "Body slug can only have lowercase letters, numbers and hyphens" });
+    }
+  });
+export type NewExamInput = z.infer<typeof newExamSchema>;
+
+export function validateNewExam(raw: unknown): Result<NewExamInput> {
+  const p = newExamSchema.safeParse(raw);
+  if (p.success) return { ok: true, value: p.data };
+  return { ok: false, errors: [...new Set(p.error.issues.map((i) => i.message))] };
+}
+
 export function parseFaqs(json: unknown): Faq[] {
   const p = faqListSchema.safeParse(json);
   return p.success ? p.data : [];

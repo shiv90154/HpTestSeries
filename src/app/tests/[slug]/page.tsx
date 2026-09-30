@@ -6,6 +6,7 @@ import { Breadcrumbs } from "@/components/breadcrumbs";
 import { JsonLd } from "@/components/json-ld";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
+import { OwnedGate } from "@/components/my-access";
 import { btn, card } from "@/components/ui";
 import { rupees } from "@/lib/money";
 import { site } from "@/lib/site";
@@ -156,34 +157,44 @@ export default async function TestDetailPage({ params }: PageProps<"/tests/[slug
           <p className="flex-1 text-sm">
             Real CBT interface with question palette, Mark for Review and a live timer. Switch between Hindi and English any time.
           </p>
-          {hasDemo ? (
-            <div className="flex w-full flex-col gap-2 sm:w-auto">
-              <Link href={`/tests/${slug}/demo`} className={btn("primary", "lg")}>
-                Try free demo <ChevronRight className="size-5" />
+          {/* Cached page: a student who already bought this test gets "Start" instead of the buy prompt. */}
+          <OwnedGate
+            slug={slug}
+            owned={
+              <Link href={`/tests/${slug}/attempt`} className={btn("primary", "lg")}>
+                Start test now <ChevronRight className="size-5" />
               </Link>
-              {buy && (
+            }
+          >
+            {hasDemo ? (
+              <div className="flex w-full flex-col gap-2 sm:w-auto">
+                <Link href={`/tests/${slug}/demo`} className={btn("primary", "lg")}>
+                  Try free demo <ChevronRight className="size-5" />
+                </Link>
+                {buy && (
+                  <Link href={buy.href} className={btn("accent", "lg")}>
+                    Unlock full test — {rupees(buy.priceInPaise)}
+                  </Link>
+                )}
+                <Link href={`/tests/${slug}/attempt`} className="flex min-h-10 items-center justify-center text-center text-sm font-medium text-primary hover:underline">
+                  Already purchased? Start the full test
+                </Link>
+              </div>
+            ) : buy ? (
+              <div className="flex w-full flex-col gap-2 sm:w-auto">
                 <Link href={buy.href} className={btn("accent", "lg")}>
                   Unlock full test — {rupees(buy.priceInPaise)}
                 </Link>
-              )}
-              <Link href={`/tests/${slug}/attempt`} className="flex min-h-10 items-center justify-center text-center text-sm font-medium text-primary hover:underline">
-                Already purchased? Start the full test
+                <Link href={`/tests/${slug}/attempt`} className="flex min-h-10 items-center justify-center text-center text-sm font-medium text-primary hover:underline">
+                  Already purchased? Start the test
+                </Link>
+              </div>
+            ) : (
+              <Link href={`/tests/${slug}/attempt`} className={btn("primary", "lg")}>
+                Start test now <ChevronRight className="size-5" />
               </Link>
-            </div>
-          ) : buy ? (
-            <div className="flex w-full flex-col gap-2 sm:w-auto">
-              <Link href={buy.href} className={btn("accent", "lg")}>
-                Unlock full test — {rupees(buy.priceInPaise)}
-              </Link>
-              <Link href={`/tests/${slug}/attempt`} className="flex min-h-10 items-center justify-center text-center text-sm font-medium text-primary hover:underline">
-                Already purchased? Start the test
-              </Link>
-            </div>
-          ) : (
-            <Link href={`/tests/${slug}/attempt`} className={btn("primary", "lg")}>
-              Start test now <ChevronRight className="size-5" />
-            </Link>
-          )}
+            )}
+          </OwnedGate>
         </div>
         {demo && (
           <p className="-mt-4 text-sm text-muted">

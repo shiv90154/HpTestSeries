@@ -13,8 +13,8 @@ const firstNumber = (s: string) => {
 const topics = new Set(taxonomy.flatMap((s) => s.topics.map(([slug]) => `${s.slug}/${slug}`)));
 
 describe("HP Police Constable series", () => {
-  it("has 3 full mocks and 12 subject tests with unique slugs", () => {
-    expect(POLICE_TESTS.filter((t) => t.type === "MOCK")).toHaveLength(3);
+  it("has 9 full mocks and 12 subject tests with unique slugs", () => {
+    expect(POLICE_TESTS.filter((t) => t.type === "MOCK")).toHaveLength(9);
     expect(POLICE_TESTS.filter((t) => t.type === "SECTIONAL")).toHaveLength(12);
     const slugs = [...POLICE_TESTS, ...PATWARI_TESTS].map((t) => t.slug);
     expect(new Set(slugs).size).toBe(slugs.length);

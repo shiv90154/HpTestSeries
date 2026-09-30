@@ -9,7 +9,7 @@ import { createProductAction, deleteProductAction, updateProductAction } from ".
 type Props = {
   id: string | null;
   initial: ProductInput;
-  seriesOptions: { id: string; title: string; examName: string }[];
+  seriesOptions: { id: string; title: string; examName: string; testCount: number }[];
 };
 
 export function ProductForm({ id, initial, seriesOptions }: Props) {
@@ -126,7 +126,12 @@ export function ProductForm({ id, initial, seriesOptions }: Props) {
           </label>
         </div>
 
-        {m.kind !== "PASS" && (
+        {m.kind === "PASS" ? (
+          <p className="rounded-lg border border-danger bg-danger-soft p-3 text-sm text-danger sm:col-span-2">
+            An All-Access Pass opens <b>every paid test of every exam</b>, whichever series you pick elsewhere. To sell just one exam (JOA IT, Police,
+            Patwari…), choose Series or Pack and tick only that series.
+          </p>
+        ) : (
           <div className="sm:col-span-2">
             <span className={labelCls}>Series included</span>
             {seriesOptions.length === 0 ? (
@@ -136,11 +141,15 @@ export function ProductForm({ id, initial, seriesOptions }: Props) {
                 {seriesOptions.map((s) => (
                   <label key={s.id} className="flex items-center gap-2 rounded px-1 py-1 text-sm hover:bg-surface-muted">
                     <input type="checkbox" checked={m.seriesIds.includes(s.id)} onChange={() => toggleSeries(s.id)} />
-                    {s.title} <span className="text-xs text-muted">({s.examName})</span>
+                    {s.title} <span className="text-xs text-muted">({s.examName} · {s.testCount} tests)</span>
                   </label>
                 ))}
               </div>
             )}
+            <p className="mt-1.5 text-xs text-muted">
+              Buyers get only the ticked series:{" "}
+              <b>{seriesOptions.filter((s) => m.seriesIds.includes(s.id)).reduce((n, s) => n + s.testCount, 0)} tests</b>. Everything else stays locked for them.
+            </p>
           </div>
         )}
       </fieldset>

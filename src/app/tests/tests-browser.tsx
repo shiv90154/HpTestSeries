@@ -1,9 +1,10 @@
 "use client";
 
-import { Search, X } from "lucide-react";
+import { Lock, LockOpen, Search, X } from "lucide-react";
 import { usePathname, useSearchParams } from "next/navigation";
 import { useMemo, useState } from "react";
-import { TestCard } from "@/components/test-card";
+import { useOwnedTests } from "@/components/my-access";
+import { TestCard, TestRow } from "@/components/test-card";
 import type { PublicTest } from "@/modules/catalog/queries";
 
 const TYPE_LABEL: Record<string, string> = { MOCK: "Full mocks", PYQ: "Previous year", SECTIONAL: "Sectional", TOPIC: "Topic tests", DAILY: "Daily quiz" };
@@ -31,7 +32,8 @@ const examTitle = (name: string) => (/^(HP|JOA|HPAS)/.test(name) ? name : `HP $
  * can be shared and survives Back; it is written with history.replaceState, which Next keeps in sync
  * with useSearchParams without a server round trip.
  */
-export function TestsBrowser({ tests }: { tests: PublicTest[] }) {
+export function TestsBrowser({ tests, examNames = [] }: { tests: PublicTest[]; examNames?: string[] }) {
+  const owned = useOwnedTests();
   const params = useSearchParams();
   const pathname = usePathname();
   const exam = params.get("exam") ?? "";
@@ -47,7 +49,10 @@ export function TestsBrowser({ tests }: { tests: PublicTest[] }) {
     window.history.replaceState(null, "", qs ? `${pathname}?${qs}` : pathname);
   }
 
-  const exams = useMemo(() => [...new Set(tests.map((t) => t.examName).filter((e): e is string => !!e))].sort(), [tests]);
+  const exams = useMemo(
+    () => [...new Set([...examNames, ...tests.map((t) => t.examName).filter((e): e is string => !!e)])],
+    [tests, examNames],
+  );
   const types = useMemo(() => Object.keys(TYPE_LABEL).filter((k) => tests.some((t) => t.type === k)), [tests]);
 
   const shown = useMemo(() => {
@@ -137,22 +142,69 @@ export function TestsBrowser({ tests }: { tests: PublicTest[] }) {
         )}
       </div>
 
-      {exam ? (
-        <TestGrid tests={shown} />
-      ) : (
-        // With no exam picked, list the tests exam by exam so each exam's mocks sit together.
-        [...exams, null].map((e) => {
+      {/* One card per exam, with that exam's tests inside it. Picking an exam tab shows just that card. */}
+      {[...exams, null]
+        .filter((e) => !exam || e === exam || e === null)
+        .map((e) => {
           const group = shown.filter((t) => t.examName === e);
-          if (group.length === 0) return null;
+          const total = tests.filter((t) => t.examName === e).length;
+          // An exam with no tests yet still gets its card, unless a filter is narrowing the list.
+          if (group.length === 0 && (filtered || total > 0 || !e)) return null;
+          const open = group.filter((t) => t.isFree || owned?.has(t.slug)).length;
+          const locked = group.length - open;
           return (
-            <section key={e ?? "general"} className="space-y-3">
-              <h2 className="text-xl font-bold">{e ? `${examTitle(e)} mock tests` : "General tests for all exams"}</h2>
-              <TestGrid tests={group} headingLevel={3} />
+            <section key={e ?? "general"} className="space-y-2 rounded-2xl border border-border bg-surface p-4 shadow-sm sm:p-6">
+              <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border pb-3">
+                <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+                  <h2 className="text-xl font-bold">{e ? `${examTitle(e)} mock tests` : "General tests for all exams"}</h2>
+                  <p className="text-sm text-muted">{group.length === total ? `${total} tests` : `${group.length} of ${total} tests`}</p>
+                </div>
+                {group.length > 0 && (
+                  <div className="flex gap-2 text-xs font-semibold">
+                    {open > 0 && (
+                      <span className="flex items-center gap-1 rounded-md bg-success-soft px-2 py-1 text-success">
+                        <LockOpen className="size-3" aria-hidden /> {open} unlocked
+                      </span>
+                    )}
+                    {locked > 0 && (
+                      <span className="flex items-center gap-1 rounded-md bg-accent-soft px-2 py-1 text-accent-ink">
+                        <Lock className="size-3" aria-hidden /> {locked} locked
+                      </span>
+                    )}
+                  </div>
+                )}
+              </div>
+              {group.length > 0 ? (
+                <TestList tests={group} expanded={!!exam || filtered} />
+              ) : (
+                <p className="rounded-xl bg-background px-4 py-6 text-center text-muted">Mock tests for this exam are coming soon.</p>
+              )}
             </section>
           );
-        })
-      )}
+        })}
       {shown.length === 0 && tests.length > 0 && <p className="py-10 text-center text-muted">No tests match these filters.</p>}
+    </div>
+  );
+}
+
+const PREVIEW = 5;
+
+/** The tests inside an exam card: a compact list, first few only until "Show all" (or a filter/exam tab) opens it. */
+function TestList({ tests, expanded }: { tests: PublicTest[]; expanded: boolean }) {
+  const [all, setAll] = useState(false);
+  const visible = expanded || all ? tests : tests.slice(0, PREVIEW);
+  return (
+    <div>
+      <ul className="divide-y divide-border">
+        {visible.map((t) => (
+          <TestRow key={t.slug} test={t} />
+        ))}
+      </ul>
+      {visible.length < tests.length && (
+        <button type="button" onClick={() => setAll(true)} className="mt-2 flex h-11 w-full items-center justify-center rounded-xl border border-border text-sm font-semibold text-primary hover:border-primary">
+          Show all {tests.length} tests
+        </button>
+      )}
     </div>
   );
 }

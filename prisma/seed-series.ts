@@ -18,7 +18,7 @@ export type SeriesSeed = {
 
 const DIFFICULTY: Record<Diff, "EASY" | "MEDIUM" | "HARD"> = { E: "EASY", M: "MEDIUM", H: "HARD" };
 
-async function upsertQuestion(db: PrismaClient, label: string, q: PatwariQuestion, topicId: Map<string, string>): Promise<string> {
+export async function upsertQuestion(db: PrismaClient, label: string, q: PatwariQuestion, topicId: Map<string, string>): Promise<string> {
   const textHash = questionTextHash(q.en[0]);
   const existing = await db.question.findFirst({ where: { textHash }, select: { id: true } });
   if (existing) return existing.id;
