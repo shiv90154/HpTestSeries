@@ -1,6 +1,6 @@
 // Seeds one code-defined test series (tests, one series, one paid product) for an exam. Idempotent: questions
 // are matched by text hash; tests, the series and the product by slug, and are only created when missing so
-// later edits in the admin panel (price, titles, questions) are kept. Used by the Patwari and Police seeds.
+// later edits in the admin panel (price, questions) are kept; series/product titles follow the code. Used by the Patwari and Police seeds.
 
 import type { PrismaClient } from "../src/generated/prisma/client";
 import { questionTextHash } from "../src/modules/content/text-hash";
@@ -112,7 +112,8 @@ export async function seedSeries(db: PrismaClient, cfg: SeriesSeed) {
 
   const series = await db.testSeries.upsert({
     where: { slug: cfg.series.slug },
-    update: {},
+    // Titles describe what the series contains, so they follow the code when tests are added; price etc. stay as edited
+    update: { title: cfg.series.title, titleHi: cfg.series.titleHi, description: cfg.series.description },
     create: { ...cfg.series, examId: exam.id, status: "PUBLISHED" },
     select: { id: true },
   });
@@ -123,7 +124,7 @@ export async function seedSeries(db: PrismaClient, cfg: SeriesSeed) {
 
   const product = await db.product.upsert({
     where: { slug: cfg.product.slug },
-    update: {},
+    update: { title: cfg.product.title, titleHi: cfg.product.titleHi },
     create: { ...cfg.product, kind: "SERIES", isActive: true },
     select: { id: true },
   });

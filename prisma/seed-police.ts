@@ -1,4 +1,4 @@
-// HP Police Constable mock test series: 3 full mocks (100 questions each) and 12 subject tests (25 questions each),
+// HP Police Constable mock test series: 9 full mocks (100 questions each) and 12 subject tests (25 questions each),
 // all in one series and one paid product. Adding a new test = adding it to prisma/police/index.ts.
 
 import type { PrismaClient } from "../src/generated/prisma/client";
@@ -18,17 +18,17 @@ export function seedPolice(db: PrismaClient) {
     tests: POLICE_TESTS,
     series: {
       slug: POLICE_SERIES_SLUG,
-      title: "HP Police Constable Mock Test Series (3 Full Mocks + 12 Subject Tests)",
-      titleHi: "एचपी पुलिस कांस्टेबल मॉक टेस्ट सीरीज़ (3 फुल मॉक + 12 विषय-वार टेस्ट)",
+      title: "HP Police Constable Mock Test Series (9 Full Mocks + 12 Subject Tests)",
+      titleHi: "एचपी पुलिस कांस्टेबल मॉक टेस्ट सीरीज़ (9 फुल मॉक + 12 विषय-वार टेस्ट)",
       description:
-        "Three full-length, exam-level HP Police Constable mock tests (100 questions each) plus 12 subject-wise tests of 25 " +
+        "Nine full-length, exam-level HP Police Constable mock tests (100 questions each) plus 12 subject-wise tests of 25 " +
         "questions: Himachal GK, General Knowledge, Reasoning, Numerical Ability, Hindi and English, two tests each. " +
         "Every question has a detailed solution in Hindi and English.",
     },
     product: {
       slug: POLICE_PRODUCT_SLUG,
-      title: "HP Police Constable Mock Test Series — 3 Full Mocks + 12 Subject Tests",
-      titleHi: "एचपी पुलिस कांस्टेबल मॉक टेस्ट सीरीज़ — 3 फुल मॉक + 12 विषय-वार टेस्ट",
+      title: "HP Police Constable Mock Test Series — 9 Full Mocks + 12 Subject Tests",
+      titleHi: "एचपी पुलिस कांस्टेबल मॉक टेस्ट सीरीज़ — 9 फुल मॉक + 12 विषय-वार टेस्ट",
       priceInPaise: PRICE_IN_PAISE,
       validityDays: VALIDITY_DAYS,
     },
