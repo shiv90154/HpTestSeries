@@ -11,8 +11,11 @@ import { seedContent } from "./seed-content";
 import { DEMO_TEST_SLUG, seedDemoTest } from "./seed-demo";
 import { seedHpasFree } from "./seed-hpas";
 import { seedJoaIt } from "./seed-joa-it";
+import { seedJoaItPyq } from "./seed-joa-it-pyq";
 import { seedPatwari } from "./seed-patwari";
+import { seedPatwariPyq } from "./seed-patwari-pyq";
 import { seedPolice } from "./seed-police";
+import { seedPoliceStandalonePyq } from "./seed-police-pyq";
 import { taxonomy } from "./taxonomy";
 
 const db = new PrismaClient({ adapter: new PrismaPg({ connectionString: process.env.DATABASE_URL }) });
@@ -145,11 +148,13 @@ async function main() {
   const police = await seedPolice(db);
   const joaIt = await seedJoaIt(db);
   const hpas = await seedHpasFree(db);
+  const pyq = [await seedPatwariPyq(db), await seedPoliceStandalonePyq(db), await seedJoaItPyq(db)];
   const content = await seedContent(db);
   console.log(
     `Seeded ${catalogue.length} bodies, ${taxonomy.length} subjects, the demo test "${DEMO_TEST_SLUG}", ` +
       `${patwari.createdTests} new Patwari tests, ${police.createdTests} new Police Constable tests, ` +
       `${joaIt.createdTests} new JOA IT tests, ${hpas.createdTests} new free HPAS tests, ` +
+      `${pyq.reduce((n, r) => n + r.created, 0)} new previous-year papers, ` +
       `content for ${content.filled} exams and ${content.created} new draft posts.`,
   );
 }
