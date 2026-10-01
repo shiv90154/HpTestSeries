@@ -6,6 +6,7 @@ import {
   Clock,
   Languages,
   MonitorCheck,
+  BookOpen,
   Sparkles,
   Trophy,
 } from "lucide-react";
@@ -22,6 +23,7 @@ import { organizationNode } from "@/lib/schema";
 import { FREE_MOCK_HREF, site } from "@/lib/site";
 import { getCatalog, getPublishedPosts } from "@/modules/catalog/queries";
 import { faqPageJsonLd } from "@/modules/content/exam-content";
+import { UPCOMING_EXAMS, type UpcomingExam } from "@/modules/catalog/upcoming-exams";
 import { listActiveProducts, type PublicProduct } from "@/modules/commerce/product-service";
 
 export const revalidate = 3600;
@@ -53,18 +55,8 @@ const features = [
 const PLAN_ITEMS: Record<string, string[]> = {
   SERIES: ["Full mock tests", "Previous-year style questions", "Sectional & topic tests", "Detailed analysis"],
   PACK: ["Multiple exam series", "Full mock tests & PYQs", "Sectional & topic tests", "Detailed analysis"],
-  PASS: ["Every Himachal exam", "All mock tests & PYQs", "HP GK & current affairs tests", "Best value for serious aspirants"],
+  PASS: ["Every Himachal exam", "All mock tests & sectional tests", "All previous-year papers", "Best value for serious aspirants"],
 };
-
-/** Exams from the notification feed that have no test series yet; shown as "launching soon" once a series for them exists this drops off. */
-const UPCOMING_EXAMS = [
-  { name: "HPRCA Clerk", match: /clerk/i },
-  { name: "HP TET", match: /tet/i },
-  { name: "HPPSC HPAS", match: /hpas/i },
-  { name: "HPPSC Assistant Professor", match: /assistant professor/i },
-  { name: "HPPSC ADO (Agriculture Development Officer)", match: /ado|agriculture/i },
-  { name: "PGIMER Nursing Officer", match: /pgimer|nursing/i },
-];
 
 const faqs = [
   {
@@ -85,7 +77,7 @@ const faqs = [
   },
   {
     q: "How much does it cost?",
-    a: "Many tests are free. Paid test series are planned at very low prices, starting from ₹49, with an all-access pass for all Himachal exams.",
+    a: "Many tests are free. Paid test series are priced very low: each exam's price and validity are listed in the Pricing section above, and an all-access pass covers all Himachal exams.",
   },
 ];
 
@@ -96,7 +88,12 @@ export default async function Home() {
   // cheapest all-access pass. Products arrive sorted by price.
   const pass = products.find((p) => p.kind === "PASS");
   const series = products.filter((p) => p.kind !== "PASS");
-  const upcoming = UPCOMING_EXAMS.filter((e) => !series.some((p) => e.match.test(p.title)));
+  // A card follows its Exam row: hidden or deleted in the admin panel means no card, and a rename shows up here too.
+  const liveExams = new Map(catalog.flatMap((b) => b.exams.map((e) => [`${b.slug}/${e.slug}`, e.name] as const)));
+  const upcoming = UPCOMING_EXAMS.filter((e) => liveExams.has(`${e.bodySlug}/${e.examSlug}`) && !series.some((p) => e.match.test(p.title))).map((e) => ({
+    ...e,
+    name: liveExams.get(`${e.bodySlug}/${e.examSlug}`)!,
+  }));
   const planCount = products.length === 0 ? 3 : 1 + series.length + (pass ? 1 : 0);
 
   return (
@@ -308,18 +305,33 @@ export default async function Home() {
             </div>
             {upcoming.length > 0 && (
               <div className="space-y-3">
-                <h3 className="text-sm font-semibold sm:text-center">More exams launching soon</h3>
-                <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                <h3 className="text-sm font-semibold sm:text-center">More exams launching soon — try a free mock now</h3>
+                <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
                   {upcoming.map((e) => (
-                    <li key={e.name} className="flex min-h-11 items-center justify-between gap-3 rounded-xl border border-border bg-background px-3.5 py-2 text-sm font-medium">
-                      {e.name}
-                      <span className="shrink-0 rounded-full bg-accent-soft px-2.5 py-1 text-xs font-semibold text-accent-ink">Soon</span>
-                    </li>
+                    <UpcomingCard key={e.name} exam={e} />
                   ))}
-                </ul>
+                </div>
+                <p className="text-center text-xs text-muted">
+                  Eligibility and pattern are a summary and change with each notification. Always confirm on the official notification before applying.
+                </p>
               </div>
             )}
           </div>
+        </section>
+
+        {/* Reading resource: partner blog for Himachal GK */}
+        <section className="mx-auto w-full max-w-6xl px-4 pt-10 sm:pt-16">
+          <Link href="/himachal" className={`${card} flex items-center gap-4 p-5 transition hover:border-primary sm:p-6`}>
+            <span className="flex size-12 shrink-0 items-center justify-center rounded-xl bg-accent-soft text-accent-ink">
+              <BookOpen className="size-6" />
+            </span>
+            <span className="flex-1 space-y-0.5">
+              <span className="block text-xs font-semibold uppercase tracking-wider text-primary">Read &amp; learn</span>
+              <span className="block font-semibold sm:text-lg">Know Your Himachal — free district-wise guide</span>
+              <span className="block text-sm text-muted">All 12 districts, famous places, fairs and records, in simple language for exam revision.</span>
+            </span>
+            <ChevronRight className="size-5 shrink-0 text-muted" aria-hidden />
+          </Link>
         </section>
 
         {/* FAQ */}
@@ -370,6 +382,38 @@ function productPlan(p: PublicProduct) {
     items: detail ? [detail, ...items.filter((i) => i !== "Full mock tests")] : items,
     cta: { href: `/buy/${p.slug}`, label: "Buy now" },
   };
+}
+
+/** Card for an exam whose paid series is still being built: free sample mock now, eligibility and syllabus summary. */
+function UpcomingCard({ exam }: { exam: UpcomingExam }) {
+  const rows = [
+    ["Eligibility", exam.eligibility],
+    ["Exam pattern", exam.pattern],
+    ["Syllabus", exam.syllabus],
+  ];
+  return (
+    <div className="relative flex flex-col rounded-2xl border border-border bg-background p-5 md:p-6">
+      <span className="absolute right-5 top-5 rounded-full bg-accent-soft px-2.5 py-1 text-xs font-semibold text-accent-ink">Series soon</span>
+      <h3 className="flex items-start gap-2 pr-24 font-semibold">
+        <BadgeIndianRupee className="mt-0.5 size-5 shrink-0 text-primary" /> {exam.name}
+      </h3>
+      <p className="mt-4">
+        <span className="text-4xl font-bold">₹0</span>
+        <span className="ml-1 text-sm text-muted">free mock test</span>
+      </p>
+      <dl className="mt-5 flex-1 space-y-3 text-sm">
+        {rows.map(([label, text]) => (
+          <div key={label}>
+            <dt className="text-xs font-semibold uppercase tracking-wide text-primary">{label}</dt>
+            <dd className="mt-0.5 leading-relaxed text-muted">{text}</dd>
+          </div>
+        ))}
+      </dl>
+      <Link href={`/tests/${exam.freeMockSlug}`} className={`${btn("primary")} mt-6`}>
+        Start free mock
+      </Link>
+    </div>
+  );
 }
 
 /** A pricing card. `badge` highlights it (the plan we recommend); `children` go below the feature list. */

@@ -33,6 +33,7 @@ export const seoSchema = z.object({
 export type ExamSeo = z.infer<typeof seoSchema>;
 
 export const examInputSchema = z.object({
+  name: z.string().trim().min(2, "Exam name is required").max(120),
   nameHi: z.string().trim().max(120),
   description: z.string().trim().max(10_000, "Description is too long"),
   syllabus: z.string().trim().max(50_000, "Syllabus is too long"),
@@ -42,6 +43,9 @@ export const examInputSchema = z.object({
   isActive: z.boolean(),
 });
 export type ExamInput = z.infer<typeof examInputSchema>;
+
+/** AuditLog.entity of the marker left when an exam is deleted; entityId is "<bodySlug>/<examSlug>". The seed reads it so a deploy does not bring the exam back. */
+export const EXAM_TOMBSTONE_ENTITY = "exam-deleted";
 
 type Result<T> = { ok: true; value: T } | { ok: false; errors: string[] };
 

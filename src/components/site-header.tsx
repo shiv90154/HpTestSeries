@@ -2,7 +2,11 @@ import Link from "next/link";
 import { AuthCta } from "./auth-cta";
 import { FREE_MOCK_HREF } from "@/lib/site";
 import { Logo } from "./logo";
+import { ExploreButton } from "./explore-button";
 import { MobileMenu } from "./mobile-menu";
+
+/** Partner travel/culture guide for students who want to read more about Himachal. */
+const EXPLORE_HREF = "https://knowyourhimachal.in/";
 
 const nav = [
   { href: "/exams", label: "Exams" },
@@ -23,6 +27,7 @@ export function SiteHeader() {
               {n.label}
             </Link>
           ))}
+          <ExploreButton href={EXPLORE_HREF} />
         </nav>
         <div className="ml-auto flex items-center gap-1 sm:gap-2">
           <Link
@@ -32,7 +37,7 @@ export function SiteHeader() {
             Free Mock
           </Link>
           <AuthCta />
-          <MobileMenu links={nav} />
+          <MobileMenu links={[...nav, { href: EXPLORE_HREF, label: "Explore" }]} />
         </div>
       </div>
     </header>

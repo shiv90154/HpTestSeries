@@ -112,8 +112,8 @@ export const reasoning2: PoliceQuestion[] = [
     ["अंग्रेज़ी वर्णमाला में बाएँ छोर से 13वें अक्षर के दाईं ओर 7वाँ अक्षर कौन-सा है?", ["T", "S", "U", "G"], "बाएँ से 13वाँ अक्षर M है। उसके दाईं ओर 7वाँ स्थान 20वाँ अक्षर T है।"]),
   // Coding-decoding (2)
   q(0, "reasoning", "coding-decoding", "H", 1,
-    ["If DELHI is coded as 73541 and CALCUTTA as 82589662, how is CALICUT coded?", ["8251896", "8251986", "8521896", "8259186"], "From the codes: D = 7, E = 3, L = 5, H = 4, I = 1, C = 8, A = 2, U = 9, T = 6. CALICUT = 8 2 5 1 8 9 6."],
-    ["यदि DELHI को 73541 और CALCUTTA को 82589662 लिखा जाता है, तो CALICUT को कैसे लिखा जाएगा?", ["8251896", "8251986", "8521896", "8259186"], "कोड से: D = 7, E = 3, L = 5, H = 4, I = 1, C = 8, A = 2, U = 9, T = 6। CALICUT = 8 2 5 1 8 9 6।"]),
+    ["If MOBILE is coded as NPCJMF, how is SYSTEM coded?", ["TZTUGN", "TZTUFN", "SZTUFN", "TZUTFN"], "Each letter is moved one place forward: S→T, Y→Z, S→T, T→U, E→F, M→N, so SYSTEM = TZTUFN."],
+    ["यदि MOBILE को NPCJMF लिखा जाता है, तो SYSTEM को कैसे लिखा जाएगा?", ["TZTUGN", "TZTUFN", "SZTUFN", "TZUTFN"], "प्रत्येक अक्षर एक स्थान आगे बढ़ा है: S→T, Y→Z, S→T, T→U, E→F, M→N, अतः SYSTEM = TZTUFN।"]),
   q(0, "reasoning", "coding-decoding", "H", 2,
     ["In a certain code, MONKEY is written as XDJMNL. How will TIGER be written in that code?", ["QDFHT", "SHFDQ", "QDFHS", "SDFHQ"], "The word is reversed (YEKNOM) and each letter is moved one step back: X D J M N L. TIGER reversed is REGIT, one step back gives QDFHS."],
     ["किसी कोड में MONKEY को XDJMNL लिखा जाता है। उसी कोड में TIGER को कैसे लिखा जाएगा?", ["QDFHT", "SHFDQ", "QDFHS", "SDFHQ"], "शब्द को उल्टा (YEKNOM) करके हर अक्षर एक स्थान पीछे किया गया है: X D J M N L। TIGER उल्टा REGIT, एक स्थान पीछे करने पर QDFHS।"]),

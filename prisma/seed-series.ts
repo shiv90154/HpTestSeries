@@ -56,7 +56,10 @@ export async function seedSeries(db: PrismaClient, cfg: SeriesSeed) {
     where: { slug: cfg.examSlug, body: { slug: cfg.bodySlug } },
     select: { id: true },
   });
-  if (!exam) throw new Error(`${cfg.label}: exam ${cfg.bodySlug}/${cfg.examSlug} is missing`);
+  if (!exam) {
+    console.warn(`${cfg.label}: exam ${cfg.bodySlug}/${cfg.examSlug} was deleted in admin, skipping`);
+    return { createdTests: 0 };
+  }
 
   const topics = await db.topic.findMany({ select: { id: true, slug: true, subject: { select: { slug: true } } } });
   const topicId = new Map(topics.map((t) => [`${t.subject.slug}/${t.slug}`, t.id]));

@@ -1,8 +1,12 @@
-// Every HP Patwari test that is seeded: 3 full mocks followed by 14 single-subject tests (2 per subject).
+// Every HP Patwari test that is seeded: 7 full mocks followed by 14 single-subject tests (2 per subject).
 
 import { mock1 } from "./mock1";
 import { mock2 } from "./mock2";
 import { mock3 } from "./mock3";
+import { mock4 } from "./mock4";
+import { mock5 } from "./mock5";
+import { mock6 } from "./mock6";
+import { mock7 } from "./mock7";
 import { english1, english2 } from "./sectional/english";
 import { gk1, gk2 } from "./sectional/gk";
 import { hindi1, hindi2 } from "./sectional/hindi";
@@ -22,7 +26,7 @@ const SUBJECT_INSTRUCTIONS = (subject: string) =>
   `Subject test: 25 questions, 25 marks, 25 minutes. Each correct answer gives 1 mark and each wrong answer deducts 0.25 marks. ` +
   `This test covers ${subject} only, set slightly above the real exam level. You can switch between Hindi and English at any time.`;
 
-const mocks: TestDef[] = [mock1, mock2, mock3].map((questions, i) => ({
+const mocks: TestDef[] = [mock1, mock2, mock3, mock4, mock5, mock6, mock7].map((questions, i) => ({
   slug: `hp-patwari-full-mock-${i + 1}`,
   title: `HP Patwari Full Mock Test ${i + 1}`,
   titleHi: `एचपी पटवारी फुल मॉक टेस्ट ${i + 1}`,

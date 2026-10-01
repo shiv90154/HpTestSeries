@@ -23,6 +23,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${site.url}/tests`, changeFrequency: "daily", priority: 0.9 },
     { url: `${site.url}/previous-year-papers`, changeFrequency: "weekly", priority: 0.8 },
     ...exams.map((e) => ({ url: `${site.url}/${e.body}/${e.exam}`, lastModified: e.updatedAt, changeFrequency: "weekly" as const, priority: 0.8 })),
+    { url: `${site.url}/himachal`, changeFrequency: "monthly" as const, priority: 0.6 },
     { url: `${site.url}/blog`, lastModified: latestPost, changeFrequency: "daily" as const, priority: 0.8 },
     ...categories.map((c) => ({ url: `${site.url}/blog/category/${CATEGORY_META[c].slug}`, changeFrequency: "weekly" as const, priority: 0.5 })),
     ...posts.map((p) => ({ url: `${site.url}/blog/${p.slug}`, lastModified: p.updatedAt, changeFrequency: "weekly" as const, priority: 0.7 })),

@@ -1,6 +1,6 @@
 import "server-only";
 import { db } from "@/lib/db";
-import { emptyPattern, parseFaqs, parsePattern, parseSeo, validateExam, validateNewExam, type ExamInput } from "./exam-content";
+import { EXAM_TOMBSTONE_ENTITY, emptyPattern, parseFaqs, parsePattern, parseSeo, validateExam, validateNewExam, type ExamInput } from "./exam-content";
 
 type Fail = { ok: false; errors: string[] };
 
@@ -35,7 +35,7 @@ export async function listExamsForAdmin() {
   }));
 }
 
-export async function getExamForEdit(id: string): Promise<({ id: string; name: string; href: string } & ExamInput) | null> {
+export async function getExamForEdit(id: string): Promise<({ id: string; href: string } & ExamInput) | null> {
   const e = await db.exam.findUnique({ where: { id }, include: { body: { select: { slug: true } } } });
   if (!e) return null;
   return {
@@ -59,6 +59,7 @@ export async function updateExam(id: string, raw: unknown, actorId: string): Pro
   await db.exam.update({
     where: { id },
     data: {
+      name: x.name,
       nameHi: x.nameHi || null,
       description: x.description || null,
       syllabus: x.syllabus || null,
@@ -69,6 +70,33 @@ export async function updateExam(id: string, raw: unknown, actorId: string): Pro
     },
   });
   await db.auditLog.create({ data: { actorId, entity: "exam", entityId: id, action: "update" } });
+  return { ok: true };
+}
+
+/**
+ * Deletes an exam that nothing hangs off. Tests, series, questions and posts keep a hard reference to their exam,
+ * so those must be moved or deleted first (or the exam simply hidden). A marker is left so the seed does not recreate it.
+ */
+export async function deleteExam(id: string, actorId: string): Promise<{ ok: true } | Fail> {
+  const e = await db.exam.findUnique({
+    where: { id },
+    select: { slug: true, name: true, body: { select: { slug: true } }, _count: { select: { tests: true, series: true, pyqQuestions: true, posts: true } } },
+  });
+  if (!e) return { ok: false, errors: ["Exam not found"] };
+  const used = [
+    [e._count.tests, "test"],
+    [e._count.series, "test series"],
+    [e._count.pyqQuestions, "question"],
+    [e._count.posts, "blog post"],
+  ] as const;
+  const blockers = used.filter(([n]) => n > 0).map(([n, what]) => `${n} ${what}${n === 1 ? "" : "s"}`);
+  if (blockers.length) {
+    return { ok: false, errors: [`Cannot delete — still used by ${blockers.join(", ")}. Remove or move those first, or untick "Visible on the site" to hide the exam instead.`] };
+  }
+  await db.$transaction([
+    db.exam.delete({ where: { id } }),
+    db.auditLog.create({ data: { actorId, entity: EXAM_TOMBSTONE_ENTITY, entityId: `${e.body.slug}/${e.slug}`, action: "delete", diff: { name: e.name } } }),
+  ]);
   return { ok: true };
 }
 

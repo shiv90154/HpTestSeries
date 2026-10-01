@@ -13,9 +13,12 @@ import { seedHpasFree } from "./seed-hpas";
 import { seedJoaIt } from "./seed-joa-it";
 import { seedJoaItPyq } from "./seed-joa-it-pyq";
 import { seedPatwari } from "./seed-patwari";
+import { seedPremiumPass } from "./seed-pass";
 import { seedPatwariPyq } from "./seed-patwari-pyq";
 import { seedPolice } from "./seed-police";
 import { seedPoliceStandalonePyq } from "./seed-police-pyq";
+import { seedUpcomingFree } from "./seed-upcoming-free";
+import { EXAM_TOMBSTONE_ENTITY } from "../src/modules/content/exam-content";
 import { taxonomy } from "./taxonomy";
 
 const db = new PrismaClient({ adapter: new PrismaPg({ connectionString: process.env.DATABASE_URL }) });
@@ -39,6 +42,13 @@ const catalogue: BodySeed[] = [
           { slug: "mains", name: "Mains", nameHi: "मुख्य" },
         ],
       },
+      { slug: "assistant-professor", name: "Assistant Professor", nameHi: "असिस्टेंट प्रोफेसर" },
+      { slug: "ado", name: "Agriculture Development Officer", nameHi: "कृषि विकास अधिकारी" },
+      { slug: "assistant-engineer", name: "Assistant Engineer", nameHi: "सहायक अभियंता" },
+      { slug: "medical-officer", name: "Medical Officer", nameHi: "चिकित्सा अधिकारी" },
+      { slug: "veterinary-officer", name: "Veterinary Officer", nameHi: "पशु चिकित्सा अधिकारी" },
+      { slug: "food-safety-officer", name: "Food Safety Officer", nameHi: "खाद्य सुरक्षा अधिकारी" },
+      { slug: "judicial-services", name: "HP Judicial Services", nameHi: "हिमाचल प्रदेश न्यायिक सेवा" },
     ],
   },
   {
@@ -48,13 +58,23 @@ const catalogue: BodySeed[] = [
     exams: [
       { slug: "joa-it", name: "JOA IT", nameHi: "जेओए आईटी" },
       { slug: "clerk", name: "Clerk", nameHi: "क्लर्क" },
+      { slug: "jbt", name: "JBT Teacher", nameHi: "जेबीटी शिक्षक" },
+      { slug: "tgt", name: "TGT Teacher", nameHi: "टीजीटी शिक्षक" },
+      { slug: "language-teacher", name: "Language Teacher", nameHi: "भाषा अध्यापक" },
+      { slug: "junior-engineer", name: "Junior Engineer", nameHi: "कनिष्ठ अभियंता" },
+      { slug: "staff-nurse", name: "Staff Nurse", nameHi: "स्टाफ नर्स" },
+      { slug: "pharmacist", name: "Pharmacist", nameHi: "फार्मासिस्ट" },
+      { slug: "forest-guard", name: "Forest Guard", nameHi: "वन रक्षक" },
     ],
   },
   {
     slug: "hp-police",
     name: "Himachal Pradesh Police",
     nameHi: "हिमाचल प्रदेश पुलिस",
-    exams: [{ slug: "constable", name: "Police Constable", nameHi: "पुलिस कांस्टेबल" }],
+    exams: [
+      { slug: "constable", name: "Police Constable", nameHi: "पुलिस कांस्टेबल" },
+      { slug: "sub-inspector", name: "Sub-Inspector", nameHi: "सब-इंस्पेक्टर" },
+    ],
   },
   {
     slug: "hpbose",
@@ -80,7 +100,33 @@ const catalogue: BodySeed[] = [
     nameHi: "राजस्व विभाग, हिमाचल प्रदेश",
     exams: [{ slug: "patwari", name: "Patwari", nameHi: "पटवारी" }],
   },
+  {
+    slug: "pgimer",
+    name: "Postgraduate Institute of Medical Education and Research",
+    nameHi: "स्नातकोत्तर चिकित्सा शिक्षा एवं अनुसंधान संस्थान",
+    exams: [{ slug: "nursing-officer", name: "Nursing Officer", nameHi: "नर्सिंग ऑफिसर" }],
+  },
+  {
+    slug: "hpsebl",
+    name: "Himachal Pradesh State Electricity Board Limited",
+    nameHi: "हिमाचल प्रदेश राज्य विद्युत बोर्ड लिमिटेड",
+    exams: [
+      { slug: "junior-engineer-electrical", name: "Junior Engineer (Electrical)", nameHi: "कनिष्ठ अभियंता (विद्युत)" },
+      { slug: "assistant-engineer", name: "Assistant Engineer", nameHi: "सहायक अभियंता" },
+      { slug: "lineman", name: "Lineman", nameHi: "लाइनमैन" },
+    ],
+  },
+  {
+    slug: "hpscb",
+    name: "Himachal Pradesh State Cooperative Bank",
+    nameHi: "हिमाचल प्रदेश राज्य सहकारी बैंक",
+    exams: [{ slug: "clerk", name: "Clerk", nameHi: "क्लर्क" }],
+  },
 ];
+
+/** Hub-page text for exams that have no hand-written description yet; the admin replaces it from /admin/exams. */
+const genericDescription = (exam: string, body: string) =>
+  `${exam} recruitment in Himachal Pradesh is handled by ${body}. Eligibility, exam pattern and syllabus change with each notification, so always check the official notification before applying. Mock tests for this exam are being added.`;
 
 // Shown on the public exam pages. Keep to facts that do not change between notifications.
 const descriptions: Record<string, string> = {
@@ -109,12 +155,17 @@ async function main() {
 
     for (const [ei, exam] of exams.entries()) {
       const { stages = [], ...rest } = exam;
-      // Description only on create: after that it's edited in /admin/exams (seedContent fills empty fields).
-      const e = await db.exam.upsert({
-        where: { bodyId_slug: { bodyId: b.id, slug: exam.slug } },
-        update: { ...rest, order: ei },
-        create: { ...rest, description: descriptions[`${body.slug}/${exam.slug}`] ?? null, order: ei, bodyId: b.id },
-      });
+      // After creation the exam belongs to /admin/exams (rename, hide, delete, copy), so an existing row is left
+      // alone, and one the admin deleted stays deleted: a marker is left behind when it is.
+      const where = { bodyId_slug: { bodyId: b.id, slug: exam.slug } };
+      let e = await db.exam.findUnique({ where });
+      if (!e) {
+        const deleted = await db.auditLog.findFirst({ where: { entity: EXAM_TOMBSTONE_ENTITY, entityId: `${body.slug}/${exam.slug}` }, select: { id: true } });
+        if (deleted) continue;
+        e = await db.exam.create({
+          data: { ...rest, description: descriptions[`${body.slug}/${exam.slug}`] ?? genericDescription(exam.name, body.name), order: ei, bodyId: b.id },
+        });
+      }
 
       for (const [si, stage] of stages.entries()) {
         await db.examStage.upsert({
@@ -148,12 +199,14 @@ async function main() {
   const police = await seedPolice(db);
   const joaIt = await seedJoaIt(db);
   const hpas = await seedHpasFree(db);
+  const upcoming = await seedUpcomingFree(db);
   const pyq = [await seedPatwariPyq(db), await seedPoliceStandalonePyq(db), await seedJoaItPyq(db)];
+  await seedPremiumPass(db);
   const content = await seedContent(db);
   console.log(
     `Seeded ${catalogue.length} bodies, ${taxonomy.length} subjects, the demo test "${DEMO_TEST_SLUG}", ` +
       `${patwari.createdTests} new Patwari tests, ${police.createdTests} new Police Constable tests, ` +
-      `${joaIt.createdTests} new JOA IT tests, ${hpas.createdTests} new free HPAS tests, ` +
+      `${joaIt.createdTests} new JOA IT tests, ${hpas.createdTests} new free HPAS tests, ${upcoming.createdTests} new free upcoming-exam mocks, ` +
       `${pyq.reduce((n, r) => n + r.created, 0)} new previous-year papers, ` +
       `content for ${content.filled} exams and ${content.created} new draft posts.`,
   );

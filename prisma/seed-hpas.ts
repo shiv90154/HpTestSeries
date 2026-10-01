@@ -7,7 +7,10 @@ import { upsertQuestion } from "./seed-series";
 
 export async function seedHpasFree(db: PrismaClient) {
   const exam = await db.exam.findFirst({ where: { slug: "hpas", body: { slug: "hppsc" } }, select: { id: true } });
-  if (!exam) throw new Error("HPAS seed: exam hppsc/hpas is missing");
+  if (!exam) {
+    console.warn("HPAS seed: exam hppsc/hpas was deleted in admin, skipping");
+    return { createdTests: 0 };
+  }
 
   const topics = await db.topic.findMany({ select: { id: true, slug: true, subject: { select: { slug: true } } } });
   const topicId = new Map(topics.map((t) => [`${t.subject.slug}/${t.slug}`, t.id]));

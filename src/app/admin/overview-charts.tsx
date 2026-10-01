@@ -33,52 +33,83 @@ function BarChart({
   format: (n: number) => string;
 }) {
   const W = 600;
-  const H = 160;
+  const TOP = 22; // headroom so value labels never touch the card edge
+  const H = 140;
   const max = Math.max(...values, 1);
   const slot = W / values.length;
   const barW = slot * 0.7;
   const summary = `${title}, last ${DAYS} days: ${total}`;
+  const bestIdx = values.indexOf(Math.max(...values));
+  const hasData = values.some((v) => v > 0);
+  // Label every bar only while the chart is sparse; otherwise it turns to noise.
+  const labelAll = values.filter((v) => v > 0).length <= 10;
+  const ticks = [0, 7, 14, 21, values.length - 1];
 
   return (
     <figure className="rounded-xl border border-border bg-surface p-4">
       <figcaption className="mb-3 flex items-baseline justify-between gap-2">
         <span className="text-sm font-semibold text-muted">{title}</span>
         <span className="text-xs text-muted">
-          Last {DAYS} days · <b className="text-base font-semibold tabular-nums text-foreground">{total}</b>
+          Total (30 days) <b className="text-base font-semibold tabular-nums text-foreground">{total}</b>
         </span>
       </figcaption>
-      <svg viewBox={`0 0 ${W} ${H + 20}`} role="img" aria-label={summary} className="h-auto w-full">
-        {[0.5, 1].map((f) => (
-          <line key={f} x1={0} x2={W} y1={H - H * f} y2={H - H * f} stroke="var(--border)" strokeDasharray="3 4" />
-        ))}
-        <line x1={0} x2={W} y1={H} y2={H} stroke="var(--border)" />
+      <svg viewBox={`0 0 ${W} ${TOP + H + 22}`} role="img" aria-label={summary} className="h-auto w-full">
+        <line x1={0} x2={W} y1={TOP} y2={TOP} stroke="var(--border)" strokeDasharray="3 4" />
+        <line x1={0} x2={W} y1={TOP + H / 2} y2={TOP + H / 2} stroke="var(--border)" strokeDasharray="3 4" />
+        <line x1={0} x2={W} y1={TOP + H} y2={TOP + H} stroke="var(--border)" />
         {values.map((v, i) => {
           const h = v === 0 ? 0 : Math.max((v / max) * H, 2);
+          const cx = i * slot + slot / 2;
           return (
-            <rect
-              key={i}
-              x={i * slot + (slot - barW) / 2}
-              y={H - h}
-              width={barW}
-              height={h}
-              rx={2}
-              fill="var(--primary)"
-              opacity={v === 0 ? 0.25 : 1}
-            >
-              <title>{`${dayLabel(days[i])}: ${format(v)}`}</title>
-            </rect>
+            <g key={i}>
+              <rect
+                x={cx - barW / 2}
+                y={TOP + H - h}
+                width={barW}
+                height={h}
+                rx={2}
+                fill="var(--primary)"
+              >
+                <title>{`${dayLabel(days[i])}: ${format(v)}`}</title>
+              </rect>
+              {v > 0 && (labelAll || i === bestIdx) && (
+                <text
+                  x={Math.min(Math.max(cx, 24), W - 24)}
+                  y={TOP + H - h - 5}
+                  fontSize={12}
+                  fontWeight={600}
+                  textAnchor="middle"
+                  fill="var(--foreground)"
+                >
+                  {format(v)}
+                </text>
+              )}
+            </g>
           );
         })}
-        <text x={0} y={H + 15} fontSize={11} fill="var(--muted)">
-          {dayLabel(days[0])}
-        </text>
-        <text x={W} y={H + 15} fontSize={11} fill="var(--muted)" textAnchor="end">
-          {dayLabel(days[days.length - 1])}
-        </text>
-        <text x={W} y={11} fontSize={11} fill="var(--muted)" textAnchor="end">
-          peak {format(max === 1 && values.every((v) => v === 0) ? 0 : max)}
-        </text>
+        {ticks.map((i) => (
+          <text
+            key={i}
+            x={i * slot + slot / 2}
+            y={TOP + H + 16}
+            fontSize={11}
+            fill="var(--muted)"
+            textAnchor={i === 0 ? "start" : i === values.length - 1 ? "end" : "middle"}
+          >
+            {dayLabel(days[i])}
+          </text>
+        ))}
+        {!hasData && (
+          <text x={W / 2} y={TOP + H / 2 + 4} fontSize={13} fill="var(--muted)" textAnchor="middle">
+            No data in the last {DAYS} days
+          </text>
+        )}
       </svg>
+      {hasData && (
+        <p className="mt-1 text-xs text-muted">
+          Best day: <b className="text-foreground">{dayLabel(days[bestIdx])}</b> · {format(values[bestIdx])}
+        </p>
+      )}
     </figure>
   );
 }

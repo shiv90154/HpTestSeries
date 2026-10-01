@@ -2,8 +2,11 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { connection } from "next/server";
+import { getAutoMockPlan } from "@/modules/content/auto-mock-service";
 import { getExamForEdit } from "@/modules/content/exam-service";
 import { requirePermission } from "@/modules/identity/session";
+import { DeleteExamButton } from "../delete-exam-button";
+import { AutoMockPanel } from "./auto-mock-panel";
 import { ExamForm } from "./exam-form";
 
 export const metadata: Metadata = { title: "Edit exam" };
@@ -14,7 +17,9 @@ export default async function EditExamPage({ params }: PageProps<"/admin/exams/[
   const { id } = await params;
   const exam = await getExamForEdit(id);
   if (!exam) notFound();
-  const { id: examId, name, href, ...initial } = exam;
+  const { id: examId, href, ...initial } = exam;
+  const { name } = initial;
+  const plan = await getAutoMockPlan(examId);
 
   return (
     <div className="space-y-5">
@@ -27,7 +32,9 @@ export default async function EditExamPage({ params }: PageProps<"/admin/exams/[
           View public page {href}
         </a>
       </div>
+      {plan && <AutoMockPanel examId={examId} plan={plan} />}
       <ExamForm id={examId} path={href} initial={initial} />
+      <DeleteExamButton id={examId} name={name} />
     </div>
   );
 }

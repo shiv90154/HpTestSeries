@@ -26,7 +26,10 @@ const INSTRUCTIONS =
 
 export async function seedPyqPapers(db: PrismaClient, cfg: { label: string; bodySlug: string; examSlug: string; papers: PyqPaper[] }) {
   const exam = await db.exam.findFirst({ where: { slug: cfg.examSlug, body: { slug: cfg.bodySlug } }, select: { id: true } });
-  if (!exam) throw new Error(`${cfg.label}: exam ${cfg.bodySlug}/${cfg.examSlug} is missing`);
+  if (!exam) {
+    console.warn(`${cfg.label}: exam ${cfg.bodySlug}/${cfg.examSlug} was deleted in admin, skipping`);
+    return { created: 0, papers: 0, exams: 0 };
+  }
   const topics = await db.topic.findMany({ select: { id: true, slug: true, subject: { select: { slug: true } } } });
   const topicId = new Map(topics.map((t) => [`${t.subject.slug}/${t.slug}`, t.id]));
 

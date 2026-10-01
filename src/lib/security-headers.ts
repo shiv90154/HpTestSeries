@@ -2,7 +2,7 @@
 // The CSP follows Next's "without nonces" pattern: nonces would force every page to render
 // dynamically, so inline scripts stay allowed and the policy instead pins origins, framing,
 // plugins, <base> and form targets. Razorpay Checkout loads its script from checkout.razorpay.com
-// and opens its iframe/API calls on other *.razorpay.com hosts.
+// and opens its iframe/API calls on other *.razorpay.com hosts; its risk-detection script comes from cdn.razorpay.com.
 
 type Header = { key: string; value: string };
 
@@ -13,7 +13,7 @@ const GA_CONNECT = "https://*.google-analytics.com https://*.analytics.google.co
 export function contentSecurityPolicy(isDev: boolean): string {
   const directives = [
     "default-src 'self'",
-    `script-src 'self' 'unsafe-inline' https://checkout.razorpay.com ${GA_SCRIPT}${isDev ? " 'unsafe-eval'" : ""}`,
+    `script-src 'self' 'unsafe-inline' https://checkout.razorpay.com https://cdn.razorpay.com ${GA_SCRIPT}${isDev ? " 'unsafe-eval'" : ""}`,
     "style-src 'self' 'unsafe-inline'",
     // Any https image: blog posts embed cover/inline images by URL (images can't run script).
     "img-src 'self' data: blob: https:",

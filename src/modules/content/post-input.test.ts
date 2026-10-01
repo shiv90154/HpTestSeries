@@ -75,8 +75,9 @@ describe("exam content", () => {
   });
 
   it("validates exam input", () => {
-    const exam = { nameHi: "", description: "", syllabus: "", pattern: emptyPattern, faqs: [], seo: { title: "", description: "" }, isActive: true };
+    const exam = { name: "HP TET", nameHi: "", description: "", syllabus: "", pattern: emptyPattern, faqs: [], seo: { title: "", description: "" }, isActive: true };
     expect(validateExam(exam).ok).toBe(true);
     expect(validateExam({ ...exam, faqs: [{ q: "?", a: "" }] }).ok).toBe(false);
+    expect(validateExam({ ...exam, name: " " }).ok).toBe(false);
   });
 });

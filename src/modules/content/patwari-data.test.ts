@@ -12,8 +12,8 @@ const firstNumber = (s: string) => {
 const topics = new Set(taxonomy.flatMap((s) => s.topics.map(([slug]) => `${s.slug}/${slug}`)));
 
 describe("HP Patwari series", () => {
-  it("has 3 full mocks and 14 subject tests with unique slugs", () => {
-    expect(PATWARI_TESTS.filter((t) => t.type === "MOCK")).toHaveLength(3);
+  it("has 7 full mocks and 14 subject tests with unique slugs", () => {
+    expect(PATWARI_TESTS.filter((t) => t.type === "MOCK")).toHaveLength(7);
     expect(PATWARI_TESTS.filter((t) => t.type === "SECTIONAL")).toHaveLength(14);
     expect(new Set(PATWARI_TESTS.map((t) => t.slug)).size).toBe(PATWARI_TESTS.length);
   });

@@ -50,13 +50,25 @@ export function MobileMenu({ links }: { links: { href: string; label: string }[]
         <ul className="px-2 py-2">
           {links.map((l) => (
             <li key={l.href}>
-              <Link
-                href={l.href}
-                onClick={() => setOpen(false)}
-                className="flex min-h-12 items-center rounded-xl px-3 text-base font-medium hover:bg-surface-muted hover:text-primary"
-              >
-                {l.label}
-              </Link>
+              {l.href.startsWith("https://") ? (
+                <a
+                  href={l.href}
+                  target="_blank"
+                  rel="noopener"
+                  onClick={() => setOpen(false)}
+                  className="flex min-h-12 items-center rounded-xl px-3 text-base font-medium hover:bg-surface-muted hover:text-primary"
+                >
+                  {l.label}
+                </a>
+              ) : (
+                <Link
+                  href={l.href}
+                  onClick={() => setOpen(false)}
+                  className="flex min-h-12 items-center rounded-xl px-3 text-base font-medium hover:bg-surface-muted hover:text-primary"
+                >
+                  {l.label}
+                </Link>
+              )}
             </li>
           ))}
         </ul>

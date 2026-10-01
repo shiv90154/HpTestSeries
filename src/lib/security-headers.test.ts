@@ -12,6 +12,7 @@ describe("contentSecurityPolicy", () => {
   it("allows Razorpay Checkout", () => {
     const csp = contentSecurityPolicy(false);
     expect(csp).toMatch(/script-src [^;]*https:\/\/checkout\.razorpay\.com/);
+    expect(csp).toMatch(/script-src [^;]*https:\/\/cdn\.razorpay\.com/);
     expect(csp).toMatch(/frame-src [^;]*razorpay\.com/);
   });
 

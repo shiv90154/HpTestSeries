@@ -139,4 +139,112 @@ export const taxonomy: SubjectSeed[] = [
       ["inclusive-education", "Inclusive Education"],
     ],
   },
+  {
+    slug: "teaching-aptitude",
+    name: "Teaching & Research Aptitude",
+    nameHi: "शिक्षण एवं शोध अभिक्षमता",
+    topics: [
+      ["teaching", "Teaching Aptitude"],
+      ["research", "Research Aptitude"],
+    ],
+  },
+  {
+    slug: "agriculture",
+    name: "Agriculture",
+    nameHi: "कृषि",
+    topics: [
+      ["agronomy", "Agronomy & Crop Production"],
+      ["soil-science", "Soil Science"],
+      ["horticulture", "Horticulture"],
+      ["plant-protection", "Plant Protection"],
+      ["extension-economics", "Agricultural Extension & Economics"],
+    ],
+  },
+  {
+    slug: "nursing",
+    name: "Nursing",
+    nameHi: "नर्सिंग",
+    topics: [
+      ["fundamentals", "Fundamentals of Nursing"],
+      ["anatomy-physiology", "Anatomy & Physiology"],
+      ["medical-surgical", "Medical-Surgical Nursing"],
+      ["community-health", "Community Health Nursing"],
+      ["child-health", "Child Health Nursing"],
+      ["midwifery", "Obstetrics & Midwifery"],
+    ],
+  },
+  {
+    slug: "civil-engineering",
+    name: "Civil Engineering",
+    nameHi: "सिविल इंजीनियरिंग",
+    topics: [
+      ["building-materials", "Building Materials & Construction"],
+      ["structures", "Strength of Materials & Structures"],
+      ["geotech-hydrology", "Soil Mechanics, Fluids & Hydrology"],
+      ["surveying-transport", "Surveying, Highways & Estimation"],
+    ],
+  },
+  {
+    slug: "electrical-engineering",
+    name: "Electrical Engineering",
+    nameHi: "विद्युत इंजीनियरिंग",
+    topics: [
+      ["circuits", "Circuit Theory & Basics"],
+      ["machines", "Electrical Machines"],
+      ["power-systems", "Power Systems"],
+      ["measurements-safety", "Measurements, Wiring & Safety"],
+    ],
+  },
+  {
+    slug: "pharmacy",
+    name: "Pharmacy",
+    nameHi: "फार्मेसी",
+    topics: [
+      ["pharmaceutics", "Pharmaceutics"],
+      ["pharmacology", "Pharmacology"],
+      ["pharmaceutical-chemistry", "Pharmaceutical Chemistry"],
+      ["pharmacy-practice", "Pharmacy Practice & Law"],
+    ],
+  },
+  {
+    slug: "law",
+    name: "Law",
+    nameHi: "विधि",
+    topics: [
+      ["constitution", "Constitutional Law"],
+      ["criminal-law", "Criminal Law"],
+      ["civil-law", "Civil Law, Contract & Evidence"],
+    ],
+  },
+  {
+    slug: "medicine",
+    name: "Medicine",
+    nameHi: "चिकित्सा विज्ञान",
+    topics: [
+      ["general-medicine", "General Medicine"],
+      ["surgery", "Surgery"],
+      ["community-medicine", "Community Medicine"],
+      ["preclinical", "Anatomy, Physiology & Pharmacology"],
+    ],
+  },
+  {
+    slug: "veterinary",
+    name: "Veterinary Science",
+    nameHi: "पशु चिकित्सा विज्ञान",
+    topics: [
+      ["animal-husbandry", "Animal Husbandry & Nutrition"],
+      ["vet-medicine", "Veterinary Medicine & Pathology"],
+      ["vet-anatomy-physiology", "Veterinary Anatomy & Physiology"],
+    ],
+  },
+  {
+    slug: "food-safety",
+    name: "Food Safety",
+    nameHi: "खाद्य सुरक्षा",
+    topics: [
+      ["food-law", "Food Safety Law & Standards"],
+      ["food-science", "Food Science & Chemistry"],
+      ["food-microbiology", "Food Microbiology & Nutrition"],
+    ],
+  },
 ];

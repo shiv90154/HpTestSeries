@@ -48,6 +48,10 @@ export function ExamForm({ id, path, initial }: { id: string; path: string; init
           <h2 className="font-semibold">About the exam</h2>
           <div className="grid gap-4 sm:grid-cols-2">
             <div>
+              <label className={labelCls} htmlFor="name">Exam name</label>
+              <input id="name" className={inputCls} value={m.name} onChange={(e) => set("name", e.target.value)} />
+            </div>
+            <div>
               <label className={labelCls} htmlFor="nameHi">Hindi name</label>
               <input id="nameHi" lang="hi" className={inputCls} value={m.nameHi} onChange={(e) => set("nameHi", e.target.value)} />
             </div>

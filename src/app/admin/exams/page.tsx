@@ -2,6 +2,7 @@ import { Plus } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { connection } from "next/server";
+import { DeleteExamButton } from "./delete-exam-button";
 import { listExamsForAdmin } from "@/modules/content/exam-service";
 import { requirePermission } from "@/modules/identity/session";
 
@@ -46,7 +47,11 @@ export default async function ExamsAdminPage() {
                 </a>
               </div>
             </div>
-            <span className="flex flex-wrap gap-2 text-xs">
+            <span className="flex flex-wrap items-start gap-2 text-xs">
+              <Link href={`/admin/exams/${e.id}`} className="text-primary underline">
+                Edit
+              </Link>
+              <DeleteExamButton id={e.id} name={e.name} compact />
               <Badge ok={e.words >= MIN_WORDS}>{e.words} words</Badge>
               <Badge ok={e.faqCount >= 4}>{e.faqCount} FAQs</Badge>
               <Badge ok={e.testCount > 0}>{e.testCount} tests</Badge>

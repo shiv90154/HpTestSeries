@@ -77,8 +77,8 @@ export const mock3: PoliceQuestion[] = [
     ["Captain Ram Singh Thakur, who composed the tune of the INA marching song 'Kadam Kadam Badhaye Ja', was born near:", ["Mandi", "Nahan", "Una", "Dharamshala"], "Captain Ram Singh Thakur was born at Khaniyara near Dharamshala in Kangra district. He composed several INA songs, including 'Kadam Kadam Badhaye Ja'."],
     ["आज़ाद हिंद फ़ौज के गीत 'कदम कदम बढ़ाए जा' की धुन बनाने वाले कैप्टन राम सिंह ठाकुर का जन्म कहाँ के पास हुआ था?", ["मंडी", "नाहन", "ऊना", "धर्मशाला"], "कैप्टन राम सिंह ठाकुर का जन्म कांगड़ा जिले में धर्मशाला के पास खनियारा में हुआ। उन्होंने 'कदम कदम बढ़ाए जा' सहित INA के कई गीतों की धुनें बनाईं।"]),
   q(0, "hp-gk", "polity-administration", "M", 0,
-    ["The Himachal Pradesh Public Service Commission (HPPSC) has its headquarters at:", ["Shimla", "Hamirpur", "Dharamshala", "Mandi"], "HPPSC is headquartered at Shimla. The Himachal Pradesh Rajya Chayan Aayog (HPRCA) is at Hamirpur."],
-    ["हिमाचल प्रदेश लोक सेवा आयोग (HPPSC) का मुख्यालय कहाँ है?", ["शिमला", "हमीरपुर", "धर्मशाला", "मंडी"], "HPPSC का मुख्यालय शिमला में है। हिमाचल प्रदेश राज्य चयन आयोग (HPRCA) हमीरपुर में है।"]),
+    ["The Himachal Pradesh High Court is located at:", ["Shimla", "Hamirpur", "Dharamshala", "Solan"], "The High Court of Himachal Pradesh is at Shimla."],
+    ["हिमाचल प्रदेश उच्च न्यायालय कहाँ स्थित है?", ["शिमला", "हमीरपुर", "धर्मशाला", "सोलन"], "हिमाचल प्रदेश उच्च न्यायालय शिमला में स्थित है।"]),
 
   // ───────── Section 1: General Knowledge (25) ─────────
   q(1, "general-studies", "indian-history", "M", 0,
