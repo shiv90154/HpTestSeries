@@ -7,7 +7,7 @@ import { SiteHeader } from "@/components/site-header";
 import { card } from "@/components/ui";
 import { site } from "@/lib/site";
 import { hasBodyPage } from "@/modules/catalog/body-info";
-import { bodyShortName, getCatalog } from "@/modules/catalog/queries";
+import { bodyShortName, getCatalog, getPublishedTests } from "@/modules/catalog/queries";
 
 export const revalidate = 3600;
 
@@ -27,7 +27,8 @@ function badge(name: string): string {
 }
 
 export default async function ExamsPage() {
-  const catalog = await getCatalog();
+  const [catalog, tests] = await Promise.all([getCatalog(), getPublishedTests()]);
+  const freeCount = (name: string) => tests.filter((t) => t.examName === name && t.isFree).length;
   const totalExams = catalog.reduce((n, b) => n + b.exams.length, 0);
   const totalTests = catalog.reduce((n, b) => n + b.exams.reduce((m, e) => m + e.testCount, 0), 0);
   return (
@@ -97,18 +98,35 @@ export default async function ExamsPage() {
               </span>
             </div>
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {b.exams.map((e) => (
-                <Link key={e.href} href={e.href} className={`${card} group flex items-center gap-4 p-5 transition duration-200 ease-out hover:-translate-y-0.5 hover:border-primary hover:shadow-md motion-reduce:transition-none motion-reduce:hover:translate-y-0`}>
-                  <span aria-hidden className="grid size-12 shrink-0 place-items-center rounded-xl bg-primary-soft text-sm font-bold text-primary">
+              {[...b.exams].sort((x, y) => Number(y.testCount > 0) - Number(x.testCount > 0)).map((e) => (
+                <Link
+                  key={e.href}
+                  href={e.href}
+                  className={`${card} group flex items-center gap-4 p-4 transition duration-200 ease-out hover:-translate-y-0.5 hover:border-primary hover:shadow-md motion-reduce:transition-none motion-reduce:hover:translate-y-0 sm:p-5 ${e.testCount === 0 ? "bg-surface-muted/60" : ""}`}
+                >
+                  <span
+                    aria-hidden
+                    className={`relative grid size-13 shrink-0 place-items-center rounded-2xl text-sm font-extrabold ${e.testCount > 0 ? "bg-primary text-white" : "bg-primary-soft text-primary"}`}
+                  >
                     {badge(e.name)}
+                    {e.testCount > 0 && <span className="absolute right-1.5 top-1.5 size-2 rounded-full bg-accent" />}
                   </span>
                   <span className="min-w-0 flex-1">
-                    <span className="block font-semibold">{e.name} Mock Test</span>
+                    <span className="block font-semibold leading-snug">{e.name} Mock Test</span>
                     <span lang="hi" className="block text-sm text-muted">
                       {e.nameHi}
                     </span>
-                    <span className="mt-1 block text-xs font-medium text-primary">
-                      {e.testCount > 0 ? `${e.testCount} ${e.testCount === 1 ? "test" : "tests"} available` : "Tests launching soon"}
+                    <span className="mt-1.5 flex flex-wrap items-center gap-1.5 text-xs font-semibold">
+                      {e.testCount > 0 ? (
+                        <>
+                          <span className="rounded-md bg-primary-soft px-2 py-0.5 text-primary">
+                            {e.testCount} {e.testCount === 1 ? "test" : "tests"}
+                          </span>
+                          {freeCount(e.name) > 0 && <span className="rounded-md bg-success-soft px-2 py-0.5 text-success">{freeCount(e.name)} free</span>}
+                        </>
+                      ) : (
+                        <span className="rounded-md bg-surface-muted px-2 py-0.5 text-muted">Tests launching soon</span>
+                      )}
                     </span>
                   </span>
                   <ChevronRight className="size-5 text-muted transition duration-200 group-hover:translate-x-0.5 group-hover:text-primary motion-reduce:transition-none" />
