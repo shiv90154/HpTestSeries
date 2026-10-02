@@ -56,10 +56,11 @@ export default async function TestsPage() {
                   href={`${e.href}/tests`}
                   className={`${card} group relative block h-full overflow-hidden transition duration-200 ease-out hover:-translate-y-0.5 hover:border-primary hover:shadow-md motion-reduce:transition-none motion-reduce:hover:translate-y-0`}
                 >
-                  <span className="relative flex items-center gap-3 overflow-hidden bg-cbt-header p-4 text-white">
-                    <span aria-hidden className="absolute -bottom-10 right-4 size-24 bg-white/10 [clip-path:polygon(50%_0,100%_100%,0_100%)]" />
-                    <span aria-hidden className="relative grid size-13 shrink-0 place-items-center rounded-2xl bg-accent text-base font-extrabold text-[#1f1300]">
+                  <span className="relative flex items-center gap-3 overflow-hidden bg-primary p-4 text-white">
+                    <span aria-hidden className="absolute -bottom-10 right-4 size-24 bg-white/15 [clip-path:polygon(50%_0,100%_100%,0_100%)]" />
+                    <span aria-hidden className="relative grid size-13 shrink-0 place-items-center rounded-2xl bg-white text-base font-extrabold text-primary ring-4 ring-white/30">
                       {badge(e.name)}
+                      <span className="absolute right-1.5 top-1.5 size-2.5 rounded-full bg-accent" />
                     </span>
                     <span className="relative min-w-0">
                       <span className="block text-lg font-bold leading-snug">{e.label}</span>
