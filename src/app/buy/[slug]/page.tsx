@@ -20,7 +20,7 @@ export async function generateMetadata({ params }: PageProps<"/buy/[slug]">): Pr
   return {
     title: `Buy ${product.title}`,
     description: `${product.title} for ₹${(product.priceInPaise / 100).toLocaleString("en-IN")} — Himachal exam mock tests in a real CBT interface with Hindi & English questions, solutions and HP rank.`,
-    robots: { index: false }, // checkout page; pricing is indexed on the home page
+    robots: { index: false }, // checkout page; pricing is indexed on /pricing
   };
 }
 

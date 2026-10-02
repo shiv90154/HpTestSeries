@@ -77,7 +77,7 @@ export default async function ProfilePage() {
           {purchases.length === 0 ? (
             <p className="text-sm text-muted">
               No purchases yet.{" "}
-              <Link href="/#pricing" className="font-medium text-primary hover:underline">
+              <Link href="/pricing" className="font-medium text-primary hover:underline">
                 See plans
               </Link>
             </p>

@@ -14,17 +14,17 @@ import Link from "next/link";
 import { CbtPreview } from "@/components/cbt-preview";
 import { JsonLd } from "@/components/json-ld";
 import { Mountains } from "@/components/mountains";
+import { Plan, productPlan } from "@/components/pricing-plans";
 import { PostCard } from "@/components/post-card";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { btn, card } from "@/components/ui";
-import { rupees } from "@/lib/money";
 import { organizationNode } from "@/lib/schema";
 import { FREE_MOCK_HREF, site } from "@/lib/site";
 import { getCatalog, getPublishedPosts } from "@/modules/catalog/queries";
 import { faqPageJsonLd } from "@/modules/content/exam-content";
 import { UPCOMING_EXAMS, type UpcomingExam } from "@/modules/catalog/upcoming-exams";
-import { listActiveProducts, type PublicProduct } from "@/modules/commerce/product-service";
+import { listActiveProducts } from "@/modules/commerce/product-service";
 
 export const revalidate = 3600;
 
@@ -52,12 +52,6 @@ const features = [
   },
 ];
 
-const PLAN_ITEMS: Record<string, string[]> = {
-  SERIES: ["Full mock tests", "Previous-year style questions", "Sectional & topic tests", "Detailed analysis"],
-  PACK: ["Multiple exam series", "Full mock tests & PYQs", "Sectional & topic tests", "Detailed analysis"],
-  PASS: ["Every Himachal exam", "All mock tests & sectional tests", "All previous-year papers", "Best value for serious aspirants"],
-};
-
 const faqs = [
   {
     q: "Can I take a mock test without logging in?",
@@ -77,7 +71,7 @@ const faqs = [
   },
   {
     q: "How much does it cost?",
-    a: "Many tests are free. Paid test series are priced very low: each exam's price and validity are listed in the Pricing section above, and an all-access pass covers all Himachal exams.",
+    a: "Many tests are free. Paid test series are priced very low: each exam's price and validity are listed on the Pricing page, and an all-access pass covers all Himachal exams.",
   },
 ];
 
@@ -303,6 +297,11 @@ export default async function Home() {
                 </>
               )}
             </div>
+            <p className="text-center">
+              <Link href="/pricing" className="inline-flex min-h-10 items-center font-semibold text-primary hover:underline">
+                See full pricing, payment and refund details →
+              </Link>
+            </p>
             {upcoming.length > 0 && (
               <div className="space-y-3">
                 <h3 className="text-sm font-semibold sm:text-center">More exams launching soon — try a free mock now</h3>
@@ -370,20 +369,6 @@ export default async function Home() {
   );
 }
 
-/** Card for one product on sale (an exam series, a pack or the all-access pass). */
-function productPlan(p: PublicProduct) {
-  // "HP Patwari Mock Test Series — 3 Full Mocks + 14 Subject Tests": the part after the dash becomes the first bullet
-  const [name, detail] = p.title.split(/\s+[—–]\s+/);
-  const items = PLAN_ITEMS[p.kind] ?? PLAN_ITEMS.SERIES;
-  return {
-    name,
-    price: rupees(p.priceInPaise),
-    note: p.validityDays ? `valid ${p.validityDays} days` : "one-time",
-    items: detail ? [detail, ...items.filter((i) => i !== "Full mock tests")] : items,
-    cta: { href: `/buy/${p.slug}`, label: "Buy now" },
-  };
-}
-
 /** Card for an exam whose paid series is still being built: free sample mock now, eligibility and syllabus summary. */
 function UpcomingCard({ exam }: { exam: UpcomingExam }) {
   const rows = [
@@ -412,49 +397,6 @@ function UpcomingCard({ exam }: { exam: UpcomingExam }) {
       <Link href={`/tests/${exam.freeMockSlug}`} className={`${btn("primary")} mt-6`}>
         Start free mock
       </Link>
-    </div>
-  );
-}
-
-/** A pricing card. `badge` highlights it (the plan we recommend); `children` go below the feature list. */
-function Plan(props: {
-  name: string;
-  price: string;
-  note: string;
-  items: string[];
-  badge?: string;
-  soon?: boolean;
-  cta?: { href: string; label: string };
-  children?: React.ReactNode;
-}) {
-  return (
-    <div className={`relative flex flex-col rounded-2xl border bg-background p-5 md:p-6 ${props.badge ? "border-primary shadow-xl" : "border-border"}`}>
-      {props.badge && (
-        <span className="absolute -top-3 left-5 rounded-full bg-primary px-2.5 py-1 text-xs font-semibold text-white">{props.badge}</span>
-      )}
-      {props.soon && (
-        <span className="absolute right-5 top-5 rounded-full bg-accent-soft px-2.5 py-1 text-xs font-semibold text-accent-ink">Launching soon</span>
-      )}
-      <h3 className="flex items-center gap-2 font-semibold">
-        <BadgeIndianRupee className="size-5 text-primary" /> {props.name}
-      </h3>
-      <p className="mt-4">
-        <span className="text-4xl font-bold">{props.price}</span>
-        <span className="ml-1 text-sm text-muted">{props.note}</span>
-      </p>
-      <ul className="mt-6 flex-1 space-y-2.5 text-sm">
-        {props.items.map((i) => (
-          <li key={i} className="flex items-start gap-2">
-            <CheckCircle2 className="mt-0.5 size-4 shrink-0 text-success" /> {i}
-          </li>
-        ))}
-      </ul>
-      {props.children}
-      {props.cta && (
-        <Link href={props.cta.href} className={`${btn("primary")} mt-6`}>
-          {props.cta.label}
-        </Link>
-      )}
     </div>
   );
 }

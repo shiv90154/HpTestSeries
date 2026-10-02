@@ -13,7 +13,7 @@ const nav = [
   { href: "/tests", label: "Mock Tests" },
   { href: "/previous-year-papers", label: "Previous Papers" },
   { href: "/blog", label: "Exam Updates" },
-  { href: "/#pricing", label: "Pricing" },
+  { href: "/pricing", label: "Pricing" },
 ];
 
 export function SiteHeader() {
