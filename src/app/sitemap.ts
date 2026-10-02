@@ -3,15 +3,16 @@ import { db } from "@/lib/db";
 import { LEGAL_LINKS } from "@/lib/business";
 import { site } from "@/lib/site";
 import { hasBodyPage } from "@/modules/catalog/body-info";
-import { getAllPostSlugs, getCatalog, getExamSubPages } from "@/modules/catalog/queries";
+import { getAllPostSlugs, getCatalog, getExamSubPages, getExamsWithTests } from "@/modules/catalog/queries";
 import { liveTestWhere } from "@/modules/catalog/visibility";
 import { CATEGORY_META } from "@/modules/content/post-input";
 
 export const revalidate = 3600;
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const [exams, catalog, tests, posts] = await Promise.all([
+  const [exams, withTests, catalog, tests, posts] = await Promise.all([
     getExamSubPages(),
+    getExamsWithTests(),
     getCatalog(),
     db.test.findMany({ where: liveTestWhere(), select: { slug: true, updatedAt: true } }),
     getAllPostSlugs(),
@@ -36,6 +37,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         .filter((page): page is string => !!page)
         .map((page) => ({ url: `${site.url}/${e.body}/${e.exam}/${page}`, lastModified: e.updatedAt, changeFrequency: "weekly" as const, priority: 0.7 })),
     ),
+    ...withTests.map((e) => ({ url: `${site.url}/${e.body}/${e.exam}/tests`, lastModified: e.updatedAt, changeFrequency: "weekly" as const, priority: 0.8 })),
     { url: `${site.url}/himachal`, changeFrequency: "monthly" as const, priority: 0.6 },
     { url: `${site.url}/blog`, lastModified: latestPost, changeFrequency: "daily" as const, priority: 0.8 },
     ...categories.map((c) => ({ url: `${site.url}/blog/category/${CATEGORY_META[c].slug}`, changeFrequency: "weekly" as const, priority: 0.5 })),

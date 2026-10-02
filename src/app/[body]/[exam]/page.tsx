@@ -281,7 +281,7 @@ export default async function ExamPage({ params }: PageProps<"/[body]/[exam]">) 
               ))}
               {own.length > 0 && (
                 <Link
-                  href={`/tests?exam=${encodeURIComponent(data.name)}`}
+                  href={`${ctx.base}/tests`}
                   className="inline-flex min-h-10 items-center text-sm font-semibold text-primary hover:underline"
                 >
                   See all {own.length} {name} tests →

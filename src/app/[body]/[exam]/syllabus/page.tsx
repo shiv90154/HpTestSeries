@@ -99,7 +99,7 @@ export default async function SyllabusPage({ params }: PageProps<"/[body]/[exam]
               ))}
             </div>
             {topicTests.length > 6 && (
-              <Link href={`/tests?exam=${encodeURIComponent(data.name)}`} className="inline-flex min-h-10 items-center text-sm font-semibold text-primary hover:underline">
+              <Link href={`${ctx.base}/tests`} className="inline-flex min-h-10 items-center text-sm font-semibold text-primary hover:underline">
                 See all {topicTests.length} subject tests →
               </Link>
             )}

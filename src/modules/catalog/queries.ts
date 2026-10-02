@@ -201,6 +201,15 @@ export async function getExamSubPages() {
   }));
 }
 
+/** Exams with at least one live test of their own: each gets a /tests page listing them. */
+export async function getExamsWithTests() {
+  const exams = await db.exam.findMany({
+    where: { isActive: true, tests: { some: liveTestWhere() } },
+    select: { slug: true, updatedAt: true, body: { select: { slug: true } } },
+  });
+  return exams.map((e) => ({ body: e.body.slug, exam: e.slug, updatedAt: e.updatedAt }));
+}
+
 /** The ### / ## headings of a markdown syllabus, for the "syllabus at a glance" list on the exam page. */
 export function syllabusOutline(markdown: string | null): string[] {
   if (!markdown) return [];
