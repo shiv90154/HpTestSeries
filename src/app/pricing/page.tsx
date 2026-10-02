@@ -30,7 +30,7 @@ const STEPS = [
 const FAQS = [
   { q: "Is it a subscription?", a: "No. Every plan is a one-time payment. Nothing renews automatically, so you never have to cancel anything." },
   { q: "How long does my access last?", a: "The validity is printed on each plan, for example 'valid 365 days'. Within that time you can attempt every test as many times as you like." },
-  { q: "Which payment methods work?", a: "UPI, debit and credit cards and netbanking, through Razorpay. The price shown includes GST." },
+  { q: "Which payment methods work?", a: "UPI, debit and credit cards and netbanking, through Razorpay. The price shown is the final amount you pay, with no extra charges." },
   { q: "Can I try before I pay?", a: "Yes. Every exam has free tests in the same CBT screen as the paid ones, and many paid tests have a free demo. Free tests need no login." },
   { q: "What if I buy and then change my mind?", a: "Ask for a refund within 7 days, as long as you have not started a test in that series. The full rules are on the refund policy page." },
   { q: "Which plan should I pick?", a: "If you are preparing for one exam, buy that exam's series. If you are preparing for several, the all-access pass is cheaper than buying each series." },
@@ -107,7 +107,7 @@ export default async function PricingPage() {
               ))}
             </ul>
             <p className="flex items-center gap-1.5 text-sm text-muted">
-              <ShieldCheck className="size-4 text-success" aria-hidden /> Secure payment via Razorpay. Prices include GST.
+              <ShieldCheck className="size-4 text-success" aria-hidden /> Secure payment via Razorpay. The price shown is the final amount.
             </p>
           </section>
 
