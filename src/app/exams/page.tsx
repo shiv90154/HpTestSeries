@@ -6,14 +6,15 @@ import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { card } from "@/components/ui";
 import { site } from "@/lib/site";
-import { getCatalog } from "@/modules/catalog/queries";
+import { hasBodyPage } from "@/modules/catalog/body-info";
+import { bodyShortName, getCatalog } from "@/modules/catalog/queries";
 
 export const revalidate = 3600;
 
 export const metadata: Metadata = {
   title: "All Himachal Pradesh Govt Exams — Mock Tests & Test Series",
   description:
-    "Mock tests for every major Himachal Pradesh government exam: HPRCA JOA IT & Clerk, HPPSC HPAS, HP Police Constable, HP TET and Patwari. Real CBT interface in Hindi & English.",
+    "Mock tests for Himachal govt exams: Patwari, Police, JOA IT, Clerk, HP TET, JBT, TGT, Staff Nurse, HPAS, High Court. Real CBT in Hindi & English.",
   alternates: { canonical: "/exams" },
 };
 
@@ -84,8 +85,15 @@ export default async function ExamsPage() {
                   </p>
                 )}
               </div>
-              <span className="shrink-0 rounded-full bg-surface-muted px-3 py-1 text-xs font-medium text-muted">
-                {b.exams.length} {b.exams.length === 1 ? "exam" : "exams"}
+              <span className="flex shrink-0 flex-col items-end gap-1 sm:flex-row sm:items-center sm:gap-3">
+                {hasBodyPage(b) && (
+                  <Link href={`/${b.slug}`} className="inline-flex min-h-10 items-center text-sm font-semibold text-primary hover:underline">
+                    All {bodyShortName(b.slug)} mock tests →
+                  </Link>
+                )}
+                <span className="rounded-full bg-surface-muted px-3 py-1 text-xs font-medium text-muted">
+                  {b.exams.length} {b.exams.length === 1 ? "exam" : "exams"}
+                </span>
               </span>
             </div>
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">

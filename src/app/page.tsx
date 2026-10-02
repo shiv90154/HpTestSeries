@@ -73,7 +73,7 @@ const faqs = [
   },
   {
     q: "Which exams are covered?",
-    a: "HPRCA (JOA IT, Clerk and other posts), HPPSC HPAS, HP Police Constable, HP TET and Patwari, with Himachal GK tests that help in every exam. More exams are being added.",
+    a: "Patwari, HP Police Constable, HPRCA (JOA IT, Clerk, JBT, TGT, Staff Nurse and more), HPPSC (HPAS, Assistant Professor, ADO and more), HP TET, HPSEBL, High Court posts and others, with Himachal GK tests that help in every exam. Full test series are being added exam by exam.",
   },
   {
     q: "How much does it cost?",

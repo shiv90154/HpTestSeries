@@ -12,11 +12,11 @@ const heading = "mb-2 text-sm font-semibold uppercase tracking-wider text-white"
 
 export async function SiteFooter() {
   const [catalog, latest] = await Promise.all([getCatalog(), getPublishedPosts({ take: 4 })]);
-  // Footer lists only the few best-stocked exams; the rest live on /exams.
+  // Footer lists the best-stocked exams (a link from every page helps them rank); the rest live on /exams.
   const exams = catalog
     .flatMap((b) => b.exams)
     .sort((a, b) => b.testCount - a.testCount)
-    .slice(0, 4);
+    .slice(0, 8);
 
   return (
     <footer className="mt-auto bg-[#0b1733] pb-[calc(4rem+env(safe-area-inset-bottom))] text-slate-300 md:pb-0">

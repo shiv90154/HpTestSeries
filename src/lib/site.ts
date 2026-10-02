@@ -3,7 +3,7 @@ export const site = {
   tagline: "Every Himachal government exam, practised in the real exam format.",
   taglineHi: "हिमाचल की हर सरकारी परीक्षा की तैयारी — असली CBT परीक्षा जैसे माहौल में।",
   description:
-    "Affordable mock tests for HPRCA, HPPSC, HP Police, HP TET and Patwari exams. Real CBT exam interface, Hindi & English questions, detailed solutions and your rank among Himachal aspirants.",
+    "Affordable mock tests for HPRCA, HPPSC, HP Police, HP TET, Patwari and High Court exams. Real CBT exam interface, Hindi & English questions, detailed solutions and your rank among Himachal aspirants.",
   keywords: [
     "HP mock test",
     "Himachal GK mock test",
@@ -13,6 +13,9 @@ export const site = {
     "HP TET mock test",
     "HP Police constable mock test",
     "HP Patwari mock test",
+    "HP JBT TGT mock test",
+    "HP Staff Nurse mock test",
+    "HP High Court clerk mock test",
     "Himachal test series",
   ],
   url: process.env.NEXT_PUBLIC_SITE_URL ?? "https://hptestseries.in",

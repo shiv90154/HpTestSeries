@@ -25,7 +25,7 @@ const examTab = (active: boolean) =>
   }`;
 
 /** "Patwari" -> "HP Patwari"; names that already carry the department (HP TET, JOA IT) are left alone. */
-const examTitle = (name: string) => (/^(HP|JOA|HPAS)/.test(name) ? name : `HP ${name}`);
+const examTitle = (name: string) => (/^(HP|JOA|HPAS)\b/.test(name) ? name : `HP ${name}`);
 
 /**
  * Search and filters for the test list. State lives in the URL (?exam=&type=&access=&q=) so a filtered list

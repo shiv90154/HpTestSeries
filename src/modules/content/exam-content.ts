@@ -118,6 +118,14 @@ export function faqPageJsonLd(faqs: Faq[]) {
   };
 }
 
+/** First sentence of a markdown text as plain text, for one-line summaries. Cut at `max` characters if there is no early full stop. */
+export function firstSentence(markdown: string | null, max = 200): string {
+  if (!markdown) return "";
+  const text = stripMarkdown(markdown);
+  const sentence = text.match(/^.{40,400}?[.!?](?=\s|$)/)?.[0];
+  return sentence && sentence.length <= max ? sentence : text.slice(0, max).trimEnd();
+}
+
 export function stripMarkdown(text: string): string {
   return text
     .replace(/!\[[^\]]*\]\([^)]*\)/g, "")

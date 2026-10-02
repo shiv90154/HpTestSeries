@@ -10,12 +10,13 @@
 
 import type { PrismaClient } from "../src/generated/prisma/client";
 import { FREE_MOCK_HREF as FREE_MOCK } from "../src/lib/site";
+import { EXAM_PAGES, NOTIFICATION_POSTS, type PostSeed } from "./exam-pages";
 
 type Faq = { q: string; a: string };
 type ExamContent = { description: string; syllabus: string; faqs: Faq[] };
 
 
-const examContent: Record<string, ExamContent> = {
+export const examContent: Record<string, ExamContent> = {
   "hppsc/hpas": {
     description: `The **HPAS Combined Competitive Examination** is conducted by the Himachal Pradesh Public Service Commission (HPPSC), Shimla, to recruit officers for the Himachal Pradesh Administrative Service (HPAS) and allied services such as HP Police Service, Tehsildar and other Class-I and Class-II posts. It is the most prestigious state-level exam in Himachal, and many aspirants prepare for it alongside UPSC.
 
@@ -298,18 +299,8 @@ Land-record terms such as jamabandi, khasra, khatauni and girdawari are also wor
   },
 };
 
-type PostSeed = {
-  slug: string;
-  title: string;
-  titleHi?: string;
-  excerpt: string;
-  category: "NOTIFICATION" | "SYLLABUS" | "EXAM_PATTERN" | "CUTOFF" | "STRATEGY" | "CURRENT_AFFAIRS";
-  exams: string[]; // "body/exam"
-  content: string;
-  faqs?: Faq[];
-};
-
-const posts: PostSeed[] = [
+export const posts: PostSeed[] = [
+  ...NOTIFICATION_POSTS,
   {
     slug: "hp-police-constable-bharti-2026-notification-eligibility-selection-process",
     title: "HP Police Constable Bharti 2026: Notification, Eligibility, Selection Process & Exam Pattern",
@@ -675,20 +666,28 @@ HP TET mock tests: [HP TET mock tests](/hpbose/hp-tet). Shuruaat [free mock test
 
 export async function seedContent(db: PrismaClient) {
   let filled = 0;
-  for (const [key, content] of Object.entries(examContent)) {
+  // The six hand-written pages above win for description, syllabus and FAQs; prisma/exam-pages adds the SEO title and
+  // description for every exam, the exam pattern where it is known, and full copy for all the other exams.
+  for (const key of new Set([...Object.keys(examContent), ...Object.keys(EXAM_PAGES)])) {
     const [bodySlug, examSlug] = key.split("/");
+    const written = examContent[key];
+    const page = EXAM_PAGES[key];
+    const content = { description: written?.description ?? page?.description, syllabus: written?.syllabus ?? page?.syllabus, faqs: written?.faqs ?? page?.faqs };
     const exam = await db.exam.findFirst({
       where: { slug: examSlug, body: { slug: bodySlug } },
-      select: { id: true, description: true, syllabus: true, faqs: true },
+      select: { id: true, description: true, syllabus: true, faqs: true, seo: true, pattern: true },
     });
     if (!exam) continue;
     await db.exam.update({
       where: { id: exam.id },
       data: {
         // The old one-paragraph seed descriptions are replaced; anything edited in admin is longer and kept.
-        ...((!exam.description || exam.description.length < 600) && { description: content.description }),
-        ...(!exam.syllabus && { syllabus: content.syllabus }),
-        ...(exam.faqs == null && { faqs: content.faqs }),
+        ...(content.description && (!exam.description || exam.description.length < 600) && { description: content.description }),
+        ...(content.syllabus && !exam.syllabus && { syllabus: content.syllabus }),
+        ...(content.faqs && exam.faqs == null && { faqs: content.faqs }),
+        // SEO and pattern are only ever filled while empty, so /admin/exams edits are never overwritten.
+        ...(page?.seo && exam.seo == null && { seo: page.seo }),
+        ...(page?.pattern && exam.pattern == null && { pattern: page.pattern }),
       },
     });
     filled++;
@@ -713,6 +712,8 @@ export async function seedContent(db: PrismaClient) {
         content: p.content,
         category: p.category,
         faqs: p.faqs ?? [],
+        seoTitle: p.seoTitle ?? null,
+        seoDescription: p.seoDescription ?? null,
         status: "DRAFT",
         exams: { connect: examIds },
       },

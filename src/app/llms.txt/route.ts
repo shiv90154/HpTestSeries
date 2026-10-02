@@ -1,6 +1,9 @@
 // llms.txt — a machine-readable summary of the site for LLM crawlers/agents. Spec: https://llmstxt.org/
 import { site } from "@/lib/site";
 import { getCatalog, getPublishedPosts, getPublishedTests } from "@/modules/catalog/queries";
+import { firstSentence } from "@/modules/content/exam-content";
+
+const summary = (description: string | null) => (description ? ` — ${firstSentence(description)}` : "");
 
 export const revalidate = 3600;
 
@@ -15,7 +18,7 @@ export async function GET() {
     "",
     "## Exams",
     ...catalog.flatMap((body) =>
-      body.exams.map((e) => `- [${e.name}](${site.url}${e.href}): mock tests, PYQs and topic tests for ${e.name}${e.description ? ` — ${e.description}` : ""}`),
+      body.exams.map((e) => `- [${e.name}](${site.url}${e.href}): mock tests, PYQs and topic tests for ${e.name}${summary(e.description)}`),
     ),
     "",
     "## Free tests (no login needed)",

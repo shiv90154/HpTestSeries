@@ -4,7 +4,10 @@ import { db } from "@/lib/db";
 import type { PostCategory } from "@/generated/prisma/enums";
 import { planDemo } from "@/modules/assessment/demo";
 import { parseFaqs, parsePattern, parseSeo } from "@/modules/content/exam-content";
+import { examLabel } from "./labels";
 import { liveTestWhere } from "./visibility";
+
+export { bodyShortName, examLabel, examShortName } from "./labels";
 
 export type CatalogExam = {
   slug: string;
@@ -108,7 +111,8 @@ export async function getPublishedTests(filter: { examId?: string | null } = {})
   }));
 }
 
-export async function getExamPage(bodySlug: string, examSlug: string) {
+/** Cached per request so generateMetadata and the page itself share one set of queries. */
+export const getExamPage = cache(async (bodySlug: string, examSlug: string) => {
   const exam = await db.exam.findFirst({
     where: { slug: examSlug, isActive: true, body: { slug: bodySlug } },
     select: {
@@ -127,7 +131,11 @@ export async function getExamPage(bodySlug: string, examSlug: string) {
     },
   });
   if (!exam) return null;
-  const [tests, posts] = await Promise.all([getPublishedTests({ examId: exam.id }), getPublishedPosts({ examId: exam.id, take: 6 })]);
+  const [tests, posts, offer] = await Promise.all([
+    getPublishedTests({ examId: exam.id }),
+    getPublishedPosts({ examId: exam.id, take: 6 }),
+    getExamOffer(exam.id),
+  ]);
   return {
     ...exam,
     pattern: parsePattern(exam.pattern),
@@ -135,7 +143,28 @@ export async function getExamPage(bodySlug: string, examSlug: string) {
     seo: parseSeo(exam.seo),
     tests,
     posts: posts.items,
+    offer,
   };
+});
+
+export type ExamOffer = { slug: string; title: string; priceInPaise: number; validityDays: number | null; testCount: number };
+
+/** The cheapest series on sale for this exam, for the "buy" card on its page. Null while the exam has no paid series. */
+export async function getExamOffer(examId: string): Promise<ExamOffer | null> {
+  const p = await db.product.findFirst({
+    where: { isActive: true, kind: "SERIES", items: { some: { series: { examId } } } },
+    orderBy: { priceInPaise: "asc" },
+    select: {
+      slug: true,
+      title: true,
+      priceInPaise: true,
+      validityDays: true,
+      items: { select: { series: { select: { examId: true, _count: { select: { tests: { where: { test: liveTestWhere() } } } } } } } },
+    },
+  });
+  if (!p) return null;
+  const testCount = p.items.filter((i) => i.series.examId === examId).reduce((n, i) => n + i.series._count.tests, 0);
+  return { slug: p.slug, title: p.title, priceInPaise: p.priceInPaise, validityDays: p.validityDays, testCount };
 }
 
 export async function getAllExamParams() {
@@ -146,10 +175,36 @@ export async function getAllExamParams() {
   return exams.map((e) => ({ body: e.body.slug, exam: e.slug, updatedAt: e.updatedAt }));
 }
 
-/** SEO label: "HPRCA JOA IT", "HPPSC HPAS", "HP Police Constable", "HP TET", "HP Patwari". */
-export function examLabel(bodySlug: string, name: string): string {
-  if (bodySlug === "hprca" || bodySlug === "hppsc") return `${bodySlug.toUpperCase()} ${name}`;
-  return name.startsWith("HP ") ? name : `HP ${name}`;
+/**
+ * The extra SEO pages an exam can have, and which of them have real content: /syllabus needs a syllabus, /exam-pattern a
+ * pattern and /previous-year-papers at least one live PYQ paper. A page without content is not generated or put in the sitemap.
+ */
+export async function getExamSubPages() {
+  const exams = await db.exam.findMany({
+    where: { isActive: true },
+    select: {
+      slug: true,
+      updatedAt: true,
+      syllabus: true,
+      pattern: true,
+      body: { select: { slug: true } },
+      _count: { select: { tests: { where: { ...liveTestWhere(), type: "PYQ" } } } },
+    },
+  });
+  return exams.map((e) => ({
+    body: e.body.slug,
+    exam: e.slug,
+    updatedAt: e.updatedAt,
+    syllabus: !!e.syllabus?.trim(),
+    pattern: parsePattern(e.pattern) !== null,
+    pyq: e._count.tests > 0,
+  }));
+}
+
+/** The ### / ## headings of a markdown syllabus, for the "syllabus at a glance" list on the exam page. */
+export function syllabusOutline(markdown: string | null): string[] {
+  if (!markdown) return [];
+  return [...markdown.matchAll(/^#{2,3}\s+(.+?)\s*$/gm)].map((m) => m[1].replace(/[*_`]/g, ""));
 }
 
 // ───────────────────────── Blog ─────────────────────────
