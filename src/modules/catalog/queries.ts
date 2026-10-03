@@ -16,6 +16,7 @@ export type CatalogExam = {
   nameHi: string | null;
   description: string | null;
   href: string;
+  /** live mock/subject tests; previous year papers are sold separately and are not counted here */
   testCount: number;
 };
 
@@ -41,7 +42,7 @@ export const getCatalog = cache(async (): Promise<CatalogBody[]> => {
           name: true,
           nameHi: true,
           description: true,
-          _count: { select: { tests: { where: liveTestWhere() } } },
+          _count: { select: { tests: { where: { ...liveTestWhere(), type: { not: "PYQ" } } } } },
         },
       },
     },

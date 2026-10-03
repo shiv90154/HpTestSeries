@@ -75,7 +75,8 @@ export default async function ExamTestsPage({ params }: PageProps<"/[body]/[exam
   const offer = data.offer;
   const price = offer ? rupees(offer.priceInPaise) : null;
   const unlockLabel = paid.length > 0 && price ? `Unlock all ${paid.length} for ${price}` : null;
-  const stats = [`${own.length} tests`, ...(free.length > 0 ? [`${free.length} free`] : []), "Real CBT screen", "Solutions in Hindi & English"];
+  const paperCount = own.filter((t) => t.type === "PYQ").length;
+  const stats = [`${own.length - paperCount} tests`, ...(paperCount > 0 ? [`${paperCount} previous year ${paperCount === 1 ? "paper" : "papers"}`] : []), ...(free.length > 0 ? [`${free.length} free`] : []), "Real CBT screen", "Solutions in Hindi & English"];
 
   return (
     <>
