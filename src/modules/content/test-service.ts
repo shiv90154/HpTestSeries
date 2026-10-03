@@ -1,6 +1,7 @@
 import "server-only";
 import { db } from "@/lib/db";
 import type { ContentStatus, Difficulty, Prisma, SourceType } from "@/generated/prisma/client";
+import { liveWindowProblems, parseIstLocal, toIstLocal } from "@/modules/assessment/live";
 import { publishProblems, validateTestMeta, validateTestStructure, type TestMetaInput } from "./test-input";
 
 type Fail = { ok: false; errors: string[] };
@@ -134,6 +135,7 @@ export async function getTestForBuilder(id: string) {
         orderBy: { order: "asc" },
         include: { questions: { orderBy: { order: "asc" }, include: { question: { select: bankSelect } } } },
       },
+      prizes: { orderBy: { rank: "asc" } },
       _count: { select: { attempts: true } },
     },
   });
@@ -148,6 +150,12 @@ export async function getTestForBuilder(id: string) {
     isFree: t.isFree,
     demoPercent: t.demoPercent,
     instructions: t.instructions ?? "",
+    liveStartsAt: toIstLocal(t.liveStartsAt),
+    liveEndsAt: toIstLocal(t.liveEndsAt),
+    prizes: [1, 2, 3].map((rank) => {
+      const p = t.prizes.find((x) => x.rank === rank);
+      return { title: p?.title ?? "", productId: p?.productId ?? null };
+    }),
   };
   const sections: BuilderSection[] = t.sections.map((s) => ({
     name: s.name,
@@ -171,7 +179,28 @@ function metaData(m: TestMetaInput) {
     // A free test has nothing to sell, so a demo makes no sense for it.
     demoPercent: m.isFree ? 0 : m.demoPercent,
     instructions: m.instructions || null,
+    liveStartsAt: parseIstLocal(m.liveStartsAt) ?? null,
+    liveEndsAt: parseIstLocal(m.liveEndsAt) ?? null,
   };
+}
+
+/** Rank prizes follow the form: rows already awarded to a winner are never changed. */
+async function savePrizes(testId: string, m: TestMetaInput) {
+  const live = !!m.liveStartsAt && !!m.liveEndsAt;
+  for (let rank = 1; rank <= 3; rank++) {
+    const want = live ? m.prizes[rank - 1] : undefined;
+    const existing = await db.livePrize.findUnique({ where: { testId_rank: { testId, rank } } });
+    if (existing?.awardedAt) continue;
+    if (!want?.title) {
+      if (existing) await db.livePrize.delete({ where: { id: existing.id } });
+    } else {
+      await db.livePrize.upsert({
+        where: { testId_rank: { testId, rank } },
+        create: { testId, rank, title: want.title, productId: want.productId },
+        update: { title: want.title, productId: want.productId },
+      });
+    }
+  }
 }
 
 async function checkMetaRefs(m: TestMetaInput, selfId: string | null): Promise<string[]> {
@@ -182,6 +211,10 @@ async function checkMetaRefs(m: TestMetaInput, selfId: string | null): Promise<s
   const errors: string[] = [];
   if (slugOwner && slugOwner.id !== selfId) errors.push(`The URL "/tests/${m.slug}" is already used by another test`);
   if (m.examId && !exam) errors.push("Choose a valid exam");
+  const starts = parseIstLocal(m.liveStartsAt);
+  const ends = parseIstLocal(m.liveEndsAt);
+  if (starts === null || ends === null) errors.push("Live window times are not valid");
+  else errors.push(...liveWindowProblems(starts ?? null, ends ?? null, m.durationMin * 60));
   return errors;
 }
 
@@ -198,6 +231,7 @@ export async function createTest(raw: unknown, actorId: string): Promise<{ ok: t
       sections: { create: [{ name: "General", order: 0, marksCorrect: 1, marksWrong: 0 }] },
     },
   });
+  await savePrizes(t.id, v.value);
   await db.auditLog.create({ data: { actorId, entity: "test", entityId: t.id, action: "create" } });
   return { ok: true, id: t.id };
 }
@@ -214,6 +248,7 @@ export async function updateTestMeta(id: string, raw: unknown, actorId: string):
   const errors = await checkMetaRefs(v.value, id);
   if (errors.length) return { ok: false, errors };
   await db.test.update({ where: { id }, data: metaData(v.value) });
+  await savePrizes(id, v.value);
   await db.auditLog.create({ data: { actorId, entity: "test", entityId: id, action: "update-meta" } });
   return { ok: true, slug: v.value.slug };
 }

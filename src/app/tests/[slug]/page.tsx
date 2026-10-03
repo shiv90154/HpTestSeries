@@ -13,6 +13,7 @@ import { site } from "@/lib/site";
 import { getTestMeta } from "@/modules/assessment/service";
 import { getPublishedTests } from "@/modules/catalog/queries";
 import { getBuyOptionForSeries } from "@/modules/commerce/product-service";
+import { LiveBanner } from "./live-banner";
 
 export const revalidate = 600;
 
@@ -80,7 +81,8 @@ export default async function TestDetailPage({ params }: PageProps<"/tests/[slug
         />
 
         <header className="space-y-3">
-          {t.isFree && <span className="rounded-md bg-success-soft px-2 py-1 text-xs font-bold text-success">FREE · NO LOGIN NEEDED</span>}
+          {t.live && <span className="rounded-md bg-danger-soft px-2 py-1 text-xs font-bold text-danger">LIVE TEST · LOGIN NEEDED</span>}
+          {t.isFree && !t.live && <span className="rounded-md bg-success-soft px-2 py-1 text-xs font-bold text-success">FREE · NO LOGIN NEEDED</span>}
           {!t.isFree && (
             <span className="inline-flex items-center gap-1 rounded-md bg-accent-soft px-2 py-1 text-xs font-bold text-accent-ink">
               <Lock className="size-3" aria-hidden /> {hasDemo ? "PAID · FREE DEMO AVAILABLE" : "PAID"}
@@ -99,6 +101,8 @@ export default async function TestDetailPage({ params }: PageProps<"/tests/[slug
             </Link>
           )}
         </header>
+
+        {t.live && <LiveBanner live={t.live} prizes={t.prizes} slug={slug} />}
 
         <dl className="grid grid-cols-2 gap-3 sm:grid-cols-4">
           {[
@@ -152,6 +156,7 @@ export default async function TestDetailPage({ params }: PageProps<"/tests/[slug
           </table>
         </section>
 
+        {!t.live && (
         <div className="flex flex-col items-start gap-4 rounded-2xl bg-primary-soft p-6 sm:flex-row sm:items-center">
           <Languages className="size-8 shrink-0 text-primary" />
           <p className="flex-1 text-sm">
@@ -196,6 +201,7 @@ export default async function TestDetailPage({ params }: PageProps<"/tests/[slug
             )}
           </OwnedGate>
         </div>
+        )}
         {demo && (
           <p className="-mt-4 text-sm text-muted">
             The free demo has the first {demo.percent}% of every section ({demo.freeTotal} of {demo.freeTotal + demo.lockedTotal} questions). It is not saved and does not affect your rank.

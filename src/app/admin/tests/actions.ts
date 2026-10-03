@@ -18,6 +18,7 @@ import {
   type BankQuestion,
 } from "@/modules/content/test-service";
 import { db } from "@/lib/db";
+import { awardLivePrizes } from "@/modules/assessment/live-service";
 import { can } from "@/modules/identity/permissions";
 import { requirePermission } from "@/modules/identity/session";
 
@@ -82,6 +83,16 @@ export async function restoreTestAction(id: string): Promise<Result> {
   const user = await requirePermission("content:publish");
   const res = await restoreTest(id, user.id);
   if (res.ok) refreshPublicPages();
+  return res;
+}
+
+export async function confirmWinnersAction(id: string): Promise<{ ok: true; awarded: number } | { ok: false; error: string }> {
+  const user = await requirePermission("content:publish");
+  const res = await awardLivePrizes(z.string().min(1).max(64).parse(id), user.id);
+  if (res.ok) {
+    revalidatePath(`/admin/tests/${id}`);
+    refreshPublicPages();
+  }
   return res;
 }
 

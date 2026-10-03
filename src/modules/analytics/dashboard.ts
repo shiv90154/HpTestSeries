@@ -9,7 +9,8 @@ export async function getDashboard(userId: string) {
   const [profile, attempts, inProgress, allTests] = await Promise.all([
     db.user.findUniqueOrThrow({ where: { id: userId }, select: { name: true, district: true } }),
     db.attempt.findMany({
-      where: { userId, status: "SUBMITTED" },
+      // A live test's score stays hidden until its window closes.
+      where: { userId, status: "SUBMITTED", test: { OR: [{ liveEndsAt: null }, { liveEndsAt: { lte: new Date() } }] } },
       orderBy: { submittedAt: "desc" },
       take: 50,
       select: {

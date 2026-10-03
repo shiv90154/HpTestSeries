@@ -10,6 +10,7 @@ import { demoDurationSec, planDemo } from "./demo";
 import { gradeAttempt, percentileFromRank, type GradingSection, type GradeResult } from "./grading";
 import { signClaim, verifyClaim } from "./guest-claim";
 import { competitionRanks, publicName } from "./leaderboard";
+import { isLiveTest, liveDeadline, liveState, resultsLocked } from "./live";
 import type { Bilingual, GuestClaim, LeaderboardRow, Paper, ResultData, SubmittedAnswers } from "./types";
 
 /** Late submissions within this window still count (network delays at the deadline). */
@@ -34,6 +35,7 @@ const fullTestInclude = {
     },
   },
   series: { select: { seriesId: true } },
+  prizes: { orderBy: { rank: "asc" }, select: { rank: true, title: true, awardedAt: true, winner: { select: { name: true } } } },
   exam: { select: { slug: true, name: true, isActive: true, body: { select: { slug: true } } } },
 } satisfies Prisma.TestInclude;
 
@@ -106,6 +108,9 @@ export async function getTestMeta(slug: string) {
       marksWrong: Number(s.marksWrong),
     })),
     series: t.series,
+    live: isLiveTest(t) ? { startsAt: t.liveStartsAt!.toISOString(), endsAt: t.liveEndsAt!.toISOString() } : null,
+    // Winners' names appear only once an admin has confirmed them.
+    prizes: t.prizes.map((p) => ({ rank: p.rank, title: p.title, winner: p.awardedAt && p.winner ? publicName(p.winner.name) : null })),
     // Hub pages exist only for active exams.
     exam: t.exam?.isActive ? { name: examLabel(t.exam.body.slug, t.exam.name), href: `/${t.exam.body.slug}/${t.exam.slug}` } : null,
   };
@@ -262,7 +267,7 @@ function claimSecret(): string {
  */
 export async function gradeGuestAttempt(slug: string, answers: SubmittedAnswers, violations = 0): Promise<ResultData | null> {
   const t = await loadFullTest(slug);
-  if (!t || !t.isFree) return null;
+  if (!t || !t.isFree || isLiveTest(t)) return null; // live tests need a login
   const clean = sanitizeAnswers(t, answers);
   const grade = gradeAttempt(gradingSections(t), clean);
   const gradedAt = Date.now();
@@ -276,7 +281,7 @@ export async function gradeGuestAttempt(slug: string, answers: SubmittedAnswers,
 /** Saves a signed guest result as the student's attempt. Counts for rank only if it is their first on the test. */
 export async function claimGuestAttempt(userId: string, slug: string, claim: GuestClaim): Promise<{ attemptId: string } | { error: string }> {
   const t = await loadFullTest(slug);
-  if (!t || !t.isFree) return { error: "This result can no longer be saved." };
+  if (!t || !t.isFree || isLiveTest(t)) return { error: "This result can no longer be saved." };
   const clean = sanitizeAnswers(t, claim.answers);
   const check = verifyClaim({ slug, answers: clean, gradedAt: claim.gradedAt, violations: claim.violations }, claim.token, claimSecret());
   if (check !== "ok") return { error: check === "expired" ? "This result is too old to save — take the test again while logged in." : "This result could not be verified." };
@@ -362,10 +367,45 @@ export async function gradeDemoAttempt(slug: string, answers: SubmittedAnswers):
 
 export type StartedAttempt = { attemptId: string; deadlineAt: string; answers: SubmittedAnswers; resumed: boolean };
 
+export type LiveGate =
+  | { kind: "ok" }
+  | { kind: "login" }
+  | { kind: "phone" }
+  | { kind: "upcoming"; startsAt: string }
+  | { kind: "ended" }
+  | { kind: "done"; endsAt: string }; // already took part
+
+/** Whether this student may sit a live test right now. Normal tests are always "ok" here. */
+export async function liveGate(userId: string | null, t: { id: string; liveStartsAt: Date | null; liveEndsAt: Date | null }): Promise<LiveGate> {
+  const state = liveState(t);
+  if (state === "none") return { kind: "ok" };
+  if (!userId) return { kind: "login" };
+  const [user, taken] = await Promise.all([
+    db.user.findUnique({ where: { id: userId }, select: { phoneNumberVerified: true } }),
+    db.attempt.findFirst({ where: { userId, testId: t.id }, select: { status: true, deadlineAt: true } }),
+  ]);
+  // A started attempt can always be resumed until its own deadline.
+  if (taken?.status === "IN_PROGRESS" && taken.deadlineAt.getTime() + SUBMIT_GRACE_MS > Date.now()) return { kind: "ok" };
+  if (taken) return { kind: "done", endsAt: t.liveEndsAt!.toISOString() };
+  if (!user?.phoneNumberVerified) return { kind: "phone" };
+  if (state === "upcoming") return { kind: "upcoming", startsAt: t.liveStartsAt!.toISOString() };
+  if (state === "ended") return { kind: "ended" };
+  return { kind: "ok" };
+}
+
 export async function startAttempt(userId: string, slug: string): Promise<StartedAttempt | { error: string }> {
   const t = await loadFullTest(slug);
   if (!t) return { error: "Test not found." };
   if (!(await canUserAccessTest(userId, t))) return { error: "This test is part of a paid series." };
+
+  const live = isLiveTest(t);
+  if (live) {
+    const gate = await liveGate(userId, t);
+    if (gate.kind === "phone") return { error: "Verify your mobile number in your profile to join a live test." };
+    if (gate.kind === "upcoming") return { error: "This live test has not started yet." };
+    if (gate.kind === "ended") return { error: "This live test has ended." };
+    if (gate.kind === "done") return { error: "You have already taken this live test." };
+  }
 
   const now = Date.now();
   const open = await db.attempt.findFirst({ where: { userId, testId: t.id, status: "IN_PROGRESS" } });
@@ -375,6 +415,7 @@ export async function startAttempt(userId: string, slug: string): Promise<Starte
     }
     // Abandoned attempt past its deadline: grade what was autosaved so it still counts.
     await finalizeAttempt(t, open.id, open.answers as SubmittedAnswers);
+    if (live) return { error: "You have already taken this live test." };
   }
 
   const previous = await db.attempt.count({ where: { userId, testId: t.id } });
@@ -382,7 +423,7 @@ export async function startAttempt(userId: string, slug: string): Promise<Starte
     userId,
     testId: t.id,
     testVersion: t.version,
-    deadlineAt: new Date(now + t.durationSec * 1000),
+    deadlineAt: live ? liveDeadline(new Date(now), t.durationSec, t.liveEndsAt!) : new Date(now + t.durationSec * 1000),
   };
   try {
     const a = await db.attempt.create({ data: { ...data, isFirst: previous === 0 } });
@@ -450,7 +491,8 @@ export async function submitAttempt(
   // After the deadline (plus grace) only the last autosave counts — answers can't be changed late.
   const late = Date.now() > attempt.deadlineAt.getTime() + SUBMIT_GRACE_MS;
   await finalizeAttempt(t, attempt.id, late ? (attempt.answers as SubmittedAnswers) : answers, violationCount);
-  void notifyResultReady(userId, attemptId, attempt.test.title).catch(() => {});
+  // A live test's result is hidden until the window closes, so no "result ready" email now.
+  if (!isLiveTest(t)) void notifyResultReady(userId, attemptId, attempt.test.title).catch(() => {});
   return { ok: true };
 }
 
@@ -461,6 +503,15 @@ async function notifyResultReady(userId: string, attemptId: string, testTitle: s
   await sendResultReadyEmail(user.email, testTitle, attemptId);
 }
 
+/** When this attempt belongs to a live test whose window is still open, the time its result appears; otherwise null. */
+export async function getResultLock(userId: string, attemptId: string): Promise<{ title: string; opensAt: string } | null> {
+  const a = await db.attempt.findFirst({
+    where: { id: attemptId, userId },
+    select: { test: { select: { title: true, liveStartsAt: true, liveEndsAt: true } } },
+  });
+  return a && resultsLocked(a.test) ? { title: a.test.title, opensAt: a.test.liveEndsAt!.toISOString() } : null;
+}
+
 export async function getAttemptResult(userId: string, attemptId: string): Promise<ResultData | null> {
   const attempt = await db.attempt.findFirst({
     where: { id: attemptId, userId, status: "SUBMITTED" },
@@ -468,7 +519,7 @@ export async function getAttemptResult(userId: string, attemptId: string): Promi
   });
   if (!attempt) return null;
   const t = await loadTestForResults(attempt.test.slug);
-  if (!t) return null;
+  if (!t || resultsLocked(t)) return null;
   const answers = attempt.answers as SubmittedAnswers;
   // Re-grading from stored answers keeps results correct after an erratum fix.
   const grade = gradeAttempt(gradingSections(t), answers);
@@ -498,10 +549,10 @@ export async function getResultCard(userId: string, attemptId: string) {
       correct: true,
       wrong: true,
       user: { select: { name: true, district: true } },
-      test: { select: { title: true, sections: { select: { marksCorrect: true, _count: { select: { questions: true } } } } } },
+      test: { select: { title: true, liveStartsAt: true, liveEndsAt: true, sections: { select: { marksCorrect: true, _count: { select: { questions: true } } } } } },
     },
   });
-  if (!a) return null;
+  if (!a || resultsLocked(a.test)) return null;
   const score = Number(a.score ?? 0);
   const attempted = (a.correct ?? 0) + (a.wrong ?? 0);
   return {
@@ -556,7 +607,7 @@ async function topAttempts(testId: string, userId: string): Promise<LeaderboardR
 
 /** A published test in the same exam the student hasn't attempted yet (free ones first), else any such test. */
 async function nextTestFor(userId: string, t: FullTest): Promise<ResultData["nextTest"]> {
-  const base = { ...liveTestWhere(), id: { not: t.id }, attempts: { none: { userId } } };
+  const base = { ...liveTestWhere(), id: { not: t.id }, liveStartsAt: null, attempts: { none: { userId } } };
   const select = { slug: true, title: true, isFree: true } as const;
   const orderBy = [{ isFree: "desc" as const }, { publishedAt: "asc" as const }];
   return (

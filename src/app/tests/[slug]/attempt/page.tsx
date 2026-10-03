@@ -5,10 +5,11 @@ import { notFound } from "next/navigation";
 import { SiteHeader } from "@/components/site-header";
 import { btn, card } from "@/components/ui";
 import { rupees } from "@/lib/money";
-import { canUserAccessTest, getPaper, getTestMeta } from "@/modules/assessment/service";
+import { canUserAccessTest, getPaper, getTestMeta, liveGate } from "@/modules/assessment/service";
 import { getBuyOptionForSeries } from "@/modules/commerce/product-service";
 import { getCurrentUser, getPreferredLang } from "@/modules/identity/session";
 import { Cbt } from "./cbt";
+import { LiveGateScreen } from "./live-wait";
 
 export const metadata: Metadata = { title: "Test in progress", robots: { index: false, follow: false } };
 
@@ -55,6 +56,12 @@ export default async function AttemptPage({ params }: PageProps<"/tests/[slug]/a
         </main>
       </>
     );
+  }
+
+  // Live tests: the paper is never sent before the window opens, or to anyone who has already taken it.
+  if (meta.live) {
+    const gate = await liveGate(user?.id ?? null, { id: meta.id, liveStartsAt: new Date(meta.live.startsAt), liveEndsAt: new Date(meta.live.endsAt) });
+    if (gate.kind !== "ok") return <LiveGateScreen gate={gate} title={meta.title} slug={slug} />;
   }
 
   const [paper, defaultLang] = await Promise.all([getPaper(slug), user ? getPreferredLang(user.id) : undefined]);

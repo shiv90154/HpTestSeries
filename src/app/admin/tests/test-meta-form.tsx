@@ -12,12 +12,14 @@ type Props = {
   id: string | null;
   initial: TestMetaInput;
   exams: { id: string; name: string; body: string }[];
+  /** What a prize can give the winner as free access. */
+  products?: { id: string; title: string }[];
   /** URL of a published test is fixed */
   slugLocked: boolean;
   readOnly?: boolean;
 };
 
-export function TestMetaForm({ id, initial, exams, slugLocked, readOnly }: Props) {
+export function TestMetaForm({ id, initial, exams, products = [], slugLocked, readOnly }: Props) {
   const router = useRouter();
   const [m, setM] = useState(initial);
   const [slugTouched, setSlugTouched] = useState(!!id);
@@ -137,6 +139,45 @@ export function TestMetaForm({ id, initial, exams, slugLocked, readOnly }: Props
               ? "Free tests don't need a demo."
               : "When on, visitors get a “Try free demo” button, and a “Pay now” popup appears when the free part ends. Demos are not saved and never affect ranks. Keep it Off for tests you want people to pay for without trying."}
           </p>
+        </div>
+        <div className="space-y-3 rounded-lg border border-border p-4 sm:col-span-2">
+          <div>
+            <p className="font-medium">Live test (optional)</p>
+            <p className="text-xs text-muted">
+              Set both times to make this a live test: everyone sits it inside this window (Indian time), one attempt each, and results stay hidden until it closes. Leave empty for a normal test.
+            </p>
+          </div>
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div>
+              <label className={labelCls} htmlFor="liveStartsAt">Opens at (IST)</label>
+              <input id="liveStartsAt" type="datetime-local" className={inputCls} value={m.liveStartsAt} onChange={(e) => set("liveStartsAt", e.target.value)} />
+            </div>
+            <div>
+              <label className={labelCls} htmlFor="liveEndsAt">Closes at (IST)</label>
+              <input id="liveEndsAt" type="datetime-local" className={inputCls} value={m.liveEndsAt} onChange={(e) => set("liveEndsAt", e.target.value)} />
+            </div>
+          </div>
+          {m.liveStartsAt && m.liveEndsAt && (
+            <div className="space-y-2">
+              <p className="text-sm font-medium">Prizes</p>
+              {[0, 1, 2].map((i) => {
+                const p = m.prizes[i] ?? { title: "", productId: null };
+                const setPrize = (next: typeof p) => set("prizes", [0, 1, 2].map((j) => (j === i ? next : (m.prizes[j] ?? { title: "", productId: null }))));
+                return (
+                  <div key={i} className="grid gap-2 sm:grid-cols-[5rem_1fr_1fr] sm:items-center">
+                    <span className="text-sm text-muted">Rank {i + 1}</span>
+                    <input className={inputCls} aria-label={`Rank ${i + 1} prize`} placeholder="e.g. 1 month Pass (leave empty for none)" value={p.title} onChange={(e) => setPrize({ ...p, title: e.target.value })} />
+                    <select className={inputCls} aria-label={`Rank ${i + 1} free access`} value={p.productId ?? ""} onChange={(e) => setPrize({ ...p, productId: e.target.value || null })}>
+                      <option value="">No automatic access</option>
+                      {products.map((pr) => (
+                        <option key={pr.id} value={pr.id}>Give free access: {pr.title}</option>
+                      ))}
+                    </select>
+                  </div>
+                );
+              })}
+            </div>
+          )}
         </div>
         <div className="sm:col-span-2">
           <label className={labelCls} htmlFor="instructions">Instructions (optional, shown before the test starts)</label>

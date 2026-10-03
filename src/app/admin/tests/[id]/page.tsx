@@ -8,7 +8,9 @@ import { getTaxonomy } from "@/modules/content/taxonomy";
 import { getTestForBuilder } from "@/modules/content/test-service";
 import { can } from "@/modules/identity/permissions";
 import { requirePermission } from "@/modules/identity/session";
+import { listGrantableProducts } from "@/modules/identity/user-service";
 import { TestBuilder } from "../test-builder";
+import { LiveWinners } from "./live-winners";
 import { TestMetaForm } from "../test-meta-form";
 
 export const metadata: Metadata = { title: "Edit test" };
@@ -17,7 +19,7 @@ export default async function EditTestPage({ params }: PageProps<"/admin/tests/[
   const user = await requirePermission("content:edit");
   await connection();
   const { id } = await params;
-  const [t, taxonomy] = await Promise.all([getTestForBuilder(id), getTaxonomy()]);
+  const [t, taxonomy, products] = await Promise.all([getTestForBuilder(id), getTaxonomy(), listGrantableProducts()]);
   if (!t) notFound();
   const canPublish = can(user.role, "content:publish");
   // Scheduled and retired tests count as published here: their URL is public and their questions are locked.
@@ -45,9 +47,11 @@ export default async function EditTestPage({ params }: PageProps<"/admin/tests/[
       <details open={!published && t.sections.every((s) => s.questions.length === 0)} className="group">
         <summary className="cursor-pointer text-sm font-medium">Test details (title, URL, exam, duration, access)</summary>
         <div className="mt-3">
-          <TestMetaForm id={t.id} initial={t.meta} exams={taxonomy.exams} slugLocked={published} readOnly={published && !canPublish} />
+          <TestMetaForm id={t.id} initial={t.meta} exams={taxonomy.exams} products={products} slugLocked={published} readOnly={published && !canPublish} />
         </div>
       </details>
+
+      {t.meta.liveStartsAt && t.meta.liveEndsAt && <LiveWinners testId={t.id} />}
 
       <TestBuilder
         // Remount after a save/publish so the builder starts from what the server stored.

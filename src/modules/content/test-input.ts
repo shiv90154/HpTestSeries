@@ -47,6 +47,14 @@ export const testMetaSchema = z.object({
     .min(0, "Demo share cannot be negative")
     .max(MAX_DEMO_PERCENT, `Demo share can be at most ${MAX_DEMO_PERCENT}%, so something stays locked`),
   instructions: z.string().trim().max(5000, "Instructions are too long"),
+  /** Live test window, "YYYY-MM-DDTHH:mm" in Indian time. Both empty = a normal test. */
+  liveStartsAt: z.string().default(""),
+  liveEndsAt: z.string().default(""),
+  /** Prizes for rank 1, 2, 3 (by position). An empty title means no prize for that rank. */
+  prizes: z
+    .array(z.object({ title: z.string().trim().max(120, "Prize text is too long"), productId: z.string().nullable() }))
+    .max(3, "At most 3 prizes")
+    .default([]),
 });
 
 export type TestMetaInput = z.infer<typeof testMetaSchema>;

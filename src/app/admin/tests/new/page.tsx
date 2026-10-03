@@ -3,6 +3,7 @@ import Link from "next/link";
 import { connection } from "next/server";
 import { getTaxonomy } from "@/modules/content/taxonomy";
 import { requirePermission } from "@/modules/identity/session";
+import { listGrantableProducts } from "@/modules/identity/user-service";
 import { TestMetaForm } from "../test-meta-form";
 
 export const metadata: Metadata = { title: "New test" };
@@ -10,7 +11,7 @@ export const metadata: Metadata = { title: "New test" };
 export default async function NewTestPage() {
   await requirePermission("content:edit");
   await connection();
-  const { exams } = await getTaxonomy();
+  const [{ exams }, products] = await Promise.all([getTaxonomy(), listGrantableProducts()]);
 
   return (
     <div className="space-y-5">
@@ -24,8 +25,9 @@ export default async function NewTestPage() {
       <TestMetaForm
         id={null}
         exams={exams}
+        products={products}
         slugLocked={false}
-        initial={{ title: "", titleHi: "", slug: "", type: "MOCK", examId: null, durationMin: 60, isFree: false, demoPercent: 0, instructions: "" }}
+        initial={{ title: "", titleHi: "", slug: "", type: "MOCK", examId: null, durationMin: 60, isFree: false, demoPercent: 0, instructions: "", liveStartsAt: "", liveEndsAt: "", prizes: [] }}
       />
     </div>
   );

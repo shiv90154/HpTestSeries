@@ -50,6 +50,7 @@ model User {
   questionsCheck Question[]       @relation("QuestionReviewedBy")
   auditLogs      AuditLog[]
   posts          Post[]
+  prizesWon      LivePrize[]
 
   @@map("user")
 }
@@ -328,6 +329,9 @@ model Test {
   instructions String?
   isFree       Boolean       @default(false)
   demoPercent  Int           @default(0) // paid tests only: 0 = no free demo, else the first N% of every section can be tried without paying
+  // Live test: everyone sits it inside one window, one attempt each. Results, solutions and the leaderboard stay hidden until liveEndsAt.
+  liveStartsAt DateTime?
+  liveEndsAt   DateTime?
   status       ContentStatus @default(DRAFT)
   publishedAt  DateTime?
   version      Int           @default(1) // bumped on erratum; attempts record the version they took
@@ -339,8 +343,10 @@ model Test {
   series    SeriesTest[]
   attempts  Attempt[]
   stats     TestStats?
+  prizes    LivePrize[]
 
   @@index([examId, status])
+  @@index([liveStartsAt])
 }
 
 model TestSection {
@@ -497,6 +503,21 @@ model Payment {
   status            String
   raw               Json
   createdAt         DateTime @default(now())
+}
+
+/// A prize for a rank on a live test. The winner is filled in when an admin confirms the result.
+model LivePrize {
+  id            String    @id @default(cuid())
+  testId        String
+  test          Test      @relation(fields: [testId], references: [id], onDelete: Cascade)
+  rank          Int // 1 = first place
+  title         String // what students see, e.g. "1 month Pass"
+  productId     String? // granted as free access to the winner when awarded
+  winnerId      String?
+  winner        User?     @relation(fields: [winnerId], references: [id])
+  awardedAt     DateTime?
+
+  @@unique([testId, rank])
 }
 
 model Entitlement {
