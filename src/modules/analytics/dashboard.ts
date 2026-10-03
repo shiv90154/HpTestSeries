@@ -2,11 +2,15 @@ import "server-only";
 import { db } from "@/lib/db";
 import { percentileFromRank } from "@/modules/assessment/grading";
 import { getPublishedTests } from "@/modules/catalog/queries";
+import { liveTestWhere } from "@/modules/catalog/visibility";
+import { canAccessTest } from "@/modules/commerce/access";
+import { liveEntitlements } from "@/modules/commerce/purchases";
+import { preferredExams, rankSuggestions } from "./suggest";
 
 type TopicTally = { correct: number; wrong: number; skipped: number };
 
 export async function getDashboard(userId: string) {
-  const [profile, attempts, inProgress, allTests] = await Promise.all([
+  const [profile, attempts, inProgress, allTests, testMeta, entitlements, liveNext] = await Promise.all([
     db.user.findUniqueOrThrow({ where: { id: userId }, select: { name: true, district: true } }),
     db.attempt.findMany({
       // A live test's score stays hidden until its window closes.
@@ -38,6 +42,15 @@ export async function getDashboard(userId: string) {
       select: { deadlineAt: true, answers: true, test: { select: { slug: true, title: true } } },
     }),
     getPublishedTests(),
+    // What getPublishedTests does not carry: each test's exam, series and live window.
+    db.test.findMany({ where: liveTestWhere(), select: { slug: true, examId: true, liveStartsAt: true, series: { select: { seriesId: true } } } }),
+    liveEntitlements(userId),
+    // The next live test that has not closed yet (only one the student has not already taken).
+    db.test.findFirst({
+      where: { ...liveTestWhere(), liveStartsAt: { not: null }, liveEndsAt: { gt: new Date() }, attempts: { none: { userId } } },
+      orderBy: { liveStartsAt: "asc" },
+      select: { slug: true, title: true, liveStartsAt: true, liveEndsAt: true, prizes: { orderBy: { rank: "asc" }, select: { rank: true, title: true } } },
+    }),
   ]);
 
   const rows = attempts.map((a) => {
@@ -106,6 +119,19 @@ export async function getDashboard(userId: string) {
   const totalAttempted = attempts.reduce((s, a) => s + (a.correct ?? 0) + (a.wrong ?? 0), 0);
   const attemptedSlugs = new Set(rows.map((r) => r.slug));
 
+  // Recommendations: the exams the student practises or has paid for first; live tests have their own card.
+  const meta = new Map(testMeta.map((m) => [m.slug, m]));
+  const now = new Date();
+  const candidates = allTests.map((t) => {
+    const m = meta.get(t.slug);
+    const seriesIds = m?.series.map((s) => s.seriesId) ?? [];
+    return { ...t, examId: m?.examId ?? null, isLive: !!m?.liveStartsAt, open: canAccessTest({ isFree: t.isFree, seriesIds }, entitlements, now) };
+  });
+  const preferred = preferredExams([...rows.map((r) => meta.get(r.slug)?.examId ?? null), ...candidates.filter((t) => t.open && !t.isFree).map((t) => t.examId)]);
+  const ranked_ = rankSuggestions(candidates, attemptedSlugs, preferred);
+  // The big "Take a mock test" button must lead somewhere the student can actually start.
+  const startSlug = ranked_.find((t) => t.open)?.slug ?? null;
+
   return {
     profile,
     stats: {
@@ -125,6 +151,8 @@ export async function getDashboard(userId: string) {
     trend: rows.slice(0, 12).reverse().map((r) => ({ id: r.id, title: r.title, percent: r.percent, score: r.score, maxScore: r.maxScore, date: r.submittedAt })),
     weakTopics: topics.slice(0, 4),
     strongTopics: [...topics].reverse().filter((t) => t.accuracy >= 70).slice(0, 3),
-    suggested: allTests.filter((t) => !attemptedSlugs.has(t.slug)).slice(0, 3),
+    suggested: ranked_.slice(0, 3),
+    startSlug,
+    liveNext: liveNext && { open: liveNext.liveStartsAt! <= now, slug: liveNext.slug, title: liveNext.title, startsAt: liveNext.liveStartsAt!, endsAt: liveNext.liveEndsAt!, prizes: liveNext.prizes },
   };
 }

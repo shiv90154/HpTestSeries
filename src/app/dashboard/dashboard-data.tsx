@@ -1,6 +1,7 @@
-import { ArrowRight, BadgeCheck, BarChart3, Clock, Flag, PlayCircle, Target, Trophy, TrendingUp } from "lucide-react";
+import { ArrowRight, BadgeCheck, BarChart3, BookOpenCheck, Clock, Flag, PlayCircle, Radio, Target, Trophy, TrendingUp } from "lucide-react";
 import Link from "next/link";
 import { AppHeader } from "@/components/app-header";
+import { LiveCountdown } from "@/components/live-countdown";
 import { TestCard } from "@/components/test-card";
 import { btn, card } from "@/components/ui";
 import { getDashboard } from "@/modules/analytics/dashboard";
@@ -46,7 +47,7 @@ export async function DashboardData({ user, purchaseNotice }: { user: Awaited<Re
                   : `You've taken ${d.stats.tests} test${d.stats.tests === 1 ? "" : "s"}. Every mock sharpens your speed and accuracy — keep practising!`}
               </p>
             </div>
-            <Link href={d.suggested[0] ? `/tests/${d.suggested[0].slug}/attempt` : "/tests"} className={btn("accent", "lg")}>
+            <Link href={d.startSlug ? `/tests/${d.startSlug}/attempt` : "/tests"} className={btn("accent", "lg")}>
               <PlayCircle className="size-5" /> {d.stats.tests === 0 ? "Start first test" : "Take a mock test"}
             </Link>
           </div>
@@ -71,9 +72,16 @@ export async function DashboardData({ user, purchaseNotice }: { user: Awaited<Re
           </section>
         )}
 
+        {d.liveNext && <LiveCard live={d.liveNext} />}
+
         {plans.length > 0 && <MyPlans plans={plans} />}
 
+        {/* Before the first test there is nothing to chart: a short guide is more useful than four zeros. */}
+        {d.stats.tests === 0 && <FirstTestGuide startHref={d.startSlug ? `/tests/${d.startSlug}/attempt` : "/tests"} />}
+
         {/* Stats */}
+        {d.stats.tests > 0 && (
+        <>
         <section className="grid grid-cols-2 gap-3 lg:grid-cols-4">
           <Stat icon={<BarChart3 className="size-5 text-primary" />} label="Tests taken" value={`${d.stats.tests}`} />
           <Stat icon={<TrendingUp className="size-5 text-success" />} label="Average score" value={`${d.stats.avgPercent}%`} sub={`Best ${d.stats.bestPercent}%`} />
@@ -116,7 +124,11 @@ export async function DashboardData({ user, purchaseNotice }: { user: Awaited<Re
           </section>
         </div>
 
+        </>
+        )}
+
         {/* Recent */}
+        {d.stats.tests > 0 && (
         <section className={`${card} overflow-hidden`}>
           <div className="flex items-center justify-between border-b border-border px-5 py-4">
             <h2 className="font-semibold">Recent tests</h2>
@@ -208,6 +220,7 @@ export async function DashboardData({ user, purchaseNotice }: { user: Awaited<Re
             </>
           )}
         </section>
+        )}
 
         {reports.length > 0 && <MyReports reports={reports} />}
 
@@ -221,8 +234,71 @@ export async function DashboardData({ user, purchaseNotice }: { user: Awaited<Re
             </div>
           </section>
         )}
+
+        <Link href="/previous-year-papers" className={`${card} flex items-center gap-3 p-4 transition-colors hover:border-primary`}>
+          <BookOpenCheck className="size-6 shrink-0 text-primary" aria-hidden />
+          <span className="flex-1">
+            <b className="block">Previous year papers</b>
+            <span className="text-sm text-muted">Solve real past papers of your exam, with solutions in Hindi &amp; English.</span>
+          </span>
+          <ArrowRight className="size-4 shrink-0 text-muted" aria-hidden />
+        </Link>
       </main>
     </>
+  );
+}
+
+const when = (d: Date) => d.toLocaleString("en-IN", { weekday: "short", day: "numeric", month: "short", hour: "numeric", minute: "2-digit", timeZone: "Asia/Kolkata" });
+
+/** The next live test: when it starts, what the top ranks win, and a way in. */
+function LiveCard({ live }: { live: NonNullable<Awaited<ReturnType<typeof getDashboard>>["liveNext"]> }) {
+  const open = live.open;
+  return (
+    <section className={`${card} space-y-3 border-danger/40 p-5`}>
+      <div className="flex flex-wrap items-center gap-3">
+        <Radio className="size-6 shrink-0 text-danger" aria-hidden />
+        <div className="min-w-0 flex-1">
+          <p className="text-xs font-bold uppercase tracking-wide text-danger">{open ? "Live now" : "Next live test"}</p>
+          <p className="font-semibold">{live.title}</p>
+          <p className="text-sm text-muted">
+            {open ? `Join before ${when(live.endsAt)} (IST)` : `${when(live.startsAt)} (IST)`}
+            {live.prizes.length > 0 && ` · Win: ${live.prizes.map((p) => p.title).join(" · ")}`}
+          </p>
+        </div>
+        <Link href={`/tests/${live.slug}`} className={btn(open ? "primary" : "outline")}>
+          {open ? "Join now" : "Details"} <ArrowRight className="size-4" />
+        </Link>
+      </div>
+      {!open && <LiveCountdown to={live.startsAt.toISOString()} />}
+    </section>
+  );
+}
+
+/** What a student with no attempts yet sees instead of empty charts. */
+function FirstTestGuide({ startHref }: { startHref: string }) {
+  const steps = [
+    ["1", "Take a test", "Start with a free one. It uses the same screen as the real exam."],
+    ["2", "See your rank", "Your score is ranked against Himachal aspirants straight away."],
+    ["3", "Fix weak topics", "We show the topics where you lose marks, so you know what to revise."],
+  ];
+  return (
+    <section className={`${card} space-y-4 p-5`}>
+      <h2 className="font-semibold">Your dashboard fills up after your first test</h2>
+      <ol className="grid gap-3 sm:grid-cols-3">
+        {steps.map(([n, t, text]) => (
+          <li key={n} className="flex gap-3">
+            <span className="grid size-8 shrink-0 place-items-center rounded-full bg-primary-soft font-bold text-primary">{n}</span>
+            <span>
+              <b className="block">{t}</b>
+              <span className="text-sm text-muted">{text}</span>
+            </span>
+          </li>
+        ))}
+      </ol>
+      <Link href={startHref} className={btn("primary")}>
+        <PlayCircle className="size-5" /> Start your first test
+      </Link>
+    </section>
   );
 }
 
