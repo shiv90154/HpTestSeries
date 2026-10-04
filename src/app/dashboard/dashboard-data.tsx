@@ -5,6 +5,7 @@ import { LiveCountdown } from "@/components/live-countdown";
 import { TestCard } from "@/components/test-card";
 import { btn, card } from "@/components/ui";
 import { getDashboard } from "@/modules/analytics/dashboard";
+import { daysLeftLabel, planUsedPercent } from "@/modules/commerce/plan-rules";
 import { getMyPlans, type Plan } from "@/modules/commerce/purchases";
 import { getMyReports, type MyReport } from "@/modules/content/report-service";
 import type { requireUser } from "@/modules/identity/session";
@@ -304,45 +305,45 @@ function FirstTestGuide({ startHref }: { startHref: string }) {
 
 const date = (d: Date) => d.toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric", timeZone: "Asia/Kolkata" });
 
-/** What the student has paid for, so a purchase is visible right after checkout. */
+/** What the student has paid for, so a purchase is visible right after checkout. The full detail lives on /plan. */
 function MyPlans({ plans }: { plans: Plan[] }) {
   const renewed = new Set(plans.filter((p) => p.upcoming).map((p) => p.slug));
+  const current = plans.filter((p) => !p.upcoming);
   return (
-    <section className={`${card} p-5`}>
-      <h2 className="mb-3 flex items-center gap-2 font-semibold">
-        <BadgeCheck className="size-5 text-primary" /> My plan
-      </h2>
-      <ul className="divide-y divide-border">
-        {plans.map((p) => (
-          <li key={`${p.slug}-${p.startsAt.toISOString()}`} className="flex flex-wrap items-center gap-3 py-3 first:pt-0 last:pb-0">
-            <div className="min-w-0 flex-1">
-              <p className="font-medium">{p.title}</p>
-              <p className={`text-sm ${!p.upcoming && p.daysLeft <= 7 ? "text-danger" : "text-muted"}`}>
-                {p.upcoming
-                  ? `Starts ${date(p.startsAt)} · valid till ${date(p.expiresAt)}`
-                  : `Valid till ${date(p.expiresAt)} · ${p.daysLeft} day${p.daysLeft === 1 ? "" : "s"} left`}
-              </p>
-            </div>
-            {p.upcoming ? (
-              <span className="rounded-full bg-primary-soft px-2.5 py-1 text-xs font-semibold text-primary">Renewal</span>
-            ) : p.daysLeft <= 7 && !renewed.has(p.slug) ? (
-              <Link href={`/buy/${p.slug}`} className={btn("accent", "sm")}>
-                Renew
-              </Link>
-            ) : (
-              <span className="rounded-full bg-success-soft px-2.5 py-1 text-xs font-semibold text-success">Active</span>
-            )}
-          </li>
-        ))}
-      </ul>
-      <div className="mt-4 flex flex-wrap gap-x-5 gap-y-2 text-sm font-medium">
-        <Link href="/tests" className="text-primary hover:underline">
-          Browse tests
-        </Link>
-        <Link href="/profile#purchases" className="text-muted hover:text-primary">
-          Purchase history &amp; receipts
+    <section className={`${card} overflow-hidden`}>
+      <div className="flex items-center justify-between gap-3 border-b border-border bg-primary-soft px-5 py-3">
+        <h2 className="flex items-center gap-2 font-semibold text-primary-strong">
+          <BadgeCheck className="size-5 text-primary" /> My plan
+        </h2>
+        <Link href="/plan" className="inline-flex items-center gap-1 text-sm font-semibold text-primary hover:underline">
+          View details <ArrowRight className="size-4" />
         </Link>
       </div>
+      <ul className="divide-y divide-border">
+        {current.map((p) => {
+          const ending = p.daysLeft <= 7;
+          return (
+            <li key={`${p.slug}-${p.startsAt.toISOString()}`} className="space-y-2 px-5 py-4">
+              <div className="flex flex-wrap items-center gap-3">
+                <p className="min-w-0 flex-1 font-medium">{p.title}</p>
+                {ending && !renewed.has(p.slug) ? (
+                  <Link href={`/buy/${p.slug}`} className={btn("accent", "sm")}>
+                    Renew
+                  </Link>
+                ) : (
+                  <span className="rounded-full bg-success-soft px-2.5 py-1 text-xs font-semibold text-success">{renewed.has(p.slug) ? "Renewed" : "Active"}</span>
+                )}
+              </div>
+              <div className="h-1.5 overflow-hidden rounded-full bg-surface-muted" role="progressbar" aria-label={`${p.title} validity used`} aria-valuemin={0} aria-valuemax={100} aria-valuenow={planUsedPercent(p.startsAt, p.expiresAt)}>
+                <div className={`h-full rounded-full ${ending ? "bg-accent" : "bg-primary"}`} style={{ width: `${planUsedPercent(p.startsAt, p.expiresAt)}%` }} />
+              </div>
+              <p className={`text-xs ${ending ? "font-medium text-danger" : "text-muted"}`}>
+                {daysLeftLabel(p.expiresAt)} · till {date(p.expiresAt)}
+              </p>
+            </li>
+          );
+        })}
+      </ul>
     </section>
   );
 }

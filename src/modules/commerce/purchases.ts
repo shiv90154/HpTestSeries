@@ -53,6 +53,28 @@ export async function getMyPlans(userId: string): Promise<Plan[]> {
   }));
 }
 
+export type PlanDetail = Plan & {
+  /** the series a SERIES/PACK plan opens, with their live test counts */
+  included: { title: string; testCount: number }[];
+  /** for an all-access PASS: how many paid tests it opens today */
+  paidTestCount: number;
+};
+
+/** The same plans as getMyPlans plus what each one includes — the My plan page. */
+export async function getMyPlanDetails(userId: string): Promise<PlanDetail[]> {
+  const plans = await getMyPlans(userId);
+  if (!plans.length) return [];
+  const [products, paidTestCount] = await Promise.all([
+    db.product.findMany({
+      where: { slug: { in: [...new Set(plans.map((p) => p.slug))] } },
+      select: { slug: true, items: { select: { series: { select: { title: true, _count: { select: { tests: { where: liveTestWhere() } } } } } } } },
+    }),
+    plans.some((p) => p.kind === "PASS") ? db.test.count({ where: { ...liveTestWhere(), isFree: false } }) : Promise.resolve(0),
+  ]);
+  const bySlug = new Map(products.map((p) => [p.slug, p.items.map((i) => ({ title: i.series.title, testCount: i.series._count.tests }))]));
+  return plans.map((p) => ({ ...p, included: bySlug.get(p.slug) ?? [], paidTestCount }));
+}
+
 export type PurchaseRow = { id: string; productTitle: string; amountPaise: number; status: "PAID" | "REFUNDED"; createdAt: Date };
 
 /** Completed purchases only: abandoned and failed checkouts would just confuse students. */

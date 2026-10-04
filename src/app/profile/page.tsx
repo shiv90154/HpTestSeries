@@ -83,7 +83,12 @@ export default async function ProfilePage() {
         </section>
 
         <section id="purchases" className={`${card} scroll-mt-24 p-5`}>
-          <h2 className="mb-3 font-semibold">Purchases</h2>
+          <div className="mb-3 flex items-center justify-between gap-3">
+            <h2 className="font-semibold">Purchases</h2>
+            <Link href="/plan" className="text-sm font-medium text-primary hover:underline">
+              My plan →
+            </Link>
+          </div>
           {purchases.length === 0 ? (
             <p className="text-sm text-muted">
               No purchases yet.{" "}

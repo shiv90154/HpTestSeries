@@ -25,7 +25,7 @@ export default async function ReceiptPage({ params }: PageProps<"/orders/[id]/re
   return (
     <main className="mx-auto w-full max-w-2xl flex-1 px-4 py-6 sm:py-10 print:max-w-none print:p-0">
       <div className="mb-4 flex items-center justify-between gap-3 print:hidden">
-        <Link href="/profile#purchases" className="text-sm font-medium text-muted hover:text-primary">
+        <Link href="/plan#purchases" className="text-sm font-medium text-muted hover:text-primary">
           ← My purchases
         </Link>
         <PrintButton />
