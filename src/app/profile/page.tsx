@@ -2,7 +2,7 @@ import { BadgeCheck, Calendar, Mail, Phone, Receipt } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { AppHeader } from "@/components/app-header";
-import { card } from "@/components/ui";
+import { btn, card } from "@/components/ui";
 import { db } from "@/lib/db";
 import { rupees } from "@/lib/money";
 import { getMyPurchases } from "@/modules/commerce/purchases";
@@ -70,6 +70,16 @@ export default async function ProfilePage() {
         <section className={`${card} p-5`}>
           <h2 className="mb-4 font-semibold">Edit details</h2>
           <ProfileForm name={profile.name} district={profile.district} preferredLang={profile.preferredLang} />
+        </section>
+
+        <section className={`${card} flex items-center justify-between gap-3 p-5`}>
+          <div>
+            <h2 className="font-semibold">Refer a friend</h2>
+            <p className="text-sm text-muted">Your friend saves ₹50, and you get a ₹50 coupon when they pay.</p>
+          </div>
+          <Link href="/refer" className={btn("outline", "md", "shrink-0")}>
+            Get my code
+          </Link>
         </section>
 
         <section id="purchases" className={`${card} scroll-mt-24 p-5`}>

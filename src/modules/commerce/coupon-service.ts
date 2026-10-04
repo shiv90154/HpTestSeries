@@ -1,6 +1,7 @@
 import "server-only";
 import { db } from "@/lib/db";
 import { applyCoupon, couponProblem, endOfDayIst, normalizeCode, validateCoupon, type CouponInput } from "./coupon-input";
+import { referralCouponProblem } from "./referral-rules";
 
 type Fail = { ok: false; errors: string[] };
 
@@ -20,7 +21,8 @@ export type CouponRow = {
 
 export async function listCoupons(): Promise<CouponRow[]> {
   const [coupons, revenue] = await Promise.all([
-    db.coupon.findMany({ orderBy: { createdAt: "desc" } }),
+    // Referral codes and reward coupons are per-student and numerous; they live on the student's /refer page.
+    db.coupon.findMany({ where: { referrerId: null, ownerId: null }, orderBy: { createdAt: "desc" } }),
     db.order.groupBy({ by: ["couponId"], where: { status: "PAID", couponId: { not: null } }, _sum: { amountPaise: true } }),
   ]);
   const byCoupon = new Map(revenue.map((r) => [r.couponId, r._sum.amountPaise ?? 0]));
@@ -88,6 +90,9 @@ export async function quoteCoupon(userId: string, rawCode: string, pricePaise: n
   if (problem) return { error: problem };
   const used = await db.order.count({ where: { userId, couponId: coupon.id, status: "PAID" } });
   if (used > 0) return { error: "You have already used this coupon." };
+  const hasPaidBefore = coupon.referrerId ? (await db.order.count({ where: { userId, status: "PAID" } })) > 0 : false;
+  const refProblem = referralCouponProblem(coupon, userId, hasPaidBefore);
+  if (refProblem) return { error: refProblem };
   return { couponId: coupon.id, code: coupon.code, ...applyCoupon(pricePaise, coupon) };
 }
 

@@ -7,6 +7,7 @@ import { consumeRateLimit } from "@/lib/rate-limit";
 import { createRazorpayOrder, fetchOrderPayments, razorpayPublicKey, verifyCheckoutSignature } from "@/lib/razorpay";
 import { recordRedemption, quoteCoupon } from "./coupon-service";
 import { renewalStart } from "./ownership";
+import { rewardReferrer } from "./referral";
 import { getOwnership } from "./purchases";
 import { paymentMatchesOrder } from "./webhook-event";
 
@@ -195,7 +196,10 @@ export async function fulfillOrder(order: OrderForFulfilment, razorpayPaymentId:
     if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === "P2002") return;
     throw err;
   }
-  if (order.couponId) await recordRedemption(order.couponId).catch((e) => logError(e, { path: "coupon-redemption", userId: order.userId ?? undefined }));
+  if (order.couponId) {
+    await recordRedemption(order.couponId).catch((e) => logError(e, { path: "coupon-redemption", userId: order.userId ?? undefined }));
+    await rewardReferrer(order.id).catch((e) => logError(e, { path: "referral-reward", userId: order.userId ?? undefined }));
+  }
   // A guest order may have been claimed while this payment was being recorded; then it is owed its access now.
   if (!order.userId) await grantIfPaid(order.id);
 }

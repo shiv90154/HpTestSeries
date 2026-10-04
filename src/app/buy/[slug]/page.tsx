@@ -1,5 +1,6 @@
 import { BadgeCheck, CheckCircle2, ShieldCheck } from "lucide-react";
 import type { Metadata } from "next";
+import { cookies } from "next/headers";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { SiteFooter } from "@/components/site-footer";
@@ -8,6 +9,7 @@ import { btn, card } from "@/components/ui";
 import { examLabel } from "@/modules/catalog/queries";
 import { getProductForSale } from "@/modules/commerce/product-service";
 import { getOwnership } from "@/modules/commerce/purchases";
+import { REFERRAL_COOKIE } from "@/modules/commerce/referral-rules";
 import { getCurrentUser } from "@/modules/identity/session";
 import { BuyButton } from "./buy-button";
 
@@ -28,6 +30,8 @@ export default async function BuyPage({ params }: PageProps<"/buy/[slug]">) {
   const { slug } = await params;
   const [product, user] = await Promise.all([getProductForSale(slug), getCurrentUser()]);
   if (!product) notFound();
+  // A friend's shared link (/r/<code>) leaves its code in a cookie; pre-fill it in the coupon box.
+  const referralCode = (await cookies()).get(REFERRAL_COOKIE)?.value ?? "";
 
   const own = user ? await getOwnership(user.id, product.id) : ({ kind: "none" } as const);
   const date = (d: Date) => d.toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric", timeZone: "Asia/Kolkata" });
@@ -113,7 +117,7 @@ export default async function BuyPage({ params }: PageProps<"/buy/[slug]">) {
                   don&apos;t lose any days.
                 </p>
               )}
-              <BuyButton productSlug={product.slug} pricePaise={product.priceInPaise} user={user} label={own.kind === "renewable" ? "Renew now" : undefined} />
+              <BuyButton productSlug={product.slug} pricePaise={product.priceInPaise} user={user} label={own.kind === "renewable" ? "Renew now" : undefined} initialCode={referralCode} />
             </>
           )}
           <div className="space-y-2 text-xs text-muted">

@@ -51,6 +51,8 @@ model User {
   auditLogs      AuditLog[]
   posts          Post[]
   prizesWon      LivePrize[]
+  referralCode   Coupon?          @relation("ReferralCode")
+  rewardCoupons  Coupon[]         @relation("RewardCoupon")
 
   @@map("user")
 }
@@ -467,6 +469,15 @@ model Coupon {
   isActive     Boolean   @default(true)
   createdAt    DateTime  @default(now())
   orders       Order[]
+
+  // Referral programme (modules/commerce/referral.ts). Both kinds stay out of the admin coupon list.
+  referrerId    String? @unique // a student's personal referral code (one each): friends get the discount, this student earns a reward
+  referrer      User?   @relation("ReferralCode", fields: [referrerId], references: [id], onDelete: Cascade)
+  ownerId       String? // a reward coupon: only this student can use it
+  owner         User?   @relation("RewardCoupon", fields: [ownerId], references: [id], onDelete: Cascade)
+  rewardOrderId String? @unique // the friend's paid order this reward was issued for (makes issuing idempotent)
+
+  @@index([ownerId])
 }
 
 model Order {

@@ -23,15 +23,18 @@ export function BuyButton({
   pricePaise,
   user,
   label = "Buy now",
+  initialCode = "",
 }: {
   productSlug: string;
   pricePaise: number;
   user: { name: string; email: string; phoneNumber: string | null } | null;
   label?: string;
+  /** a referral code from the friend's shared link; pre-filled, the student still taps Apply */
+  initialCode?: string;
 }) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
-  const [code, setCode] = useState("");
+  const [code, setCode] = useState(initialCode);
   const [quote, setQuote] = useState<Quote | null>(null);
   const [couponError, setCouponError] = useState<string | null>(null);
   const [checking, setChecking] = useState(false);
