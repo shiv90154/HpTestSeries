@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { isReferralLinkCode, randomCode, referralCouponProblem, referralLink } from "./referral-rules";
 
-const plain = { referrerId: null, ownerId: null };
+const plain = { referrerId: null };
 
 describe("referralCouponProblem", () => {
   it("leaves plain coupons alone", () => {
@@ -9,19 +9,13 @@ describe("referralCouponProblem", () => {
   });
 
   it("blocks using your own referral code", () => {
-    expect(referralCouponProblem({ referrerId: "u1", ownerId: null }, "u1", false)).toMatch(/own referral code/);
+    expect(referralCouponProblem({ referrerId: "u1" }, "u1", false)).toMatch(/own referral code/);
   });
 
   it("allows a friend's first purchase only", () => {
-    const code = { referrerId: "u1", ownerId: null };
+    const code = { referrerId: "u1" };
     expect(referralCouponProblem(code, "u2", false)).toBeNull();
     expect(referralCouponProblem(code, "u2", true)).toMatch(/first purchase/);
-  });
-
-  it("keeps a reward coupon to its owner, and lets the owner use it after buying before", () => {
-    const reward = { referrerId: null, ownerId: "u1" };
-    expect(referralCouponProblem(reward, "u1", true)).toBeNull();
-    expect(referralCouponProblem(reward, "u2", false)).toMatch(/not valid/);
   });
 });
 

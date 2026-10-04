@@ -76,12 +76,18 @@ export default async function ReceiptPage({ params }: PageProps<"/orders/[id]/re
                   {r.access && ` · ${day(r.access.startsAt)} – ${day(r.access.expiresAt)}`}
                 </p>
               </td>
-              <td className="py-3 text-right tabular-nums">{rupees(r.amountPaise + r.discountPaise)}</td>
+              <td className="py-3 text-right tabular-nums">{rupees(r.amountPaise + r.discountPaise + r.walletPaise)}</td>
             </tr>
             {r.discountPaise > 0 && (
               <tr className="border-b border-border">
                 <td className="py-2 text-muted">Coupon{r.couponCode ? ` ${r.couponCode}` : ""}</td>
                 <td className="py-2 text-right tabular-nums text-success">−{rupees(r.discountPaise)}</td>
+              </tr>
+            )}
+            {r.walletPaise > 0 && (
+              <tr className="border-b border-border">
+                <td className="py-2 text-muted">HP wallet</td>
+                <td className="py-2 text-right tabular-nums text-success">−{rupees(r.walletPaise)}</td>
               </tr>
             )}
           </tbody>
@@ -103,7 +109,7 @@ export default async function ReceiptPage({ params }: PageProps<"/orders/[id]/re
             Paid on: <span className="text-foreground">{dayTime(r.paidAt)}</span>
           </p>
           <p>
-            Paid via: <span className="text-foreground">{r.amountPaise === 0 ? "100% coupon (nothing to pay)" : "Razorpay"}</span>
+            Paid via: <span className="text-foreground">{r.amountPaise > 0 ? (r.walletPaise > 0 ? "Razorpay + HP wallet" : "Razorpay") : r.walletPaise > 0 ? "HP wallet (nothing to pay by card/UPI)" : "100% coupon (nothing to pay)"}</span>
           </p>
           {r.razorpayPaymentId && (
             <p className="break-all">

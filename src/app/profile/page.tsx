@@ -75,7 +75,7 @@ export default async function ProfilePage() {
         <section className={`${card} flex items-center justify-between gap-3 p-5`}>
           <div>
             <h2 className="font-semibold">Refer a friend</h2>
-            <p className="text-sm text-muted">Your friend saves ₹50, and you get a ₹50 coupon when they pay.</p>
+            <p className="text-sm text-muted">Your friend saves ₹50, and ₹50 goes into your HP wallet when they pay.</p>
           </div>
           <Link href="/refer" className={btn("outline", "md", "shrink-0")}>
             Get my code

@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { track } from "@/components/analytics";
 import { btn } from "@/components/ui";
 import { rupees } from "@/lib/money";
+import { splitWallet } from "@/modules/commerce/wallet-rules";
 import { site } from "@/lib/site";
 import { confirmPaymentAction, createGuestOrderAction, createOrderAction, quoteCouponAction } from "./actions";
 
@@ -24,6 +25,7 @@ export function BuyButton({
   user,
   label = "Buy now",
   initialCode = "",
+  walletPaise = 0,
 }: {
   productSlug: string;
   pricePaise: number;
@@ -31,6 +33,8 @@ export function BuyButton({
   label?: string;
   /** a referral code from the friend's shared link; pre-filled, the student still taps Apply */
   initialCode?: string;
+  /** the student's HP wallet balance; spent first when they tick the box */
+  walletPaise?: number;
 }) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
@@ -38,6 +42,7 @@ export function BuyButton({
   const [quote, setQuote] = useState<Quote | null>(null);
   const [couponError, setCouponError] = useState<string | null>(null);
   const [checking, setChecking] = useState(false);
+  const [useWallet, setUseWallet] = useState(true);
 
   async function applyCode() {
     if (!user) {
@@ -75,7 +80,7 @@ export function BuyButton({
     setLoading(true);
     try {
       // Not logged in: the order is created anyway and attached to the account on the next login (/claim).
-      const order = guest ? await createGuestOrderAction(productSlug) : await createOrderAction(productSlug, quote?.code);
+      const order = guest ? await createGuestOrderAction(productSlug) : await createOrderAction(productSlug, quote?.code, useWallet && walletPaise > 0);
       if ("error" in order) {
         toast.error(order.error);
         setLoading(false);
@@ -135,7 +140,10 @@ export function BuyButton({
     }
   }
 
-  const payLabel = quote ? (quote.finalPaise === 0 ? "Get it free" : `${label} · ${rupees(quote.finalPaise)}`) : label;
+  // The server decides the real split when the order is created; this only previews it.
+  const total = quote ? quote.finalPaise : pricePaise;
+  const split = useWallet && walletPaise > 0 && total > 0 ? splitWallet(total, walletPaise) : { walletPaise: 0, cashPaise: total };
+  const payLabel = quote || split.walletPaise > 0 ? (split.cashPaise === 0 ? "Get it free" : `${label} · ${rupees(split.cashPaise)}`) : label;
 
   return (
     <div className="space-y-4">
@@ -175,6 +183,20 @@ export function BuyButton({
             </p>
           )}
         </div>
+      )}
+
+      {user && walletPaise > 0 && total > 0 && (
+        <label className="flex cursor-pointer items-start gap-3 rounded-xl border border-border bg-surface-muted p-3 text-sm">
+          <input type="checkbox" checked={useWallet} onChange={(e) => setUseWallet(e.target.checked)} className="mt-0.5 size-4 accent-[var(--primary)]" />
+          <span>
+            <b>Use my HP wallet</b> <span className="text-muted">({rupees(walletPaise)} available)</span>
+            {useWallet && split.walletPaise > 0 && (
+              <span className="block text-xs text-muted">
+                {rupees(split.walletPaise)} from wallet · {split.cashPaise === 0 ? "nothing to pay" : `${rupees(split.cashPaise)} to pay`}
+              </span>
+            )}
+          </span>
+        </label>
       )}
 
       <button onClick={pay} disabled={loading} className={btn("primary", "lg", "w-full")}>

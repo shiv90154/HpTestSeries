@@ -1,5 +1,6 @@
 import "server-only";
 import { db } from "@/lib/db";
+import { settleWalletOnRefund } from "@/modules/commerce/wallet";
 
 /** Finds students by name, email or phone (staff lookup for support requests). */
 export async function searchUsers(q: string) {
@@ -88,6 +89,7 @@ export async function markOrderRefunded(orderId: string, actorId: string): Promi
     db.order.update({ where: { id: orderId }, data: { status: "REFUNDED" } }),
     db.entitlement.updateMany({ where: { orderId, revokedAt: null }, data: { revokedAt: new Date() } }),
   ]);
+  await settleWalletOnRefund(orderId); // wallet part back to the student, referral reward back from the referrer
   await db.auditLog.create({ data: { actorId, entity: "order", entityId: orderId, action: "mark-refunded" } });
   return { ok: true };
 }

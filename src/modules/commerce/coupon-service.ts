@@ -21,8 +21,8 @@ export type CouponRow = {
 
 export async function listCoupons(): Promise<CouponRow[]> {
   const [coupons, revenue] = await Promise.all([
-    // Referral codes and reward coupons are per-student and numerous; they live on the student's /refer page.
-    db.coupon.findMany({ where: { referrerId: null, ownerId: null }, orderBy: { createdAt: "desc" } }),
+    // Referral codes are per-student and numerous; they live on the student's /refer page.
+    db.coupon.findMany({ where: { referrerId: null }, orderBy: { createdAt: "desc" } }),
     db.order.groupBy({ by: ["couponId"], where: { status: "PAID", couponId: { not: null } }, _sum: { amountPaise: true } }),
   ]);
   const byCoupon = new Map(revenue.map((r) => [r.couponId, r._sum.amountPaise ?? 0]));

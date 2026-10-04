@@ -11,10 +11,10 @@ import { getCurrentUser } from "@/modules/identity/session";
 const slugSchema = z.string().min(1).max(80);
 const codeSchema = z.string().max(40);
 
-export async function createOrderAction(productSlug: string, couponCode?: string): Promise<CreateOrderResult> {
+export async function createOrderAction(productSlug: string, couponCode?: string, useWallet = false): Promise<CreateOrderResult> {
   const user = await getCurrentUser();
   if (!user) return { error: "Please log in first." };
-  return createOrderForProduct(user.id, slugSchema.parse(productSlug), couponCode ? codeSchema.parse(couponCode) : undefined);
+  return createOrderForProduct(user.id, slugSchema.parse(productSlug), couponCode ? codeSchema.parse(couponCode) : undefined, useWallet === true);
 }
 
 /** Checkout without an account: the order is remembered in this browser and attached to whoever signs in next. */

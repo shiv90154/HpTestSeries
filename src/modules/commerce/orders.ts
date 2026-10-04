@@ -9,6 +9,7 @@ import { recordRedemption, quoteCoupon } from "./coupon-service";
 import { renewalStart } from "./ownership";
 import { rewardReferrer } from "./referral";
 import { getOwnership } from "./purchases";
+import { confirmSpendOp, createOrderWithWallet, releaseOrderReservation } from "./wallet";
 import { paymentMatchesOrder } from "./webhook-event";
 
 export type CheckoutOrder = {
@@ -26,6 +27,7 @@ type OrderForFulfilment = {
   userId: string | null; // null: guest order, access is granted when it is claimed (claimGuestOrders)
   productId: string;
   couponId: string | null;
+  walletPaise: number; // part paid from the HP wallet; reserved when the order was created, confirmed when it is paid
   product: { validUntil: Date | null; validityDays: number | null };
 };
 
@@ -38,9 +40,10 @@ export async function quoteForProduct(userId: string, productSlug: string, code:
 
 /**
  * Creates a local Order plus the matching Razorpay order, ready to hand to Razorpay Checkout.
- * A coupon that brings the price to zero skips Razorpay and grants access straight away.
+ * With `useWallet` the student's HP wallet pays first and Razorpay charges only the rest. If a coupon and/or the
+ * wallet bring the price to zero, Razorpay is skipped and access is granted straight away.
  */
-export async function createOrderForProduct(userId: string, productSlug: string, couponCode?: string): Promise<CreateOrderResult> {
+export async function createOrderForProduct(userId: string, productSlug: string, couponCode?: string, useWallet = false): Promise<CreateOrderResult> {
   if (!(await consumeRateLimit(`order:${userId}`, 10 * 60, 10))) {
     return { error: "Too many payment attempts. Please wait a few minutes and try again." };
   }
@@ -65,22 +68,16 @@ export async function createOrderForProduct(userId: string, productSlug: string,
     couponId = quote.couponId;
   }
 
-  if (amountPaise === 0) {
-    const order = await db.order.create({
-      data: { userId, productId: product.id, amountPaise: 0, discountPaise, couponId, status: "CREATED" },
-      include: { product: true },
-    });
+  // The order's amountPaise is the cash part; a wallet reservation (if any) is made in the same transaction.
+  const order = await createOrderWithWallet({ userId, productId: product.id, totalPaise: amountPaise, discountPaise, couponId, useWallet: useWallet && amountPaise > 0 });
+  if (order.amountPaise === 0) {
     await fulfillOrder(order, null, {});
     return { free: true, orderId: order.id };
   }
 
-  const order = await db.order.create({
-    data: { userId, productId: product.id, amountPaise, discountPaise, couponId, status: "CREATED" },
-  });
-
   try {
     const rpOrder = await createRazorpayOrder({
-      amountPaise,
+      amountPaise: order.amountPaise,
       receipt: order.id,
       notes: { userId, productSlug },
     });
@@ -88,12 +85,13 @@ export async function createOrderForProduct(userId: string, productSlug: string,
     return {
       orderId: order.id,
       razorpayOrderId: rpOrder.id,
-      amountPaise,
+      amountPaise: order.amountPaise,
       keyId: razorpayPublicKey(),
       productTitle: product.title,
     };
   } catch (err) {
     await db.order.update({ where: { id: order.id }, data: { status: "FAILED" } });
+    await releaseOrderReservation(order.id).catch((e) => logError(e, { path: "wallet-release", userId }));
     throw err;
   }
 }
@@ -101,7 +99,7 @@ export async function createOrderForProduct(userId: string, productSlug: string,
 /**
  * Checkout for a buyer who is not logged in. The order belongs to nobody yet: the caller keeps the returned
  * `claimToken` in the buyer's browser, and once they sign in claimGuestOrders() attaches the order to their
- * account and grants the access. Coupons need an account (per-user limits), so guests pay the list price.
+ * account and grants the access. Coupons and the wallet need an account, so guests pay the list price.
  */
 export async function createGuestOrderForProduct(productSlug: string): Promise<(CheckoutOrder & { claimToken: string }) | { error: string }> {
   const product = await db.product.findUnique({ where: { slug: productSlug } });
@@ -171,6 +169,7 @@ export async function fulfillOrder(order: OrderForFulfilment, razorpayPaymentId:
   try {
     await db.$transaction([
       db.order.update({ where: { id: order.id }, data: { status: "PAID", ...(payerEmail && { payerEmail }) } }),
+      ...(order.userId && order.walletPaise > 0 ? [confirmSpendOp({ id: order.id, userId: order.userId, walletPaise: order.walletPaise })] : []),
       ...(razorpayPaymentId
         ? [
             db.payment.upsert({
@@ -185,7 +184,7 @@ export async function fulfillOrder(order: OrderForFulfilment, razorpayPaymentId:
         ? [
             db.entitlement.upsert({
               where: { orderId: order.id },
-              create: { userId: order.userId, productId: order.productId, source: razorpayPaymentId ? "PURCHASE" : "COUPON_FREE", orderId: order.id, ...grant },
+              create: { userId: order.userId, productId: order.productId, source: razorpayPaymentId || order.walletPaise > 0 ? "PURCHASE" : "COUPON_FREE", orderId: order.id, ...grant },
               update: {},
             }),
           ]

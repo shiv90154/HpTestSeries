@@ -52,7 +52,7 @@ model User {
   posts          Post[]
   prizesWon      LivePrize[]
   referralCode   Coupon?          @relation("ReferralCode")
-  rewardCoupons  Coupon[]         @relation("RewardCoupon")
+  walletTxns     WalletTransaction[]
 
   @@map("user")
 }
@@ -470,14 +470,10 @@ model Coupon {
   createdAt    DateTime  @default(now())
   orders       Order[]
 
-  // Referral programme (modules/commerce/referral.ts). Both kinds stay out of the admin coupon list.
-  referrerId    String? @unique // a student's personal referral code (one each): friends get the discount, this student earns a reward
-  referrer      User?   @relation("ReferralCode", fields: [referrerId], references: [id], onDelete: Cascade)
-  ownerId       String? // a reward coupon: only this student can use it
-  owner         User?   @relation("RewardCoupon", fields: [ownerId], references: [id], onDelete: Cascade)
-  rewardOrderId String? @unique // the friend's paid order this reward was issued for (makes issuing idempotent)
-
-  @@index([ownerId])
+  // Referral programme (modules/commerce/referral.ts): a student's personal code. Friends get the discount; the
+  // student's wallet is credited when a friend pays. Referral codes stay out of the admin coupon list.
+  referrerId String? @unique
+  referrer   User?   @relation("ReferralCode", fields: [referrerId], references: [id], onDelete: Cascade)
 }
 
 model Order {
@@ -486,8 +482,9 @@ model Order {
   user            User?       @relation(fields: [userId], references: [id])
   productId       String
   product         Product     @relation(fields: [productId], references: [id])
-  amountPaise     Int // what the student pays (after any coupon)
-  discountPaise   Int         @default(0) // list price minus amountPaise
+  amountPaise     Int // cash the student pays through Razorpay (after any coupon and wallet use)
+  discountPaise   Int         @default(0) // coupon discount off the list price
+  walletPaise     Int         @default(0) // paid from the student's HP wallet; amountPaise is only what Razorpay charged
   couponId        String?
   coupon          Coupon?     @relation(fields: [couponId], references: [id])
   status          OrderStatus @default(CREATED)
@@ -504,6 +501,29 @@ model Order {
   @@index([userId, createdAt])
   @@index([status, createdAt])
   @@index([payerEmail])
+}
+
+enum WalletTxType {
+  REFERRAL_REWARD // + a friend's paid order used the student's referral code
+  REFERRAL_REVERSAL // - that friend's order was refunded
+  PURCHASE // - spent on an order (reserved when the order is created, released if it is never paid)
+  REFUND // + the wallet part of a refunded order
+  ADMIN // +/- manual adjustment
+}
+
+/// HP wallet ledger: the balance is the sum of amountPaise. Money can only be spent on products, never withdrawn.
+model WalletTransaction {
+  id          String        @id @default(cuid())
+  userId      String
+  user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  amountPaise Int // signed
+  type        WalletTxType
+  orderId     String? // the order this row is about; with `type` it makes each row idempotent
+  note        String?
+  createdAt   DateTime      @default(now())
+
+  @@unique([type, orderId])
+  @@index([userId, createdAt])
 }
 
 model Payment {
