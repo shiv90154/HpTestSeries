@@ -103,7 +103,7 @@ export async function listProducts(): Promise<ProductListItem[]> {
       validityDays: true,
       isActive: true,
       _count: { select: { orders: true, entitlements: true } },
-      items: { select: { series: { select: { title: true, _count: { select: { tests: { where: liveTestWhere() } } } } } } },
+      items: { select: { series: { select: { title: true, _count: { select: { tests: { where: { test: liveTestWhere() } } } } } } } },
     },
   });
   return products.map((p) => ({
@@ -146,7 +146,7 @@ export async function getProductForEdit(id: string) {
 export async function listSeriesOptions(): Promise<{ id: string; title: string; examName: string; testCount: number }[]> {
   const series = await db.testSeries.findMany({
     orderBy: { title: "asc" },
-    select: { id: true, title: true, exam: { select: { name: true } }, _count: { select: { tests: { where: liveTestWhere() } } } },
+    select: { id: true, title: true, exam: { select: { name: true } }, _count: { select: { tests: { where: { test: liveTestWhere() } } } } },
   });
   return series.map((s) => ({ id: s.id, title: s.title, examName: s.exam.name, testCount: s._count.tests }));
 }

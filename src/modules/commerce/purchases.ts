@@ -67,7 +67,7 @@ export async function getMyPlanDetails(userId: string): Promise<PlanDetail[]> {
   const [products, paidTestCount] = await Promise.all([
     db.product.findMany({
       where: { slug: { in: [...new Set(plans.map((p) => p.slug))] } },
-      select: { slug: true, items: { select: { series: { select: { title: true, _count: { select: { tests: { where: liveTestWhere() } } } } } } } },
+      select: { slug: true, items: { select: { series: { select: { title: true, _count: { select: { tests: { where: { test: liveTestWhere() } } } } } } } } },
     }),
     plans.some((p) => p.kind === "PASS") ? db.test.count({ where: { ...liveTestWhere(), isFree: false } }) : Promise.resolve(0),
   ]);
