@@ -6,6 +6,7 @@ import { liveTestWhere } from "@/modules/catalog/visibility";
 import { canAccessTest } from "@/modules/commerce/access";
 import { liveEntitlements } from "@/modules/commerce/purchases";
 import { preferredExams, rankSuggestions } from "./suggest";
+import { currentStreak, testsThisWeek } from "./streak";
 
 type TopicTally = { correct: number; wrong: number; skipped: number };
 
@@ -140,6 +141,8 @@ export async function getDashboard(userId: string) {
       bestPercent: n ? Math.max(...rows.map((r) => r.percent)) : 0,
       accuracy: totalAttempted ? Math.round((totalCorrect / totalAttempted) * 100) : 0,
       totalMinutes: Math.round(rows.reduce((s, r) => s + r.timeSpentSec, 0) / 60),
+      streak: currentStreak(rows.map((r) => r.submittedAt)),
+      weekTests: testsThisWeek(rows.map((r) => r.submittedAt)),
     },
     inProgress: inProgress && {
       slug: inProgress.test.slug,
