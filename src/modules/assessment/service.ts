@@ -524,7 +524,7 @@ export async function getAttemptResult(userId: string, attemptId: string): Promi
   // Re-grading from stored answers keeps results correct after an erratum fix.
   const grade = gradeAttempt(gradingSections(t), answers);
   const [rank, compare, leaderboard, nextTest] = await Promise.all([
-    attempt.isFirst ? rankFor(t.id, Number(attempt.score ?? grade.score)) : null,
+    attempt.isFirst && !attempt.flagged ? rankFor(t.id, Number(attempt.score ?? grade.score)) : null,
     sectionComparison(t.id),
     topAttempts(t.id, userId),
     nextTestFor(userId, t),
@@ -545,6 +545,7 @@ export async function getResultCard(userId: string, attemptId: string) {
     select: {
       testId: true,
       isFirst: true,
+      flagged: true,
       score: true,
       correct: true,
       wrong: true,
@@ -562,7 +563,7 @@ export async function getResultCard(userId: string, attemptId: string) {
     score,
     maxScore: a.test.sections.reduce((n, s) => n + s._count.questions * Number(s.marksCorrect), 0),
     accuracy: attempted ? Math.round(((a.correct ?? 0) / attempted) * 100) : 0,
-    rank: a.isFirst ? await rankFor(a.testId, score) : null,
+    rank: a.isFirst && !a.flagged ? await rankFor(a.testId, score) : null,
   };
 }
 

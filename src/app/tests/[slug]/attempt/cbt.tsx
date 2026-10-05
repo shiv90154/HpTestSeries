@@ -684,10 +684,10 @@ export function Cbt({
         )}
         {violations > 0 && !demo && (
           <span
-            className="hidden shrink-0 rounded-md bg-danger px-2 py-1 font-sans text-xs font-semibold text-white sm:inline"
+            className="shrink-0 rounded-md bg-danger px-2 py-1 font-sans text-xs font-semibold text-white"
             title="Tab switches, fullscreen exits and copy/paste attempts recorded this test"
           >
-            {violations} flagged
+            {violations}<span className="hidden sm:inline"> flagged</span><span className="sm:hidden"> ⚠</span>
           </span>
         )}
         <div
@@ -699,6 +699,15 @@ export function Cbt({
           <Clock className="size-4" aria-hidden />
           {fmt(remaining)}
         </div>
+        {!demo && !preview && (
+          <button
+            type="button"
+            onClick={() => setConfirmOpen(true)}
+            className="shrink-0 rounded-md bg-cbt-submit px-2.5 py-1.5 font-sans text-xs font-bold text-white hover:bg-cbt-submit-strong lg:hidden"
+          >
+            Submit
+          </button>
+        )}
         <button
           id="cbt-palette-toggle"
           type="button"

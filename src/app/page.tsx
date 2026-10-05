@@ -292,7 +292,7 @@ export default async function Home() {
               {pass && <Plan {...productPlan(pass)} badge="Best value" />}
               {products.length === 0 && (
                 <>
-                  <Plan name="Exam Test Series" price="₹49–99" note="per exam" soon items={["20–40 full mock tests", "Previous-year papers", "Sectional & topic tests", "Detailed analysis"]} />
+                  <Plan name="Exam Test Series" price="₹199" note="per exam" soon items={["20–40 full mock tests", "Previous-year papers", "Sectional & topic tests", "Detailed analysis"]} />
                   <Plan badge="Best value" name="All-Access Pass" price="₹299" note="per year" soon items={["Every Himachal exam", "All mock tests & PYQs", "HP GK & current affairs tests", "Best value for serious aspirants"]} />
                 </>
               )}
