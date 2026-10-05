@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { examLabel, getCatalog, getPublishedPosts } from "@/modules/catalog/queries";
 import { FREE_MOCK_HREF, site } from "@/lib/site";
-import { LEGAL_LINKS, business } from "@/lib/business";
+import { LEGAL_LINKS } from "@/lib/business";
 import { AuthFooterLink } from "./auth-cta";
 import { Logo } from "./logo";
 import { PublicBottomNav } from "./public-bottom-nav";
@@ -80,22 +80,6 @@ export async function SiteFooter() {
                 </Link>
               </li>
             ))}
-          </ul>
-          <ul className="mt-3 text-sm text-slate-400">
-            {business.email && (
-              <li>
-                <a href={`mailto:${business.email}`} className={`${link} break-all`}>
-                  {business.email}
-                </a>
-              </li>
-            )}
-            {business.phone && (
-              <li>
-                <a href={`tel:${business.phone.replace(/[^\d+]/g, "")}`} className={link}>
-                  {business.phone}
-                </a>
-              </li>
-            )}
           </ul>
         </div>
         {exams.length > 0 && (

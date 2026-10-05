@@ -10,7 +10,7 @@ const DASHBOARD: Tab = { href: "/dashboard", icon: LayoutDashboard, label: "Dash
 const TESTS: Tab = { href: "/tests", icon: NotebookPen, label: "Tests", desktopLabel: "Mock Tests" };
 const EXAMS: Tab = { href: "/exams", icon: LayoutGrid, label: "Exams" };
 const UPDATES: Tab = { href: "/blog", icon: Newspaper, label: "Updates", desktopLabel: "Exam Updates" };
-const PROFILE: Tab = { href: "/profile", icon: UserRound, label: "Profile" };
+const PROFILE: Tab = { href: "/profile", icon: UserRound, label: "Profile", desktopLabel: "My Profile" };
 const ADMIN: Tab = { href: "/admin", icon: ShieldCheck, label: "Admin" };
 
 function isActive(pathname: string, tab: Tab): boolean {
@@ -20,7 +20,7 @@ function isActive(pathname: string, tab: Tab): boolean {
 /** Header links for logged-in pages on tablets and desktops (phones use BottomNav). */
 export function AppDesktopNav({ showAdmin }: { showAdmin: boolean }) {
   const pathname = usePathname();
-  const tabs = showAdmin ? [DASHBOARD, TESTS, EXAMS, UPDATES, ADMIN] : [DASHBOARD, TESTS, EXAMS, UPDATES];
+  const tabs = showAdmin ? [DASHBOARD, TESTS, EXAMS, UPDATES, PROFILE, ADMIN] : [DASHBOARD, TESTS, EXAMS, UPDATES, PROFILE];
   return (
     <nav aria-label="Main" className="hidden gap-5 text-sm font-medium text-muted md:flex">
       {tabs.map((t) => {
