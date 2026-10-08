@@ -18,17 +18,17 @@ export function seedPatwari(db: PrismaClient) {
     tests: PATWARI_TESTS,
     series: {
       slug: PATWARI_SERIES_SLUG,
-      title: "HP Patwari Mock Test Series (7 Full Mocks + 14 Subject Tests)",
-      titleHi: "एचपी पटवारी मॉक टेस्ट सीरीज़ (7 फुल मॉक + 14 विषय-वार टेस्ट)",
+      title: "HP Patwari Mock Test Series",
+      titleHi: "एचपी पटवारी मॉक टेस्ट सीरीज़",
       description:
-        "Seven full-length, exam-level HP Patwari mock tests (100 questions each) plus 14 subject-wise tests of 25 questions: " +
-        "Himachal GK, General Knowledge, Reasoning, Mathematics, Hindi, English and Revenue & Computer, two tests each. " +
+        "Full-length, exam-level HP Patwari mock tests plus subject-wise tests in Himachal GK, General Knowledge, " +
+        "Reasoning, Mathematics, Hindi, English and Revenue & Computer. " +
         "Every question has a detailed solution in Hindi and English.",
     },
     product: {
       slug: PATWARI_PRODUCT_SLUG,
-      title: "HP Patwari Mock Test Series — 7 Full Mocks + 14 Subject Tests",
-      titleHi: "एचपी पटवारी मॉक टेस्ट सीरीज़ — 7 फुल मॉक + 14 विषय-वार टेस्ट",
+      title: "HP Patwari Mock Test Series",
+      titleHi: "एचपी पटवारी मॉक टेस्ट सीरीज़",
       priceInPaise: PRICE_IN_PAISE,
       validityDays: VALIDITY_DAYS,
     },

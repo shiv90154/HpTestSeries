@@ -12,14 +12,15 @@ const PLAN_ITEMS: Record<string, string[]> = {
 
 /** Card for one product on sale (an exam series, a pack or the all-access pass). */
 export function productPlan(p: PublicProduct) {
-  // "HP Patwari Mock Test Series — 3 Full Mocks + 14 Subject Tests": the part after the dash becomes the first bullet
-  const [name, detail] = p.title.split(/\s+[—–]\s+/);
+  // Only the total is shown, never a mocks/sectional split; older titles may still carry one after a dash
+  const [name] = p.title.split(/\s+[—–]\s+/);
   const items = PLAN_ITEMS[p.kind] ?? PLAN_ITEMS.SERIES;
+  const count = p.kind !== "PASS" && p.testCount > 0 ? `${p.testCount} ${p.testCount === 1 ? "test" : "tests"}` : null;
   return {
     name,
     price: rupees(p.priceInPaise),
     note: p.validityDays ? `valid ${p.validityDays} days` : "one-time",
-    items: detail ? [detail, ...items.filter((i) => i !== "Full mock tests")] : items,
+    items: count ? [count, ...items] : items,
     cta: { href: `/buy/${p.slug}`, label: "Buy now" },
   };
 }

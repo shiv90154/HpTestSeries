@@ -49,6 +49,7 @@ export const catalogue: BodySeed[] = [
       { slug: "steno-typist", name: "Steno Typist", nameHi: "स्टेनो टाइपिस्ट" },
       { slug: "special-educator", name: "Special Educator", nameHi: "विशेष शिक्षक" },
       { slug: "radiographer", name: "Radiographer", nameHi: "रेडियोग्राफर" },
+      { slug: "panchayat-secretary", name: "Panchayat Secretary", nameHi: "पंचायत सचिव" },
     ],
   },
   {

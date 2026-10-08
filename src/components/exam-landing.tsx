@@ -93,11 +93,11 @@ export function ExamTabs({ ctx, active }: { ctx: ExamCtx; active: "overview" | "
 export function OfferCard({ ctx, placement, className = "" }: { ctx: ExamCtx; placement: string; className?: string }) {
   const offer = ctx.offer;
   if (!offer) return null;
-  // "HP Patwari Mock Test Series — 3 Full Mocks + 14 Subject Tests": the part after the dash is the detail line.
-  const [title, detail] = offer.title.split(/\s+[—–]\s+/);
+  // Only the total is shown, never a mocks/sectional split; older titles may still carry one after a dash
+  const [title] = offer.title.split(/\s+[—–]\s+/);
   const price = rupees(offer.priceInPaise);
   const items = [
-    `${offer.testCount} full-length and subject tests`,
+    `${offer.testCount} ${offer.testCount === 1 ? "test" : "tests"}`,
     "Detailed solutions in Hindi & English",
     "Rank among Himachal aspirants",
     "Section and topic-wise analysis",
@@ -107,7 +107,6 @@ export function OfferCard({ ctx, placement, className = "" }: { ctx: ExamCtx; pl
       <span className="absolute -top-3 left-5 rounded-full bg-primary px-2.5 py-1 text-xs font-semibold text-white">Full test series</span>
       <div className="pt-1">
         <h2 className="font-semibold">{title}</h2>
-        {detail && <p className="text-sm text-muted">{detail}</p>}
       </div>
       <p>
         <span className="text-4xl font-bold">{price}</span>

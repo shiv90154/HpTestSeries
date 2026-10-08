@@ -522,4 +522,48 @@ Radiographer paper me **radiographic techniques, anatomy, radiation physics aur 
       },
     ],
   },
+
+  "hprca/panchayat-secretary": {
+    seo: {
+      title: "HP Panchayat Secretary Mock Test {year} — HPRCA Test Series",
+      description: "HPRCA Panchayat Secretary mock tests: Himachal GK, Panchayati Raj, social science, reasoning, Hindi and English in real CBT format, with Hindi & English solutions.",
+    },
+    description: `**Panchayat Secretary** is the key administrative post at the gram panchayat level in Himachal Pradesh. The secretary keeps the panchayat's records and accounts, helps run gram sabha meetings and carries out rural development schemes on the ground. Recruitment is done by the **Himachal Pradesh Rajya Chayan Aayog (HPRCA), Hamirpur** through an objective written test as laid down in the post-wise notification.
+
+Eligibility, vacancies, age limit and the exact selection stages change with each notification, so always read the latest advertisement on hprca.hp.gov.in before applying. The written paper covers general awareness and the subject of the post, so Panchayati Raj questions can decide who gets ahead of the others.
+
+Paper me **Himachal GK, social science, everyday science, reasoning, Hindi aur English** ke saath **Panchayati Raj, 73rd Amendment, HP Panchayati Raj Act, gramin vikas yojanayen aur panchayat accounts** ke questions aate hain. Inme se Panchayati Raj ka hissa sabse zyada scoring hai, kyunki zyada candidates ise seriously nahi lete.
+
+**How to prepare:** make short notes on the 73rd Amendment, the three-tier structure and the main rural development schemes, revise Himachal GK every day and practise timed mocks. Start with the free [HP GK mock test](${FREE_MOCK_HREF}) to get used to the CBT screen, then move to the full Panchayat Secretary series.`,
+    syllabus: `The detailed syllabus is in the HPRCA notification. Usual areas for Panchayat Secretary:
+
+### Subject of the post
+- Panchayati Raj: 73rd Constitutional Amendment, three-tier system, gram sabha, committees on Panchayati Raj
+- HP Panchayati Raj Act and rules
+- Rural development schemes and their working
+- Panchayat accounts, records and office work
+
+### General awareness
+- Himachal Pradesh GK: history, geography, culture, economy and administration
+- Social science: Indian history, geography, polity and economy
+- Everyday science and current affairs
+
+### Aptitude and language
+- Reasoning and basic mathematics
+- Hindi and English grammar and comprehension`,
+    faqs: [
+      {
+        q: "Panchayat Secretary ke liye qualification kya hai?",
+        a: "Qualification, age limit aur vacancies har notification me alag hoti hain. Latest advertisement hprca.hp.gov.in par dekhein.",
+      },
+      {
+        q: "Which topics matter most in the Panchayat Secretary exam?",
+        a: "Panchayati Raj (73rd Amendment, HP Panchayati Raj Act), rural development schemes and Himachal GK carry the most weight, along with social science and reasoning.",
+      },
+      {
+        q: "Panchayat Secretary ke mock tests me kya milta hai?",
+        a: "Full-length mocks aur subject-wise tests, har question ka Hindi aur English solution, aur result ke baad HP rank. Pehle free HP GK mock se CBT screen try kar sakte ho.",
+      },
+    ],
+  },
 };

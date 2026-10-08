@@ -247,4 +247,16 @@ export const taxonomy: SubjectSeed[] = [
       ["food-microbiology", "Food Microbiology & Nutrition"],
     ],
   },
+  {
+    slug: "panchayati-raj",
+    name: "Panchayati Raj & Rural Development",
+    nameHi: "पंचायती राज एवं ग्रामीण विकास",
+    topics: [
+      ["constitution", "73rd Amendment & Constitutional Provisions"],
+      ["hp-act", "HP Panchayati Raj Act & Rules"],
+      ["committees-history", "Committees & History of Panchayati Raj"],
+      ["schemes", "Rural Development Schemes"],
+      ["accounts-office", "Panchayat Accounts, Records & Office Work"],
+    ],
+  },
 ];

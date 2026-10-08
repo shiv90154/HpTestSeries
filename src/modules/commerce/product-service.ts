@@ -13,16 +13,32 @@ export type PublicProduct = {
   kind: string;
   priceInPaise: number;
   validityDays: number | null;
+  /** Live tests it unlocks: every paid test for a PASS, otherwise the tests in its series. */
+  testCount: number;
 };
 
 /** Active products for the public pricing section — no auth required. */
 export const listActiveProducts = cache(async (): Promise<PublicProduct[]> => {
-  const products = await db.product.findMany({
-    where: { isActive: true },
-    orderBy: { priceInPaise: "asc" },
-    select: { slug: true, title: true, titleHi: true, kind: true, priceInPaise: true, validityDays: true },
-  });
-  return products;
+  const [products, paidTestCount] = await Promise.all([
+    db.product.findMany({
+      where: { isActive: true },
+      orderBy: { priceInPaise: "asc" },
+      select: {
+        slug: true,
+        title: true,
+        titleHi: true,
+        kind: true,
+        priceInPaise: true,
+        validityDays: true,
+        items: { select: { series: { select: { _count: { select: { tests: { where: { test: liveTestWhere() } } } } } } } },
+      },
+    }),
+    db.test.count({ where: { ...liveTestWhere(), isFree: false } }),
+  ]);
+  return products.map(({ items, ...p }) => ({
+    ...p,
+    testCount: p.kind === "PASS" ? paidTestCount : items.reduce((n, i) => n + i.series._count.tests, 0),
+  }));
 });
 
 /**
