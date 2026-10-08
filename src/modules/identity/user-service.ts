@@ -2,23 +2,32 @@ import "server-only";
 import { db } from "@/lib/db";
 import { settleWalletOnRefund } from "@/modules/commerce/wallet";
 
-/** Finds students by name, email or phone (staff lookup for support requests). */
-export async function searchUsers(q: string) {
+export const USERS_PAGE_SIZE = 25;
+
+/** Staff user list: every user, newest first, or only those matching name, email, phone or id when `q` is given. One page at a time. */
+export async function listUsers(q: string, page: number) {
   const term = q.trim();
-  if (term.length < 2) return [];
-  return db.user.findMany({
-    where: {
-      OR: [
-        { email: { contains: term, mode: "insensitive" } },
-        { name: { contains: term, mode: "insensitive" } },
-        { phoneNumber: { contains: term.replace(/\s/g, "") } },
-        { id: term },
-      ],
-    },
-    orderBy: { createdAt: "desc" },
-    take: 25,
-    select: { id: true, name: true, email: true, phoneNumber: true, role: true, createdAt: true },
-  });
+  const where = term
+    ? {
+        OR: [
+          { email: { contains: term, mode: "insensitive" as const } },
+          { name: { contains: term, mode: "insensitive" as const } },
+          { phoneNumber: { contains: term.replace(/\s/g, "") } },
+          { id: term },
+        ],
+      }
+    : {};
+  const [total, rows] = await Promise.all([
+    db.user.count({ where }),
+    db.user.findMany({
+      where,
+      orderBy: [{ createdAt: "desc" }, { id: "desc" }],
+      skip: (page - 1) * USERS_PAGE_SIZE,
+      take: USERS_PAGE_SIZE,
+      select: { id: true, name: true, email: true, phoneNumber: true, role: true, createdAt: true },
+    }),
+  ]);
+  return { rows, total };
 }
 
 export async function getUserDetail(id: string) {
