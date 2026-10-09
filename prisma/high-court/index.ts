@@ -5,6 +5,7 @@
 // Question `s` in a mock is the index into that exam's sections in prisma/exam-series/index.ts.
 
 import type { PatwariQuestion, TestDef } from "../patwari/types";
+import { processServerMock3 } from "./process-server-mock3";
 import { englishTests } from "./sectional-english";
 import { gkTests } from "./sectional-gk";
 import { hindiTests } from "./sectional-hindi";
@@ -36,6 +37,6 @@ export const HC_SECTIONALS: TestDef[] = SUBJECTS.flatMap((sub) =>
 );
 
 /** Fresh full mocks 3, 4, … for each post (sections as in prisma/exam-series/index.ts). */
-export const PROCESS_SERVER_MOCKS: PatwariQuestion[][] = [];
+export const PROCESS_SERVER_MOCKS: PatwariQuestion[][] = [processServerMock3];
 export const STENO_MOCKS: PatwariQuestion[][] = [];
 export const CLERK_MOCKS: PatwariQuestion[][] = [];
