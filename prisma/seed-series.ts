@@ -1,6 +1,6 @@
 // Seeds one code-defined test series (tests, one series, one paid product) for an exam. Idempotent: questions
 // are matched by text hash; tests, the series and the product by slug, and are only created when missing so
-// later edits in the admin panel (price, questions) are kept; series/product titles follow the code. Used by the Patwari and Police seeds.
+// later edits in the admin panel (price, questions) are kept; series/product titles follow the code. Used by the Patwari, Police and other exam seeds.
 
 import type { PrismaClient } from "../src/generated/prisma/client";
 import { questionTextHash } from "../src/modules/content/text-hash";
@@ -11,6 +11,8 @@ export type SeriesSeed = {
   label: string;
   bodySlug: string;
   examSlug: string;
+  /** Exam stage every test belongs to (e.g. HP TET "jbt"); omitted = no stage. */
+  stageSlug?: string;
   tests: TestDef[];
   series: { slug: string; title: string; titleHi: string; description: string };
   product: { slug: string; title: string; titleHi: string; priceInPaise: number; validityDays: number };
@@ -54,7 +56,7 @@ export async function upsertQuestion(db: PrismaClient, label: string, q: Patwari
 export async function seedSeries(db: PrismaClient, cfg: SeriesSeed) {
   const exam = await db.exam.findFirst({
     where: { slug: cfg.examSlug, body: { slug: cfg.bodySlug } },
-    select: { id: true },
+    select: { id: true, stages: { where: { slug: cfg.stageSlug ?? "" }, select: { id: true } } },
   });
   if (!exam) {
     console.warn(`${cfg.label}: exam ${cfg.bodySlug}/${cfg.examSlug} was deleted in admin, skipping`);
@@ -87,14 +89,15 @@ export async function seedSeries(db: PrismaClient, cfg: SeriesSeed) {
           titleHi: def.titleHi,
           type: def.type,
           examId: exam.id,
+          stageId: exam.stages[0]?.id ?? null,
           durationSec: def.durationSec,
-          isFree: false,
+          isFree: def.isFree ?? false,
           demoPercent: def.demoPercent ?? 0,
           status: "PUBLISHED",
           publishedAt: new Date(),
           instructions: def.instructions,
           sections: {
-            create: def.sections.map((s, order) => ({ name: s.name, nameHi: s.nameHi, order, marksCorrect: 1, marksWrong: 0.25 })),
+            create: def.sections.map((s, order) => ({ name: s.name, nameHi: s.nameHi, order, marksCorrect: 1, marksWrong: def.marksWrong ?? 0.25 })),
           },
         },
       });

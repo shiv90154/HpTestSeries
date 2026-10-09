@@ -14,6 +14,7 @@ import { seedHpasFree } from "./seed-hpas";
 import { seedJoaIt } from "./seed-joa-it";
 import { seedJoaItPyq } from "./seed-joa-it-pyq";
 import { seedPanchayatSecretary } from "./seed-panchayat-secretary";
+import { seedExamSeries } from "./seed-exam-series";
 import { seedPatwari } from "./seed-patwari";
 import { seedPremiumPass } from "./seed-pass";
 import { seedPatwariPyq } from "./seed-patwari-pyq";
@@ -100,6 +101,7 @@ async function main() {
   const police = await seedPolice(db);
   const joaIt = await seedJoaIt(db);
   const panchayat = await seedPanchayatSecretary(db);
+  const examSeries = await seedExamSeries(db);
   const hpas = await seedHpasFree(db);
   const upcoming = await seedUpcomingFree(db);
   const pyq = [await seedPatwariPyq(db), await seedPoliceStandalonePyq(db), await seedJoaItPyq(db)];
@@ -108,7 +110,7 @@ async function main() {
   console.log(
     `Seeded ${catalogue.length} bodies, ${taxonomy.length} subjects, the demo test "${DEMO_TEST_SLUG}", ` +
       `${patwari.createdTests} new Patwari tests, ${police.createdTests} new Police Constable tests, ` +
-      `${joaIt.createdTests} new JOA IT tests, ${panchayat.createdTests} new Panchayat Secretary tests, ${hpas.createdTests} new free HPAS tests, ${upcoming.createdTests} new free upcoming-exam mocks, ` +
+      `${joaIt.createdTests} new JOA IT tests, ${panchayat.createdTests} new Panchayat Secretary tests, ${examSeries.createdTests} new tests in other exam series, ${hpas.createdTests} new free HPAS tests, ${upcoming.createdTests} new free upcoming-exam mocks, ` +
       `${pyq.reduce((n, r) => n + r.created, 0)} new previous-year papers, ` +
       `content for ${content.filled} exams and ${content.created} new draft posts.`,
   );

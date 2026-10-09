@@ -207,6 +207,38 @@ export const taxonomy: SubjectSeed[] = [
     ],
   },
   {
+    slug: "forestry",
+    name: "Forestry & Environment",
+    nameHi: "वानिकी एवं पर्यावरण",
+    topics: [
+      ["forests-wildlife", "Forests & Wildlife"],
+      ["environment-ecology", "Environment & Ecology"],
+    ],
+  },
+  {
+    slug: "banking",
+    name: "Banking Awareness",
+    nameHi: "बैंकिंग जागरूकता",
+    topics: [
+      ["banking-awareness", "Banking & RBI"],
+      ["cooperative-banking", "Cooperative Banking"],
+    ],
+  },
+  {
+    slug: "library-science",
+    name: "Library & Information Science",
+    nameHi: "पुस्तकालय एवं सूचना विज्ञान",
+    topics: [
+      ["foundations", "Foundations of Library Science"],
+      ["classification", "Library Classification"],
+      ["cataloguing", "Library Cataloguing"],
+      ["library-management", "Library Management"],
+      ["library-services", "Reference & Information Services"],
+      ["library-automation", "Library Automation"],
+      ["information-sources", "Information Sources & Bibliometrics"],
+    ],
+  },
+  {
     slug: "law",
     name: "Law",
     nameHi: "विधि",

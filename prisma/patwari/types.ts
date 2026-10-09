@@ -83,6 +83,10 @@ export type TestDef = {
   durationSec: number;
   /** Free demo share of every section (0 or omitted = no demo). Editable per test in the admin panel afterwards. */
   demoPercent?: number;
+  /** Whole test free for everyone (the series' sample mock); demoPercent is then irrelevant. */
+  isFree?: boolean;
+  /** Marks deducted per wrong answer in every section; default 0.25. */
+  marksWrong?: number;
   instructions: string;
   sections: { name: string; nameHi: string }[];
   questions: PatwariQuestion[];
