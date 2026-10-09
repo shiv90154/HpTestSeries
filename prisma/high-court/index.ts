@@ -9,6 +9,7 @@ import { processServerMock3 } from "./process-server-mock3";
 import { processServerMock4 } from "./process-server-mock4";
 import { processServerMock5 } from "./process-server-mock5";
 import { englishTests } from "./sectional-english";
+import { stenoMock3 } from "./steno-mock3";
 import { gkTests } from "./sectional-gk";
 import { hindiTests } from "./sectional-hindi";
 import { reasoningTests } from "./sectional-reasoning";
@@ -40,5 +41,5 @@ export const HC_SECTIONALS: TestDef[] = SUBJECTS.flatMap((sub) =>
 
 /** Fresh full mocks 3, 4, … for each post (sections as in prisma/exam-series/index.ts). */
 export const PROCESS_SERVER_MOCKS: PatwariQuestion[][] = [processServerMock3, processServerMock4, processServerMock5];
-export const STENO_MOCKS: PatwariQuestion[][] = [];
+export const STENO_MOCKS: PatwariQuestion[][] = [stenoMock3];
 export const CLERK_MOCKS: PatwariQuestion[][] = [];
