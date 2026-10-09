@@ -15,6 +15,7 @@ import { libraryScience } from "./fresh/library-science";
 import { nursingCommunity, nursingFundamentals, nursingMedSurg } from "./fresh/nursing";
 import { tetCdp } from "./fresh/tet-cdp";
 import { tgtPedagogy } from "./fresh/tgt-pedagogy";
+import { CLERK_MOCKS, HC_SECTIONALS, PROCESS_SERVER_MOCKS, STENO_MOCKS } from "../high-court";
 
 type Part = { n: number; pick: Pick } | PatwariQuestion[][];
 type Section = { name: string; nameHi: string; parts: Part[] };
@@ -33,6 +34,10 @@ type ExamDef = {
   price: number;
   description: string;
   sections: Section[];
+  /** Full mocks 3, 4, … written wholly fresh (question `s` = index into `sections`), for exams the bank cannot stretch to. */
+  extraMocks?: PatwariQuestion[][];
+  /** Further tests in the series, e.g. sectional tests shared by several series (a test is seeded once, by slug). */
+  extraTests?: TestDef[];
 };
 
 const hpGk = subject("hp-gk");
@@ -171,6 +176,8 @@ const EXAMS: ExamDef[] = [
     minutes: 120,
     price: 99,
     description: "Full-length HP High Court Clerk mock tests: general knowledge with Himachal GK, English, Hindi, reasoning, maths and computer.",
+    extraMocks: CLERK_MOCKS,
+    extraTests: HC_SECTIONALS,
     sections: [
       S("General Knowledge & Himachal GK", "सामान्य ज्ञान एवं हिमाचल सामान्य ज्ञान", from(10, hpGk), from(20, gs)),
       S("English", "अंग्रेज़ी", from(20, english)),
@@ -226,6 +233,8 @@ const EXAMS: ExamDef[] = [
     minutes: 120,
     price: 99,
     description: "Full-length HP High Court Process Server mock tests: Himachal GK, general studies, reasoning, maths, Hindi and English.",
+    extraMocks: PROCESS_SERVER_MOCKS,
+    extraTests: HC_SECTIONALS,
     sections: [
       S("Himachal GK", "हिमाचल सामान्य ज्ञान", from(25, hpGk)),
       S("General Studies", "सामान्य अध्ययन", from(30, gs)),
@@ -245,6 +254,8 @@ const EXAMS: ExamDef[] = [
     description:
       "Full-length HP High Court Stenographer mock tests for the written paper: English, Hindi, general knowledge with Himachal GK, reasoning and computer. " +
       "The shorthand and typing skill test is not covered.",
+    extraMocks: STENO_MOCKS,
+    extraTests: HC_SECTIONALS,
     sections: [
       S("English", "अंग्रेज़ी", from(20, english)),
       S("Hindi", "हिंदी", from(15, hindi)),
@@ -316,8 +327,8 @@ function instructions(e: ExamDef, qs: PatwariQuestion[]): string {
 export type ExamSeriesSeed = SeriesSeed & { key: string };
 
 export const EXAM_SERIES: ExamSeriesSeed[] = EXAMS.map((e) => {
-  const tests: TestDef[] = Array.from({ length: MOCKS }, (_, i) => {
-    const questions = mockQuestions(e, i);
+  const mocks = [...Array.from({ length: MOCKS }, (_, i) => mockQuestions(e, i)), ...(e.extraMocks ?? [])];
+  const tests: TestDef[] = mocks.map((questions, i) => {
     return {
       slug: `${e.slug}-full-mock-${i + 1}`,
       title: `${e.name} Full Mock Test ${i + 1}`,
@@ -332,6 +343,7 @@ export const EXAM_SERIES: ExamSeriesSeed[] = EXAMS.map((e) => {
       questions,
     };
   });
+  tests.push(...(e.extraTests ?? []));
   const title = `${e.name} Mock Test Series`;
   const titleHi = `${e.nameHi} मॉक टेस्ट सीरीज़`;
   return {
@@ -356,3 +368,15 @@ export const EXAM_SERIES: ExamSeriesSeed[] = EXAMS.map((e) => {
     },
   };
 });
+
+/** Products that bundle several of the series above. */
+export const EXAM_PACKS: { slug: string; title: string; titleHi: string; priceInPaise: number; validityDays: number; seriesSlugs: string[] }[] = [
+  {
+    slug: "hp-high-court-pack",
+    title: "HP High Court Pack (Process Server, Stenographer, Clerk)",
+    titleHi: "एचपी हाई कोर्ट पैक (प्रोसेस सर्वर, आशुलिपिक, क्लर्क)",
+    priceInPaise: 199_00,
+    validityDays: 180,
+    seriesSlugs: ["hp-high-court-process-server", "hp-high-court-stenographer", "hp-high-court-clerk"].map((s) => `${s}-mock-test-series`),
+  },
+];

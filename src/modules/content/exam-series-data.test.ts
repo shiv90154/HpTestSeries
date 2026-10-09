@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { EXAM_SERIES } from "../../../prisma/exam-series";
+import { EXAM_PACKS, EXAM_SERIES } from "../../../prisma/exam-series";
+import { CLERK_MOCKS, HC_SECTIONALS, PROCESS_SERVER_MOCKS, STENO_MOCKS } from "../../../prisma/high-court";
 import { HPAS_FREE_TESTS } from "../../../prisma/hpas";
 import { JOA_IT_TESTS } from "../../../prisma/joa-it";
 import { PANCHAYAT_SECRETARY_TESTS } from "../../../prisma/panchayat-secretary";
@@ -17,7 +18,8 @@ const firstNumber = (s: string) => {
 
 const topics = new Set(taxonomy.flatMap((s) => s.topics.map(([slug]) => `${s.slug}/${slug}`)));
 const hash = (x: { en: [string, ...unknown[]] }) => questionTextHash(x.en[0]);
-const ALL_TESTS = EXAM_SERIES.flatMap((s) => s.tests);
+// Shared tests (the High Court sectionals) sit in several series but are seeded once
+const ALL_TESTS = [...new Map(EXAM_SERIES.flatMap((s) => s.tests).map((t) => [t.slug, t])).values()];
 const otherSeries = new Set(
   [...PATWARI_TESTS, ...POLICE_TESTS, ...JOA_IT_TESTS, ...PANCHAYAT_SECRETARY_TESTS, ...UPCOMING_FREE_TESTS, ...HPAS_FREE_TESTS].flatMap((t) =>
     t.questions.map(hash),
@@ -49,14 +51,17 @@ describe("exam series built from the shared bank", () => {
     for (const t of ALL_TESTS) {
       for (const x of t.questions.filter((y) => specific.has(y.subject))) expect(otherSeries.has(hash(x)), `${t.slug}: ${x.en[0].slice(0, 60)}`).toBe(false);
     }
+    const highCourt = [...HC_SECTIONALS.flatMap((t) => t.questions), ...[...PROCESS_SERVER_MOCKS, ...STENO_MOCKS, ...CLERK_MOCKS].flat()];
+    for (const x of highCourt) expect(otherSeries.has(hash(x)), x.en[0].slice(0, 60)).toBe(false);
   });
 
   it("makes exactly the first mock of each series free", () => {
-    for (const s of EXAM_SERIES)
-      expect(
-        s.tests.map((t) => !!t.isFree),
-        s.key,
-      ).toEqual([true, false]);
+    for (const s of EXAM_SERIES) expect(s.tests.map((t) => !!t.isFree), s.key).toEqual(s.tests.map((_, i) => i === 0));
+  });
+
+  it("builds every pack from series that exist", () => {
+    const series = new Set(EXAM_SERIES.map((s) => s.series.slug));
+    for (const p of EXAM_PACKS) for (const slug of p.seriesSlugs) expect(series.has(slug), slug).toBe(true);
   });
 
   it("only uses subjects and topics that exist in the seeded taxonomy", () => {
