@@ -16,7 +16,8 @@
     "db:migrate": "prisma migrate dev && prisma generate",
     "db:seed": "prisma db seed",
     "db:studio": "prisma studio",
-    "set-role": "tsx scripts/set-role.ts"
+    "set-role": "tsx scripts/set-role.ts",
+    "clear-orders": "tsx scripts/clear-orders.ts"
   },
   "dependencies": {
     "@prisma/adapter-pg": "^7.10.0",
