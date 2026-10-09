@@ -1,10 +1,12 @@
 import Link from "next/link";
 import { examLabel, getCatalog, getPublishedPosts } from "@/modules/catalog/queries";
-import { FREE_MOCK_HREF, site } from "@/lib/site";
+import { FREE_MOCK_HREF, site, WHATSAPP_GROUP_URL } from "@/lib/site";
 import { LEGAL_LINKS } from "@/lib/business";
 import { AuthFooterLink } from "./auth-cta";
 import { Logo } from "./logo";
 import { PublicBottomNav } from "./public-bottom-nav";
+import { TrackedLink } from "./tracked-link";
+import { WhatsAppIcon } from "./whatsapp-group";
 
 /** Footer links are 40px tall so they are easy to tap on phones. */
 const link = "inline-block py-2.5 hover:text-accent md:py-1.5";
@@ -27,6 +29,16 @@ export async function SiteFooter() {
           <p lang="hi" className="text-sm text-slate-400">
             {site.taglineHi}
           </p>
+          <TrackedLink
+            href={WHATSAPP_GROUP_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            event="whatsapp_group_click"
+            params={{ place: "footer" }}
+            className="inline-flex h-10 items-center gap-2 rounded-xl bg-[#118376] px-4 text-sm font-semibold text-white hover:bg-[#0d6b60]"
+          >
+            <WhatsAppIcon /> Join WhatsApp group
+          </TrackedLink>
         </div>
         <div>
           <h2 className={heading}>Practice</h2>

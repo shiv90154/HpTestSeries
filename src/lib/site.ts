@@ -27,6 +27,9 @@ export const site = {
 export const FREE_MOCK_SLUG = "hp-gk-free-mock-1";
 export const FREE_MOCK_HREF = `/tests/${FREE_MOCK_SLUG}`;
 
+/** Our open WhatsApp group for exam news and updates. Joining is optional; shown after purchase, on the dashboard, profile, results, blog and footer. */
+export const WHATSAPP_GROUP_URL = "https://chat.whatsapp.com/EZxeaAz5iUo94axPkpiej1";
+
 /** Only allow same-site relative redirects (blocks open redirects like `//evil.com` or `https://…`). */
 export function safeNextPath(next: string | string[] | undefined, fallback = "/dashboard"): string {
   const value = Array.isArray(next) ? next[0] : next;

@@ -13,6 +13,7 @@ import { rupees } from "@/lib/money";
 import { site } from "@/lib/site";
 import { ReportQuestion } from "./report-question";
 import { ShareButtons } from "./share-buttons";
+import { WhatsAppGroupCard } from "./whatsapp-group";
 import { btn, card } from "./ui";
 
 type Lang = "en" | "hi";
@@ -209,6 +210,8 @@ export function ResultView({
         />
         {!isGuest && data.attemptId && <ResultCardButton attemptId={data.attemptId} url={`${site.url}/tests/${data.test.slug}`} />}
       </section>
+
+      <WhatsAppGroupCard place="result" />
 
       {data.nextTest && (
         <section className={`${card} flex flex-wrap items-center gap-3 p-5`}>

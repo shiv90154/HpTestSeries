@@ -1,6 +1,7 @@
 import { BadgeCheck } from "lucide-react";
 import { AppHeader } from "@/components/app-header";
 import { TestCard } from "@/components/test-card";
+import { WhatsAppGroupCard } from "@/components/whatsapp-group";
 import { getDashboard } from "@/modules/analytics/dashboard";
 import { getMyPlans } from "@/modules/commerce/purchases";
 import { getWalletBalance } from "@/modules/commerce/wallet";
@@ -28,6 +29,8 @@ export async function DashboardData({ user, purchaseNotice }: { user: Awaited<Re
               : "Payment received — it's being confirmed by the bank. Your access appears here automatically within a few minutes."}
           </p>
         )}
+        {/* Right after paying is when a student is keenest to join; otherwise the invite sits lower down. */}
+        {purchaseNotice && <WhatsAppGroupCard place="after_purchase" />}
 
         <Hero firstName={firstName} d={d} />
 
@@ -54,6 +57,7 @@ export async function DashboardData({ user, purchaseNotice }: { user: Awaited<Re
 
         {hasTests && <RecentTests recent={d.recent} />}
         {reports.length > 0 && <MyReports reports={reports} />}
+        {!purchaseNotice && <WhatsAppGroupCard place="dashboard" />}
       </main>
     </>
   );

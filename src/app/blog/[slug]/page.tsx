@@ -8,6 +8,7 @@ import { JsonLd } from "@/components/json-ld";
 import { Markdown } from "@/components/markdown";
 import { formatDate, PostCard } from "@/components/post-card";
 import { ShareButtons } from "@/components/share-buttons";
+import { WhatsAppGroupCard } from "@/components/whatsapp-group";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { btn, card } from "@/components/ui";
@@ -142,6 +143,7 @@ export default async function PostPage({ params }: PageProps<"/blog/[slug]">) {
           )}
 
           <ShareButtons url={url} text={post.title} />
+          <WhatsAppGroupCard place="blog_post" />
         </article>
 
         <aside className="space-y-6">

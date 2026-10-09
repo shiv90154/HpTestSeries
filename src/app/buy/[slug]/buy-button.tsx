@@ -89,7 +89,7 @@ export function BuyButton({
       if ("free" in order) {
         track("purchase", { transaction_id: order.orderId, value: 0, currency: "INR", item_name: productSlug });
         toast.success("Coupon applied! Access unlocked.");
-        router.push("/dashboard");
+        router.push("/dashboard?purchase=unlocked");
         router.refresh();
         return;
       }
@@ -127,7 +127,7 @@ export function BuyButton({
             return;
           }
           toast.success("Payment successful! Access unlocked.");
-          router.push("/dashboard");
+          router.push("/dashboard?purchase=unlocked");
           router.refresh();
         },
         modal: { ondismiss: () => setLoading(false) },

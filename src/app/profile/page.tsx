@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { AppHeader } from "@/components/app-header";
 import { btn, card } from "@/components/ui";
+import { WhatsAppGroupCard } from "@/components/whatsapp-group";
 import { db } from "@/lib/db";
 import { rupees } from "@/lib/money";
 import { getMyPurchases } from "@/modules/commerce/purchases";
@@ -81,6 +82,8 @@ export default async function ProfilePage() {
             Get my code
           </Link>
         </section>
+
+        <WhatsAppGroupCard place="profile" />
 
         <section id="purchases" className={`${card} scroll-mt-24 p-5`}>
           <div className="mb-3 flex items-center justify-between gap-3">
