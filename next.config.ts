@@ -17,6 +17,15 @@ const nextConfig: NextConfig = {
     },
     ...(buildWorkers && { cpus: buildWorkers, staticGenerationMaxConcurrency: 1 }),
   },
+  // Old URLs Google still has (Search Console reports them as 404): send them to the exam page that replaced them.
+  async redirects() {
+    return [
+      { source: "/exams/hp-police", destination: "/hp-police", permanent: true },
+      { source: "/tests/pgimer-nursing-officer", destination: "/pgimer/nursing-officer", permanent: true },
+      { source: "/tests/hppsc-ado", destination: "/hppsc/ado", permanent: true },
+      { source: "/tests/hppsc-assistant-professor", destination: "/hppsc/assistant-professor", permanent: true },
+    ];
+  },
   async headers() {
     return [
       { source: "/:path*", headers: securityHeaders(isDev) },
