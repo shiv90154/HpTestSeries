@@ -3,6 +3,7 @@ import { cache } from "react";
 import { db } from "@/lib/db";
 import type { PostCategory } from "@/generated/prisma/enums";
 import { planDemo } from "@/modules/assessment/demo";
+import { getPackForExam, type PackOffer } from "@/modules/commerce/product-service";
 import { parseFaqs, parsePattern, parseSeo } from "@/modules/content/exam-content";
 import { examLabel } from "./labels";
 import { liveTestWhere } from "./visibility";
@@ -148,7 +149,15 @@ export const getExamPage = cache(async (bodySlug: string, examSlug: string) => {
   };
 });
 
-export type ExamOffer = { slug: string; title: string; priceInPaise: number; validityDays: number | null; testCount: number };
+export type ExamOffer = {
+  slug: string;
+  title: string;
+  priceInPaise: number;
+  validityDays: number | null;
+  testCount: number;
+  /** A cheaper-together pack that includes this exam's series, if one is on sale. */
+  pack: PackOffer | null;
+};
 
 /** The cheapest series on sale for this exam, for the "buy" card on its page. Null while the exam has no paid series. */
 export async function getExamOffer(examId: string): Promise<ExamOffer | null> {
@@ -165,7 +174,8 @@ export async function getExamOffer(examId: string): Promise<ExamOffer | null> {
   });
   if (!p) return null;
   const testCount = p.items.filter((i) => i.series.examId === examId).reduce((n, i) => n + i.series._count.tests, 0);
-  return { slug: p.slug, title: p.title, priceInPaise: p.priceInPaise, validityDays: p.validityDays, testCount };
+  const pack = await getPackForExam(examId);
+  return { slug: p.slug, title: p.title, priceInPaise: p.priceInPaise, validityDays: p.validityDays, testCount, pack };
 }
 
 export async function getAllExamParams() {

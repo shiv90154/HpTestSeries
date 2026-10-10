@@ -2,11 +2,12 @@ import { BadgeIndianRupee, CheckCircle2 } from "lucide-react";
 import Link from "next/link";
 import { rupees } from "@/lib/money";
 import type { PublicProduct } from "@/modules/commerce/product-service";
+import { perTestLabel, saving } from "@/modules/commerce/value";
 import { btn } from "./ui";
 
 const PLAN_ITEMS: Record<string, string[]> = {
   SERIES: ["Full mock tests", "Previous-year style questions", "Sectional & topic tests", "Detailed analysis"],
-  PACK: ["Multiple exam series", "Full mock tests & PYQs", "Sectional & topic tests", "Detailed analysis"],
+  PACK: ["Multiple exam series", "Full mock tests", "Sectional & topic tests", "Detailed analysis"],
   PASS: ["Every Himachal exam", "All mock tests & sectional tests", "All previous-year papers", "Best value for serious aspirants"],
 };
 
@@ -22,7 +23,21 @@ export function productPlan(p: PublicProduct) {
     note: p.validityDays ? `valid ${p.validityDays} days` : "one-time",
     items: count ? [count, ...items] : items,
     cta: { href: `/buy/${p.slug}`, label: "Buy now" },
+    separate: p.separatePaise ? { was: p.separatePaise, now: p.priceInPaise } : undefined,
+    perTest: perTestLabel(p.priceInPaise, p.testCount) ?? undefined,
   };
+}
+
+/** "~~₹297~~ Save ₹98 (32%)" for a pack, where ₹297 is the real price of its series bought one by one. */
+export function SeparateSaving({ was, now, className = "" }: { was: number; now: number; className?: string }) {
+  const s = saving(now, was);
+  return (
+    <p className={`text-sm ${className}`}>
+      <span className="sr-only">Bought separately: </span>
+      <s className="text-muted">{rupees(was)}</s> <span className="font-semibold text-success">Save {rupees(s.paise)} ({s.pct}%)</span>
+      <span className="block text-xs text-muted">{rupees(was)} if you buy these series one by one</span>
+    </p>
+  );
 }
 
 /** A pricing card. `badge` highlights it (the plan we recommend); `children` go below the feature list. */
@@ -34,6 +49,10 @@ export function Plan(props: {
   badge?: string;
   soon?: boolean;
   cta?: { href: string; label: string };
+  /** Pack only: the real one-by-one total of its series, shown struck out with the saving. */
+  separate?: { was: number; now: number };
+  /** "₹8 per test" */
+  perTest?: string;
   children?: React.ReactNode;
 }) {
   return (
@@ -47,6 +66,8 @@ export function Plan(props: {
         <span className="text-4xl font-bold">{props.price}</span>
         <span className="ml-1 text-sm text-muted">{props.note}</span>
       </p>
+      {props.separate && <SeparateSaving {...props.separate} className="mt-1" />}
+      {props.perTest && <p className="mt-1 text-sm font-medium text-primary">Just {props.perTest}</p>}
       <ul className="mt-6 flex-1 space-y-2.5 text-sm">
         {props.items.map((i) => (
           <li key={i} className="flex items-start gap-2">

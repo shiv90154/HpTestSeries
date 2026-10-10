@@ -8,6 +8,8 @@ import { SiteHeader } from "@/components/site-header";
 import { TrackedLink } from "@/components/tracked-link";
 import { btn, card } from "@/components/ui";
 import { rupees } from "@/lib/money";
+import { SeparateSaving } from "@/components/pricing-plans";
+import { perTestLabel } from "@/modules/commerce/value";
 import type { ExamOffer } from "@/modules/catalog/queries";
 import { startTest } from "@/modules/catalog/start-test";
 
@@ -96,6 +98,8 @@ export function OfferCard({ ctx, placement, className = "" }: { ctx: ExamCtx; pl
   // Only the total is shown, never a mocks/sectional split; older titles may still carry one after a dash
   const [title] = offer.title.split(/\s+[—–]\s+/);
   const price = rupees(offer.priceInPaise);
+  const perTest = perTestLabel(offer.priceInPaise, offer.testCount);
+  const pack = offer.pack;
   const items = [
     `${offer.testCount} ${offer.testCount === 1 ? "test" : "tests"}`,
     "Detailed solutions in Hindi & English",
@@ -110,6 +114,7 @@ export function OfferCard({ ctx, placement, className = "" }: { ctx: ExamCtx; pl
       </div>
       <p>
         <span className="text-4xl font-bold">{price}</span>
+        {perTest && <span className="mt-1 block text-sm font-medium text-primary">Just {perTest}</span>}
         <span className="mt-1 block text-sm text-muted">{offer.validityDays ? `Valid ${offer.validityDays} days` : "One-time payment"} · no auto-renewal</span>
       </p>
       <ul className="space-y-2 text-sm">
@@ -127,6 +132,23 @@ export function OfferCard({ ctx, placement, className = "" }: { ctx: ExamCtx; pl
       >
         Buy now for {price}
       </TrackedLink>
+      {pack && (
+        <div className="space-y-2 rounded-xl border border-border bg-background p-3">
+          <p className="text-sm">
+            Preparing for more than one post? <b>{pack.title.split(/\s+[—–(]\s*/)[0]}</b> has all {pack.seriesCount} series for{" "}
+            <b>{rupees(pack.priceInPaise)}</b>.
+          </p>
+          <SeparateSaving was={pack.separatePaise} now={pack.priceInPaise} />
+          <TrackedLink
+            href={`/buy/${pack.slug}`}
+            event="landing_buy_click"
+            params={{ exam: ctx.key, placement: `${placement}-pack`, price: pack.priceInPaise / 100 }}
+            className={btn("outline", "md", "w-full")}
+          >
+            Get the pack for {rupees(pack.priceInPaise)}
+          </TrackedLink>
+        </div>
+      )}
       <p className="flex items-center gap-1.5 text-xs text-muted">
         <ShieldCheck className="size-4 shrink-0 text-success" aria-hidden /> Secure payment via Razorpay (UPI, cards, netbanking)
       </p>

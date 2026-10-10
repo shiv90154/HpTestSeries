@@ -5,9 +5,11 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
+import { SeparateSaving } from "@/components/pricing-plans";
 import { btn, card } from "@/components/ui";
 import { examLabel } from "@/modules/catalog/queries";
 import { getProductForSale } from "@/modules/commerce/product-service";
+import { perTestLabel } from "@/modules/commerce/value";
 import { getOwnership } from "@/modules/commerce/purchases";
 import { getWalletBalance } from "@/modules/commerce/wallet";
 import { REFERRAL_COOKIE } from "@/modules/commerce/referral-rules";
@@ -39,6 +41,7 @@ export default async function BuyPage({ params }: PageProps<"/buy/[slug]">) {
   const own = user ? await getOwnership(user.id, product.id) : ({ kind: "none" } as const);
   const date = (d: Date) => d.toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric", timeZone: "Asia/Kolkata" });
   const rupees = (product.priceInPaise / 100).toLocaleString("en-IN");
+  const perTest = perTestLabel(product.priceInPaise, product.testCount);
   // Same precedence as fulfillOrder: a fixed end date wins over relative validity.
   const validity = product.validUntil
     ? `valid till ${product.validUntil.toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric", timeZone: "Asia/Kolkata" })}`
@@ -64,6 +67,8 @@ export default async function BuyPage({ params }: PageProps<"/buy/[slug]">) {
               ₹{rupees}
               {validity && <span className="ml-2 text-sm font-normal text-muted">{validity}</span>}
             </p>
+            {product.separatePaise && <SeparateSaving was={product.separatePaise} now={product.priceInPaise} className="mt-1" />}
+            {perTest && <p className="mt-1 text-sm font-medium text-primary">Just {perTest}</p>}
             <p className="mt-1 text-xs text-muted">One-time payment · final price, nothing extra · no auto-renewal</p>
           </div>
 
