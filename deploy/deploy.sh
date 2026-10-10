@@ -47,7 +47,12 @@ docker compose build app
 docker compose up -d app
 
 for i in $(seq 1 30); do
-  if curl -fsS -o /dev/null http://127.0.0.1:3030/; then echo "App is up on 127.0.0.1:3030"; exit 0; fi
+  if curl -fsS -o /dev/null http://127.0.0.1:3030/; then
+    echo "App is up on 127.0.0.1:3030"
+    # Payment reconcile (every 15 min) and daily emails (7 pm IST); only adds lines that are missing.
+    bash install-cron.sh || echo "Could not set the cron jobs; run: bash deploy/install-cron.sh" >&2
+    exit 0
+  fi
   sleep 2
 done
 echo "App did not respond; check: docker compose -p hptestseries logs app" >&2

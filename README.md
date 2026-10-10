@@ -62,14 +62,15 @@ src/app/admin/                admin panel (layout-guarded; every action re-check
   phone, 20 / 10 min per IP (loose on purpose — mobile carriers share IPs via CGNAT). Max 2 sessions per user.
 - **Prisma 7:** `migrate dev` no longer runs `generate`; use `npm run db:migrate`, which does both.
 - **Payments:** Razorpay Checkout → client callback unlocks access instantly; the webhook (`/api/razorpay/webhook`) is the
-  safety net; `POST /api/cron/reconcile` (Bearer `CRON_SECRET`) recovers payments both missed. Crontab on the server:
-  `*/15 * * * * curl -fsS -X POST -H "Authorization: Bearer $CRON_SECRET" https://hptestseries.in/api/cron/reconcile`
+  safety net; `POST /api/cron/reconcile` (Bearer `CRON_SECRET`) recovers payments both missed, every 15 minutes from root's crontab.
+- **Cron:** `deploy.sh` runs `deploy/install-cron.sh`, which appends any missing job to root's crontab (tagged
+  `# hptestseries`, other apps' lines untouched): reconcile every 15 min and emails at 7 pm IST, both through
+  `deploy/cron-call.sh`, which reads `CRON_SECRET` from `deploy/.env.production`. Log: `/var/log/hptestseries-cron.log`.
 - **Refunds are manual:** students use `/refund-request` (opens WhatsApp/email with the order filled in). The owner refunds from the
   Razorpay dashboard, then clicks *Mark refunded* on the user's admin page to end their access.
 - **Emails:** `/admin/emails`. Reminders (access ending in 7 days; free-test follow-up for students who opted in) and admin
   campaigns go through Resend, capped at `EMAIL_DAILY_LIMIT` a day (default 60, leaving room for login codes in the free
-  plan's 100/day), one offer per student every 3 days and 4 a month. Daily run at 7 pm IST:
-  `30 13 * * * curl -fsS -X POST -H "Authorization: Bearer $CRON_SECRET" https://hptestseries.in/api/cron/emails`
+  plan's 100/day), one offer per student every 3 days and 4 a month. Daily run at 7 pm IST.
 - **Coupons:** `/admin/coupons` (percent or flat, max uses, expiry, partner tag). One use per student; 100% = free access.
 - **Admin 2FA (optional):** each staff member can turn on an authenticator-app code at `/admin/security`.
 - **Login:** Google + email code. Phone/SMS login is off unless `PHONE_LOGIN=on`.
