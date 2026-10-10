@@ -66,6 +66,10 @@ src/app/admin/                admin panel (layout-guarded; every action re-check
   `*/15 * * * * curl -fsS -X POST -H "Authorization: Bearer $CRON_SECRET" https://hptestseries.in/api/cron/reconcile`
 - **Refunds are manual:** students use `/refund-request` (opens WhatsApp/email with the order filled in). The owner refunds from the
   Razorpay dashboard, then clicks *Mark refunded* on the user's admin page to end their access.
+- **Emails:** `/admin/emails`. Reminders (access ending in 7 days; free-test follow-up for students who opted in) and admin
+  campaigns go through Resend, capped at `EMAIL_DAILY_LIMIT` a day (default 60, leaving room for login codes in the free
+  plan's 100/day), one offer per student every 3 days and 4 a month. Daily run at 7 pm IST:
+  `30 13 * * * curl -fsS -X POST -H "Authorization: Bearer $CRON_SECRET" https://hptestseries.in/api/cron/emails`
 - **Coupons:** `/admin/coupons` (percent or flat, max uses, expiry, partner tag). One use per student; 100% = free access.
 - **Admin 2FA (optional):** each staff member can turn on an authenticator-app code at `/admin/security`.
 - **Login:** Google + email code. Phone/SMS login is off unless `PHONE_LOGIN=on`.

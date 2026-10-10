@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { HP_DISTRICTS } from "@/lib/districts";
+import { setEmailPreferences } from "@/modules/email/service";
 import { saveOwnProfile } from "@/modules/identity/profile";
 import { requireUser } from "@/modules/identity/session";
 
@@ -23,5 +24,12 @@ export async function updateProfileDetailsAction(_: unknown, formData: FormData)
   await saveOwnProfile(user.id, parsed.data);
   revalidatePath("/profile");
   revalidatePath("/dashboard");
+  return { ok: true };
+}
+
+export async function updateEmailPreferencesAction(_: unknown, formData: FormData): Promise<{ ok?: boolean }> {
+  const user = await requireUser();
+  await setEmailPreferences(user.id, { offers: formData.get("offers") === "on", reminders: formData.get("reminders") === "on" });
+  revalidatePath("/profile");
   return { ok: true };
 }

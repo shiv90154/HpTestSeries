@@ -3,6 +3,7 @@
 import { z } from "zod";
 import { HP_DISTRICTS } from "@/lib/districts";
 import { PLACEHOLDER_NAME } from "@/modules/identity/permissions";
+import { optInToOffers } from "@/modules/email/service";
 import { saveOwnProfile } from "@/modules/identity/profile";
 import { requireUser } from "@/modules/identity/session";
 
@@ -22,5 +23,6 @@ export async function saveWelcomeAction(_: unknown, formData: FormData): Promise
   const parsed = welcomeSchema.safeParse({ name: formData.get("name"), district: formData.get("district") || undefined });
   if (!parsed.success) return { error: parsed.error.issues[0]?.message ?? "Please check the form." };
   await saveOwnProfile(user.id, parsed.data);
+  if (formData.get("emailOffers") === "on") await optInToOffers(user.id);
   return { ok: true };
 }

@@ -87,7 +87,13 @@ export async function sendReportFixedEmail(email: string, questionPreview: strin
   await sendEmail(email, reportFixedEmail(questionPreview), `[dev] Report-fixed email for ${email}`);
 }
 
-async function sendEmail(email: string, content: { subject: string; text: string; html: string }, devLogLine: string): Promise<boolean> {
+/** Sends one email through Resend; extra headers (e.g. List-Unsubscribe) are passed through. Locally it only logs. */
+export async function sendEmail(
+  email: string,
+  content: { subject: string; text: string; html: string },
+  devLogLine: string,
+  headers?: Record<string, string>,
+): Promise<boolean> {
   const apiKey = process.env.RESEND_API_KEY;
   const from = process.env.EMAIL_FROM;
 
@@ -101,7 +107,7 @@ async function sendEmail(email: string, content: { subject: string; text: string
   const res = await fetch(RESEND_URL, {
     method: "POST",
     headers: { authorization: `Bearer ${apiKey}`, "content-type": "application/json" },
-    body: JSON.stringify({ from, to: [email], ...content }),
+    body: JSON.stringify({ from, to: [email], ...content, ...(headers ? { headers } : {}) }),
   });
   return res.ok;
 }

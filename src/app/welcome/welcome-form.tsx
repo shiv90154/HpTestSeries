@@ -9,7 +9,7 @@ import { saveWelcomeAction } from "./actions";
 
 const field = "h-12 w-full rounded-xl border border-border bg-surface px-4 text-base outline-none focus:border-primary focus:ring-4 focus:ring-primary-soft";
 
-export function WelcomeForm({ next }: { next: string }) {
+export function WelcomeForm({ next, canEmail }: { next: string; canEmail: boolean }) {
   const router = useRouter();
   const [state, action, pending] = useActionState(saveWelcomeAction, {});
 
@@ -51,6 +51,14 @@ export function WelcomeForm({ next }: { next: string }) {
           <option value="Outside HP">Outside HP</option>
         </select>
       </div>
+      {canEmail && (
+        <label className="flex cursor-pointer items-start gap-3 rounded-xl border border-border bg-surface p-3 text-sm">
+          <input type="checkbox" name="emailOffers" className="mt-0.5 size-5 shrink-0 accent-primary" />
+          <span>
+            Email me new mock tests, exam updates and offers <span className="text-muted">(at most 4 a month, unsubscribe any time)</span>
+          </span>
+        </label>
+      )}
       {state.error && (
         <p role="alert" className="text-sm text-danger">
           {state.error}

@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { connection } from "next/server";
 import { Logo } from "@/components/logo";
 import { db } from "@/lib/db";
+import { isRealEmail } from "@/modules/email/rules";
 import { safeNextPath } from "@/lib/site";
 import { PLACEHOLDER_NAME } from "@/modules/identity/permissions";
 import { requireUser } from "@/modules/identity/session";
@@ -17,7 +18,7 @@ export default async function WelcomePage({ searchParams }: PageProps<"/welcome"
   const next = safeNextPath((await searchParams).next);
   const user = await requireUser(`/welcome?next=${encodeURIComponent(next)}`);
   // From the DB, not the session: the session cookie caches the name for a few minutes.
-  const { name } = await db.user.findUniqueOrThrow({ where: { id: user.id }, select: { name: true } });
+  const { name, email } = await db.user.findUniqueOrThrow({ where: { id: user.id }, select: { name: true, email: true } });
   if (name !== PLACEHOLDER_NAME) redirect(next);
 
   return (
@@ -32,7 +33,7 @@ export default async function WelcomePage({ searchParams }: PageProps<"/welcome"
           &ldquo;Rahul S.&rdquo;
         </p>
       </div>
-      <WelcomeForm next={next} />
+      <WelcomeForm next={next} canEmail={isRealEmail(email)} />
     </main>
   );
 }

@@ -36,6 +36,11 @@ model User {
   preferredLang       Lang      @default(en)
   district            String?
   twoFactorEnabled    Boolean   @default(false) // staff-only TOTP, see modules/identity/two-factor.ts
+  // Email consent (modules/email): offers = opt-in promotions (free-test follow-up, campaigns); reminders = service
+  // mails about what the student bought (access ending), on by default and switchable off.
+  emailOffers         Boolean   @default(false)
+  emailOffersAt       DateTime? // when the student last ticked "email me offers"
+  emailReminders      Boolean   @default(true)
   createdAt           DateTime  @default(now())
   updatedAt           DateTime  @updatedAt
 
@@ -53,6 +58,8 @@ model User {
   prizesWon      LivePrize[]
   referralCode   Coupon?          @relation("ReferralCode")
   walletTxns     WalletTransaction[]
+  emailLogs      EmailLog[]
+  emailCampaigns EmailCampaign[]
 
   @@map("user")
 }
@@ -701,4 +708,48 @@ model Post {
 
   @@index([status, publishedAt])
   @@index([category, status])
+}
+
+// ───────────────────────── Email ─────────────────────────
+
+enum EmailStatus {
+  QUEUED
+  SENT
+  FAILED
+  SKIPPED // consent withdrawn or frequency cap hit before it went out
+}
+
+/** One row per email meant for a student; the unique key stops the same reminder going twice. */
+model EmailLog {
+  id         String         @id @default(cuid())
+  userId     String
+  user       User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  kind       String // "expiry" | "free-followup" | "campaign"
+  refKey     String // what it is about: entitlement id, exam/test id, campaign id
+  campaignId String?
+  campaign   EmailCampaign? @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  status     EmailStatus    @default(QUEUED)
+  error      String?
+  createdAt  DateTime       @default(now())
+  sentAt     DateTime?
+
+  @@unique([userId, kind, refKey])
+  @@index([status, createdAt])
+  @@index([userId, sentAt])
+  @@index([campaignId])
+}
+
+/** A one-off email written in /admin/emails and sent to students who opted in to offers. */
+model EmailCampaign {
+  id          String     @id @default(cuid())
+  subject     String
+  heading     String
+  body        String     @db.Text
+  ctaLabel    String
+  ctaUrl      String
+  examId      String? // null = everyone who opted in; else students who attempted or bought this exam
+  createdById String
+  createdBy   User       @relation(fields: [createdById], references: [id])
+  createdAt   DateTime   @default(now())
+  logs        EmailLog[]
 }

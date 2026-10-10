@@ -7,7 +7,9 @@ import { WhatsAppGroupCard } from "@/components/whatsapp-group";
 import { db } from "@/lib/db";
 import { rupees } from "@/lib/money";
 import { getMyPurchases } from "@/modules/commerce/purchases";
+import { isRealEmail } from "@/modules/email/rules";
 import { requireUser } from "@/modules/identity/session";
+import { EmailPrefsForm } from "./email-prefs-form";
 import { ProfileForm } from "./profile-form";
 
 export const metadata: Metadata = { title: "My Profile", robots: { index: false } };
@@ -17,7 +19,18 @@ export default async function ProfilePage() {
   const purchasesPromise = getMyPurchases(user.id);
   const profile = await db.user.findUniqueOrThrow({
     where: { id: user.id },
-    select: { name: true, email: true, emailVerified: true, phoneNumber: true, phoneNumberVerified: true, district: true, preferredLang: true, createdAt: true },
+    select: {
+      name: true,
+      email: true,
+      emailVerified: true,
+      phoneNumber: true,
+      phoneNumberVerified: true,
+      district: true,
+      preferredLang: true,
+      createdAt: true,
+      emailOffers: true,
+      emailReminders: true,
+    },
   });
 
   const purchases = await purchasesPromise;
@@ -72,6 +85,13 @@ export default async function ProfilePage() {
           <h2 className="mb-4 font-semibold">Edit details</h2>
           <ProfileForm name={profile.name} district={profile.district} preferredLang={profile.preferredLang} />
         </section>
+
+        {isRealEmail(profile.email) && (
+          <section id="email" className={`${card} scroll-mt-24 p-5`}>
+            <h2 className="mb-4 font-semibold">Email settings</h2>
+            <EmailPrefsForm offers={profile.emailOffers} reminders={profile.emailReminders} />
+          </section>
+        )}
 
         <section className={`${card} flex items-center justify-between gap-3 p-5`}>
           <div>
