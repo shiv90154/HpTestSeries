@@ -178,6 +178,74 @@ export async function getExamOffer(examId: string): Promise<ExamOffer | null> {
   return { slug: p.slug, title: p.title, priceInPaise: p.priceInPaise, validityDays: p.validityDays, testCount, pack };
 }
 
+export type DirectoryExam = {
+  href: string;
+  bodySlug: string;
+  slug: string;
+  name: string;
+  label: string;
+  nameHi: string | null;
+  /** live mocks and subject tests; previous year papers are counted apart */
+  tests: number;
+  papers: number;
+  free: number;
+  /** the free test the card's "Start free mock" button opens: a free mock if there is one */
+  freeTestSlug: string | null;
+  /** tests that went live in the last NEW_TEST_DAYS days */
+  newTests: number;
+  /** cheapest series on sale for this exam, and how many tests it unlocks */
+  pricePaise: number | null;
+  priceTests: number;
+};
+
+const NEW_TEST_DAYS = 14;
+
+/** Every active exam with live tests, with what the /tests grid shows on its card. Unsorted. */
+export async function getExamDirectory(now: Date = new Date()): Promise<DirectoryExam[]> {
+  const live = liveTestWhere(now);
+  const [exams, products] = await Promise.all([
+    db.exam.findMany({
+      where: { isActive: true, tests: { some: live } },
+      select: {
+        id: true,
+        slug: true,
+        name: true,
+        nameHi: true,
+        body: { select: { slug: true } },
+        tests: { where: live, orderBy: { createdAt: "asc" }, select: { slug: true, type: true, isFree: true, publishedAt: true, createdAt: true } },
+      },
+    }),
+    db.product.findMany({
+      where: { isActive: true, kind: "SERIES" },
+      orderBy: { priceInPaise: "asc" },
+      select: { priceInPaise: true, items: { select: { series: { select: { examId: true, _count: { select: { tests: { where: { test: live } } } } } } } } },
+    }),
+  ]);
+  const newSince = now.getTime() - NEW_TEST_DAYS * 24 * 60 * 60 * 1000;
+  return exams.map((e) => {
+    const papers = e.tests.filter((t) => t.type === "PYQ").length;
+    const free = e.tests.filter((t) => t.isFree);
+    const freeTest = free.find((t) => t.type === "MOCK") ?? free.find((t) => t.type !== "PYQ") ?? free[0];
+    // Products are cheapest first, so the first one that sells this exam's series is the price shown.
+    const product = products.find((p) => p.items.some((i) => i.series.examId === e.id));
+    return {
+      href: `/${e.body.slug}/${e.slug}`,
+      bodySlug: e.body.slug,
+      slug: e.slug,
+      name: e.name,
+      label: examLabel(e.body.slug, e.name),
+      nameHi: e.nameHi,
+      tests: e.tests.length - papers,
+      papers,
+      free: free.length,
+      freeTestSlug: freeTest?.slug ?? null,
+      newTests: e.tests.filter((t) => (t.publishedAt ?? t.createdAt).getTime() >= newSince).length,
+      pricePaise: product?.priceInPaise ?? null,
+      priceTests: product ? product.items.filter((i) => i.series.examId === e.id).reduce((n, i) => n + i.series._count.tests, 0) : 0,
+    };
+  });
+}
+
 export async function getAllExamParams() {
   const exams = await db.exam.findMany({
     where: { isActive: true },

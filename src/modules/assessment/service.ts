@@ -616,3 +616,42 @@ async function nextTestFor(userId: string, t: FullTest): Promise<ResultData["nex
     (await db.test.findFirst({ where: base, orderBy, select }))
   );
 }
+
+export type LastAttempt = {
+  testTitle: string;
+  /** "resume" while the timer still runs, "result" once graded, "retake" when it ran out unsubmitted */
+  action: "resume" | "result" | "retake";
+  href: string;
+  correct: number | null;
+  questions: number | null;
+  exam: { label: string; href: string } | null;
+};
+
+/** The student's most recent attempt, for the "continue where you left off" card on /tests. */
+export async function getLastAttempt(userId: string, now: Date = new Date()): Promise<LastAttempt | null> {
+  const a = await db.attempt.findFirst({
+    where: { userId },
+    orderBy: { startedAt: "desc" },
+    select: {
+      id: true,
+      status: true,
+      deadlineAt: true,
+      correct: true,
+      wrong: true,
+      skipped: true,
+      test: { select: { slug: true, title: true, exam: { select: { slug: true, name: true, body: { select: { slug: true } } } } } },
+    },
+  });
+  if (!a) return null;
+  const action = a.status === "SUBMITTED" ? "result" : a.status === "IN_PROGRESS" && a.deadlineAt > now ? "resume" : "retake";
+  const href = action === "result" ? `/results/${a.id}` : action === "resume" ? `/tests/${a.test.slug}/attempt` : `/tests/${a.test.slug}`;
+  const ex = a.test.exam;
+  return {
+    testTitle: a.test.title,
+    action,
+    href,
+    correct: action === "result" ? a.correct : null,
+    questions: action === "result" && a.correct !== null ? a.correct + (a.wrong ?? 0) + (a.skipped ?? 0) : null,
+    exam: ex ? { label: examLabel(ex.body.slug, ex.name), href: `/${ex.body.slug}/${ex.slug}/tests` } : null,
+  };
+}

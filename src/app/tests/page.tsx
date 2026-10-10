@@ -1,10 +1,14 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ExamTile } from "@/components/exam-tile";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { btn } from "@/components/ui";
-import { examLabel, getCatalog, getPublishedTests } from "@/modules/catalog/queries";
+import { rupees } from "@/lib/money";
+import { examCategory, POPULAR_EXAMS, searchAliases, sortForDirectory } from "@/modules/catalog/directory";
+import { examLabel, getCatalog, getExamDirectory, getPublishedTests } from "@/modules/catalog/queries";
+import { perTestLabel } from "@/modules/commerce/value";
+import { ContinueCard } from "./continue-card";
+import { ExamDirectory, type DirectoryCard } from "./exam-directory";
 
 export const revalidate = 600;
 
@@ -16,18 +20,32 @@ export const metadata: Metadata = {
 };
 
 export default async function TestsPage() {
-  const [tests, catalog] = await Promise.all([getPublishedTests(), getCatalog()]);
-  const exams = catalog.flatMap((b) =>
-    b.exams.map((e) => {
-      const own = tests.filter((t) => t.examName === e.name);
+  const [tests, catalog, directory] = await Promise.all([getPublishedTests(), getCatalog(), getExamDirectory()]);
+  // Exams with tests get a card, the most visited first; the rest are listed small underneath so the page is not a wall of empty cards.
+  const ready: DirectoryCard[] = sortForDirectory(directory).map((e) => {
+    const perTest = e.pricePaise !== null ? perTestLabel(e.pricePaise, e.priceTests) : null;
+    return {
+      href: `${e.href}/tests`,
+      name: e.name,
+      label: e.label,
+      nameHi: e.nameHi,
+      category: examCategory(e.bodySlug, e.slug),
+      aliases: searchAliases(e.bodySlug, e.slug),
       // Previous year papers are sold as their own pack, so they are counted apart from the series' mocks and subject tests.
-      const papers = own.filter((t) => t.type === "PYQ").length;
-      return { ...e, label: examLabel(b.slug, e.name), tests: own.length - papers, papers, free: own.filter((t) => t.isFree).length };
-    }),
-  );
-  // Exams with tests lead, biggest first; the rest are listed small underneath so the page is not a wall of empty cards.
-  const ready = exams.filter((e) => e.tests + e.papers > 0).sort((a, b) => b.tests + b.papers - (a.tests + a.papers));
-  const soon = exams.filter((e) => e.tests + e.papers === 0);
+      // A series can include shared subject tests filed under other exams; count what the student actually gets.
+      count: e.tests ? Math.max(e.tests, e.priceTests) : e.papers,
+      noun: e.tests ? "test" : "paper",
+      free: e.free,
+      extra: e.tests && e.papers ? `${e.papers} ${e.papers === 1 ? "paper" : "papers"}` : undefined,
+      popular: POPULAR_EXAMS.includes(e.href),
+      // A series that is all new is just "New"; otherwise say how many tests were added.
+      fresh: e.newTests === 0 ? undefined : e.newTests >= e.tests + e.papers ? "New" : `${e.newTests} new ${e.newTests === 1 ? "test" : "tests"}`,
+      price: e.pricePaise !== null ? [`${rupees(e.pricePaise)} for all`, perTest].filter(Boolean).join(" · ") : undefined,
+      freeHref: e.freeTestSlug ? `/tests/${e.freeTestSlug}` : undefined,
+    };
+  });
+  const withCards = new Set(directory.map((e) => e.href));
+  const soon = catalog.flatMap((b) => b.exams.map((e) => ({ ...e, label: examLabel(b.slug, e.name) }))).filter((e) => !withCards.has(e.href));
   // The generic Himachal GK tests belong to no exam; they stay one tap away.
   const general = tests.filter((t) => t.examName === null);
 
@@ -42,15 +60,9 @@ export default async function TestsPage() {
           </p>
         </header>
 
-        {ready.length > 0 && (
-          <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {ready.map((e) => (
-              <li key={e.href}>
-                <ExamTile href={`${e.href}/tests`} name={e.name} label={e.label} nameHi={e.nameHi} count={e.tests || e.papers} noun={e.tests ? "test" : "paper"} free={e.free} extra={e.tests && e.papers ? `${e.papers} ${e.papers === 1 ? "paper" : "papers"}` : undefined} />
-              </li>
-            ))}
-          </ul>
-        )}
+        <ContinueCard />
+
+        {ready.length > 0 && <ExamDirectory exams={ready} />}
         {ready.length === 0 && <p className="text-muted">New tests are being added. Check back soon.</p>}
 
         <div className="flex flex-col gap-3 rounded-2xl border border-primary/30 bg-primary-soft p-4 sm:flex-row sm:items-center sm:justify-between sm:p-5">
