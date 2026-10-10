@@ -10,6 +10,7 @@ import { btn, card } from "@/components/ui";
 import { rupees } from "@/lib/money";
 import { site } from "@/lib/site";
 import { clipDescription } from "@/lib/seo";
+import { pyqFaqs } from "@/modules/content/subpage-faqs";
 import { examLabel, examShortName, getExamPage, getExamSubPages } from "@/modules/catalog/queries";
 import { getProductForSale } from "@/modules/commerce/product-service";
 
@@ -68,6 +69,8 @@ export default async function ExamPyqPage({ params }: PageProps<"/[body]/[exam]/
         crumb="Previous year papers"
         h1={`${name} Previous Year Papers`}
         intro={`Solve past ${name} papers in the real computer-based format, with Hindi and English questions and a solution for every question.`}
+        faqs={pyqFaqs(name, papers.length, years)}
+        updatedAt={data.updatedAt}
       >
         <section className="space-y-4">
           <h2 className="text-2xl font-bold tracking-tight">

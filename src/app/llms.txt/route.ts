@@ -31,6 +31,7 @@ export async function GET() {
     `- [All mock tests](${site.url}/tests)`,
     `- [All Himachal exams](${site.url}/exams)`,
     `- [Exam updates & notifications](${site.url}/blog)`,
+    `- [Full content in one file](${site.url}/llms-full.txt)`,
     `- [Contact](${site.url}/contact)`,
   ];
 

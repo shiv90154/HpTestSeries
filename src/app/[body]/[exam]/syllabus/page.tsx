@@ -8,6 +8,7 @@ import { TestCard } from "@/components/test-card";
 import { card } from "@/components/ui";
 import { site } from "@/lib/site";
 import { clipDescription } from "@/lib/seo";
+import { syllabusFaqs } from "@/modules/content/subpage-faqs";
 import { examLabel, examShortName, getExamPage, getExamSubPages, syllabusOutline } from "@/modules/catalog/queries";
 
 export const revalidate = 3600;
@@ -64,6 +65,8 @@ export default async function SyllabusPage({ params }: PageProps<"/[body]/[exam]
         crumb="Syllabus"
         h1={`${name} Syllabus ${year()}`}
         intro={`Every subject and topic of the ${name} exam in one place, with free mock tests to practise them in the real CBT format.`}
+        faqs={syllabusFaqs(name, areas)}
+        updatedAt={data.updatedAt}
       >
         <section className="space-y-3">
           <h2 className="text-2xl font-bold tracking-tight">{name} syllabus, topic-wise</h2>

@@ -2,12 +2,17 @@ import { CheckCircle2, ChevronRight, Clock, Languages, MonitorCheck, ShieldCheck
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { Breadcrumbs } from "@/components/breadcrumbs";
+import { FaqList } from "@/components/faq-list";
+import { JsonLd } from "@/components/json-ld";
+import { formatDate } from "@/components/post-card";
 import { Mountains } from "@/components/mountains";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { TrackedLink } from "@/components/tracked-link";
 import { btn, card } from "@/components/ui";
 import { rupees } from "@/lib/money";
+import { site } from "@/lib/site";
+import { faqPageJsonLd, type Faq } from "@/modules/content/exam-content";
 import { SeparateSaving } from "@/components/pricing-plans";
 import { perTestLabel } from "@/modules/commerce/value";
 import type { ExamOffer } from "@/modules/catalog/queries";
@@ -221,6 +226,8 @@ export function ExamSubPage({
   crumb,
   h1,
   intro,
+  faqs = [],
+  updatedAt,
   children,
 }: {
   ctx: ExamCtx;
@@ -228,10 +235,30 @@ export function ExamSubPage({
   crumb: string;
   h1: string;
   intro: string;
+  faqs?: Faq[];
+  /** When the exam's data last changed: shown to readers and sent to search engines as dateModified. */
+  updatedAt?: Date;
   children: ReactNode;
 }) {
+  const path = `${ctx.base}/${{ syllabus: "syllabus", pattern: "exam-pattern", pyq: "previous-year-papers" }[active]}`;
   return (
     <>
+      <JsonLd
+        data={[
+          {
+            "@context": "https://schema.org",
+            "@type": "WebPage",
+            name: h1,
+            url: `${site.url}${path}`,
+            description: intro,
+            inLanguage: ["en-IN", "hi-IN"],
+            isPartOf: { "@type": "WebSite", name: site.name, url: site.url },
+            publisher: { "@id": `${site.url}/#organization` },
+            ...(updatedAt && { dateModified: updatedAt.toISOString() }),
+          },
+          ...(faqs.length > 0 ? [faqPageJsonLd(faqs)] : []),
+        ]}
+      />
       <SiteHeader />
       <main className="flex-1">
         <section className="relative overflow-hidden bg-linear-to-br from-[#0b1f5c] via-[#133a9e] to-[#1e4fd8] text-white">
@@ -252,6 +279,11 @@ export function ExamSubPage({
               </p>
             )}
             <p className="max-w-2xl text-white/85">{intro}</p>
+            {updatedAt && (
+              <p className="text-xs text-white/70">
+                Last updated: <time dateTime={updatedAt.toISOString()}>{formatDate(updatedAt)}</time>
+              </p>
+            )}
             <div className="space-y-2 pt-1">
               {ctx.startHref && (
                 <TrackedLink
@@ -271,7 +303,15 @@ export function ExamSubPage({
         <div className="mx-auto w-full max-w-6xl space-y-10 px-4 py-10">
           <ExamTabs ctx={ctx} active={active} />
           <div className="grid gap-10 lg:grid-cols-[1fr_320px]">
-            <div className="min-w-0 space-y-10">{children}</div>
+            <div className="min-w-0 space-y-10">
+              {children}
+              {faqs.length > 0 && (
+                <section className="space-y-4">
+                  <h2 className="text-2xl font-bold tracking-tight">{ctx.name}: frequently asked questions</h2>
+                  <FaqList faqs={faqs} />
+                </section>
+              )}
+            </div>
             <aside className="space-y-6 lg:sticky lg:top-24 lg:self-start">
               <OfferCard ctx={ctx} placement={`aside-${active}`} />
               <div className={`${card} space-y-2 p-5 text-sm`}>

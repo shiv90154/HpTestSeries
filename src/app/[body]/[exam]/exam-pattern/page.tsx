@@ -7,6 +7,7 @@ import { TestCard } from "@/components/test-card";
 import { card } from "@/components/ui";
 import { site } from "@/lib/site";
 import { clipDescription } from "@/lib/seo";
+import { patternFaqs } from "@/modules/content/subpage-faqs";
 import { examLabel, examShortName, getExamPage, getExamSubPages } from "@/modules/catalog/queries";
 
 export const revalidate = 3600;
@@ -72,6 +73,8 @@ export default async function ExamPatternPage({ params }: PageProps<"/[body]/[ex
         crumb="Exam pattern"
         h1={`${name} Exam Pattern ${year()}`}
         intro={`Sections, marks, duration and marking scheme of the ${name} exam, and mock tests that let you practise in the same computer-based format.`}
+        faqs={patternFaqs(name, { totalQuestions, totalMarks, durationMin: p.durationMin, negativeMarking: p.negativeMarking, sections: p.sections.map((s) => s.name) })}
+        updatedAt={data.updatedAt}
       >
         <section className="space-y-4">
           <h2 className="text-2xl font-bold tracking-tight">{name} exam pattern</h2>

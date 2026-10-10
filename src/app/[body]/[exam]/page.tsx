@@ -17,6 +17,7 @@ import { btn, card } from "@/components/ui";
 import { rupees } from "@/lib/money";
 import { site } from "@/lib/site";
 import { bodyShortName, examLabel, examShortName, getAllExamParams, getCatalog, getExamPage, syllabusOutline, type PublicTest } from "@/modules/catalog/queries";
+import { formatDate } from "@/components/post-card";
 import { faqPageJsonLd } from "@/modules/content/exam-content";
 
 export const revalidate = 3600;
@@ -168,6 +169,9 @@ export default async function ExamPage({ params }: PageProps<"/[body]/[exam]">) 
             )}
             <p className="max-w-2xl text-white/85">
               Practise {name} in the real computer-based format: Hindi and English questions, a solution for every question and your rank among Himachal aspirants.
+            </p>
+            <p className="text-xs text-white/70">
+              Last updated: <time dateTime={data.updatedAt.toISOString()}>{formatDate(data.updatedAt)}</time>
             </p>
             <div className="grid gap-2.5 pt-1 sm:flex sm:flex-wrap sm:gap-3">
               {ctx.startHref && (
