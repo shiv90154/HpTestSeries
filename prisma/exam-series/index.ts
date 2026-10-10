@@ -17,7 +17,7 @@ import { tetCdp } from "./fresh/tet-cdp";
 import { tgtPedagogy } from "./fresh/tgt-pedagogy";
 import { CLERK_MOCKS, HC_SECTIONALS, PROCESS_SERVER_MOCKS, STENO_MOCKS } from "../high-court";
 import { HP_TET_JBT_MOCKS, HP_TET_JBT_SECTIONALS } from "../hp-tet";
-import { TGT_ARTS_MOCKS, TGT_ARTS_SECTIONS, TGT_NON_MEDICAL_MOCKS, TGT_NON_MEDICAL_SECTIONS } from "../hp-tet-tgt";
+import { TGT_ARTS_MOCKS, TGT_ARTS_SECTIONS, TGT_MEDICAL_MOCKS, TGT_MEDICAL_SECTIONS, TGT_NON_MEDICAL_MOCKS, TGT_NON_MEDICAL_SECTIONS } from "../hp-tet-tgt";
 import { PGIMER_MOCKS, PGIMER_SECTIONS } from "../pgimer";
 
 type Part = { n: number; pick: Pick } | PatwariQuestion[][];
@@ -353,6 +353,22 @@ const EXAMS: ExamDef[] = [
       "physics and chemistry.",
     sections: TGT_NON_MEDICAL_SECTIONS.map((sec, i) => S(sec.name, sec.nameHi, TGT_NON_MEDICAL_MOCKS.slice(0, 2).map((m) => m.filter((x) => x.s === i)))),
     extraMocks: TGT_NON_MEDICAL_MOCKS.slice(2),
+  },
+  {
+    bodySlug: "hpbose",
+    examSlug: "hp-tet",
+    stageSlug: "tgt-medical",
+    slug: "hp-tet-tgt-medical",
+    name: "HP TET (TGT Medical)",
+    nameHi: "एचपी टेट (टीजीटी मेडिकल)",
+    minutes: 150,
+    marksWrong: 0,
+    price: 99,
+    description:
+      "Full-length HP TET TGT Medical mock tests: child development and pedagogy, Hindi, English, biology, " +
+      "physics and chemistry.",
+    sections: TGT_MEDICAL_SECTIONS.map((sec, i) => S(sec.name, sec.nameHi, TGT_MEDICAL_MOCKS.slice(0, 2).map((m) => m.filter((x) => x.s === i)))),
+    extraMocks: TGT_MEDICAL_MOCKS.slice(2),
   },
 ];
 
