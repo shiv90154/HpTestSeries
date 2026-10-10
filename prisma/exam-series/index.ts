@@ -17,6 +17,7 @@ import { tetCdp } from "./fresh/tet-cdp";
 import { tgtPedagogy } from "./fresh/tgt-pedagogy";
 import { CLERK_MOCKS, HC_SECTIONALS, PROCESS_SERVER_MOCKS, STENO_MOCKS } from "../high-court";
 import { HP_TET_JBT_MOCKS, HP_TET_JBT_SECTIONALS } from "../hp-tet";
+import { TGT_ARTS_MOCKS, TGT_ARTS_SECTIONS } from "../hp-tet-tgt";
 import { PGIMER_MOCKS, PGIMER_SECTIONS } from "../pgimer";
 
 type Part = { n: number; pick: Pick } | PatwariQuestion[][];
@@ -319,6 +320,23 @@ const EXAMS: ExamDef[] = [
       "and pharmacology, child health and midwifery, community and mental health, nursing management and general knowledge.",
     sections: PGIMER_SECTIONS.map((sec, i) => S(sec.name, sec.nameHi, PGIMER_MOCKS.slice(0, 2).map((m) => m.filter((x) => x.s === i)))),
     extraMocks: PGIMER_MOCKS.slice(2),
+  },
+  // Written wholly fresh in prisma/hp-tet-tgt: mocks 1–2 go through the sections, mocks 3+ are extra mocks.
+  {
+    bodySlug: "hpbose",
+    examSlug: "hp-tet",
+    stageSlug: "tgt-arts",
+    slug: "hp-tet-tgt-arts",
+    name: "HP TET (TGT Arts)",
+    nameHi: "एचपी टेट (टीजीटी कला)",
+    minutes: 150,
+    marksWrong: 0,
+    price: 99,
+    description:
+      "Full-length HP TET TGT Arts mock tests: child development and pedagogy, Hindi, English, history and civics, " +
+      "geography, economics and Himachal GK.",
+    sections: TGT_ARTS_SECTIONS.map((sec, i) => S(sec.name, sec.nameHi, TGT_ARTS_MOCKS.slice(0, 2).map((m) => m.filter((x) => x.s === i)))),
+    extraMocks: TGT_ARTS_MOCKS.slice(2),
   },
 ];
 
