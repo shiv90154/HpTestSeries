@@ -4,7 +4,7 @@
 
 export const business = {
   /** Legal name exactly as on PAN (proprietor's name, or the company/LLP name) */
-  legalName: "Nikhil Sharma",
+  legalName: "Sham",
   /** Support email, e.g. support@hptestseries.in */
   email: "hptestseries@gmail.com",
   /** Support phone in +91 format */
@@ -16,7 +16,7 @@ export const business = {
   /** City whose courts have jurisdiction, e.g. "Shimla" */
   jurisdictionCity: "Hamirpur",
   /** Grievance Officer (IT Rules 2021 / DPDP Act 2023) — can be the owner */
-  grievanceOfficer: "Nikhil Sharma",
+  grievanceOfficer: "Sham",
   supportHours: "Monday to Saturday, 10:00 AM – 6:00 PM IST",
   /** Date the current policies took effect (YYYY-MM-DD) */
   policiesUpdated: "2026-09-27",
