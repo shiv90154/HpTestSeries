@@ -109,5 +109,7 @@ export async function sendEmail(
     headers: { authorization: `Bearer ${apiKey}`, "content-type": "application/json" },
     body: JSON.stringify({ from, to: [email], ...content, ...(headers ? { headers } : {}) }),
   });
+  // Resend explains rejections (unverified domain, bad "from", revoked key) in the body; keep it in the server log.
+  if (!res.ok) console.error(`Resend rejected an email (${res.status}): ${(await res.text().catch(() => "")).slice(0, 300)}`);
   return res.ok;
 }
