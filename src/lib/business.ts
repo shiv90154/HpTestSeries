@@ -4,7 +4,7 @@
 
 export const business = {
   /** Legal name exactly as on PAN (proprietor's name, or the company/LLP name) */
-  legalName: "Sham",
+  legalName: "Shiv Kumar",
   /** Support email, e.g. support@hptestseries.in */
   email: "hptestseries@gmail.com",
   /** Support phone in +91 format */
