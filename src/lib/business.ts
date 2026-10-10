@@ -16,7 +16,7 @@ export const business = {
   /** City whose courts have jurisdiction, e.g. "Shimla" */
   jurisdictionCity: "Hamirpur",
   /** Grievance Officer (IT Rules 2021 / DPDP Act 2023) — can be the owner */
-  grievanceOfficer: "Sham",
+  grievanceOfficer: "Nikhil Sharma",
   supportHours: "Monday to Saturday, 10:00 AM – 6:00 PM IST",
   /** Date the current policies took effect (YYYY-MM-DD) */
   policiesUpdated: "2026-09-27",
