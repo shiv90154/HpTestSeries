@@ -92,6 +92,7 @@ export const taxonomy: SubjectSeed[] = [
       ["error-spotting", "Error Spotting"],
       ["voice-speech", "Voice & Narration"],
       ["spelling", "Spelling"],
+      ["literature", "English Literature"],
     ],
   },
   {
@@ -107,6 +108,7 @@ export const taxonomy: SubjectSeed[] = [
       ["shuddh-vartani", "Shuddh Vartani"],
       ["ek-shabd", "Ek Shabd (One-word)"],
       ["alankar-ras", "Alankar, Ras & Chhand"],
+      ["sahitya", "Sahitya (Literature)"],
     ],
   },
   {
@@ -292,6 +294,56 @@ export const taxonomy: SubjectSeed[] = [
       ["committees-history", "Committees & History of Panchayati Raj"],
       ["schemes", "Rural Development Schemes"],
       ["accounts-office", "Panchayat Accounts, Records & Office Work"],
+    ],
+  },
+  {
+    slug: "mathematics",
+    name: "Mathematics (Graduate level)",
+    nameHi: "गणित (स्नातक स्तर)",
+    topics: [
+      ["algebra", "Algebra & Sets"],
+      ["trigonometry", "Trigonometry"],
+      ["coordinate-geometry", "Coordinate Geometry"],
+      ["calculus", "Calculus"],
+      ["statistics-probability", "Statistics & Probability"],
+      ["geometry-mensuration", "Geometry & Mensuration"],
+    ],
+  },
+  {
+    slug: "physics",
+    name: "Physics",
+    nameHi: "भौतिक विज्ञान",
+    topics: [
+      ["mechanics", "Mechanics"],
+      ["heat-thermodynamics", "Heat & Thermodynamics"],
+      ["optics-waves", "Optics, Sound & Waves"],
+      ["electricity-magnetism", "Electricity & Magnetism"],
+      ["modern-physics", "Modern Physics"],
+    ],
+  },
+  {
+    slug: "chemistry",
+    name: "Chemistry",
+    nameHi: "रसायन विज्ञान",
+    topics: [
+      ["atomic-structure", "Atomic Structure & Periodic Table"],
+      ["chemical-bonding", "Chemical Bonding & Reactions"],
+      ["acids-bases-salts", "Acids, Bases & Salts"],
+      ["physical-chemistry", "Physical Chemistry"],
+      ["organic-chemistry", "Organic Chemistry"],
+    ],
+  },
+  {
+    slug: "biology",
+    name: "Biology",
+    nameHi: "जीव विज्ञान",
+    topics: [
+      ["cell-biology", "Cell Biology"],
+      ["genetics-evolution", "Genetics & Evolution"],
+      ["human-physiology", "Human Physiology"],
+      ["plant-biology", "Plant Biology"],
+      ["ecology-environment", "Ecology & Environment"],
+      ["diversity-health", "Diversity of Life, Health & Disease"],
     ],
   },
 ];
