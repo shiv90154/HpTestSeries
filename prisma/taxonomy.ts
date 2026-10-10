@@ -171,6 +171,9 @@ export const taxonomy: SubjectSeed[] = [
       ["community-health", "Community Health Nursing"],
       ["child-health", "Child Health Nursing"],
       ["midwifery", "Obstetrics & Midwifery"],
+      ["mental-health", "Mental Health Nursing"],
+      ["pharmacology", "Pharmacology"],
+      ["nursing-management", "Nursing Management, Education & Research"],
     ],
   },
   {

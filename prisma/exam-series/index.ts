@@ -16,6 +16,7 @@ import { nursingCommunity, nursingFundamentals, nursingMedSurg } from "./fresh/n
 import { tetCdp } from "./fresh/tet-cdp";
 import { tgtPedagogy } from "./fresh/tgt-pedagogy";
 import { CLERK_MOCKS, HC_SECTIONALS, PROCESS_SERVER_MOCKS, STENO_MOCKS } from "../high-court";
+import { PGIMER_MOCKS, PGIMER_SECTIONS } from "../pgimer";
 
 type Part = { n: number; pick: Pick } | PatwariQuestion[][];
 type Section = { name: string; nameHi: string; parts: Part[] };
@@ -300,6 +301,21 @@ const EXAMS: ExamDef[] = [
       S("Reasoning", "तर्कशक्ति", from(10, reasoning)),
       S("Hindi & Computer", "हिंदी एवं कंप्यूटर", from(5, hindi), from(15, computer)),
     ],
+  },
+  // Written wholly fresh in prisma/pgimer: mocks 1–2 go through the sections, mocks 3+ are extra mocks.
+  {
+    bodySlug: "pgimer",
+    examSlug: "nursing-officer",
+    slug: "pgimer-nursing-officer",
+    name: "PGIMER Nursing Officer",
+    nameHi: "पीजीआईएमईआर नर्सिंग ऑफिसर",
+    minutes: 100,
+    price: 99,
+    description:
+      "Full-length PGIMER Nursing Officer mock tests in the CBT format: fundamentals, anatomy and physiology, medical-surgical nursing " +
+      "and pharmacology, child health and midwifery, community and mental health, nursing management and general knowledge.",
+    sections: PGIMER_SECTIONS.map((sec, i) => S(sec.name, sec.nameHi, PGIMER_MOCKS.slice(0, 2).map((m) => m.filter((x) => x.s === i)))),
+    extraMocks: PGIMER_MOCKS.slice(2),
   },
 ];
 
