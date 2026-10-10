@@ -16,7 +16,7 @@ import { nursingCommunity, nursingFundamentals, nursingMedSurg } from "./fresh/n
 import { tetCdp } from "./fresh/tet-cdp";
 import { tgtPedagogy } from "./fresh/tgt-pedagogy";
 import { CLERK_MOCKS, HC_SECTIONALS, PROCESS_SERVER_MOCKS, STENO_MOCKS } from "../high-court";
-import { HP_TET_JBT_MOCKS } from "../hp-tet";
+import { HP_TET_JBT_MOCKS, HP_TET_JBT_SECTIONALS } from "../hp-tet";
 import { PGIMER_MOCKS, PGIMER_SECTIONS } from "../pgimer";
 
 type Part = { n: number; pick: Pick } | PatwariQuestion[][];
@@ -133,6 +133,7 @@ const EXAMS: ExamDef[] = [
       S("EVS & General Awareness", "पर्यावरण अध्ययन एवं सामान्य जागरूकता", from(20, gs), from(10, hpGk)),
     ],
     extraMocks: HP_TET_JBT_MOCKS,
+    extraTests: HP_TET_JBT_SECTIONALS,
   },
   {
     bodySlug: "hprca",
