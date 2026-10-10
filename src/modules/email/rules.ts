@@ -2,6 +2,7 @@
 // The sending side lives in ./service.ts.
 
 import { createHmac, timingSafeEqual } from "node:crypto";
+import { buttonRow, emailColors, emailShell, esc, paragraphRow } from "./layout";
 
 export type EmailCategory = "offers" | "reminders";
 export type EmailKind = "expiry" | "free-followup" | "campaign";
@@ -60,12 +61,10 @@ export function withUtm(url: string, siteUrl: string, campaign: string): string 
 
 // ── Template ──
 
-const esc = (s: string) => s.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]!);
-
 export type EmailContent = { subject: string; text: string; html: string };
 
 /**
- * One simple layout for every reminder: heading, short paragraphs, one button, and a footer saying why the student
+ * One layout for every reminder and offer: heading, short paragraphs, one button, and a footer saying why the student
  * got it with the unsubscribe link. Every value is escaped; paragraphs are plain text.
  */
 export function renderEmail(m: {
@@ -75,18 +74,20 @@ export function renderEmail(m: {
   cta: { label: string; url: string };
   why: string;
   unsubscribeUrl: string;
+  siteUrl?: string;
 }): EmailContent {
   const text = [m.heading, "", ...m.paragraphs.flatMap((p) => [p, ""]), `${m.cta.label}: ${m.cta.url}`, "", "—", m.why, `Unsubscribe: ${m.unsubscribeUrl}`].join("\n");
-  const paras = m.paragraphs.map((p) => `<tr><td style="padding-top:12px;font-size:15px;line-height:1.5">${esc(p)}</td></tr>`).join("");
-  const html = `<!doctype html><html><body style="margin:0;background:#f5f7fb;font-family:Arial,Helvetica,sans-serif;color:#0f1b33">
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="padding:24px 12px"><tr><td align="center">
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:480px;background:#ffffff;border:1px solid #dfe5ef;border-radius:16px;padding:28px">
-<tr><td style="font-size:18px;font-weight:bold;color:#1e4fd8">HP Test Series</td></tr>
-<tr><td style="padding-top:16px;font-size:20px;font-weight:bold">${esc(m.heading)}</td></tr>
-${paras}
-<tr><td style="padding-top:20px"><a href="${esc(m.cta.url)}" style="display:inline-block;background:#1e4fd8;color:#fff;padding:12px 20px;border-radius:8px;text-decoration:none;font-weight:600">${esc(m.cta.label)}</a></td></tr>
-<tr><td style="padding-top:24px;font-size:12px;color:#8a97ad;line-height:1.5">${esc(m.why)} <a href="${esc(m.unsubscribeUrl)}" style="color:#8a97ad">Unsubscribe</a></td></tr>
-</table></td></tr></table></body></html>`;
+  const rows = [
+    `<tr><td style="font-size:24px;line-height:1.3;font-weight:800;color:${emailColors.ink}">${esc(m.heading)}</td></tr>`,
+    ...m.paragraphs.map((p, i) => paragraphRow(p, { top: i === 0 ? 12 : 14 })),
+    buttonRow(m.cta.label, m.cta.url),
+  ].join("\n");
+  const html = emailShell({
+    preview: m.paragraphs[0] ?? m.heading,
+    siteUrl: m.siteUrl ?? process.env.NEXT_PUBLIC_SITE_URL ?? "https://hptestseries.in",
+    rows,
+    footer: `${esc(m.why)} <a href="${esc(m.unsubscribeUrl)}" style="color:${emailColors.faint};text-decoration:underline">Unsubscribe</a>`,
+  });
   return { subject: m.subject, text, html };
 }
 

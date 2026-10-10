@@ -1,7 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { countAudience, queueCampaign, sendCampaignTest, sendQueued } from "@/modules/email/service";
+import { countAudience, previewCampaign, queueCampaign, sendCampaignTest, sendQueued } from "@/modules/email/service";
 import { requirePermission } from "@/modules/identity/session";
 
 type Result<T = object> = ({ ok: true } & T) | { ok: false; errors: string[] };
@@ -32,4 +32,9 @@ export async function sendQueuedNowAction(): Promise<Result<{ sent: number; left
   const s = await sendQueued();
   revalidatePath("/admin/emails");
   return { ok: true, sent: s.sent, left: s.left };
+}
+
+export async function previewCampaignAction(raw: { subject?: string; heading?: string; body?: string; ctaLabel?: string; ctaUrl?: string }) {
+  const user = await requirePermission("commerce:manage");
+  return previewCampaign(raw, user.id);
 }

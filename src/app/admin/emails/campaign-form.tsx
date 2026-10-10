@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useState, useTransition } from "react";
 import { ErrorList, input as inputCls, label as labelCls, panel } from "../ui";
-import { countAudienceAction, queueCampaignAction, sendCampaignTestAction } from "./actions";
+import { countAudienceAction, previewCampaignAction, queueCampaignAction, sendCampaignTestAction } from "./actions";
 
 type Draft = { subject: string; heading: string; body: string; ctaLabel: string; ctaUrl: string; examId: string };
 
@@ -17,6 +17,8 @@ export function CampaignForm({ exams }: { exams: { id: string; name: string }[] 
   const [audience, setAudience] = useState<number | null>(null);
   const [confirming, setConfirming] = useState(false);
   const [pending, startTransition] = useTransition();
+  const [preview, setPreview] = useState<{ subject: string; html: string } | null>(null);
+  const [phone, setPhone] = useState(true);
   const set = <K extends keyof Draft>(k: K, v: Draft[K]) => {
     setM((p) => ({ ...p, [k]: v }));
     setConfirming(false);
@@ -31,6 +33,20 @@ export function CampaignForm({ exams }: { exams: { id: string; name: string }[] 
       live = false;
     };
   }, [m.examId]);
+
+  // Re-render the preview shortly after the admin stops typing.
+  useEffect(() => {
+    let live = true;
+    const t = setTimeout(() => {
+      previewCampaignAction(m).then((p) => {
+        if (live) setPreview(p);
+      });
+    }, 350);
+    return () => {
+      live = false;
+      clearTimeout(t);
+    };
+  }, [m]);
 
   function run(fn: () => Promise<void>) {
     setErrors([]);
@@ -63,6 +79,7 @@ export function CampaignForm({ exams }: { exams: { id: string; name: string }[] 
     });
 
   return (
+    <div className="grid items-start gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,440px)]">
     <form onSubmit={(e) => e.preventDefault()} className={`${panel} space-y-4`}>
       <div>
         <h2 className="font-semibold">New email to students</h2>
@@ -147,5 +164,39 @@ export function CampaignForm({ exams }: { exams: { id: string; name: string }[] 
         )}
       </div>
     </form>
+
+    <aside className={`${panel} space-y-3 lg:sticky lg:top-4`} aria-label="Email preview">
+      <div className="flex items-center justify-between gap-2">
+        <h2 className="font-semibold">Preview</h2>
+        <div role="group" aria-label="Preview size" className="flex rounded-lg border border-border p-0.5 text-xs font-medium">
+          {([["Phone", true], ["Desktop", false]] as const).map(([name, isPhone]) => (
+            <button
+              key={name}
+              type="button"
+              aria-pressed={phone === isPhone}
+              onClick={() => setPhone(isPhone)}
+              className={`rounded-md px-3 py-1 ${phone === isPhone ? "bg-primary text-primary-foreground" : "text-muted"}`}
+            >
+              {name}
+            </button>
+          ))}
+        </div>
+      </div>
+      <div className="rounded-lg bg-surface-muted px-3 py-2 text-xs">
+        <span className="text-muted">Subject: </span>
+        <b>{preview?.subject ?? "…"}</b>
+      </div>
+      <div className="overflow-x-auto rounded-xl border border-border bg-[#eef2f9]">
+        <iframe
+          title="Email preview"
+          sandbox=""
+          srcDoc={preview?.html ?? ""}
+          className="mx-auto block h-[560px] border-0 transition-[width]"
+          style={{ width: phone ? 375 : "100%", minWidth: phone ? 375 : 0 }}
+        />
+      </div>
+      <p className="text-xs text-muted">This is how it looks in the inbox. &ldquo;Send a test to me&rdquo; sends the real thing to your email.</p>
+    </aside>
+    </div>
   );
 }

@@ -1,10 +1,16 @@
 import "server-only";
+import { buttonRow, emailColors, emailShell, esc, otpRows, paragraphRow } from "@/modules/email/layout";
 
 // Login-code emails via Resend's REST API (free tier: 3,000/month, 100/day). Needs a verified
 // sending domain: add the DNS records Resend shows for hptestseries.in, then set EMAIL_FROM.
 const RESEND_URL = "https://api.resend.com/emails";
 
-export function otpEmail(code: string): { subject: string; text: string; html: string } {
+type Content = { subject: string; text: string; html: string };
+
+const siteUrl = () => process.env.NEXT_PUBLIC_SITE_URL ?? "https://hptestseries.in";
+const SECURITY_FOOTER = "You get this because of an action on your HP Test Series account. If it was not you, ignore this email.";
+
+export function otpEmail(code: string): Content {
   const subject = `${code} is your HP Test Series login code`;
   const text = [
     `Your HP Test Series login code is ${code}`,
@@ -15,16 +21,7 @@ export function otpEmail(code: string): { subject: string; text: string; html: s
     "",
     "If you did not try to log in, you can ignore this email.",
   ].join("\n");
-  const html = `<!doctype html><html><body style="margin:0;background:#f5f7fb;font-family:Arial,Helvetica,sans-serif;color:#0f1b33">
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="padding:24px 12px"><tr><td align="center">
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:440px;background:#ffffff;border:1px solid #dfe5ef;border-radius:16px;padding:28px">
-<tr><td style="font-size:18px;font-weight:bold;color:#1e4fd8">HP Test Series</td></tr>
-<tr><td style="padding-top:16px;font-size:15px">Your login code is</td></tr>
-<tr><td style="padding:12px 0;font-size:34px;font-weight:bold;letter-spacing:8px">${code}</td></tr>
-<tr><td style="font-size:14px;color:#5b6b85">Valid for 10 minutes. Do not share it with anyone — our team will never ask for it.</td></tr>
-<tr><td style="padding-top:12px;font-size:14px;color:#5b6b85">आपका लॉगिन कोड <b>${code}</b> है। यह 10 मिनट तक मान्य है। इसे किसी के साथ साझा न करें।</td></tr>
-<tr><td style="padding-top:20px;font-size:12px;color:#8a97ad">If you did not try to log in, you can ignore this email.</td></tr>
-</table></td></tr></table></body></html>`;
+  const html = emailShell({ preview: `${code} is your login code. Valid for 10 minutes.`, siteUrl: siteUrl(), rows: otpRows(code, 10), footer: esc(SECURITY_FOOTER) });
   return { subject, text, html };
 }
 
@@ -35,18 +32,16 @@ export async function sendOtpEmail(email: string, code: string): Promise<void> {
   }
 }
 
-function resultReadyEmail(testTitle: string, attemptId: string): { subject: string; text: string; html: string } {
-  const url = `${process.env.NEXT_PUBLIC_SITE_URL ?? ""}/results/${attemptId}`;
+function resultReadyEmail(testTitle: string, attemptId: string): Content {
+  const url = `${siteUrl()}/results/${attemptId}`;
   const subject = `Your result for "${testTitle}" is ready`;
   const text = [`Your result for "${testTitle}" is ready.`, "", `View it here: ${url}`].join("\n");
-  const html = `<!doctype html><html><body style="margin:0;background:#f5f7fb;font-family:Arial,Helvetica,sans-serif;color:#0f1b33">
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="padding:24px 12px"><tr><td align="center">
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:440px;background:#ffffff;border:1px solid #dfe5ef;border-radius:16px;padding:28px">
-<tr><td style="font-size:18px;font-weight:bold;color:#1e4fd8">HP Test Series</td></tr>
-<tr><td style="padding-top:16px;font-size:15px">Your result for <b>${testTitle}</b> is ready.</td></tr>
-<tr><td style="padding-top:16px"><a href="${url}" style="display:inline-block;background:#1e4fd8;color:#fff;padding:10px 18px;border-radius:8px;text-decoration:none;font-weight:600">View result</a></td></tr>
-</table></td></tr></table></body></html>`;
-  return { subject, text, html };
+  const rows = [
+    `<tr><td style="font-size:24px;line-height:1.3;font-weight:800;color:${emailColors.ink}">Your result is ready</td></tr>`,
+    paragraphRow(`${testTitle} has been checked. See your score, rank, every solution and your weak topics.`, { top: 12 }),
+    buttonRow("View result", url),
+  ].join("\n");
+  return { subject, text, html: emailShell({ preview: `${testTitle}: your score and rank are ready.`, siteUrl: siteUrl(), rows, footer: esc(SECURITY_FOOTER) }) };
 }
 
 /** Best-effort — a missing/broken email setup must never block grading or submission. */
@@ -54,8 +49,8 @@ export async function sendResultReadyEmail(email: string, testTitle: string, att
   await sendEmail(email, resultReadyEmail(testTitle, attemptId), `[dev] Result-ready email for ${email}: ${testTitle}`);
 }
 
-function reportFixedEmail(questionPreview: string): { subject: string; text: string; html: string } {
-  const url = `${process.env.NEXT_PUBLIC_SITE_URL ?? ""}/dashboard`;
+function reportFixedEmail(questionPreview: string): Content {
+  const url = `${siteUrl()}/dashboard`;
   const subject = "The question you reported has been corrected — thank you!";
   const text = [
     "Thank you for reporting a problem with this question:",
@@ -68,18 +63,15 @@ function reportFixedEmail(questionPreview: string): { subject: string; text: str
     "",
     url,
   ].join("\n");
-  const escaped = questionPreview.replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]!);
-  const html = `<!doctype html><html><body style="margin:0;background:#f5f7fb;font-family:Arial,Helvetica,sans-serif;color:#0f1b33">
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="padding:24px 12px"><tr><td align="center">
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:440px;background:#ffffff;border:1px solid #dfe5ef;border-radius:16px;padding:28px">
-<tr><td style="font-size:18px;font-weight:bold;color:#1e4fd8">HP Test Series</td></tr>
-<tr><td style="padding-top:16px;font-size:15px">Thank you for reporting a problem with this question:</td></tr>
-<tr><td style="padding:12px 0;font-size:14px;color:#5b6b85;font-style:italic">&ldquo;${escaped}&rdquo;</td></tr>
-<tr><td style="font-size:15px">Our team has checked and corrected it. Results that include it now use the corrected version.</td></tr>
-<tr><td style="padding-top:12px;font-size:14px;color:#5b6b85">आपकी रिपोर्ट के लिए धन्यवाद — यह प्रश्न ठीक कर दिया गया है।</td></tr>
-<tr><td style="padding-top:16px"><a href="${url}" style="display:inline-block;background:#1e4fd8;color:#fff;padding:10px 18px;border-radius:8px;text-decoration:none;font-weight:600">Open dashboard</a></td></tr>
-</table></td></tr></table></body></html>`;
-  return { subject, text, html };
+  const rows = [
+    `<tr><td style="font-size:24px;line-height:1.3;font-weight:800;color:${emailColors.ink}">Thank you, it is fixed</td></tr>`,
+    paragraphRow("You reported a problem with this question:", { top: 12 }),
+    `<tr><td style="padding-top:12px"><table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr><td bgcolor="${emailColors.soft}" style="background:${emailColors.soft};border-left:4px solid ${emailColors.primary};border-radius:8px;padding:12px 14px;font-size:14px;line-height:1.55;color:${emailColors.muted};font-style:italic">&ldquo;${esc(questionPreview)}&rdquo;</td></tr></table></td></tr>`,
+    paragraphRow("Our team has checked and corrected it. Results that include it now use the corrected version.", { top: 14 }),
+    paragraphRow("आपकी रिपोर्ट के लिए धन्यवाद — यह प्रश्न ठीक कर दिया गया है।", { muted: true }),
+    buttonRow("Open dashboard", url),
+  ].join("\n");
+  return { subject, text, html: emailShell({ preview: "Your report helped us correct a question.", siteUrl: siteUrl(), rows, footer: esc(SECURITY_FOOTER) }) };
 }
 
 /** Best-effort thank-you when a reported question is fixed. */

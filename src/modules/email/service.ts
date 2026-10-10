@@ -308,6 +308,19 @@ export async function queueCampaign(raw: unknown, actorId: string): Promise<{ ok
   return { ok: true, id: campaign.id, queued: count };
 }
 
+/** What the draft looks like in an inbox. Blank fields show placeholders so the preview works while typing. */
+export function previewCampaign(raw: Partial<CampaignBody>, adminId: string): { subject: string; html: string } {
+  const c = {
+    subject: raw.subject?.trim() || "Your subject line",
+    heading: raw.heading?.trim() || "Your heading",
+    body: raw.body?.trim() || "Your message appears here.\n\nLeave a blank line to start a new paragraph.",
+    ctaLabel: raw.ctaLabel?.trim() || "Button text",
+    ctaUrl: raw.ctaUrl?.trim() && (raw.ctaUrl.startsWith("/") || raw.ctaUrl.startsWith("https://")) ? raw.ctaUrl.trim() : "/",
+  };
+  const e = campaignEmail(adminId, c, "campaign-preview");
+  return { subject: e.subject, html: e.html };
+}
+
 /** Sends the draft to the admin's own inbox only; nothing is logged or queued. */
 export async function sendCampaignTest(raw: unknown, admin: { id: string; email: string }): Promise<{ ok: true } | Fail> {
   const v = campaignSchema.safeParse(raw);

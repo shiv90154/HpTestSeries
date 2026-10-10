@@ -1,10 +1,11 @@
 "use client";
 
-import { Mail, Smartphone } from "lucide-react";
+import { Mail, MailCheck, MessageSquareText, Smartphone } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import { authClient } from "@/modules/identity/auth-client";
 import { normalizeIndianMobile, PLACEHOLDER_NAME } from "@/modules/identity/permissions";
+import { OtpInput } from "./otp-input";
 
 type Method = "email" | "phone";
 type Step = { kind: "enter" } | { kind: "code"; to: string };
@@ -14,6 +15,7 @@ const inputClass =
 const buttonClass =
   "h-12 w-full rounded-xl bg-primary font-semibold text-primary-foreground shadow-sm transition hover:bg-primary-strong disabled:opacity-60";
 
+const RESEND_AFTER = 30; // seconds before "Resend" works again
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
 /** One OTP flow, two channels. Error text comes from the server when it has a useful message. */
@@ -30,7 +32,7 @@ const channels = {
     send: (to: string) => authClient.emailOtp.sendVerificationOtp({ email: to, type: "sign-in" }),
     // Name is only used when the account is created; /welcome then asks for the real name.
     verify: (to: string, code: string) => authClient.signIn.emailOtp({ email: to, otp: code, name: PLACEHOLDER_NAME }),
-    sentTo: (to: string) => `Enter the 6-digit code sent to ${to}`,
+    sentTo: "We emailed a 6-digit code to",
     hint: "Can’t find it? Check your Spam or Promotions folder.",
     change: "Change email",
   },
@@ -42,7 +44,7 @@ const channels = {
     invalid: "Enter a valid 10-digit Indian mobile number.",
     send: (to: string) => authClient.phoneNumber.sendOtp({ phoneNumber: to }),
     verify: (to: string, code: string) => authClient.phoneNumber.verify({ phoneNumber: to, code }),
-    sentTo: (to: string) => `Enter the 6-digit code sent to ${to}`,
+    sentTo: "We sent a 6-digit code by SMS to",
     hint: null,
     change: "Change number",
   },
@@ -68,7 +70,15 @@ export function LoginForm({ next, googleEnabled, emailEnabled, phoneEnabled }: {
   const [error, setError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
+  const [wrong, setWrong] = useState(false);
+  const [cooldown, setCooldown] = useState(0);
   const ch = channels[method];
+
+  useEffect(() => {
+    if (cooldown <= 0) return;
+    const t = setTimeout(() => setCooldown((c) => c - 1), 1000);
+    return () => clearTimeout(t);
+  }, [cooldown]);
 
   function switchMethod(m: Method) {
     setMethod(m);
@@ -76,6 +86,7 @@ export function LoginForm({ next, googleEnabled, emailEnabled, phoneEnabled }: {
     setValue("");
     setError(null);
     setNotice(null);
+    setWrong(false);
   }
 
   async function sendCode(to: string) {
@@ -83,6 +94,19 @@ export function LoginForm({ next, googleEnabled, emailEnabled, phoneEnabled }: {
     if (error) {
       throw new Error(error.status === 429 ? "Too many attempts. Try again in a few minutes." : error.message || "Could not send the code. Please try again.");
     }
+    setCooldown(RESEND_AFTER);
+  }
+
+  async function verifyCode(to: string, code: string) {
+    const { data, error } = await ch.verify(to, code);
+    if (error) {
+      setWrong(true);
+      setValue("");
+      throw new Error(error.status === 429 ? "Too many attempts. Try again in a few minutes." : "That code is incorrect or has expired.");
+    }
+    // New code accounts are called "Aspirant" (also on leaderboards) until the student gives their name.
+    router.replace(data?.user.name === PLACEHOLDER_NAME ? `/welcome?next=${encodeURIComponent(next)}` : next);
+    router.refresh();
   }
 
   async function run(fn: () => Promise<void>) {
@@ -108,11 +132,7 @@ export function LoginForm({ next, googleEnabled, emailEnabled, phoneEnabled }: {
         setStep({ kind: "code", to });
         setValue("");
       } else {
-        const { data, error } = await ch.verify(step.to, value.trim());
-        if (error) throw new Error(error.status === 429 ? "Too many attempts. Try again in a few minutes." : "That code is incorrect or has expired.");
-        // New code accounts are called "Aspirant" (also on leaderboards) until the student gives their name.
-        router.replace(data?.user.name === PLACEHOLDER_NAME ? `/welcome?next=${encodeURIComponent(next)}` : next);
-        router.refresh();
+        await verifyCode(step.to, value.trim());
       }
     });
   }
@@ -153,21 +173,31 @@ export function LoginForm({ next, googleEnabled, emailEnabled, phoneEnabled }: {
             />
           </label>
         ) : (
-          <label className="block space-y-1.5">
-            <span className="text-sm font-medium">{ch.sentTo(step.to)}</span>
-            <input
-              className={`${inputClass} tracking-[0.5em]`}
-              inputMode="numeric"
-              autoComplete="one-time-code"
-              pattern="\d{6}"
-              maxLength={6}
+          <div className="space-y-4 motion-safe:animate-[step-in_.25s_ease-out]">
+            <div className="flex items-start gap-3">
+              <span className="grid size-11 shrink-0 place-items-center rounded-xl bg-primary-soft text-primary">
+                {method === "email" ? <MailCheck className="size-5" /> : <MessageSquareText className="size-5" />}
+              </span>
+              <div className="min-w-0">
+                <p className="text-sm text-muted">{ch.sentTo}</p>
+                <p className="truncate font-semibold">{step.to}</p>
+              </div>
+            </div>
+            <OtpInput
               value={value}
-              onChange={(e) => setValue(e.target.value.replace(/\D/g, ""))}
-              autoFocus
-              required
+              invalid={wrong}
+              disabled={pending}
+              label="6-digit login code"
+              onChange={(v) => {
+                setWrong(false);
+                setError(null);
+                setValue(v);
+              }}
+              onComplete={(code) => run(() => verifyCode(step.to, code))}
             />
-            {ch.hint && <span className="block text-xs text-muted">{ch.hint}</span>}
-          </label>
+            <p className="text-xs text-muted">The code works for {method === "email" ? 10 : 5} minutes. It signs you in automatically once all 6 digits are in.</p>
+            {ch.hint && <p className="text-xs text-muted">{ch.hint}</p>}
+          </div>
         )}
 
         {error && (
@@ -181,8 +211,8 @@ export function LoginForm({ next, googleEnabled, emailEnabled, phoneEnabled }: {
           </p>
         )}
 
-        <button type="submit" className={buttonClass} disabled={pending}>
-          {pending ? "Please wait…" : step.kind === "enter" ? "Send code" : "Verify and sign in"}
+        <button type="submit" className={buttonClass} disabled={pending || (step.kind === "code" && value.length < 6)}>
+          {pending ? (step.kind === "enter" ? "Sending code…" : "Checking…") : step.kind === "enter" ? "Send code" : "Verify and sign in"}
         </button>
 
         {step.kind === "code" && (
@@ -192,16 +222,18 @@ export function LoginForm({ next, googleEnabled, emailEnabled, phoneEnabled }: {
             </button>
             <button
               type="button"
-              className="text-primary underline disabled:opacity-60"
-              disabled={pending}
+              className="font-medium text-primary underline disabled:text-muted disabled:no-underline"
+              disabled={pending || cooldown > 0}
               onClick={() =>
                 run(async () => {
                   await sendCode(step.to);
+                  setValue("");
+                  setWrong(false);
                   setNotice("A new code has been sent.");
                 })
               }
             >
-              Resend code
+              {cooldown > 0 ? `Resend code in ${cooldown}s` : "Resend code"}
             </button>
           </div>
         )}
