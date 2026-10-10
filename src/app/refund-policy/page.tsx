@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { LegalPage } from "@/components/legal-page";
-import { biz } from "@/lib/business";
+import { biz, bizPhones } from "@/lib/business";
 import { site } from "@/lib/site";
 
 // Static; the footer lists exams from the DB.
@@ -81,7 +81,7 @@ export default function RefundPolicyPage() {
 
       <h2>6. Contact</h2>
       <p>
-        {biz("legalName")} · <a href={`mailto:${biz("email")}`}>{biz("email")}</a> · {biz("phone")} · {biz("supportHours")}
+        {biz("legalName")} · <a href={`mailto:${biz("email")}`}>{biz("email")}</a> · {bizPhones()} · {biz("supportHours")}
       </p>
     </LegalPage>
   );

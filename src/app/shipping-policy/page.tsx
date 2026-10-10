@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { LegalPage } from "@/components/legal-page";
-import { biz } from "@/lib/business";
+import { biz, bizPhones } from "@/lib/business";
 import { site } from "@/lib/site";
 
 // Static; the footer lists exams from the DB.
@@ -36,7 +36,7 @@ export default function ShippingPolicyPage() {
       <h2>If access is not activated</h2>
       <p>
         If your payment succeeded but the series is not active within 2 hours, email{" "}
-        <a href={`mailto:${biz("email")}`}>{biz("email")}</a> or call {biz("phone")} with your order ID or payment ID. We will
+        <a href={`mailto:${biz("email")}`}>{biz("email")}</a> or call {bizPhones()} with your order ID or payment ID. We will
         activate it or refund you as per our <Link href="/refund-policy">Refund Policy</Link>.
       </p>
     </LegalPage>

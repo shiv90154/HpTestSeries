@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { LegalPage } from "@/components/legal-page";
-import { biz } from "@/lib/business";
+import { biz, bizPhones } from "@/lib/business";
 import { site } from "@/lib/site";
 
 // Static; the footer lists exams from the DB.
@@ -106,7 +106,7 @@ export default function TermsPage() {
 
       <h2>10. Contact</h2>
       <p>
-        {biz("legalName")}. Email <a href={`mailto:${biz("email")}`}>{biz("email")}</a>, phone {biz("phone")}.
+        {biz("legalName")}. Email <a href={`mailto:${biz("email")}`}>{biz("email")}</a>, phone {bizPhones()}.
         Grievance Officer: {biz("grievanceOfficer")}.
       </p>
     </LegalPage>

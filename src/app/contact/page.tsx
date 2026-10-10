@@ -2,7 +2,7 @@ import { Clock, Flag, Mail, MapPin, Phone, ShieldCheck } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { LegalPage } from "@/components/legal-page";
-import { biz, business } from "@/lib/business";
+import { biz, business, supportPhones, telHref } from "@/lib/business";
 import { site } from "@/lib/site";
 
 // Static; the footer lists exams from the DB.
@@ -27,7 +27,7 @@ function Row({ icon, label, children }: { icon: React.ReactNode; label: string; 
 }
 
 export default function ContactPage() {
-  const tel = business.phone.replace(/[^\d+]/g, "");
+  const phones = supportPhones();
   return (
     <LegalPage title="Contact Us" intro="We usually reply within one working day." showUpdated={false}>
       <div className="grid gap-6 sm:grid-cols-2">
@@ -35,7 +35,14 @@ export default function ContactPage() {
           <a href={`mailto:${biz("email")}`}>{biz("email")}</a>
         </Row>
         <Row icon={<Phone className="size-5" />} label="Phone">
-          {tel ? <a href={`tel:${tel}`}>{business.phone}</a> : biz("phone")}
+          {phones.length > 0
+            ? phones.map((p, i) => (
+                <span key={p}>
+                  {i > 0 && " / "}
+                  <a href={telHref(p)}>{p}</a>
+                </span>
+              ))
+            : biz("phone")}
         </Row>
         <Row icon={<Clock className="size-5" />} label="Support hours">
           {biz("supportHours")}

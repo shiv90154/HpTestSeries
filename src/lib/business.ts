@@ -6,9 +6,11 @@ export const business = {
   /** Legal name exactly as on PAN (proprietor's name, or the company/LLP name) */
   legalName: "Nikhil Sharma",
   /** Support email, e.g. support@hptestseries.in */
-  email: "nikhhilsharma787683@gmail.com",
+  email: "hptestseries@gmail.com",
   /** Support phone in +91 format */
   phone: "+91 78768 35326",
+  /** Second support phone — optional */
+  phone2: "+91 90154 84696",
   /** Full postal address with PIN code — optional; left out of pages while empty */
   address: "",
   /** City whose courts have jurisdiction, e.g. "Shimla" */
@@ -24,6 +26,7 @@ const labels: Record<keyof typeof business, string> = {
   legalName: "legal name",
   email: "support email",
   phone: "support phone",
+  phone2: "second support phone",
   address: "postal address",
   jurisdictionCity: "jurisdiction city",
   grievanceOfficer: "grievance officer",
@@ -32,13 +35,26 @@ const labels: Record<keyof typeof business, string> = {
 };
 
 export function missingBusinessDetails(): string[] {
-  return (Object.keys(business) as (keyof typeof business)[]).filter((k) => k !== "address" && !business[k].trim()).map((k) => labels[k]);
+  return (Object.keys(business) as (keyof typeof business)[]).filter((k) => k !== "address" && k !== "phone2" && !business[k].trim()).map((k) => labels[k]);
 }
 
 /** Value for display, or a visible placeholder so a missing detail is obvious in review. */
 export function biz(key: keyof typeof business): string {
   return business[key].trim() || `[${labels[key]} to be added]`;
 }
+
+/** Support numbers that are filled in, as written ("+91 78768 35326"). */
+export function supportPhones(): string[] {
+  return [business.phone, business.phone2].map((p) => p.trim()).filter(Boolean);
+}
+
+/** All support numbers for running text, e.g. "+91 78768 35326 / +91 90154 84696". */
+export function bizPhones(): string {
+  return supportPhones().join(" / ") || biz("phone");
+}
+
+/** tel: link target, e.g. "+917876835326". */
+export const telHref = (phone: string) => `tel:${phone.replace(/[^\d+]/g, "")}`;
 
 /** Policy pages, linked from the footer (Razorpay checks the site for these). */
 export const LEGAL_LINKS = [

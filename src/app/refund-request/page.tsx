@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { connection } from "next/server";
 import { LegalPage } from "@/components/legal-page";
-import { biz } from "@/lib/business";
+import { biz, supportPhones, telHref } from "@/lib/business";
 import { rupees } from "@/lib/money";
 import { getMyPurchases } from "@/modules/commerce/purchases";
 import { getCurrentUser } from "@/modules/identity/session";
@@ -83,7 +83,14 @@ export default async function RefundRequestPage() {
           <Mail className="size-4" /> <a href={mail()}>{email}</a>
         </li>
         <li className="flex items-center gap-2">
-          <Phone className="size-4" /> <a href={`tel:+${wa}`}>{biz("phone")}</a> · {biz("supportHours")}
+          <Phone className="size-4" />{" "}
+          {supportPhones().map((p, i) => (
+            <span key={p}>
+              {i > 0 && " / "}
+              <a href={telHref(p)}>{p}</a>
+            </span>
+          ))}{" "}
+          · {biz("supportHours")}
         </li>
       </ul>
       <p>
