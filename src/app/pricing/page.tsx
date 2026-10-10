@@ -39,7 +39,8 @@ const FAQS = [
 export default async function PricingPage() {
   const products = await listActiveProducts();
   const pass = products.find((p) => p.kind === "PASS");
-  const series = products.filter((p) => p.kind !== "PASS");
+  // Dearest first, Free last, so each plan reads cheap next to the one above it.
+  const series = products.filter((p) => p.kind !== "PASS").sort((a, b) => b.priceInPaise - a.priceInPaise);
   const planCount = products.length === 0 ? 3 : 1 + series.length + (pass ? 1 : 0);
   const cheapest = products[0];
 
@@ -76,11 +77,11 @@ export default async function PricingPage() {
 
         <div className="mx-auto w-full max-w-6xl space-y-14 px-4 py-10 sm:py-14">
           <section aria-label="Plans" className={`grid gap-5 ${planCount >= 4 ? "sm:grid-cols-2 lg:grid-cols-4" : planCount === 3 ? "md:grid-cols-3" : "mx-auto max-w-4xl md:grid-cols-2"}`}>
-            <Plan name="Free" price="₹0" note="forever" items={["Free mock tests", "Real CBT interface", "Solutions in Hindi & English", "HP rank on free tests"]} cta={{ href: FREE_MOCK_HREF, label: "Start free test" }} />
+            {pass && <Plan {...productPlan(pass)} badge="Best value" />}
             {series.map((p) => (
               <Plan key={p.slug} {...productPlan(p)} badge={series.length === 1 && !pass ? "Recommended" : undefined} />
             ))}
-            {pass && <Plan {...productPlan(pass)} badge="Best value" />}
+            <Plan name="Free" price="₹0" note="forever" items={["Free mock tests", "Real CBT interface", "Solutions in Hindi & English", "HP rank on free tests"]} cta={{ href: FREE_MOCK_HREF, label: "Start free test" }} />
             {products.length === 0 && (
               <>
                 <Plan name="Exam Test Series" price="₹49–99" note="per exam" soon items={["20–40 full mock tests", "Previous-year papers", "Sectional & topic tests", "Detailed analysis"]} />
