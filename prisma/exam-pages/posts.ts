@@ -289,4 +289,185 @@ Nursing textbooks chapter-wise revise karo aur Part B ke aasaan marks (Himachal 
       { q: "What is the pass mark for HPRCA Staff Nurse?", a: "Reported minimum qualifying marks are 45% for General/EWS and 40% for SC/ST/OBC in the 120-mark CBT. [VERIFY]" },
     ],
   },
+
+  {
+    slug: "hp-high-court-syllabus-2026-clerk-stenographer-process-server",
+    seoTitle: "HP High Court Syllabus 2026: Clerk, Steno, Process Server",
+    seoDescription: "HP High Court syllabus 2026 for Clerk, Stenographer and Process Server: subject-wise topics, exam pattern, post-wise differences and a 30-day preparation plan.",
+    title: "HP High Court Syllabus 2026: Clerk, Stenographer & Process Server — Subject-wise Topics, Exam Pattern & Study Plan",
+    titleHi: "हिमाचल हाई कोर्ट सिलेबस 2026: क्लर्क, स्टेनोग्राफर, प्रोसेस सर्वर",
+    excerpt: "HP High Court syllabus 2026 for Clerk, Stenographer Grade-III and Process Server — subject-wise topics, what differs between the three posts, exam pattern and a 30-day plan.",
+    category: "SYLLABUS",
+    exams: ["hp-high-court/clerk", "hp-high-court/stenographer", "hp-high-court/process-server"],
+    content: `**High Court of Himachal Pradesh, Shimla** ne 2026 me Clerk, Stenographer Grade-III aur Process Server jaise posts ke liye bharti nikali hai. Teeno posts ka syllabus kaafi had tak milta-julta hai, isliye ek hi guide me post-wise farak aur subject-wise topics de rahe hain.
+
+> ⚠ Yeh draft hai. Syllabus, marks, negative marking aur skill-test standard **[VERIFY]** High Court ke official notification (hphcrecruitment.in) se match karke hi publish karein. Neeche ke topics us level ke usual areas hain, official list nahi.
+
+## Teeno posts ek nazar me
+
+| | Clerk | Stenographer Grade-III | Process Server |
+|---|---|---|---|
+| Vacancies (reported) | 141 [VERIFY] | 79 [VERIFY] | 65 [VERIFY] |
+| Written test | Haan [VERIFY] | Haan [VERIFY] | Notification me dekhein [VERIFY] |
+| Skill test | Typing: English 30 wpm, Hindi 25 wpm [VERIFY] | Shorthand + typing [VERIFY] | Notification me dekhein [VERIFY] |
+| Sabse zaroori subject | English, Hindi | English, computer | Himachal GK, reasoning |
+
+## Exam pattern
+
+Marks, questions ki sankhya, time aur negative marking High Court ke notification me di jaati hai. Neeche ki table me notification se number bharke hi publish karein **[VERIFY]**.
+
+| Detail | Information |
+|---|---|
+| Mode | [VERIFY] |
+| Total questions / marks | [VERIFY] |
+| Duration | [VERIFY] |
+| Negative marking | [VERIFY] |
+| Qualifying marks | [VERIFY] |
+
+## Subject-wise syllabus (usual areas)
+
+### English
+- Grammar: tenses, articles, prepositions, subject-verb agreement, voice, narration
+- Vocabulary: synonyms, antonyms, one-word substitution, idioms and phrases
+- Error spotting, sentence improvement, fill in the blanks
+- Reading comprehension and para jumbles
+- Drafting basics: letters, applications, notices (important for court work)
+
+### Hindi
+- Vyakaran: sandhi, samas, upsarg-pratyay, vilom, paryayvachi shabd
+- Muhavare aur lokoktiyan, vakya shuddhi
+- Apathit gadyansh (comprehension)
+
+### General knowledge and Himachal GK
+- Himachal Pradesh: history and formation of the state, districts, rivers, lakes, passes, national parks
+- Fairs, festivals, temples, folk dances, Kangra and Pahari painting
+- HP economy: horticulture, hydropower, tourism
+- Indian polity and basic legal awareness: Constitution, courts, fundamental rights
+- Current affairs of the last 6 to 12 months, national and Himachal
+
+### Reasoning
+- Series, analogy, odd one out, coding-decoding
+- Blood relations, direction sense, ranking and order
+- Syllogism, Venn diagrams, clock and calendar
+
+### Maths (aptitude)
+- Simplification, percentage, ratio and proportion, average
+- Profit and loss, simple and compound interest, time and work
+- Data interpretation basics
+
+### Computer (Clerk and Stenographer)
+- Computer fundamentals, hardware and software, input/output devices
+- MS Word, Excel and PowerPoint basics, keyboard shortcuts
+- Internet, email, cyber safety, file management
+
+## Post-wise farak: kahan zyada dhyan do
+
+- **Clerk:** English aur Hindi par sabse zyada pakad banao. Daily typing practice karo taaki skill test me speed kam na pade.
+- **Stenographer Grade-III:** written paper ke saath shorthand dictation aur transcription ki speed notified level tak le jao. English accuracy aur legal vocabulary important hai.
+- **Process Server:** written test hone par Himachal GK, reasoning aur basic maths ke aasaan questions aate hain. Roz GK revision aur weekly mock kaafi hai.
+
+## 30 din ka study plan
+
+| Din | Kya karna hai |
+|---|---|
+| 1 se 10 | English grammar aur Hindi vyakaran ki basics, Himachal GK ke short notes (district, river, history) |
+| 11 se 20 | Reasoning aur maths ki speed practice, computer basics, har 2 din me ek sectional test |
+| 21 se 27 | Har din ek full mock test, galat sawaalon ko ek error notebook me likho |
+| 28 se 30 | Sirf revision, current affairs aur weak topics. Naya chapter shuru mat karo |
+
+## Practice kaise karein
+
+Hamare High Court practice hubs me Clerk, Stenographer aur Process Server ke liye full mock tests aur sectional tests (GK, English, Hindi, reasoning) hain. Teeno posts ka core syllabus common hai, isliye sectional tests teeno ke kaam aate hain.
+
+- [HP High Court Clerk mock tests](/hp-high-court/clerk)
+- [HP High Court Stenographer mock tests](/hp-high-court/stenographer)
+- [HP High Court Process Server mock tests](/hp-high-court/process-server)
+- [Free Himachal GK mock](${FREE_MOCK}) se CBT ka feel lo, bina login.
+
+Recruitment ki puri detail: [HP High Court Recruitment 2026](/blog/hp-high-court-recruitment-2026-clerk-steno-process-server-388-posts).`,
+    faqs: [
+      { q: "HP High Court Clerk ka syllabus kya hai?", a: "Usual areas: English, Hindi, General Knowledge with Himachal GK, reasoning, basic maths aur computer. Exact syllabus aur marks High Court ke notification me dekhein. [VERIFY]" },
+      { q: "Is the High Court syllabus the same for Clerk, Stenographer and Process Server?", a: "The core subjects overlap a lot: English, Hindi, GK and Himachal GK, reasoning and maths. Clerk and Stenographer also test computer, and Stenographer has a shorthand skill test. Check the notification for each post. [VERIFY]" },
+      { q: "High Court ke exam me negative marking hai?", a: "Negative marking aur marks ka scheme notification me diya hota hai. Publish karne se pehle confirm karein. [VERIFY]" },
+      { q: "Process Server ke liye kya padhna chahiye?", a: "Himachal GK, general knowledge, basic reasoning aur maths, Hindi aur English. Written test hota hai ya nahi, yeh notification me dekhein. [VERIFY]" },
+    ],
+  },
+
+  {
+    slug: "hpas-mock-test-free-2026-prelims-preparation-strategy",
+    seoTitle: "HPAS Mock Test Free 2026: Prelims Strategy & Test Plan",
+    seoDescription: "How to use free HPAS mock tests for the 2026 prelims: a weekly test plan, how to analyse mistakes, Himachal GK focus areas and a 12-week roadmap.",
+    title: "HPAS Mock Test Free 2026: How to Use Mock Tests for Prelims — Weekly Plan, Analysis & Himachal GK Focus",
+    titleHi: "एचपीएएस फ्री मॉक टेस्ट 2026: प्रीलिम्स के लिए रणनीति",
+    excerpt: "How to use free HPAS prelims mock tests properly: a weekly test plan, how to analyse every mistake, Himachal GK focus areas and a 12-week roadmap.",
+    category: "STRATEGY",
+    exams: ["hppsc/hpas"],
+    content: `HPAS prelims me sirf padhna kaafi nahi hota. Jo aspirants regular mock tests dete hain aur har galti ka analysis karte hain, wo usi syllabus me zyada marks laate hain. Is guide me bata rahe hain ki free mock tests ko kaise use karein.
+
+> ⚠ Yeh draft hai. Paper-wise marks, questions ki sankhya, negative marking aur dates **[VERIFY]** latest HPPSC notification (hppsc.hp.gov.in) se match karke hi publish karein.
+
+## Mock test kyun zaroori hai
+
+- **Time management:** 100 sawaal, limited time. Sirf mock se pata chalta hai kaunsa section kitna time leta hai.
+- **Negative marking ki practice:** blind guess kab karna hai aur kab chhodna hai, yeh sirf practice se aata hai [VERIFY].
+- **Weak areas:** section-wise score se dikhta hai ki Himachal GK, polity ya economy me kya kamzor hai.
+- **CBT ka comfort:** question palette, mark for review aur Hindi-English switch ki aadat.
+
+## Hamare HPAS prelims mock tests me kya hai
+
+- **Free mocks (30 sawaal):** Himachal GK aur General Studies, 30 minute ka quick test, apna level check karne ke liye.
+- **Full mock (100 sawaal):** General Studies prelims style me, 6 sections: Himachal GK (25), Indian History and Culture (15), Polity and Governance (20), Geography and Environment (15), Economy (15), Science and Technology (10). Section split hamara hai, official nahi.
+- Har sawaal ka solution Hindi aur English dono me, aur test ke baad Himachal ke aspirants me aapka rank.
+
+## Hafte ka test plan
+
+| Din | Kya karna hai |
+|---|---|
+| Somvar se Gurubar | Roz ke topic padho (NCERT, Himachal GK notes) aur raat ko 15-20 sawaal ki practice |
+| Shukrvar | Section-wise revision aur ek chhota test |
+| Shanivar | Ek **full-length mock**, exam jaise time me, bina ruke |
+| Ravivar | Mock ka analysis (kam se kam 2 ghante), error notebook update, agle hafte ka plan |
+
+## Har mock ke baad analysis kaise karein
+
+1. **Galat sawaalon ko 3 hisson me baanto:** concept pata nahi tha, bhool gaye, ya jaldbaazi me galti.
+2. **Sahi lage hue guess alag likho.** Wo bhi kamzor topic hain.
+3. **Error notebook banao:** sawaal, sahi jawab aur kyun, ek line me.
+4. **Time check:** kaunsa section sabse zyada time le raha hai.
+5. **Do hafte baad wahi galat sawaal dobara solve karo.**
+
+## Himachal GK par focus kyun
+
+Himachal GK HPAS prelims me alag se score dilata hai, aur yahan UPSC material kaam nahi aata. In topics ko pakka karo:
+
+- Riyasaton ka itihas aur Himachal ka gathan (1948, 1966 ka vilay, 1971 me full statehood)
+- Rivers, lakes, passes, national parks aur wildlife sanctuaries
+- Fairs, festivals, temples, folk dances aur Kangra painting
+- Economy: horticulture, hydropower, tourism
+- Polity: Panchayati Raj, Vidhan Sabha, High Court
+- Pichle 12 mahine ke HP current affairs
+
+## 12 hafte ka roadmap
+
+| Hafte | Focus |
+|---|---|
+| 1 se 4 | NCERT basics (history, polity, geography, economy, science) aur Himachal GK ke notes. Har hafte 1 sectional ya free mock |
+| 5 se 8 | Revision plus current affairs. Har hafte 1 full mock, analysis ke saath |
+| 9 se 11 | Har hafte 2 full mocks, weak topics ki targeted practice |
+| 12 | Sirf revision, error notebook aur halka mock. Naya topic nahi |
+
+## Aaj hi shuru karo
+
+- [HPAS free mock test](/tests/hpas-free-mock-1): 30 minute me apna level check karo
+- [HPAS mock tests aur exam detail](/hppsc/hpas)
+- [Free Himachal GK mock](${FREE_MOCK}) bina login
+
+Syllabus ke liye: [HPAS prelims syllabus](/blog/hppsc-hpas-prelims-syllabus-in-hindi).`,
+    faqs: [
+      { q: "HPAS prelims ke liye kitne mock test dene chahiye?", a: "Last 2 mahine me hafte me kam se kam ek full-length mock aur uska poora analysis. Quantity se zyada analysis ka asar hota hai." },
+      { q: "Are the free HPAS mock tests enough?", a: "Free mocks level check ke liye achhe hain. Regular full-length practice ke liye zyada mocks aur sectional tests chahiye, taaki har section ka time aur accuracy dikhe." },
+      { q: "HPAS prelims me negative marking hai?", a: "Negative marking ka scheme HPPSC ke notification me hota hai. Publish karne se pehle confirm karein. [VERIFY]" },
+      { q: "Is Himachal GK asked in HPAS prelims?", a: "Yes, General Studies me Himachal ki history, geography, economy, culture aur polity se questions aate hain. [VERIFY]" },
+    ],
+  },
 ];
