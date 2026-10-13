@@ -5,6 +5,7 @@
 import type { PatwariQuestion } from "../patwari/types";
 import { hpasMock1 } from "./mock1";
 import { hpasMock2 } from "./mock2";
+import { hpasMock3 } from "./mock3";
 
 export const HPAS_SECTIONS = [
   { name: "Himachal GK", nameHi: "हिमाचल सामान्य ज्ञान" },
@@ -16,4 +17,4 @@ export const HPAS_SECTIONS = [
 ];
 
 /** Full mocks 1, 2, 3, … in order. */
-export const HPAS_MOCKS: PatwariQuestion[][] = [hpasMock1, hpasMock2];
+export const HPAS_MOCKS: PatwariQuestion[][] = [hpasMock1, hpasMock2, hpasMock3];
