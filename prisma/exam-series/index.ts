@@ -18,6 +18,7 @@ import { tgtPedagogy } from "./fresh/tgt-pedagogy";
 import { CLERK_MOCKS, HC_SECTIONALS, PROCESS_SERVER_MOCKS, STENO_MOCKS } from "../high-court";
 import { HP_TET_JBT_MOCKS, HP_TET_JBT_SECTIONALS } from "../hp-tet";
 import { TGT_ARTS_MOCKS, TGT_ARTS_SECTIONS, TGT_MEDICAL_MOCKS, TGT_MEDICAL_SECTIONS, TGT_NON_MEDICAL_MOCKS, TGT_NON_MEDICAL_SECTIONS } from "../hp-tet-tgt";
+import { HPAS_MOCKS, HPAS_SECTIONS } from "../hpas-series";
 import { PGIMER_MOCKS, PGIMER_SECTIONS } from "../pgimer";
 
 type Part = { n: number; pick: Pick } | PatwariQuestion[][];
@@ -320,6 +321,21 @@ const EXAMS: ExamDef[] = [
       "and pharmacology, child health and midwifery, community and mental health, nursing management and general knowledge.",
     sections: PGIMER_SECTIONS.map((sec, i) => S(sec.name, sec.nameHi, PGIMER_MOCKS.slice(0, 2).map((m) => m.filter((x) => x.s === i)))),
     extraMocks: PGIMER_MOCKS.slice(2),
+  },
+  // Written wholly fresh in prisma/hpas-series: mocks 1–2 go through the sections, mocks 3+ are extra mocks.
+  {
+    bodySlug: "hppsc",
+    examSlug: "hpas",
+    slug: "hpas",
+    name: "HPAS Prelims",
+    nameHi: "एचपीएएस प्रारंभिक परीक्षा",
+    minutes: 120,
+    price: 99,
+    description:
+      "Full-length HPAS prelims mock tests in the 100-question General Studies format: Himachal GK, Indian history and culture, " +
+      "polity and governance, geography and environment, economy, and science and technology.",
+    sections: HPAS_SECTIONS.map((sec, i) => S(sec.name, sec.nameHi, HPAS_MOCKS.slice(0, 2).map((m) => m.filter((x) => x.s === i)))),
+    extraMocks: HPAS_MOCKS.slice(2),
   },
   // Written wholly fresh in prisma/hp-tet-tgt: mocks 1–2 go through the sections, mocks 3+ are extra mocks.
   {
