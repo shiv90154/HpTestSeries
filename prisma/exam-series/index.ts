@@ -315,7 +315,7 @@ const EXAMS: ExamDef[] = [
     name: "PGIMER Nursing Officer",
     nameHi: "पीजीआईएमईआर नर्सिंग ऑफिसर",
     minutes: 100,
-    price: 99,
+    price: 149,
     description:
       "Full-length PGIMER Nursing Officer mock tests in the CBT format: fundamentals, anatomy and physiology, medical-surgical nursing " +
       "and pharmacology, child health and midwifery, community and mental health, nursing management and general knowledge.",
