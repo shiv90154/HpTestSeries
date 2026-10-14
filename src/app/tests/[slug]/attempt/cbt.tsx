@@ -36,6 +36,10 @@ type Stored = { q: Record<string, QState>; cur: number; lang: Lang; deadline?: n
 const AUTOSAVE_MS = 30_000;
 /** After time is up, how often a submit that didn't reach the server is retried (also retried on reconnect). */
 const SUBMIT_RETRY_MS = 20_000;
+/** Must match VIOLATION_FLAG_THRESHOLD in the assessment service: at this many the attempt is flagged and left out of the rank. */
+const VIOLATION_LIMIT = 5;
+/** How long an in-exam notice stays up. */
+const NOTICE_MS = 5000;
 
 function subscribeOnline(onChange: () => void) {
   window.addEventListener("online", onChange);
@@ -150,6 +154,10 @@ export function Cbt({
   const [submitIssue, setSubmitIssue] = useState<string | null>(null);
   /** The browser / phone Back button was pressed mid-exam: "Leave the test?" */
   const [leaveOpen, setLeaveOpen] = useState(false);
+  /** A short notice shown in the page flow under the section tabs: a toast at the top would cover the timer and tabs. */
+  const [notice, setNotice] = useState<{ text: string; tone: "warn" | "info"; id: number } | null>(null);
+  const noticeSeq = useRef(0);
+  const showNotice = useCallback((text: string, tone: "warn" | "info") => setNotice({ text, tone, id: ++noticeSeq.current }), []);
 
   const shownAt = useRef(0); // set when the exam starts
   const dirty = useRef(false);
@@ -221,9 +229,16 @@ export function Cbt({
     const now = Date.now();
     if (now - lastViolationToastAt.current > 4000) {
       lastViolationToastAt.current = now;
-      toast.warning(message);
+      const left = VIOLATION_LIMIT - violationsRef.current;
+      showNotice(left > 0 ? `${message} ${left} more and this attempt is left out of the rank.` : `${message} This attempt is now left out of the rank.`, "warn");
     }
-  }, []);
+  }, [showNotice]);
+
+  useEffect(() => {
+    if (!notice) return;
+    const id = setTimeout(() => setNotice(null), NOTICE_MS);
+    return () => clearTimeout(id);
+  }, [notice]);
 
   // Tab switch / minimise detection.
   useEffect(() => {
@@ -277,6 +292,10 @@ export function Cbt({
 
   function go(index: number, map = qs) {
     if (index < 0 || index >= flat.length) return;
+    // Real CBT rule: a choice that wasn't saved is dropped. Say so, instead of losing it silently.
+    if (map === qs && index !== cur && selection && selection !== qs[q.id]?.s) {
+      showNotice(`Your choice for Q${q.numberInSection} was not saved. Use Save & Next to save an answer.`, "warn");
+    }
     let next = commitTime(map);
     const target = flat[index];
     const st = next[target.id] ?? { v: false, m: false, t: 0 };
@@ -301,6 +320,8 @@ export function Cbt({
       if (demo) {
         setPaywall("finished");
         track("demo_paywall_view", { test_slug: paper.slug, reason: "finished" });
+      } else {
+        showNotice(`${selection ? "Answer saved. " : ""}This is the last question. Review others from the palette, or tap Submit when you're done.`, "info");
       }
     }
   }
@@ -450,9 +471,9 @@ export function Cbt({
         return;
       }
       setPhase("exam");
-      toast.error(`${message} Your answers are safe — please try submitting again.`);
+      showNotice(`${message} Your answers are safe — please try submitting again.`, "warn");
     }
-  }, [attemptId, candidate, commitTime, deadline, demo, dropGuard, paper.slug, preview, qs, router, serverAttempt, storeKey, submitIssue, toAnswers]);
+  }, [attemptId, candidate, commitTime, deadline, demo, dropGuard, paper.slug, preview, qs, router, serverAttempt, showNotice, storeKey, submitIssue, toAnswers]);
 
   // Clock + auto-submit at time up. The interval always calls the latest submit via a ref.
   const submitRef = useRef(submit);
@@ -687,7 +708,9 @@ export function Cbt({
             className="shrink-0 rounded-md bg-danger px-2 py-1 font-sans text-xs font-semibold text-white"
             title="Tab switches, fullscreen exits and copy/paste attempts recorded this test"
           >
-            {violations}<span className="hidden sm:inline"> flagged</span><span className="sm:hidden"> ⚠</span>
+            <span className="sm:hidden">⚠ </span>
+            {Math.min(violations, VIOLATION_LIMIT)}/{VIOLATION_LIMIT}
+            <span className="hidden sm:inline"> warnings</span>
           </span>
         )}
         <div
@@ -752,6 +775,19 @@ export function Cbt({
           </label>
         )}
       </section>
+
+      {notice && (
+        <div
+          key={notice.id}
+          role="status"
+          className={`flex items-start gap-2 px-4 py-2 font-sans text-sm ${notice.tone === "warn" ? "bg-danger-soft text-danger" : "bg-primary-soft text-primary"}`}
+        >
+          <p className="flex-1">{notice.text}</p>
+          <button type="button" onClick={() => setNotice(null)} className="-my-1 rounded-md p-1 hover:bg-black/5" aria-label="Dismiss">
+            <X className="size-4" />
+          </button>
+        </div>
+      )}
 
       {fullscreenLost && (
         <div className="flex items-center gap-3 bg-danger-soft px-4 py-2 font-sans text-sm text-danger">
@@ -902,8 +938,29 @@ export function Cbt({
             <h2 id="submit-title" className="bg-cbt-header px-5 py-3 font-semibold text-white">
               Exam Summary
             </h2>
-            {/* focusable so keyboard users can scroll the wide table sideways */}
-            <div className="overflow-x-auto p-4" tabIndex={0} role="region" aria-label="Exam summary by section">
+            <div className="max-h-[60dvh] overflow-y-auto p-4 sm:max-h-none">
+              {/* Phones: one card per section, so nothing scrolls sideways at 360px */}
+              <ul className="space-y-2 sm:hidden">
+                {paper.sections.map((s, si) => {
+                  const c = counts.perSection[si];
+                  return (
+                    <li key={s.id} className="rounded-lg border border-border p-3 text-sm">
+                      <p className="font-medium">
+                        {s.name} <span className="font-normal text-muted">· {s.questions.length} Q</span>
+                      </p>
+                      <dl className="mt-2 grid grid-cols-2 gap-x-3 gap-y-1 text-xs">
+                        <SummaryItem label="Answered" value={c.answered} className="text-cbt-answered" />
+                        <SummaryItem label="Not Answered" value={c.notAnswered} className="text-cbt-not-answered" />
+                        <SummaryItem label="Marked" value={c.marked} className="text-cbt-marked" />
+                        <SummaryItem label="Ans. & Marked" value={c.answeredMarked} className="text-cbt-marked" />
+                        <SummaryItem label="Not Visited" value={c.notVisited} />
+                      </dl>
+                    </li>
+                  );
+                })}
+              </ul>
+              {/* focusable so keyboard users can scroll the wide table sideways */}
+              <div className="hidden overflow-x-auto sm:block" tabIndex={0} role="region" aria-label="Exam summary by section">
               <table className="w-full min-w-[560px] text-center text-sm">
                 <thead className="bg-surface-muted text-xs text-muted">
                   <tr>
@@ -933,6 +990,7 @@ export function Cbt({
                   })}
                 </tbody>
               </table>
+              </div>
               <p className="mt-3 text-xs text-muted">
                 &ldquo;Answered &amp; Marked for Review&rdquo; questions will be evaluated. Unsaved selections are not counted.
               </p>
@@ -942,8 +1000,8 @@ export function Cbt({
                 </p>
               )}
             </div>
-            <div className="flex items-center justify-end gap-3 border-t border-border p-4">
-              <p className="mr-auto text-sm font-medium">Are you sure you want to submit the test?</p>
+            <div className="flex flex-wrap items-center justify-end gap-3 border-t border-border p-4">
+              <p className="w-full text-sm font-medium sm:mr-auto sm:w-auto">Are you sure you want to submit the test?</p>
               <button type="button" onClick={() => setConfirmOpen(false)} className="cbt-btn border border-border bg-white">
                 No
               </button>
@@ -1035,6 +1093,15 @@ const statusStyle: Record<Status, string> = {
   marked: "bg-cbt-marked text-white rounded-full",
   answeredMarked: "bg-cbt-marked text-white rounded-full",
 };
+
+function SummaryItem({ label, value, className = "" }: { label: string; value: number; className?: string }) {
+  return (
+    <div className="flex justify-between gap-2">
+      <dt className="text-muted">{label}</dt>
+      <dd className={`font-semibold tabular-nums ${className}`}>{value}</dd>
+    </div>
+  );
+}
 
 function PaletteButton({ n, status, current, onClick }: { n: number; status: Status; current: boolean; onClick: () => void }) {
   return (
@@ -1163,7 +1230,8 @@ function Instructions(props: {
                 <li><b>Mark for Review &amp; Next</b> प्रश्न को बाद में देखने के लिए चिह्नित करता है। चिह्नित प्रश्न का चुना हुआ उत्तर भी मूल्यांकित होगा।</li>
                 <li>चुना हुआ उत्तर हटाने के लिए <b>Clear Response</b> पर क्लिक करें।</li>
                 <li>ऊपर दिए सेक्शन टैब से किसी भी सेक्शन में जा सकते हैं, और &ldquo;View in&rdquo; से भाषा बदल सकते हैं।</li>
-                <li>टेस्ट फुलस्क्रीन में शुरू होगा। टैब बदलना, फुलस्क्रीन से बाहर जाना या कॉपी करने की कोशिश दर्ज की जाएगी।</li>
+                <li>टेस्ट फुलस्क्रीन में शुरू होगा। टैब बदलना, फुलस्क्रीन से बाहर जाना या कॉपी करने की कोशिश दर्ज की जाएगी। फ़ोन पर कॉल उठाना या नोटिफ़िकेशन खोलना भी टैब बदलना गिना जाता है।</li>
+                <li>ऐसी {VIOLATION_LIMIT} चेतावनियों के बाद आपका प्रयास फ़्लैग हो जाएगा और रैंक में नहीं गिना जाएगा।</li>
               </>
             ) : (
               <>
@@ -1173,7 +1241,8 @@ function Instructions(props: {
                 <li><b>Mark for Review &amp; Next</b> flags a question to revisit. A selected answer on a marked question is still evaluated.</li>
                 <li>Click <b>Clear Response</b> to remove your selected answer.</li>
                 <li>Use the section tabs at the top to switch sections, and &ldquo;View in&rdquo; to switch between English and Hindi at any time.</li>
-                <li>The test opens in fullscreen. Switching tabs, leaving fullscreen or trying to copy content is recorded.</li>
+                <li>The test opens in fullscreen. Switching tabs, leaving fullscreen or trying to copy content is recorded. On a phone, taking a call or opening notifications also counts as switching.</li>
+                <li>After {VIOLATION_LIMIT} such warnings the attempt is flagged and left out of the rank.</li>
               </>
             )}
           </ol>

@@ -135,16 +135,18 @@ export default async function TestDetailPage({ params }: PageProps<"/tests/[slug
           <table className="w-full text-sm">
             <thead className="bg-surface-muted text-left text-xs text-muted">
               <tr>
-                <th className="px-5 py-2">Section</th>
+                <th className="px-4 py-2 sm:px-5">Section</th>
                 <th className="px-3 py-2 text-right sm:px-5">Questions</th>
-                <th className="px-3 py-2 text-right sm:px-5">Correct</th>
-                <th className="px-3 py-2 text-right sm:px-5">Wrong</th>
+                {/* Phones: Correct and Wrong share one column, or the table is wider than the screen */}
+                <th className="px-3 py-2 text-right sm:hidden">Marks</th>
+                <th className="hidden px-5 py-2 text-right sm:table-cell">Correct</th>
+                <th className="hidden px-5 py-2 text-right sm:table-cell">Wrong</th>
               </tr>
             </thead>
             <tbody>
               {t.sections.map((s) => (
                 <tr key={s.name} className="border-t border-border">
-                  <td className="px-5 py-3">
+                  <td className="px-4 py-3 sm:px-5">
                     {s.name}
                     {s.nameHi && (
                       <span lang="hi" className="block text-xs text-muted sm:ml-2 sm:inline sm:text-sm">
@@ -154,8 +156,17 @@ export default async function TestDetailPage({ params }: PageProps<"/tests/[slug
                     {s.topics.length > 0 && <span className="mt-0.5 block text-xs text-muted">Topics: {s.topics.join(", ")}</span>}
                   </td>
                   <td className="px-3 py-3 text-right tabular-nums sm:px-5">{s.count}</td>
-                  <td className="px-3 py-3 text-right tabular-nums text-success sm:px-5">+{s.marksCorrect}</td>
-                  <td className={`px-3 py-3 text-right tabular-nums sm:px-5 ${s.marksWrong ? "text-danger" : "text-muted"}`}>
+                  <td className="px-3 py-3 text-right tabular-nums sm:hidden">
+                    <span className="block text-success">
+                      <span className="sr-only">Correct </span>+{s.marksCorrect}
+                    </span>
+                    <span className={`block ${s.marksWrong ? "text-danger" : "text-muted"}`}>
+                      <span className="sr-only">Wrong </span>
+                      {s.marksWrong ? `−${s.marksWrong}` : "0"}
+                    </span>
+                  </td>
+                  <td className="hidden px-5 py-3 text-right tabular-nums text-success sm:table-cell">+{s.marksCorrect}</td>
+                  <td className={`hidden px-5 py-3 text-right tabular-nums sm:table-cell ${s.marksWrong ? "text-danger" : "text-muted"}`}>
                     {s.marksWrong ? `−${s.marksWrong}` : "0"}
                   </td>
                 </tr>
