@@ -91,7 +91,7 @@ export async function quoteCoupon(userId: string, rawCode: string, pricePaise: n
   const used = await db.order.count({ where: { userId, couponId: coupon.id, status: "PAID" } });
   if (used > 0) return { error: "You have already used this coupon." };
   const hasPaidBefore = coupon.referrerId ? (await db.order.count({ where: { userId, status: "PAID" } })) > 0 : false;
-  const refProblem = referralCouponProblem(coupon, userId, hasPaidBefore);
+  const refProblem = referralCouponProblem(coupon, userId, hasPaidBefore, pricePaise);
   if (refProblem) return { error: refProblem };
   return { couponId: coupon.id, code: coupon.code, ...applyCoupon(pricePaise, coupon) };
 }

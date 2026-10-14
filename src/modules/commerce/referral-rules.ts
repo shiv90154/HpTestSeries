@@ -7,6 +7,8 @@ export const FRIEND_DISCOUNT_PAISE = 5000;
 export const REWARD_PAISE = 5000;
 /** Cap per referrer, so a fake-account ring can't farm unlimited credit. */
 export const MAX_REWARDS_PER_USER = 20;
+/** Referral codes work only on plans priced above this; cheaper ones are already at the lowest price. */
+export const MIN_REFERRAL_PRICE_PAISE = 9900;
 
 export const REFERRAL_COOKIE = "hp_ref";
 export const REFERRAL_COOKIE_MAX_AGE = 30 * 86_400;
@@ -25,11 +27,19 @@ export function isReferralLinkCode(code: string): boolean {
   return /^[A-Z0-9][A-Z0-9_-]{2,23}$/.test(code);
 }
 
-/** Why `userId` can't use this coupon, or null. Plain coupons (no referrerId) are open to everyone. */
-export function referralCouponProblem(c: { referrerId: string | null }, userId: string, hasPaidBefore: boolean): string | null {
+/** Whether a plan at this price can take a referral code. */
+export function referralAllowedFor(pricePaise: number): boolean {
+  return pricePaise > MIN_REFERRAL_PRICE_PAISE;
+}
+
+export const REFERRAL_LOW_PRICE_MESSAGE = "Referral codes work on plans above ₹99. This plan is already at our lowest price, so keep your code for a bigger series!";
+
+/** Why `userId` can't use this coupon on a plan at `pricePaise`, or null. Plain coupons (no referrerId) are open to everyone. */
+export function referralCouponProblem(c: { referrerId: string | null }, userId: string, hasPaidBefore: boolean, pricePaise: number): string | null {
   if (!c.referrerId) return null;
   if (c.referrerId === userId) return "You can't use your own referral code.";
   if (hasPaidBefore) return "Referral codes are for your first purchase only.";
+  if (!referralAllowedFor(pricePaise)) return REFERRAL_LOW_PRICE_MESSAGE;
   return null;
 }
 

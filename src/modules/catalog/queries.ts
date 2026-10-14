@@ -268,12 +268,13 @@ export async function getExamSubPages() {
       pattern: true,
       body: { select: { slug: true } },
       _count: { select: { tests: { where: { ...liveTestWhere(), type: "PYQ" } } } },
+      tests: latestTestSelect(),
     },
   });
   return exams.map((e) => ({
     body: e.body.slug,
     exam: e.slug,
-    updatedAt: e.updatedAt,
+    updatedAt: lastChanged(e),
     syllabus: !!e.syllabus?.trim(),
     pattern: parsePattern(e.pattern) !== null,
     pyq: e._count.tests > 0,
@@ -284,9 +285,19 @@ export async function getExamSubPages() {
 export async function getExamsWithTests() {
   const exams = await db.exam.findMany({
     where: { isActive: true, tests: { some: liveTestWhere() } },
-    select: { slug: true, updatedAt: true, body: { select: { slug: true } } },
+    select: { slug: true, updatedAt: true, body: { select: { slug: true } }, tests: latestTestSelect() },
   });
-  return exams.map((e) => ({ body: e.body.slug, exam: e.slug, updatedAt: e.updatedAt }));
+  return exams.map((e) => ({ body: e.body.slug, exam: e.slug, updatedAt: lastChanged(e) }));
+}
+
+// Exam pages list the exam's tests, so for the sitemap they change whenever a live test is added or edited.
+function latestTestSelect() {
+  return { where: liveTestWhere(), orderBy: { updatedAt: "desc" as const }, take: 1, select: { updatedAt: true } };
+}
+
+function lastChanged(e: { updatedAt: Date; tests: { updatedAt: Date }[] }) {
+  const t = e.tests[0]?.updatedAt;
+  return t && t > e.updatedAt ? t : e.updatedAt;
 }
 
 /** The ### / ## headings of a markdown syllabus, for the "syllabus at a glance" list on the exam page. */
@@ -357,7 +368,7 @@ export const getPost = cache(async (slug: string) => {
       author: { select: { name: true } },
       exams: {
         where: { isActive: true },
-        select: { id: true, slug: true, name: true, body: { select: { slug: true } } },
+        select: { id: true, slug: true, name: true, syllabus: true, body: { select: { slug: true } } },
       },
     },
   });
@@ -366,7 +377,12 @@ export const getPost = cache(async (slug: string) => {
     ...p,
     publishedAt: p.publishedAt ?? p.updatedAt,
     faqs: parseFaqs(p.faqs),
-    exams: p.exams.map((e) => ({ id: e.id, name: examLabel(e.body.slug, e.name), href: `/${e.body.slug}/${e.slug}` })),
+    exams: p.exams.map((e) => ({
+      id: e.id,
+      name: examLabel(e.body.slug, e.name),
+      href: `/${e.body.slug}/${e.slug}`,
+      syllabusHref: e.syllabus?.trim() ? `/${e.body.slug}/${e.slug}/syllabus` : null,
+    })),
   };
 });
 

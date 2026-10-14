@@ -7,7 +7,7 @@ import { btn, card } from "@/components/ui";
 import { rupees } from "@/lib/money";
 import { site } from "@/lib/site";
 import { getReferralSummary } from "@/modules/commerce/referral";
-import { FRIEND_DISCOUNT_PAISE, MAX_REWARDS_PER_USER, REWARD_PAISE, referralLink } from "@/modules/commerce/referral-rules";
+import { FRIEND_DISCOUNT_PAISE, MAX_REWARDS_PER_USER, MIN_REFERRAL_PRICE_PAISE, REWARD_PAISE, referralLink } from "@/modules/commerce/referral-rules";
 import { getWalletBalance, getWalletHistory } from "@/modules/commerce/wallet";
 import { requireUser } from "@/modules/identity/session";
 
@@ -36,7 +36,7 @@ export default async function ReferPage() {
             <Gift className="size-6 text-primary" /> Refer a friend
           </h1>
           <p className="mt-1 text-sm text-muted">
-            Your friend saves {rupees(FRIEND_DISCOUNT_PAISE)} on their first purchase. When they pay, {rupees(REWARD_PAISE)} is added to your HP wallet.
+            Your friend saves {rupees(FRIEND_DISCOUNT_PAISE)} on their first purchase of a plan above {rupees(MIN_REFERRAL_PRICE_PAISE)}. When they pay, {rupees(REWARD_PAISE)} is added to your HP wallet.
           </p>
         </div>
 
@@ -61,7 +61,7 @@ export default async function ReferPage() {
           </div>
           <ShareButtons
             url={link}
-            text={`Practice Himachal exam mock tests on ${site.name}. Use my code ${summary.code} and get ${rupees(FRIEND_DISCOUNT_PAISE)} off your first purchase.`}
+            text={`Practice Himachal exam mock tests on ${site.name}. Use my code ${summary.code} and get ${rupees(FRIEND_DISCOUNT_PAISE)} off your first purchase above ${rupees(MIN_REFERRAL_PRICE_PAISE)}.`}
             label="Send it to a friend"
           />
         </section>
@@ -70,11 +70,11 @@ export default async function ReferPage() {
           <h2 className="mb-3 font-semibold">How it works</h2>
           <ol className="list-decimal space-y-1.5 pl-5 text-sm">
             <li>Share your link or code with a friend preparing for an HP exam.</li>
-            <li>They enter the code on the buy page and pay {rupees(FRIEND_DISCOUNT_PAISE)} less on their first purchase.</li>
+            <li>They enter the code on the buy page and pay {rupees(FRIEND_DISCOUNT_PAISE)} less on their first purchase of a plan above {rupees(MIN_REFERRAL_PRICE_PAISE)}.</li>
             <li>As soon as their payment goes through, {rupees(REWARD_PAISE)} is added to your wallet. On the buy page, tick &ldquo;Use my HP wallet&rdquo; to spend it.</li>
           </ol>
           <p className="mt-3 text-xs text-muted">
-            You can&apos;t use your own code, a code works only on a friend&apos;s first purchase, and you can earn from up to {MAX_REWARDS_PER_USER} friends.
+            You can&apos;t use your own code, a code works only on a friend&apos;s first purchase of a plan above {rupees(MIN_REFERRAL_PRICE_PAISE)}, and you can earn from up to {MAX_REWARDS_PER_USER} friends.
           </p>
         </section>
 

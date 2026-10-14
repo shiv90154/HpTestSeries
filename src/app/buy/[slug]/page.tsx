@@ -12,7 +12,7 @@ import { getProductForSale } from "@/modules/commerce/product-service";
 import { perTestLabel } from "@/modules/commerce/value";
 import { getOwnership } from "@/modules/commerce/purchases";
 import { getWalletBalance } from "@/modules/commerce/wallet";
-import { REFERRAL_COOKIE } from "@/modules/commerce/referral-rules";
+import { REFERRAL_COOKIE, REFERRAL_LOW_PRICE_MESSAGE, referralAllowedFor } from "@/modules/commerce/referral-rules";
 import { getCurrentUser } from "@/modules/identity/session";
 import { BuyButton } from "./buy-button";
 
@@ -33,8 +33,12 @@ export default async function BuyPage({ params }: PageProps<"/buy/[slug]">) {
   const { slug } = await params;
   const [product, user] = await Promise.all([getProductForSale(slug), getCurrentUser()]);
   if (!product) notFound();
-  // A friend's shared link (/r/<code>) leaves its code in a cookie; pre-fill it in the coupon box.
-  const referralCode = (await cookies()).get(REFERRAL_COOKIE)?.value ?? "";
+  // A friend's shared link (/r/<code>) leaves its code in a cookie; pre-fill it in the coupon box. Plans at ₹99 or
+  // less can't take a referral code, so the student sees a friendly note instead of a code that would be refused.
+  const cookieCode = (await cookies()).get(REFERRAL_COOKIE)?.value ?? "";
+  const referralOk = referralAllowedFor(product.priceInPaise);
+  const referralCode = referralOk ? cookieCode : "";
+  const referralNote = referralOk ? undefined : REFERRAL_LOW_PRICE_MESSAGE;
 
   const walletPaise = user ? await getWalletBalance(user.id) : 0;
 
@@ -125,7 +129,7 @@ export default async function BuyPage({ params }: PageProps<"/buy/[slug]">) {
                   don&apos;t lose any days.
                 </p>
               )}
-              <BuyButton productSlug={product.slug} pricePaise={product.priceInPaise} user={user} label={own.kind === "renewable" ? "Renew now" : undefined} initialCode={referralCode} walletPaise={walletPaise} />
+              <BuyButton productSlug={product.slug} pricePaise={product.priceInPaise} user={user} label={own.kind === "renewable" ? "Renew now" : undefined} initialCode={referralCode} referralNote={referralNote} showReferralNote={!!cookieCode} walletPaise={walletPaise} />
             </>
           )}
           <div className="space-y-2 text-xs text-muted">

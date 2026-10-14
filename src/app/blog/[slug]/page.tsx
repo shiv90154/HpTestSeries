@@ -55,6 +55,9 @@ export default async function PostPage({ params }: PageProps<"/blog/[slug]">) {
   const updated = post.updatedAt.getTime() - post.publishedAt.getTime() > 24 * 3600 * 1000;
   const [related, tests] = await Promise.all([getRelatedPosts(post), getPublishedTests(post.exams[0] ? { examId: post.exams[0].id } : {})]);
   const freeTest = tests.find((t) => t.isFree);
+  // In-article links to the exam's own tests (not the general ones), so new test pages get found and crawled from posts.
+  const exam = post.exams[0];
+  const examTests = exam ? tests.filter((t) => t.examName).slice(0, 6) : [];
 
   return (
     <>
@@ -130,6 +133,36 @@ export default async function PostPage({ params }: PageProps<"/blog/[slug]">) {
           )}
 
           <Markdown text={post.content} />
+
+          {exam && (examTests.length > 0 || exam.syllabusHref) && (
+            <section className={`${card} space-y-3 p-5`}>
+              <h2 className="text-xl font-bold tracking-tight">Practise for {exam.name}</h2>
+              {examTests.length > 0 && (
+                <ul className="divide-y divide-border text-sm">
+                  {examTests.map((t) => (
+                    <li key={t.slug}>
+                      <Link href={`/tests/${t.slug}`} className="flex items-center justify-between gap-3 py-2.5 hover:text-primary">
+                        <span className="font-medium">{t.title}</span>
+                        <span className="shrink-0 text-xs text-muted">
+                          {t.questionCount} Q · {t.isFree ? "Free" : "Paid"}
+                        </span>
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              )}
+              <p className="flex flex-wrap gap-x-5 gap-y-1 text-sm">
+                <Link href={exam.href} className="font-medium text-primary hover:underline">
+                  All {exam.name} tests →
+                </Link>
+                {exam.syllabusHref && (
+                  <Link href={exam.syllabusHref} className="font-medium text-primary hover:underline">
+                    {exam.name} syllabus →
+                  </Link>
+                )}
+              </p>
+            </section>
+          )}
 
           <p className="rounded-xl border border-border bg-surface-muted p-4 text-sm text-muted">
             Always confirm dates, vacancies and eligibility with the official notification of the recruiting body before applying.

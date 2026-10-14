@@ -25,6 +25,8 @@ export function BuyButton({
   user,
   label = "Buy now",
   initialCode = "",
+  referralNote,
+  showReferralNote = false,
   walletPaise = 0,
 }: {
   productSlug: string;
@@ -33,6 +35,10 @@ export function BuyButton({
   label?: string;
   /** a referral code from the friend's shared link; pre-filled, the student still taps Apply */
   initialCode?: string;
+  /** set when this plan is too cheap for referral codes; the server refuses them with this same text */
+  referralNote?: string;
+  /** the student came from a friend's referral link, so show `referralNote` up front */
+  showReferralNote?: boolean;
   /** the student's HP wallet balance; spent first when they tick the box */
   walletPaise?: number;
 }) {
@@ -177,9 +183,14 @@ export function BuyButton({
               {checking ? "Checking…" : "Apply"}
             </button>
           </div>
-          {couponError && (
+          {couponError && couponError !== referralNote && (
             <p role="alert" className="text-xs text-danger">
               {couponError}
+            </p>
+          )}
+          {referralNote && (showReferralNote || couponError === referralNote) && (
+            <p role="status" className="rounded-lg bg-accent-soft p-2.5 text-xs">
+              {referralNote}
             </p>
           )}
         </div>
