@@ -42,6 +42,8 @@ export default async function TestDetailPage({ params }: PageProps<"/tests/[slug
   const demo = t.demo;
   const hasDemo = !!demo;
   const buy = t.isFree ? null : await getBuyOptionForSeries(t.series.map((s) => s.seriesId));
+  const more = t.exam ? (await getPublishedTests({ examId: t.exam.id })).filter((x) => x.slug !== slug && x.examName).slice(0, 6) : [];
+  const intro = testIntro(t);
 
   return (
     <>
@@ -102,6 +104,11 @@ export default async function TestDetailPage({ params }: PageProps<"/tests/[slug
           )}
         </header>
 
+        <section className="space-y-2">
+          <h2 className="font-semibold">About this test</h2>
+          <p className="max-w-2xl text-foreground/85">{intro}</p>
+        </section>
+
         {t.live && <LiveBanner live={t.live} prizes={t.prizes} slug={slug} />}
 
         <dl className="grid grid-cols-2 gap-3 sm:grid-cols-4">
@@ -144,6 +151,7 @@ export default async function TestDetailPage({ params }: PageProps<"/tests/[slug
                         {s.nameHi}
                       </span>
                     )}
+                    {s.topics.length > 0 && <span className="mt-0.5 block text-xs text-muted">Topics: {s.topics.join(", ")}</span>}
                   </td>
                   <td className="px-3 py-3 text-right tabular-nums sm:px-5">{s.count}</td>
                   <td className="px-3 py-3 text-right tabular-nums text-success sm:px-5">+{s.marksCorrect}</td>
@@ -207,8 +215,54 @@ export default async function TestDetailPage({ params }: PageProps<"/tests/[slug
             The free demo has the first {demo.percent}% of every section ({demo.freeTotal} of {demo.freeTotal + demo.lockedTotal} questions). It is not saved and does not affect your rank.
           </p>
         )}
+
+        {t.exam && (
+          <section className="space-y-3">
+            <h2 className="font-semibold">Prepare for {t.exam.name}</h2>
+            <ul className="flex flex-wrap gap-x-5 gap-y-2 text-sm">
+              <li>
+                <Link href={t.exam.href} className="font-medium text-primary hover:underline">
+                  {t.exam.name} exam pattern &amp; all tests
+                </Link>
+              </li>
+              {t.exam.syllabusHref && (
+                <li>
+                  <Link href={t.exam.syllabusHref} className="font-medium text-primary hover:underline">
+                    {t.exam.name} syllabus
+                  </Link>
+                </li>
+              )}
+            </ul>
+            {more.length > 0 && (
+              <ul className="divide-y divide-border rounded-xl border border-border text-sm">
+                {more.map((x) => (
+                  <li key={x.slug}>
+                    <Link href={`/tests/${x.slug}`} className="flex items-center justify-between gap-3 px-4 py-3 hover:bg-surface-muted">
+                      <span className="font-medium">{x.title}</span>
+                      <span className="shrink-0 text-xs text-muted">
+                        {x.questionCount} Q · {x.durationMin} min · {x.isFree ? "Free" : "Paid"}
+                      </span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </section>
+        )}
       </main>
       <SiteFooter />
     </>
   );
+}
+
+type TestMeta = NonNullable<Awaited<ReturnType<typeof getTestMeta>>>;
+
+/** A short, test-specific description so each test page has its own text, not just a table. */
+function testIntro(t: TestMeta) {
+  const kind = { MOCK: "full-length mock test", PYQ: "previous year paper", SECTIONAL: "sectional test", TOPIC: "topic test", DAILY: "daily quiz" }[t.type];
+  const forExam = t.exam ? ` for the ${t.exam.name} exam` : "";
+  const sections = t.sections.map((s) => `${s.name} (${s.count})`).join(", ");
+  const neg = t.sections.some((s) => s.marksWrong) ? "Wrong answers carry negative marks as shown below." : "There is no negative marking.";
+  const access = t.isFree ? "It is free and needs no login." : t.demo ? "It is part of a paid series, with a free demo of the first questions in every section." : "It is part of a paid series.";
+  return `${t.title} is a ${kind}${forExam} with ${t.questionCount} questions in ${t.sections.length} section${t.sections.length === 1 ? "" : "s"}: ${sections}. You get ${Math.round(t.durationSec / 60)} minutes for ${t.maxScore} marks. ${neg} ${access} After submitting you get your score, rank and detailed solutions.`;
 }

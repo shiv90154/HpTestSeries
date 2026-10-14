@@ -36,7 +36,7 @@ const fullTestInclude = {
   },
   series: { select: { seriesId: true } },
   prizes: { orderBy: { rank: "asc" }, select: { rank: true, title: true, awardedAt: true, winner: { select: { name: true } } } },
-  exam: { select: { slug: true, name: true, isActive: true, body: { select: { slug: true } } } },
+  exam: { select: { id: true, slug: true, name: true, isActive: true, syllabus: true, body: { select: { slug: true } } } },
 } satisfies Prisma.TestInclude;
 
 type FullTest = Prisma.TestGetPayload<{ include: typeof fullTestInclude }>;
@@ -106,14 +106,29 @@ export async function getTestMeta(slug: string) {
       count: s.questions.length,
       marksCorrect: Number(s.marksCorrect),
       marksWrong: Number(s.marksWrong),
+      topics: topTopics(s.questions.map((q) => q.question.topics.map((qt) => qt.topic.name))),
     })),
     series: t.series,
     live: isLiveTest(t) ? { startsAt: t.liveStartsAt!.toISOString(), endsAt: t.liveEndsAt!.toISOString() } : null,
     // Winners' names appear only once an admin has confirmed them.
     prizes: t.prizes.map((p) => ({ rank: p.rank, title: p.title, winner: p.awardedAt && p.winner ? publicName(p.winner.name) : null })),
     // Hub pages exist only for active exams.
-    exam: t.exam?.isActive ? { name: examLabel(t.exam.body.slug, t.exam.name), href: `/${t.exam.body.slug}/${t.exam.slug}` } : null,
+    exam: t.exam?.isActive
+      ? {
+          id: t.exam.id,
+          name: examLabel(t.exam.body.slug, t.exam.name),
+          href: `/${t.exam.body.slug}/${t.exam.slug}`,
+          syllabusHref: t.exam.syllabus?.trim() ? `/${t.exam.body.slug}/${t.exam.slug}/syllabus` : null,
+        }
+      : null,
   };
+}
+
+/** The most-asked topics of a section, for the public test page. */
+function topTopics(perQuestion: string[][], limit = 4) {
+  const counts = new Map<string, number>();
+  for (const names of perQuestion) for (const n of names) counts.set(n, (counts.get(n) ?? 0) + 1);
+  return [...counts].sort((a, b) => b[1] - a[1]).slice(0, limit).map(([n]) => n);
 }
 
 /** Admin "view as student": the paper of a test in any status, drafts included. */
