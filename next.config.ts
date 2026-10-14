@@ -29,6 +29,8 @@ const nextConfig: NextConfig = {
   async headers() {
     return [
       { source: "/:path*", headers: securityHeaders(isDev) },
+      // Share-preview images: social crawlers still fetch them, but Google should not list them as pages.
+      { source: "/:path(.*opengraph-image.*)", headers: [{ key: "X-Robots-Tag", value: "noindex" }] },
       ...privatePaths.map((source) => ({ source, headers: [{ key: "Cache-Control", value: "private, no-store" }] })),
     ];
   },
