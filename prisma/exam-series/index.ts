@@ -15,7 +15,7 @@ import { libraryScience } from "./fresh/library-science";
 import { nursingCommunity, nursingFundamentals, nursingMedSurg } from "./fresh/nursing";
 import { tetCdp } from "./fresh/tet-cdp";
 import { tgtPedagogy } from "./fresh/tgt-pedagogy";
-import { CLERK_MOCKS, HC_SECTIONALS, PROCESS_SERVER_MOCKS, STENO_MOCKS } from "../high-court";
+import { CLERK_MOCKS, HC_SECTIONALS, PROCESS_SERVER_MOCKS, PROCESS_SERVER_SCREENING_TESTS, STENO_MOCKS } from "../high-court";
 import { HP_TET_JBT_MOCKS, HP_TET_JBT_SECTIONALS } from "../hp-tet";
 import { TGT_ARTS_MOCKS, TGT_ARTS_SECTIONS, TGT_MEDICAL_MOCKS, TGT_MEDICAL_SECTIONS, TGT_NON_MEDICAL_MOCKS, TGT_NON_MEDICAL_SECTIONS } from "../hp-tet-tgt";
 import { LT_MOCKS, LT_SECTIONALS, LT_SECTIONS, SHASTRI_MOCKS, SHASTRI_SECTIONALS, SHASTRI_SECTIONS } from "../hp-tet-lang";
@@ -241,7 +241,7 @@ const EXAMS: ExamDef[] = [
     price: 149,
     description: "Full-length HP High Court Process Server mock tests: Himachal GK, general studies, reasoning, maths, Hindi and English.",
     extraMocks: PROCESS_SERVER_MOCKS,
-    extraTests: HC_SECTIONALS,
+    extraTests: [...PROCESS_SERVER_SCREENING_TESTS, ...HC_SECTIONALS],
     sections: [
       S("Himachal GK", "हिमाचल सामान्य ज्ञान", from(25, hpGk)),
       S("General Studies", "सामान्य अध्ययन", from(30, gs)),

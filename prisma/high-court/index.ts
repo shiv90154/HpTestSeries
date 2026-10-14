@@ -8,6 +8,8 @@ import type { PatwariQuestion, TestDef } from "../patwari/types";
 import { processServerMock3 } from "./process-server-mock3";
 import { processServerMock4 } from "./process-server-mock4";
 import { processServerMock5 } from "./process-server-mock5";
+import { processServerScreening1 } from "./process-server-screening1";
+import { processServerScreening2 } from "./process-server-screening2";
 import { clerkMock3 } from "./clerk-mock3";
 import { clerkMock4 } from "./clerk-mock4";
 import { clerkMock5 } from "./clerk-mock5";
@@ -48,3 +50,32 @@ export const HC_SECTIONALS: TestDef[] = SUBJECTS.flatMap((sub) =>
 export const PROCESS_SERVER_MOCKS: PatwariQuestion[][] = [processServerMock3, processServerMock4, processServerMock5];
 export const STENO_MOCKS: PatwariQuestion[][] = [stenoMock3, stenoMock4, stenoMock5];
 export const CLERK_MOCKS: PatwariQuestion[][] = [clerkMock3, clerkMock4, clerkMock5];
+
+// The 2022–23 Process Server drive opened with a 50-mark, one-hour objective screening test (1:5 shortlist) before the
+// descriptive paper, so these mocks copy that shape. The descriptive Hindi essay and English letter cannot be marked in
+// the CBT; the blog post on them carries the formats and model answers.
+const SCREENING_SECTIONS = [
+  { name: "Himachal GK", nameHi: "हिमाचल सामान्य ज्ञान" },
+  { name: "General Studies", nameHi: "सामान्य अध्ययन" },
+  { name: "Reasoning", nameHi: "तर्कशक्ति" },
+  { name: "Mathematics", nameHi: "गणित" },
+  { name: "Hindi & English", nameHi: "हिंदी एवं अंग्रेज़ी" },
+];
+
+export const PROCESS_SERVER_SCREENING_MOCKS: PatwariQuestion[][] = [processServerScreening1, processServerScreening2];
+
+export const PROCESS_SERVER_SCREENING_TESTS: TestDef[] = PROCESS_SERVER_SCREENING_MOCKS.map((questions, i) => ({
+  slug: `hp-high-court-process-server-screening-mock-${i + 1}`,
+  title: `HP High Court Process Server Screening Mock ${i + 1}`,
+  titleHi: `एचपी हाई कोर्ट प्रोसेस सर्वर स्क्रीनिंग मॉक ${i + 1}`,
+  type: "MOCK" as const,
+  durationSec: 60 * 60,
+  instructions:
+    `Screening-pattern mock for HP High Court Process Server: ${questions.length} questions, ${questions.length} marks, 60 minutes, ` +
+    "the shape of the High Court's 2022 screening test (check the 2026 notification for this drive's scheme). " +
+    "Sections: Himachal GK 15, General Studies 15, Reasoning 7, Mathematics 7, Hindi & English 6; the split is ours, not official. " +
+    `Each correct answer gives 1 mark and each wrong answer deducts 0.25 marks. The paper is set ${level(questions)}. ` +
+    "You can switch between Hindi and English at any time.",
+  sections: SCREENING_SECTIONS,
+  questions,
+}));

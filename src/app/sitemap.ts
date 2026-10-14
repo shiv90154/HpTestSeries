@@ -10,20 +10,26 @@ import { CATEGORY_META } from "@/modules/content/post-input";
 export const revalidate = 3600;
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const [exams, withTests, catalog, tests, posts] = await Promise.all([
+  const [exams, withTests, catalog, tests, posts, liveTests] = await Promise.all([
     getExamSubPages(),
     getExamsWithTests(),
     getCatalog(),
     db.test.findMany({ where: liveTestWhere(), select: { slug: true, updatedAt: true } }),
     getAllPostSlugs(),
+    db.test.count({ where: { ...liveTestWhere(), liveStartsAt: { not: null } } }),
   ]);
-  const latestPost = posts.reduce<Date | undefined>((d, p) => (!d || p.updatedAt > d ? p.updatedAt : d), undefined);
+  const latest = (rows: { updatedAt: Date }[]) => rows.reduce<Date | undefined>((d, r) => (!d || r.updatedAt > d ? r.updatedAt : d), undefined);
+  const latestPost = latest(posts);
+  // The home page, /tests and /exams list tests, so they change whenever a live test is added or edited.
+  const latestTest = latest(tests);
   // Only categories that have posts — empty listing pages are thin content.
   const categories = [...new Set(posts.map((p) => p.category))];
   return [
-    { url: site.url, changeFrequency: "daily", priority: 1 },
-    { url: `${site.url}/exams`, changeFrequency: "weekly", priority: 0.9 },
-    { url: `${site.url}/tests`, changeFrequency: "daily", priority: 0.9 },
+    { url: site.url, lastModified: latestTest, changeFrequency: "daily", priority: 1 },
+    { url: `${site.url}/exams`, lastModified: latestTest, changeFrequency: "weekly", priority: 0.9 },
+    { url: `${site.url}/tests`, lastModified: latestTest, changeFrequency: "daily", priority: 0.9 },
+    // /live lists scheduled live tests; with none it is an empty page, so it stays out until the first one.
+    ...(liveTests > 0 ? [{ url: `${site.url}/live`, changeFrequency: "daily" as const, priority: 0.7 }] : []),
     { url: `${site.url}/pricing`, changeFrequency: "weekly", priority: 0.8 },
     { url: `${site.url}/previous-year-papers`, changeFrequency: "weekly", priority: 0.8 },
     ...exams.map((e) => ({ url: `${site.url}/${e.body}/${e.exam}`, lastModified: e.updatedAt, changeFrequency: "weekly" as const, priority: 0.8 })),

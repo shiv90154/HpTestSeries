@@ -82,6 +82,15 @@ SI written paper me **General Knowledge, Himachal GK, Reasoning, Quantitative Ap
       title: "HP Patwari Mock Test {year} — Free Online Test Series, Hindi",
       description: "Free HP Patwari mock tests: Himachal GK, general knowledge, reasoning, maths and Hindi in real CBT format. Hindi & English solutions and your HP rank.",
     },
+    pattern: {
+      sections: [
+        { name: "Subjects up to the 10+2 level", questions: 85, marks: 85 },
+        { name: "GK & Himachal GK, current affairs, science, reasoning, English, Hindi", questions: 35, marks: 35 },
+      ],
+      durationMin: 90,
+      negativeMarking: "Not mentioned in the advertisement",
+      note: "As per HPRCA Advertisement No. 08/2025 (530 posts): a CBT or OMR screening test of 120 one-mark MCQs. The second part is at Matric standard. Minimum qualifying marks are 45% for General and 40% for SC/ST/OBC/WFF, and scores from multiple shifts are normalised by the Z-score method.",
+    },
   },
 
   "pgimer/nursing-officer": {

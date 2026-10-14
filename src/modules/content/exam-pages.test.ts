@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest";
 import { catalogue } from "../../../prisma/catalogue";
 import { EXAM_PAGES, NOTIFICATION_POSTS } from "../../../prisma/exam-pages";
+import { EXAM_SERIES } from "../../../prisma/exam-series";
+import { PATWARI_TESTS } from "../../../prisma/patwari";
 import { examContent, posts } from "../../../prisma/seed-content";
 import { UPCOMING_FREE_TESTS } from "../../../prisma/upcoming-free";
 import { FREE_MOCK_SLUG } from "@/lib/site";
@@ -9,7 +11,14 @@ import { postSchema } from "./post-input";
 
 const keys = catalogue.flatMap((b) => b.exams.map((e) => `${b.slug}/${e.slug}`));
 const known = new Set(keys);
-const testSlugs = new Set([...UPCOMING_FREE_TESTS.map((t) => t.slug), FREE_MOCK_SLUG, "hpas-free-mock-1", "hpas-free-mock-2"]);
+const testSlugs = new Set([
+  ...UPCOMING_FREE_TESTS.map((t) => t.slug),
+  ...EXAM_SERIES.flatMap((s) => s.tests.map((t) => t.slug)),
+  ...PATWARI_TESTS.map((t) => t.slug),
+  FREE_MOCK_SLUG,
+  "hpas-free-mock-1",
+  "hpas-free-mock-2",
+]);
 
 /** Everything a page shows, merged the way prisma/seed-content.ts merges it. */
 function pageFor(key: string) {
@@ -88,6 +97,7 @@ describe("exam page copy", () => {
 
   it("only gives a pattern to exams where the figures are known", () => {
     expect(Object.entries(EXAM_PAGES).filter(([, p]) => p.pattern).map(([k]) => k).sort()).toEqual([
+      "hp-revenue/patwari",
       "hpbose/hp-tet",
       "hppsc/assistant-professor",
       "hprca/clerk",
@@ -96,6 +106,9 @@ describe("exam page copy", () => {
     ]);
   });
 });
+
+/** Exams whose previous-year papers prisma/seed.ts seeds, so their /previous-year-papers page exists. */
+const PYQ_EXAMS = new Set(["hp-revenue/patwari", "hp-police/constable", "hprca/joa-it"]);
 
 /** Whether an internal link in a draft post points at a page that exists (or will, once the page's own content is seeded). */
 function linkExists(href: string): boolean {
@@ -109,7 +122,7 @@ function linkExists(href: string): boolean {
   if (!sub) return false;
   if (!known.has(sub[1])) return false;
   if (sub[2] === "exam-pattern") return !!EXAM_PAGES[sub[1]]?.pattern;
-  return sub[2] !== "previous-year-papers";
+  return sub[2] !== "previous-year-papers" || PYQ_EXAMS.has(sub[1]);
 }
 
 describe("draft posts", () => {
@@ -132,9 +145,12 @@ describe("draft posts", () => {
       for (const m of text.matchAll(/\]\((\/[^)\s]*)\)/g)) expect(linkExists(m[1]), m[1]).toBe(true);
     });
 
-    it("tells the editor to verify every figure before publishing", () => {
-      expect(p.content).toMatch(/\[VERIFY\]/);
-      expect(p.content).toMatch(/Yeh draft hai/);
+    // A post is either still a draft for the editor (draft note plus [VERIFY] markers) or checked by the owner, in
+    // which case no leftover marker may reach readers.
+    it("is either marked for verification or free of verification markers", () => {
+      const text = [p.content, ...(p.faqs ?? []).map((f) => f.a)].join(" ");
+      if (/Yeh draft hai/.test(p.content)) expect(p.content).toMatch(/\[VERIFY\]/);
+      else expect(text).not.toMatch(/VERIFY/);
     });
   });
 });
