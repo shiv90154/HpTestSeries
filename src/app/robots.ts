@@ -1,7 +1,9 @@
 import type { MetadataRoute } from "next";
 import { site } from "@/lib/site";
 
-const disallow = ["/admin", "/dashboard", "/api/", "/results/", "/preview/", "/orders/", "/profile", "/verify-2fa", "/welcome", "/refund-request", "/login", "/tests/*/attempt", "/tests/*/demo", "/tests/*/result"];
+// /login and /tests/*/{attempt,demo,result} carry a noindex meta tag and are linked from public pages, so they stay
+// crawlable: a robots.txt block hides that tag from Google and leaves them "Indexed, though blocked by robots.txt".
+const disallow = ["/admin", "/dashboard", "/api/", "/results/", "/preview/", "/orders/", "/profile", "/verify-2fa", "/welcome", "/refund-request"];
 
 /** AI search and answer crawlers, named so the permission is explicit rather than implied by "*". Training-only crawlers (e.g. CCBot) are left out. */
 const aiCrawlers = [
