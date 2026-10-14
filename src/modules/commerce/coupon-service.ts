@@ -1,7 +1,7 @@
 import "server-only";
 import { db } from "@/lib/db";
 import { applyCoupon, couponProblem, endOfDayIst, normalizeCode, validateCoupon, type CouponInput } from "./coupon-input";
-import { referralCouponProblem } from "./referral-rules";
+import { REFERRAL_LOW_PRICE_MESSAGE, referralAllowedFor, referralCouponProblem } from "./referral-rules";
 
 type Fail = { ok: false; errors: string[] };
 
@@ -79,15 +79,30 @@ export async function deleteCoupon(id: string, actorId: string): Promise<{ ok: t
 }
 
 export type CouponQuote = { couponId: string; code: string; discountPaise: number; finalPaise: number };
+/** `needsLogin`: the code works only for a logged-in student, so the buy page offers the login. */
+export type CouponError = { error: string; needsLogin?: true };
 
-/** Checks a code for this student and price. Each student can use a given coupon once (paid or free). */
-export async function quoteCoupon(userId: string, rawCode: string, pricePaise: number): Promise<CouponQuote | { error: string }> {
+/**
+ * Checks a code for this student and price. Each student can use a given coupon once (paid or free).
+ * `userId` null is a buyer who is not logged in: plain coupons that leave something to pay work for them. Referral
+ * codes (own-code and first-purchase checks) and codes that make the plan free (access needs an account) ask them
+ * to log in. The once-per-student rule can't be checked for a guest; maxUses still caps the coupon.
+ */
+export async function quoteCoupon(userId: string | null, rawCode: string, pricePaise: number): Promise<CouponQuote | CouponError> {
   const code = normalizeCode(rawCode);
   if (!code) return { error: "Enter a coupon code." };
   const coupon = await db.coupon.findUnique({ where: { code } });
   if (!coupon) return { error: "This coupon code is not valid." };
   const problem = couponProblem(coupon);
   if (problem) return { error: problem };
+  if (!userId) {
+    if (coupon.referrerId) {
+      return referralAllowedFor(pricePaise) ? { error: "Referral codes need an account.", needsLogin: true } : { error: REFERRAL_LOW_PRICE_MESSAGE };
+    }
+    const price = applyCoupon(pricePaise, coupon);
+    if (price.finalPaise === 0) return { error: "This coupon makes the plan free, so it needs an account.", needsLogin: true };
+    return { couponId: coupon.id, code: coupon.code, ...price };
+  }
   const used = await db.order.count({ where: { userId, couponId: coupon.id, status: "PAID" } });
   if (used > 0) return { error: "You have already used this coupon." };
   const hasPaidBefore = coupon.referrerId ? (await db.order.count({ where: { userId, status: "PAID" } })) > 0 : false;

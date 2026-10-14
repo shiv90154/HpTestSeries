@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import Script from "next/script";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -47,21 +48,22 @@ export function BuyButton({
   const [code, setCode] = useState(initialCode);
   const [quote, setQuote] = useState<Quote | null>(null);
   const [couponError, setCouponError] = useState<string | null>(null);
+  // the code works only after logging in (referral codes, codes that make the plan free)
+  const [couponNeedsLogin, setCouponNeedsLogin] = useState(false);
   const [checking, setChecking] = useState(false);
   const [useWallet, setUseWallet] = useState(true);
+  const loginHref = `/login?next=${encodeURIComponent(`/buy/${productSlug}`)}`;
 
   async function applyCode() {
-    if (!user) {
-      router.push(`/login?next=${encodeURIComponent(`/buy/${productSlug}`)}`);
-      return;
-    }
     setChecking(true);
     setCouponError(null);
+    setCouponNeedsLogin(false);
     try {
       const res = await quoteCouponAction(productSlug, code);
       if ("error" in res) {
         setQuote(null);
         setCouponError(res.error);
+        setCouponNeedsLogin(!!res.needsLogin);
       } else setQuote(res);
     } finally {
       setChecking(false);
@@ -72,6 +74,7 @@ export function BuyButton({
     setQuote(null);
     setCode("");
     setCouponError(null);
+    setCouponNeedsLogin(false);
   }
 
   async function pay() {
@@ -86,7 +89,7 @@ export function BuyButton({
     setLoading(true);
     try {
       // Not logged in: the order is created anyway and attached to the account on the next login (/claim).
-      const order = guest ? await createGuestOrderAction(productSlug) : await createOrderAction(productSlug, quote?.code, useWallet && walletPaise > 0);
+      const order = guest ? await createGuestOrderAction(productSlug, quote?.code) : await createOrderAction(productSlug, quote?.code, useWallet && walletPaise > 0);
       if ("error" in order) {
         toast.error(order.error);
         setLoading(false);
@@ -186,6 +189,14 @@ export function BuyButton({
           {couponError && couponError !== referralNote && (
             <p role="alert" className="text-xs text-danger">
               {couponError}
+              {couponNeedsLogin && (
+                <>
+                  {" "}
+                  <Link href={loginHref} className="font-medium text-primary underline">
+                    Log in to use it
+                  </Link>
+                </>
+              )}
             </p>
           )}
           {referralNote && (showReferralNote || couponError === referralNote) && (

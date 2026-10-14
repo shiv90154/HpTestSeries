@@ -248,6 +248,29 @@ describe("coupons", () => {
     expect((await db.coupon.findUnique({ where: { id: c.id } }))?.usedCount).toBe(1);
   });
 
+  it("lets a guest pay with a plain coupon, but asks them to log in for referral codes and codes that make it free", async () => {
+    const half = await coupon({ code: "GHALF", pctOff: 50 });
+    const free = await coupon({ code: "GFREE", pctOff: 100 });
+    const ref = await db.coupon.create({ data: { code: `GREF${tag}`.toUpperCase(), flatOffPaise: 5000, referrerId: await newUser("g-ref") } });
+    couponIds.push(ref.id);
+
+    expect(await quoteCoupon(null, codeOf(half), P_PRICE)).toMatchObject({ discountPaise: 7450, finalPaise: 7450 });
+    expect(await quoteCoupon(null, codeOf(free), P_PRICE)).toMatchObject({ needsLogin: true });
+    expect(await quoteCoupon(null, ref.code, P_PRICE)).toMatchObject({ needsLogin: true });
+    expect(await createGuestOrderForProduct(productSlug, codeOf(free))).toHaveProperty("error");
+    expect(await createGuestOrderForProduct(productSlug, ref.code)).toHaveProperty("error");
+
+    const order = await createGuestOrderForProduct(productSlug, codeOf(half));
+    if ("error" in order) throw new Error(order.error);
+    expect(order.amountPaise).toBe(7450);
+    expect(await db.order.findUnique({ where: { id: order.orderId } })).toMatchObject({ userId: null, amountPaise: 7450, discountPaise: 7450, couponId: half.id });
+
+    const w = webhook("payment.captured", { rpOrderId: order.razorpayOrderId, paymentId: "pay_ghalf" + tag, amount: 7450 });
+    await handleRazorpayWebhook(w.body, w.sig);
+    expect((await db.order.findUnique({ where: { id: order.orderId } }))?.status).toBe("PAID");
+    expect((await db.coupon.findUnique({ where: { id: half.id } }))?.usedCount).toBe(1);
+  });
+
   it("rejects unknown, expired, inactive and used-up coupons", async () => {
     const userId = await newUser("cp-bad");
     const expired = await coupon({ code: "OLD", pctOff: 10, validTill: new Date(Date.now() - 1000) });

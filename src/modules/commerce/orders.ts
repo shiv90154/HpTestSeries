@@ -31,8 +31,8 @@ type OrderForFulfilment = {
   product: { validUntil: Date | null; validityDays: number | null };
 };
 
-/** Price quote for the buy page's coupon box. */
-export async function quoteForProduct(userId: string, productSlug: string, code: string) {
+/** Price quote for the buy page's coupon box. `userId` null: the buyer is not logged in (see quoteCoupon). */
+export async function quoteForProduct(userId: string | null, productSlug: string, code: string) {
   const product = await db.product.findUnique({ where: { slug: productSlug }, select: { priceInPaise: true, isActive: true } });
   if (!product || !product.isActive) return { error: "This product is not available." };
   return quoteCoupon(userId, code, product.priceInPaise);
@@ -99,16 +99,28 @@ export async function createOrderForProduct(userId: string, productSlug: string,
 /**
  * Checkout for a buyer who is not logged in. The order belongs to nobody yet: the caller keeps the returned
  * `claimToken` in the buyer's browser, and once they sign in claimGuestOrders() attaches the order to their
- * account and grants the access. Coupons and the wallet need an account, so guests pay the list price.
+ * account and grants the access. The wallet needs an account; a coupon works if quoteCoupon allows it for a guest
+ * (never one that makes the order free, so a guest order always goes through Razorpay).
  */
-export async function createGuestOrderForProduct(productSlug: string): Promise<(CheckoutOrder & { claimToken: string }) | { error: string }> {
+export async function createGuestOrderForProduct(productSlug: string, couponCode?: string): Promise<(CheckoutOrder & { claimToken: string }) | { error: string }> {
   const product = await db.product.findUnique({ where: { slug: productSlug } });
   if (!product || !product.isActive) return { error: "This product is not available." };
   if (product.priceInPaise <= 0) return { error: "Please log in to get this product." };
 
+  let amountPaise = product.priceInPaise;
+  let discountPaise = 0;
+  let couponId: string | null = null;
+  if (couponCode?.trim()) {
+    const quote = await quoteCoupon(null, couponCode, product.priceInPaise);
+    if ("error" in quote) return { error: quote.error };
+    amountPaise = quote.finalPaise;
+    discountPaise = quote.discountPaise;
+    couponId = quote.couponId;
+  }
+
   const claimToken = randomBytes(24).toString("base64url");
   const order = await db.order.create({
-    data: { userId: null, claimToken, productId: product.id, amountPaise: product.priceInPaise, status: "CREATED" },
+    data: { userId: null, claimToken, productId: product.id, amountPaise, discountPaise, couponId, status: "CREATED" },
   });
   try {
     const rpOrder = await createRazorpayOrder({ amountPaise: order.amountPaise, receipt: order.id, notes: { guest: "1", productSlug } });
