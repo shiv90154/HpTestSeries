@@ -1,4 +1,4 @@
-// The all-access Premium Pass: one ₹399 purchase opens every paid mock, sectional test and previous-year paper
+// The all-access Premium Pass: one ₹499 purchase opens every paid mock, sectional test and previous-year paper
 // for a year. PASS products need no ProductItem rows, so it also covers tests added later. Price and title are
 // only set on creation, so later edits in the admin panel are kept.
 
@@ -17,7 +17,7 @@ export async function seedPremiumPass(db: PrismaClient) {
       title: "Premium Pass — All Mocks + All Previous Year Papers",
       titleHi: "प्रीमियम पास — सभी मॉक टेस्ट + सभी पिछले वर्ष के प्रश्न पत्र",
       kind: "PASS",
-      priceInPaise: 399_00,
+      priceInPaise: 499_00,
       validityDays: 365,
       isActive: true,
     },

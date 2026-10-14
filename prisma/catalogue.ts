@@ -40,6 +40,15 @@ export const catalogue: BodySeed[] = [
       { slug: "clerk", name: "Clerk", nameHi: "क्लर्क" },
       { slug: "jbt", name: "JBT Teacher", nameHi: "जेबीटी शिक्षक" },
       { slug: "tgt", name: "TGT Teacher", nameHi: "टीजीटी शिक्षक" },
+      {
+        slug: "pgt-lecturer",
+        name: "PGT / Lecturer (School New)",
+        nameHi: "पीजीटी / प्रवक्ता (स्कूल न्यू)",
+        stages: [
+          { slug: "english", name: "PGT English", nameHi: "पीजीटी अंग्रेज़ी" },
+          { slug: "mathematics", name: "PGT Mathematics", nameHi: "पीजीटी गणित" },
+        ],
+      },
       { slug: "language-teacher", name: "Language Teacher", nameHi: "भाषा अध्यापक" },
       { slug: "junior-engineer", name: "Junior Engineer", nameHi: "कनिष्ठ अभियंता" },
       { slug: "staff-nurse", name: "Staff Nurse", nameHi: "स्टाफ नर्स" },

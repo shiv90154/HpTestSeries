@@ -1,8 +1,7 @@
 # HP Test Series
 
 Himachal Pradesh-focused, mobile-first, low-cost test series platform for state government exams.
-Product and technical plan: [docs/BLUEPRINT.md](docs/BLUEPRINT.md).
-
+Product and technical plan: [docs/BLUEPRINT.md](docs/BLUEPRINT.md)
 ## Stack
 Next.js 16 (App Router) · TypeScript · Tailwind · PostgreSQL · Prisma 7 (pg driver adapter) · Better Auth · Zod · Vitest
 
