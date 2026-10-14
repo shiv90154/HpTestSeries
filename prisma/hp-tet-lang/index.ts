@@ -8,6 +8,8 @@ import { ltMock2 } from "./lt-mock2";
 import { shastriMock1 } from "./shastri-mock1";
 import { shastriMock2 } from "./shastri-mock2";
 
+export { LT_SECTIONALS, SHASTRI_SECTIONALS } from "./sectionals";
+
 type Sec = { name: string; nameHi: string };
 
 const CDP: Sec = { name: "Child Development & Pedagogy", nameHi: "बाल विकास एवं शिक्षाशास्त्र" };

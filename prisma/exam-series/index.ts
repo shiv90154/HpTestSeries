@@ -18,7 +18,7 @@ import { tgtPedagogy } from "./fresh/tgt-pedagogy";
 import { CLERK_MOCKS, HC_SECTIONALS, PROCESS_SERVER_MOCKS, STENO_MOCKS } from "../high-court";
 import { HP_TET_JBT_MOCKS, HP_TET_JBT_SECTIONALS } from "../hp-tet";
 import { TGT_ARTS_MOCKS, TGT_ARTS_SECTIONS, TGT_MEDICAL_MOCKS, TGT_MEDICAL_SECTIONS, TGT_NON_MEDICAL_MOCKS, TGT_NON_MEDICAL_SECTIONS } from "../hp-tet-tgt";
-import { LT_MOCKS, LT_SECTIONS, SHASTRI_MOCKS, SHASTRI_SECTIONS } from "../hp-tet-lang";
+import { LT_MOCKS, LT_SECTIONALS, LT_SECTIONS, SHASTRI_MOCKS, SHASTRI_SECTIONALS, SHASTRI_SECTIONS } from "../hp-tet-lang";
 import { HPAS_MOCKS, HPAS_SECTIONS } from "../hpas-series";
 import { PGIMER_MOCKS, PGIMER_SECTIONS } from "../pgimer";
 
@@ -403,6 +403,7 @@ const EXAMS: ExamDef[] = [
       "Sanskrit literature and Sanskrit teaching.",
     sections: SHASTRI_SECTIONS.map((sec, i) => S(sec.name, sec.nameHi, SHASTRI_MOCKS.slice(0, 2).map((m) => m.filter((x) => x.s === i)))),
     extraMocks: SHASTRI_MOCKS.slice(2),
+    extraTests: SHASTRI_SECTIONALS,
   },
   {
     bodySlug: "hpbose",
@@ -419,6 +420,7 @@ const EXAMS: ExamDef[] = [
       "poetics and Hindi teaching, and English.",
     sections: LT_SECTIONS.map((sec, i) => S(sec.name, sec.nameHi, LT_MOCKS.slice(0, 2).map((m) => m.filter((x) => x.s === i)))),
     extraMocks: LT_MOCKS.slice(2),
+    extraTests: LT_SECTIONALS,
   },
 ];
 
