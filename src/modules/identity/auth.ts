@@ -11,8 +11,8 @@ import { sendOtpEmail } from "./email";
 import { googleLoginEnabled, phoneLoginEnabled } from "./login-methods";
 import { sendOtpSms } from "./sms";
 
-/** BLUEPRINT §16: at most this many concurrent sessions per user (deters account sharing). */
-export const MAX_SESSIONS_PER_USER = 2;
+/** BLUEPRINT §16: one session per user — a new login signs out the other device (deters account sharing). */
+export const MAX_SESSIONS_PER_USER = 1;
 
 export const auth = betterAuth({
   database: prismaAdapter(db, { provider: "postgresql" }),
@@ -44,7 +44,7 @@ export const auth = betterAuth({
   session: {
     expiresIn: 60 * 60 * 24 * 30, // 30 days — students stay logged in on their phone
     updateAge: 60 * 60 * 24, // refresh expiry at most daily
-    cookieCache: { enabled: true, maxAge: 5 * 60 }, // avoid a DB hit on every request
+    cookieCache: { enabled: true, maxAge: 60 }, // short: a device signed out by a newer login drops within a minute
   },
 
   advanced: {
