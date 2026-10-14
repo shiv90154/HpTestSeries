@@ -139,6 +139,7 @@ export const taxonomy: SubjectSeed[] = [
       ["child-development", "Child Development"],
       ["learning-theories", "Learning Theories"],
       ["inclusive-education", "Inclusive Education"],
+      ["language-pedagogy", "Language Pedagogy"],
     ],
   },
   {
@@ -344,6 +345,23 @@ export const taxonomy: SubjectSeed[] = [
       ["plant-biology", "Plant Biology"],
       ["ecology-environment", "Ecology & Environment"],
       ["diversity-health", "Diversity of Life, Health & Disease"],
+    ],
+  },
+  {
+    slug: "sanskrit",
+    name: "Sanskrit",
+    nameHi: "संस्कृत",
+    topics: [
+      ["sandhi", "Sandhi"],
+      ["samas", "Samas"],
+      ["karak-vibhakti", "Karak & Vibhakti"],
+      ["shabd-dhatu-roop", "Shabd & Dhatu Roop"],
+      ["pratyay", "Pratyay"],
+      ["vyakaran", "Vyakaran (General Grammar)"],
+      ["sahitya", "Sahitya (Literature)"],
+      ["chhand-alankar", "Chhand & Alankar"],
+      ["anuvad", "Anuvad (Translation)"],
+      ["shikshan", "Sanskrit Teaching"],
     ],
   },
 ];

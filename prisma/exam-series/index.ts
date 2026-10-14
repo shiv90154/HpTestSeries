@@ -18,6 +18,7 @@ import { tgtPedagogy } from "./fresh/tgt-pedagogy";
 import { CLERK_MOCKS, HC_SECTIONALS, PROCESS_SERVER_MOCKS, STENO_MOCKS } from "../high-court";
 import { HP_TET_JBT_MOCKS, HP_TET_JBT_SECTIONALS } from "../hp-tet";
 import { TGT_ARTS_MOCKS, TGT_ARTS_SECTIONS, TGT_MEDICAL_MOCKS, TGT_MEDICAL_SECTIONS, TGT_NON_MEDICAL_MOCKS, TGT_NON_MEDICAL_SECTIONS } from "../hp-tet-tgt";
+import { LT_MOCKS, LT_SECTIONS, SHASTRI_MOCKS, SHASTRI_SECTIONS } from "../hp-tet-lang";
 import { HPAS_MOCKS, HPAS_SECTIONS } from "../hpas-series";
 import { PGIMER_MOCKS, PGIMER_SECTIONS } from "../pgimer";
 
@@ -385,6 +386,39 @@ const EXAMS: ExamDef[] = [
       "physics and chemistry.",
     sections: TGT_MEDICAL_SECTIONS.map((sec, i) => S(sec.name, sec.nameHi, TGT_MEDICAL_MOCKS.slice(0, 2).map((m) => m.filter((x) => x.s === i)))),
     extraMocks: TGT_MEDICAL_MOCKS.slice(2),
+  },
+  // Written wholly fresh in prisma/hp-tet-lang: mocks 1–2 go through the sections, mocks 3+ are extra mocks.
+  {
+    bodySlug: "hpbose",
+    examSlug: "hp-tet",
+    stageSlug: "tgt-sanskrit",
+    slug: "hp-tet-shastri",
+    name: "HP TET (Shastri)",
+    nameHi: "एचपी टेट (शास्त्री)",
+    minutes: 150,
+    marksWrong: 0,
+    price: 99,
+    description:
+      "Full-length HP TET Shastri (Sanskrit) mock tests: child development and pedagogy, Hindi, English, Sanskrit grammar, " +
+      "Sanskrit literature and Sanskrit teaching.",
+    sections: SHASTRI_SECTIONS.map((sec, i) => S(sec.name, sec.nameHi, SHASTRI_MOCKS.slice(0, 2).map((m) => m.filter((x) => x.s === i)))),
+    extraMocks: SHASTRI_MOCKS.slice(2),
+  },
+  {
+    bodySlug: "hpbose",
+    examSlug: "hp-tet",
+    stageSlug: "language-teacher",
+    slug: "hp-tet-language-teacher",
+    name: "HP TET (Language Teacher)",
+    nameHi: "एचपी टेट (भाषा अध्यापक)",
+    minutes: 150,
+    marksWrong: 0,
+    price: 99,
+    description:
+      "Full-length HP TET Language Teacher (Hindi) mock tests: child development and pedagogy, Hindi grammar, Hindi literature, " +
+      "poetics and Hindi teaching, and English.",
+    sections: LT_SECTIONS.map((sec, i) => S(sec.name, sec.nameHi, LT_MOCKS.slice(0, 2).map((m) => m.filter((x) => x.s === i)))),
+    extraMocks: LT_MOCKS.slice(2),
   },
 ];
 
