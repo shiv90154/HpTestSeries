@@ -1,8 +1,11 @@
 import { business } from "./business";
 import { site } from "./site";
 
-/** Social profiles for Organization.sameAs — add the Telegram/YouTube/Instagram URLs once they exist. */
-export const SOCIAL_PROFILES: string[] = [];
+export const YOUTUBE_URL = "https://www.youtube.com/@hptestseries";
+export const INSTAGRAM_URL = "https://www.instagram.com/hptestseries.in/";
+
+/** Social profiles for Organization.sameAs — add Telegram here once it exists. */
+export const SOCIAL_PROFILES: string[] = [YOUTUBE_URL, INSTAGRAM_URL];
 
 /** schema.org Organization — the home page node and the publisher on every article. */
 export function organizationNode() {
