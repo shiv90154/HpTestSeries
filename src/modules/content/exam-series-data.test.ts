@@ -1,10 +1,12 @@
 import { describe, expect, it } from "vitest";
 import { EXAM_PACKS, EXAM_SERIES } from "../../../prisma/exam-series";
 import { CLERK_MOCKS, HC_SECTIONALS, PROCESS_SERVER_MOCKS, PROCESS_SERVER_SCREENING_MOCKS, STENO_MOCKS } from "../../../prisma/high-court";
+import { PGT_SUBJECTS } from "../../../prisma/hp-pgt";
 import { LT_MOCKS, LT_SECTIONALS, SHASTRI_MOCKS, SHASTRI_SECTIONALS } from "../../../prisma/hp-tet-lang";
 import { HPAS_FREE_TESTS } from "../../../prisma/hpas";
 import { HPAS_MOCKS } from "../../../prisma/hpas-series";
 import { PGIMER_MOCKS } from "../../../prisma/pgimer";
+import { DEFENCE_QUESTIONS } from "../../../prisma/defence";
 import { JOA_IT_TESTS } from "../../../prisma/joa-it";
 import { PANCHAYAT_SECRETARY_TESTS } from "../../../prisma/panchayat-secretary";
 import { PATWARI_TESTS } from "../../../prisma/patwari";
@@ -55,7 +57,7 @@ describe("exam series built from the shared bank", () => {
       for (const x of t.questions.filter((y) => specific.has(y.subject))) expect(otherSeries.has(hash(x)), `${t.slug}: ${x.en[0].slice(0, 60)}`).toBe(false);
     }
     const highCourt = [...HC_SECTIONALS.flatMap((t) => t.questions), ...[...PROCESS_SERVER_MOCKS, ...PROCESS_SERVER_SCREENING_MOCKS, ...STENO_MOCKS, ...CLERK_MOCKS].flat()];
-    for (const x of [...highCourt, ...PGIMER_MOCKS.flat(), ...HPAS_MOCKS.flat(), ...SHASTRI_MOCKS.flat(), ...LT_MOCKS.flat(), ...[...SHASTRI_SECTIONALS, ...LT_SECTIONALS].flatMap((x) => x.questions)]) expect(otherSeries.has(hash(x)), x.en[0].slice(0, 60)).toBe(false);
+    for (const x of [...highCourt, ...PGIMER_MOCKS.flat(), ...HPAS_MOCKS.flat(), ...SHASTRI_MOCKS.flat(), ...LT_MOCKS.flat(), ...PGT_SUBJECTS.flatMap((p) => p.mocks.flat()), ...DEFENCE_QUESTIONS, ...[...SHASTRI_SECTIONALS, ...LT_SECTIONALS].flatMap((x) => x.questions)]) expect(otherSeries.has(hash(x)), x.en[0].slice(0, 60)).toBe(false);
   });
 
   it("makes exactly the first mock of each series free", () => {

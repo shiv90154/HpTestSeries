@@ -19,8 +19,10 @@ import { CLERK_MOCKS, HC_SECTIONALS, PROCESS_SERVER_MOCKS, PROCESS_SERVER_SCREEN
 import { HP_TET_JBT_MOCKS, HP_TET_JBT_SECTIONALS } from "../hp-tet";
 import { TGT_ARTS_MOCKS, TGT_ARTS_SECTIONS, TGT_MEDICAL_MOCKS, TGT_MEDICAL_SECTIONS, TGT_NON_MEDICAL_MOCKS, TGT_NON_MEDICAL_SECTIONS } from "../hp-tet-tgt";
 import { LT_MOCKS, LT_SECTIONALS, LT_SECTIONS, SHASTRI_MOCKS, SHASTRI_SECTIONALS, SHASTRI_SECTIONS } from "../hp-tet-lang";
+import { PGT_SUBJECTS } from "../hp-pgt";
 import { HPAS_MOCKS, HPAS_SECTIONS } from "../hpas-series";
 import { PGIMER_MOCKS, PGIMER_SECTIONS } from "../pgimer";
+import { DEFENCE_SERIES } from "../defence";
 
 type Part = { n: number; pick: Pick } | PatwariQuestion[][];
 type Section = { name: string; nameHi: string; parts: Part[] };
@@ -422,6 +424,24 @@ const EXAMS: ExamDef[] = [
     extraMocks: LT_MOCKS.slice(2),
     extraTests: LT_SECTIONALS,
   },
+  // Written wholly fresh in prisma/hp-pgt, one series per subject: mocks 1–2 go through the sections, mocks 3+ are extra mocks.
+  ...PGT_SUBJECTS.map(
+    (p): ExamDef => ({
+      bodySlug: "hprca",
+      examSlug: "pgt-lecturer",
+      stageSlug: p.slug,
+      slug: `hp-pgt-${p.slug}`,
+      name: `HP PGT (${p.name})`,
+      nameHi: `एचपी पीजीटी (${p.nameHi})`,
+      minutes: 120,
+      price: 99,
+      description:
+        `Full-length HP PGT / Lecturer (School New) ${p.name} mock tests: pedagogy and teaching aptitude, Himachal GK and general studies, ` +
+        `${p.covers} at post-graduate level.`,
+      sections: p.sections.map((sec, i) => S(sec.name, sec.nameHi, p.mocks.slice(0, 2).map((m) => m.filter((x) => x.s === i)))),
+      extraMocks: p.mocks.slice(2),
+    }),
+  ),
 ];
 
 const MOCKS = 2;
@@ -447,7 +467,7 @@ function instructions(e: ExamDef, qs: PatwariQuestion[]): string {
 
 export type ExamSeriesSeed = SeriesSeed & { key: string };
 
-export const EXAM_SERIES: ExamSeriesSeed[] = EXAMS.map((e) => {
+const BANK_SERIES: ExamSeriesSeed[] = EXAMS.map((e) => {
   const mocks = [...Array.from({ length: MOCKS }, (_, i) => mockQuestions(e, i)), ...(e.extraMocks ?? [])];
   const tests: TestDef[] = mocks.map((questions, i) => {
     return {
@@ -489,6 +509,9 @@ export const EXAM_SERIES: ExamSeriesSeed[] = EXAMS.map((e) => {
     },
   };
 });
+
+// NDA, CDS and AFCAT have their own paper-wise marking and instructions, so they are built in prisma/defence.
+export const EXAM_SERIES: ExamSeriesSeed[] = [...BANK_SERIES, ...DEFENCE_SERIES];
 
 /** Products that bundle several of the series above. */
 export const EXAM_PACKS: { slug: string; title: string; titleHi: string; priceInPaise: number; validityDays: number; seriesSlugs: string[] }[] = [

@@ -40,6 +40,23 @@ export const catalogue: BodySeed[] = [
       { slug: "clerk", name: "Clerk", nameHi: "क्लर्क" },
       { slug: "jbt", name: "JBT Teacher", nameHi: "जेबीटी शिक्षक" },
       { slug: "tgt", name: "TGT Teacher", nameHi: "टीजीटी शिक्षक" },
+      {
+        slug: "pgt-lecturer",
+        name: "PGT / Lecturer (School New)",
+        nameHi: "पीजीटी / प्रवक्ता (स्कूल न्यू)",
+        stages: [
+          { slug: "english", name: "PGT English", nameHi: "पीजीटी अंग्रेज़ी" },
+          { slug: "mathematics", name: "PGT Mathematics", nameHi: "पीजीटी गणित" },
+          { slug: "physics", name: "PGT Physics", nameHi: "पीजीटी भौतिक विज्ञान" },
+          { slug: "chemistry", name: "PGT Chemistry", nameHi: "पीजीटी रसायन विज्ञान" },
+          { slug: "biology", name: "PGT Biology", nameHi: "पीजीटी जीव विज्ञान" },
+          { slug: "hindi", name: "PGT Hindi", nameHi: "पीजीटी हिंदी" },
+          { slug: "history", name: "PGT History", nameHi: "पीजीटी इतिहास" },
+          { slug: "political-science", name: "PGT Political Science", nameHi: "पीजीटी राजनीति विज्ञान" },
+          { slug: "economics", name: "PGT Economics", nameHi: "पीजीटी अर्थशास्त्र" },
+          { slug: "commerce", name: "PGT Commerce", nameHi: "पीजीटी वाणिज्य" },
+        ],
+      },
       { slug: "language-teacher", name: "Language Teacher", nameHi: "भाषा अध्यापक" },
       { slug: "junior-engineer", name: "Junior Engineer", nameHi: "कनिष्ठ अभियंता" },
       { slug: "staff-nurse", name: "Staff Nurse", nameHi: "स्टाफ नर्स" },
@@ -119,5 +136,21 @@ export const catalogue: BodySeed[] = [
     name: "Himachal Pradesh State Cooperative Bank",
     nameHi: "हिमाचल प्रदेश राज्य सहकारी बैंक",
     exams: [{ slug: "clerk", name: "Clerk", nameHi: "क्लर्क" }],
+  },
+  // National defence entries that many Himachal aspirants sit; not Himachal recruitments.
+  {
+    slug: "upsc",
+    name: "Union Public Service Commission",
+    nameHi: "संघ लोक सेवा आयोग",
+    exams: [
+      { slug: "nda", name: "NDA & NA", nameHi: "एनडीए एवं एनए" },
+      { slug: "cds", name: "CDS", nameHi: "सीडीएस" },
+    ],
+  },
+  {
+    slug: "iaf",
+    name: "Indian Air Force",
+    nameHi: "भारतीय वायु सेना",
+    exams: [{ slug: "afcat", name: "AFCAT", nameHi: "एफ़कैट" }],
   },
 ];

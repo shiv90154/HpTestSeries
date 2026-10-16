@@ -6,10 +6,13 @@
 import type { PatwariQuestion } from "../patwari/types";
 import { artsMock1 } from "./arts-mock1";
 import { artsMock2 } from "./arts-mock2";
+import { artsMock3 } from "./arts-mock3";
 import { medicalMock1 } from "./medical-mock1";
 import { medicalMock2 } from "./medical-mock2";
+import { medicalMock3 } from "./medical-mock3";
 import { nonMedicalMock1 } from "./nonmedical-mock1";
 import { nonMedicalMock2 } from "./nonmedical-mock2";
+import { nonMedicalMock3 } from "./nonmedical-mock3";
 
 type Sec = { name: string; nameHi: string };
 
@@ -25,7 +28,7 @@ export const TGT_ARTS_SECTIONS: Sec[] = [
   { name: "Geography, Economics & Himachal GK", nameHi: "भूगोल, अर्थशास्त्र एवं हिमाचल सामान्य ज्ञान" },
 ];
 
-export const TGT_ARTS_MOCKS: PatwariQuestion[][] = [artsMock1, artsMock2];
+export const TGT_ARTS_MOCKS: PatwariQuestion[][] = [artsMock1, artsMock2, artsMock3];
 
 export const TGT_NON_MEDICAL_SECTIONS: Sec[] = [
   ...COMMON,
@@ -33,7 +36,7 @@ export const TGT_NON_MEDICAL_SECTIONS: Sec[] = [
   { name: "Physics & Chemistry", nameHi: "भौतिक विज्ञान एवं रसायन विज्ञान" },
 ];
 
-export const TGT_NON_MEDICAL_MOCKS: PatwariQuestion[][] = [nonMedicalMock1, nonMedicalMock2];
+export const TGT_NON_MEDICAL_MOCKS: PatwariQuestion[][] = [nonMedicalMock1, nonMedicalMock2, nonMedicalMock3];
 
 export const TGT_MEDICAL_SECTIONS: Sec[] = [
   ...COMMON,
@@ -41,4 +44,4 @@ export const TGT_MEDICAL_SECTIONS: Sec[] = [
   { name: "Physics & Chemistry", nameHi: "भौतिक विज्ञान एवं रसायन विज्ञान" },
 ];
 
-export const TGT_MEDICAL_MOCKS: PatwariQuestion[][] = [medicalMock1, medicalMock2];
+export const TGT_MEDICAL_MOCKS: PatwariQuestion[][] = [medicalMock1, medicalMock2, medicalMock3];

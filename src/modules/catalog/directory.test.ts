@@ -17,6 +17,8 @@ describe("examCategory", () => {
     expect(examCategory("hppsc", "hpas")).toBe("officer");
     expect(examCategory("hprca", "joa-it")).toBe("clerk");
     expect(examCategory("hp-revenue", "patwari")).toBe("clerk");
+    expect(examCategory("upsc", "nda")).toBe("defence");
+    expect(examCategory("iaf", "afcat")).toBe("defence");
   });
 });
 
