@@ -153,4 +153,11 @@ export const catalogue: BodySeed[] = [
     nameHi: "भारतीय वायु सेना",
     exams: [{ slug: "afcat", name: "AFCAT", nameHi: "एफ़कैट" }],
   },
+  // Delhi Police recruits through the Staff Selection Commission; the written test is a computer-based test.
+  {
+    slug: "delhi-police",
+    name: "Delhi Police",
+    nameHi: "दिल्ली पुलिस",
+    exams: [{ slug: "constable", name: "Constable (Executive)", nameHi: "कांस्टेबल (एग्ज़ीक्यूटिव)" }],
+  },
 ];

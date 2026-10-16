@@ -32,7 +32,7 @@ export function examCategory(bodySlug: string, examSlug: string): CategoryKey {
   const fixed = CATEGORY_OF[`/${bodySlug}/${examSlug}`];
   if (fixed) return fixed;
   if (bodySlug === "hp-high-court") return "court";
-  if (bodySlug === "hp-police") return "police";
+  if (bodySlug === "hp-police" || bodySlug === "delhi-police") return "police";
   if (bodySlug === "upsc" || bodySlug === "iaf") return "defence";
   if (bodySlug === "pgimer" || /nurse|nursing|pharmac|medical|doctor/.test(examSlug)) return "medical";
   if (/tet|jbt|tgt|teacher|lecturer|professor/.test(examSlug)) return "teaching";

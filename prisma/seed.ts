@@ -40,6 +40,8 @@ const descriptions: Record<string, string> = {
     "Clerk posts in Himachal Pradesh government departments are filled by the Himachal Pradesh Rajya Chayan Aayog (HPRCA), Hamirpur, through a written objective test and a typing skill test as specified in the notification. Himachal GK, general studies, reasoning, maths, English and Hindi form the core of the written test.",
   "hp-police/constable":
     "Himachal Pradesh Police Constable recruitment includes physical standards and efficiency tests and a written objective examination. The written test covers general knowledge, Himachal GK, reasoning and numerical ability.",
+  "delhi-police/constable":
+    "Delhi Police Constable (Executive) recruitment is run through the Staff Selection Commission. Selection includes a computer-based written test, physical endurance and measurement tests, a medical examination and document verification. The written test covers general awareness, reasoning, numerical ability and computer fundamentals.",
   "hpbose/hp-tet":
     "The Himachal Pradesh Teacher Eligibility Test (HP TET) is conducted by the HP Board of School Education (HPBOSE), Dharamshala, for categories such as JBT, TGT (Arts, Medical, Non-Medical), Shastri and Language Teacher. Child development and pedagogy is common to all categories, along with subject-specific sections.",
   "hp-revenue/patwari":

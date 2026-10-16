@@ -6,6 +6,7 @@ describe("examCategory", () => {
     expect(examCategory("hp-high-court", "process-server")).toBe("court");
     expect(examCategory("hppsc", "judicial-services")).toBe("court");
     expect(examCategory("hp-police", "sub-inspector")).toBe("police");
+    expect(examCategory("delhi-police", "constable")).toBe("police");
     expect(examCategory("pgimer", "nursing-officer")).toBe("medical");
     expect(examCategory("hprca", "staff-nurse")).toBe("medical");
     expect(examCategory("hpbose", "hp-tet")).toBe("teaching");

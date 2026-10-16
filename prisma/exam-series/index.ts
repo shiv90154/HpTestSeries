@@ -23,6 +23,7 @@ import { PGT_SUBJECTS } from "../hp-pgt";
 import { HPAS_MOCKS, HPAS_SECTIONS } from "../hpas-series";
 import { PGIMER_MOCKS, PGIMER_SECTIONS } from "../pgimer";
 import { DEFENCE_SERIES } from "../defence";
+import { DELHI_POLICE_SERIES } from "../delhi-police";
 
 type Part = { n: number; pick: Pick } | PatwariQuestion[][];
 type Section = { name: string; nameHi: string; parts: Part[] };
@@ -510,8 +511,9 @@ const BANK_SERIES: ExamSeriesSeed[] = EXAMS.map((e) => {
   };
 });
 
-// NDA, CDS and AFCAT have their own paper-wise marking and instructions, so they are built in prisma/defence.
-export const EXAM_SERIES: ExamSeriesSeed[] = [...BANK_SERIES, ...DEFENCE_SERIES];
+// NDA, CDS and AFCAT have their own paper-wise marking and instructions, so they are built in prisma/defence;
+// Delhi Police Constable is written fresh to the SSC pattern in prisma/delhi-police.
+export const EXAM_SERIES: ExamSeriesSeed[] = [...BANK_SERIES, ...DEFENCE_SERIES, ...DELHI_POLICE_SERIES];
 
 /** Products that bundle several of the series above. */
 export const EXAM_PACKS: { slug: string; title: string; titleHi: string; priceInPaise: number; validityDays: number; seriesSlugs: string[] }[] = [

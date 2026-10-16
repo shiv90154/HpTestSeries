@@ -443,4 +443,16 @@ export const taxonomy: SubjectSeed[] = [
       ["defence-technology", "Defence Technology, Aircraft & Missiles"],
     ],
   },
+  {
+    slug: "delhi-gk",
+    name: "Delhi GK",
+    nameHi: "दिल्ली सामान्य ज्ञान",
+    topics: [
+      ["history", "History of Delhi"],
+      ["geography", "Geography & Rivers of Delhi"],
+      ["monuments-culture", "Monuments, Culture & Festivals"],
+      ["administration", "Administration, Police & Governance"],
+      ["transport-economy", "Transport, Economy & Institutions"],
+    ],
+  },
 ];
