@@ -131,20 +131,28 @@ TGT paper me tumhare **apne subject ka sabse bada hissa** hota hai (Arts me soci
   "hprca/pgt-lecturer": {
     seo: {
       title: "HP PGT Mock Test {year} — Lecturer (School New) Series",
-      description: "HP PGT / Lecturer (School New) mock tests for English and Mathematics: pedagogy, Himachal GK and your subject in real CBT format, Hindi & English.",
+      description: "HP PGT / Lecturer (School New) mock tests for 10 subjects, from English and Maths to Physics, History and Commerce, in real CBT format, Hindi & English.",
     },
     description: `**PGT (Post Graduate Teacher)**, called **Lecturer (School New)** in Himachal Pradesh, teaches classes 11 and 12 in government senior secondary schools. Posts are notified subject-wise (English, Hindi, Mathematics, Physics, Chemistry, Biology, History, Political Science, Economics, Commerce and others), and recruitment in recent cycles has been done through the state recruiting commission, now the **Himachal Pradesh Rajya Chayan Aayog (HPRCA), Hamirpur**. Candidates generally need a master's degree in the subject with the prescribed marks and a **B.Ed**; the notification gives the exact eligibility, age limit and stages.
 
 Selection is usually through a **computer-based screening test** on the subject and general awareness, followed by document verification and any further stage the notification lays down. The official section split is not published, so our mocks use 100 questions in four parts: pedagogy and teaching aptitude, Himachal GK and general studies, and two sections of the subject at post-graduate level.
 
-PGT paper me **subject ka hissa sabse bada** hota hai, aur level master's degree ka hota hai, sirf school ka nahi. English me grammar ke saath literature (Chaucer se postcolonial tak) aur ELT methods aate hain; Mathematics me abstract algebra, real analysis, calculus, differential equations, coordinate geometry aur statistics.
+PGT paper me **subject ka hissa sabse bada** hota hai, aur level master's degree ka hota hai, sirf school ka nahi. English me grammar ke saath literature (Chaucer se postcolonial tak) aur ELT methods aate hain; Mathematics me abstract algebra, real analysis, calculus, differential equations, coordinate geometry aur statistics. Science aur social science subjects me bhi sawal PG syllabus ke concepts aur numericals se aate hain.
 
-**How to prepare:** revise your post-graduate syllabus topic by topic, keep short notes of Himachal GK and pedagogy, and take full mocks against the clock. Start with the free [HP PGT English mock](${free("hp-pgt-english-full-mock-1")}) or the [HP PGT Mathematics mock](${free("hp-pgt-mathematics-full-mock-1")}).`,
+**How to prepare:** revise your post-graduate syllabus topic by topic, keep short notes of Himachal GK and pedagogy, and take full mocks against the clock. Every subject's first mock is free: [English](${free("hp-pgt-english-full-mock-1")}), [Mathematics](${free("hp-pgt-mathematics-full-mock-1")}), [Physics](${free("hp-pgt-physics-full-mock-1")}), [Chemistry](${free("hp-pgt-chemistry-full-mock-1")}), [Biology](${free("hp-pgt-biology-full-mock-1")}), [Hindi](${free("hp-pgt-hindi-full-mock-1")}), [History](${free("hp-pgt-history-full-mock-1")}), [Political Science](${free("hp-pgt-political-science-full-mock-1")}), [Economics](${free("hp-pgt-economics-full-mock-1")}) and [Commerce](${free("hp-pgt-commerce-full-mock-1")}).`,
     syllabus: `Each subject has its own syllabus in the notification. Our mocks follow this structure:
 
 ### Subject (largest share, post-graduate level)
 - **English:** grammar and usage, vocabulary, idioms, voice and narration, ELT methods; English literature from Old English to modern, Indian writing in English, literary terms and criticism
 - **Mathematics:** groups, rings, linear algebra, real analysis; calculus, differential equations, vector calculus, coordinate geometry, trigonometry, probability and statistics
+- **Physics:** mechanics, thermal physics and waves; electromagnetism, optics and modern physics
+- **Chemistry:** physical and inorganic chemistry; organic and analytical chemistry
+- **Biology:** cell biology, genetics and plant biology; animal physiology, ecology and biotechnology
+- **Hindi:** Hindi language and grammar; Hindi literature
+- **History:** ancient and medieval India; modern India and world history
+- **Political Science:** political theory and thought; Indian government, comparative politics and international relations
+- **Economics:** micro and macro economics; Indian economy, development and statistics
+- **Commerce:** accountancy and cost accounting; business studies, finance and business law
 
 ### Pedagogy & Teaching Aptitude
 - Learning theories, development, motivation and intelligence
@@ -164,7 +172,7 @@ PGT paper me **subject ka hissa sabse bada** hota hai, aur level master's degree
       },
       {
         q: "Which subjects do these PGT mocks cover?",
-        a: "English and Mathematics for now, each with full mocks of 100 questions. More subjects will be added as their mocks are written.",
+        a: "English, Mathematics, Physics, Chemistry, Biology, Hindi, History, Political Science, Economics and Commerce, each with full mocks of 100 questions. More subjects will be added as their mocks are written.",
       },
       {
         q: "PGT ki taiyari kaise karein?",

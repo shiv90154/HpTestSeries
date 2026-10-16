@@ -10,6 +10,8 @@ describe("examLabel", () => {
     expect(examLabel("pgimer", "Nursing Officer")).toBe("PGIMER Nursing Officer");
     expect(examLabel("hpscb", "Clerk")).toBe("HPSCB Clerk");
     expect(examLabel("hpsebl", "Lineman")).toBe("HPSEBL Lineman");
+    expect(examLabel("upsc", "NDA & NA")).toBe("UPSC NDA & NA");
+    expect(examLabel("iaf", "AFCAT")).toBe("AFCAT");
   });
 
   it("uses HP for the other bodies and never doubles it", () => {
@@ -25,6 +27,7 @@ describe("bodyShortName", () => {
     expect(bodyShortName("hprca")).toBe("HPRCA");
     expect(bodyShortName("hp-high-court")).toBe("HP High Court");
     expect(bodyShortName("hp-revenue")).toBe("HP Revenue Department");
+    expect(bodyShortName("iaf")).toBe("IAF");
     expect(bodyShortName("somebody-new")).toBe("SOMEBODY-NEW");
   });
 });

@@ -1,12 +1,15 @@
 // Pure helpers that turn exam and body slugs into the names candidates search for. No database, so tests can import them.
 
-/** The prefix that makes an exam name searchable, per recruiting body; other bodies get "HP ". */
+/** The prefix that makes an exam name searchable, per recruiting body; "" = the name alone; other bodies get "HP ". */
 const EXAM_PREFIX: Record<string, string> = {
   hprca: "HPRCA",
   hppsc: "HPPSC",
   pgimer: "PGIMER",
   hpsebl: "HPSEBL",
   hpscb: "HPSCB",
+  upsc: "UPSC",
+  // Candidates search "AFCAT", never "IAF AFCAT"
+  iaf: "",
 };
 
 /** How candidates name a recruiting body in a sentence. */
@@ -15,6 +18,7 @@ const BODY_NAME: Record<string, string> = {
   "hp-police": "HP Police",
   "hp-revenue": "HP Revenue Department",
   "hp-high-court": "HP High Court",
+  iaf: "IAF",
 };
 
 /**
@@ -34,6 +38,6 @@ export function bodyShortName(bodySlug: string): string {
 /** SEO label: "HPRCA JOA IT", "HPPSC HPAS", "HP Police Constable", "HP TET", "HP Patwari", "HP High Court Clerk". */
 export function examLabel(bodySlug: string, name: string): string {
   const prefix = EXAM_PREFIX[bodySlug];
-  if (prefix) return name.toLowerCase().startsWith(prefix.toLowerCase()) ? name : `${prefix} ${name}`;
+  if (prefix !== undefined) return name.toLowerCase().startsWith(prefix.toLowerCase()) ? name : `${prefix} ${name}`;
   return name.startsWith("HP ") ? name : `HP ${name}`;
 }

@@ -97,7 +97,7 @@ export async function seedSeries(db: PrismaClient, cfg: SeriesSeed) {
           publishedAt: new Date(),
           instructions: def.instructions,
           sections: {
-            create: def.sections.map((s, order) => ({ name: s.name, nameHi: s.nameHi, order, marksCorrect: 1, marksWrong: def.marksWrong ?? 0.25 })),
+            create: def.sections.map((s, order) => ({ name: s.name, nameHi: s.nameHi, order, marksCorrect: def.marksCorrect ?? 1, marksWrong: def.marksWrong ?? 0.25 })),
           },
         },
       });

@@ -30,6 +30,8 @@ export const taxonomy: SubjectSeed[] = [
       ["indian-geography", "Indian Geography"],
       ["indian-economy", "Indian Economy"],
       ["general-science", "General Science"],
+      ["current-affairs", "Current Affairs"],
+      ["static-gk", "Static GK (Books, Awards, Sports)"],
     ],
   },
   {
@@ -52,6 +54,7 @@ export const taxonomy: SubjectSeed[] = [
       ["alphabet-test", "Alphabet & Word Test"],
       ["dice-cube", "Dice & Cubes"],
       ["math-operations", "Mathematical Operations"],
+      ["spatial", "Spatial Reasoning (Mirror, Water Image, Figures)"],
     ],
   },
   {
@@ -93,6 +96,8 @@ export const taxonomy: SubjectSeed[] = [
       ["voice-speech", "Voice & Narration"],
       ["spelling", "Spelling"],
       ["literature", "English Literature"],
+      ["sentence-ordering", "Sentence & Para Ordering"],
+      ["cloze-test", "Cloze Test & Fill in the Blanks"],
     ],
   },
   {
@@ -308,6 +313,8 @@ export const taxonomy: SubjectSeed[] = [
       ["calculus", "Calculus"],
       ["statistics-probability", "Statistics & Probability"],
       ["geometry-mensuration", "Geometry & Mensuration"],
+      ["matrices-determinants", "Matrices & Determinants"],
+      ["vectors-3d", "Vectors & 3D Geometry"],
     ],
   },
   {
@@ -424,6 +431,16 @@ export const taxonomy: SubjectSeed[] = [
       ["human-geography", "Human & Economic Geography"],
       ["india-geography", "Geography of India"],
       ["cartography", "Cartography, GIS & Remote Sensing"],
+    ],
+  },
+  {
+    slug: "defence",
+    name: "Defence Awareness",
+    nameHi: "रक्षा जागरूकता",
+    topics: [
+      ["armed-forces", "Armed Forces, Ranks & Organisation"],
+      ["military-history", "Military History & Operations"],
+      ["defence-technology", "Defence Technology, Aircraft & Missiles"],
     ],
   },
 ];

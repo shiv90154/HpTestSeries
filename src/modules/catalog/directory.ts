@@ -12,6 +12,7 @@ export const CATEGORIES = [
   { key: "engineering", label: "Engineering" },
   { key: "forest", label: "Forest & Agriculture" },
   { key: "officer", label: "HPPSC Officer" },
+  { key: "defence", label: "Defence" },
 ] as const;
 
 export type CategoryKey = (typeof CATEGORIES)[number]["key"];
@@ -32,6 +33,7 @@ export function examCategory(bodySlug: string, examSlug: string): CategoryKey {
   if (fixed) return fixed;
   if (bodySlug === "hp-high-court") return "court";
   if (bodySlug === "hp-police") return "police";
+  if (bodySlug === "upsc" || bodySlug === "iaf") return "defence";
   if (bodySlug === "pgimer" || /nurse|nursing|pharmac|medical|doctor/.test(examSlug)) return "medical";
   if (/tet|jbt|tgt|teacher|lecturer|professor/.test(examSlug)) return "teaching";
   if (bodySlug === "hpsebl" || /engineer|lineman|electric/.test(examSlug)) return "engineering";
@@ -64,5 +66,8 @@ export function searchAliases(bodySlug: string, examSlug: string): string[] {
   if (examSlug === "steno-typist" || examSlug === "stenographer") out.push("steno");
   if (examSlug.includes("nurs")) out.push("nurse", "nursing");
   if (examSlug === "hp-tet") out.push("tet", "teacher");
+  if (bodySlug === "upsc" || bodySlug === "iaf") out.push("defence", "army", "navy", "air force");
+  if (examSlug === "cds") out.push("ima", "ota", "ina", "afa");
+  if (bodySlug === "iaf") out.push("iaf", "flying");
   return out;
 }

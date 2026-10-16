@@ -85,6 +85,8 @@ export type TestDef = {
   demoPercent?: number;
   /** Whole test free for everyone (the series' sample mock); demoPercent is then irrelevant. */
   isFree?: boolean;
+  /** Marks for a correct answer in every section; default 1. */
+  marksCorrect?: number;
   /** Marks deducted per wrong answer in every section; default 0.25. */
   marksWrong?: number;
   instructions: string;
