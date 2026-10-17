@@ -2,12 +2,12 @@ import Link from "next/link";
 import { examLabel, getCatalog, getPublishedPosts } from "@/modules/catalog/queries";
 import { FREE_MOCK_HREF, site, WHATSAPP_GROUP_URL } from "@/lib/site";
 import { LEGAL_LINKS } from "@/lib/business";
-import { INSTAGRAM_URL, YOUTUBE_URL } from "@/lib/schema";
+import { INSTAGRAM_URL, TELEGRAM_URL, YOUTUBE_URL } from "@/lib/schema";
 import { AuthFooterLink } from "./auth-cta";
 import { Logo } from "./logo";
 import { PublicBottomNav } from "./public-bottom-nav";
 import { TrackedLink } from "./tracked-link";
-import { WhatsAppIcon } from "./whatsapp-group";
+import { TelegramIcon, WhatsAppIcon } from "./whatsapp-group";
 
 /** Footer links are 40px tall so they are easy to tap on phones. */
 const link = "inline-block py-2.5 hover:text-accent md:py-1.5";
@@ -64,6 +64,15 @@ export async function SiteFooter() {
                 <circle cx="12" cy="12" r="4" />
                 <circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none" />
               </svg>
+            </a>
+            <a
+              href={TELEGRAM_URL}
+              target="_blank"
+              rel="noopener noreferrer me"
+              aria-label={`${site.name} on Telegram`}
+              className="inline-flex size-10 items-center justify-center rounded-xl bg-white/10 hover:bg-white/20 hover:text-white"
+            >
+              <TelegramIcon className="size-5" />
             </a>
           </div>
         </div>

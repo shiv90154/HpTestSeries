@@ -3,9 +3,10 @@ import { site } from "./site";
 
 export const YOUTUBE_URL = "https://www.youtube.com/@hptestseries";
 export const INSTAGRAM_URL = "https://www.instagram.com/hptestseries.in/";
+export const TELEGRAM_URL = "https://t.me/hptestseries";
 
-/** Social profiles for Organization.sameAs — add Telegram here once it exists. */
-export const SOCIAL_PROFILES: string[] = [YOUTUBE_URL, INSTAGRAM_URL];
+/** Social profiles for Organization.sameAs. */
+export const SOCIAL_PROFILES: string[] = [YOUTUBE_URL, INSTAGRAM_URL, TELEGRAM_URL];
 
 /** schema.org Organization — the home page node and the publisher on every article. */
 export function organizationNode() {
