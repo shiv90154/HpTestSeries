@@ -7,7 +7,7 @@ import { toast } from "sonner";
 import { ResultView } from "@/components/result-view";
 import { btn } from "@/components/ui";
 import { readLangPref } from "@/lib/lang-pref";
-import type { ResultData } from "@/modules/assessment/types";
+import type { ResultData, ResultUpsell } from "@/modules/assessment/types";
 import { claimGuestResultAction } from "./actions";
 
 // Guest results live only in this browser tab (sessionStorage) until the student logs in and saves one.
@@ -19,7 +19,7 @@ function read(slug: string): string | null {
   }
 }
 
-export function GuestResult({ slug, loggedIn }: { slug: string; loggedIn: boolean }) {
+export function GuestResult({ slug, loggedIn, upsell }: { slug: string; loggedIn: boolean; upsell: ResultUpsell | null }) {
   const router = useRouter();
   const raw = useSyncExternalStore(
     () => () => {},
@@ -80,7 +80,7 @@ export function GuestResult({ slug, loggedIn }: { slug: string; loggedIn: boolea
           {claimError}
         </p>
       )}
-      <ResultView data={data} isGuest loggedIn={loggedIn} defaultLang={readLangPref() ?? undefined} />
+      <ResultView data={data} isGuest loggedIn={loggedIn} defaultLang={readLangPref() ?? undefined} upsell={upsell} />
     </>
   );
 }

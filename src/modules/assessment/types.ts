@@ -107,6 +107,13 @@ export type ResultData = {
   nextTest?: { slug: string; title: string; isFree: boolean } | null;
 };
 
+/** Paid plans offered under the result of a free test that belongs to no exam (e.g. the Himachal GK mock). */
+export type ResultUpsell = {
+  series: UpsellPlan[];
+  pass: UpsellPlan | null;
+};
+export type UpsellPlan = { slug: string; title: string; priceInPaise: number; testCount: number };
+
 export type LeaderboardRow = { rank: number; name: string; district: string | null; score: number; isYou: boolean };
 
 /** The server-signed answers of a guest attempt (see modules/assessment/guest-claim.ts). */

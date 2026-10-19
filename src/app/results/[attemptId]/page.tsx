@@ -7,6 +7,7 @@ import { LiveCountdown } from "@/components/live-countdown";
 import { ResultView } from "@/components/result-view";
 import { btn, card } from "@/components/ui";
 import { getAttemptResult, getResultLock } from "@/modules/assessment/service";
+import { getResultUpsell } from "@/modules/commerce/product-service";
 import { PLACEHOLDER_NAME } from "@/modules/identity/permissions";
 import { getPreferredLang, requireUser } from "@/modules/identity/session";
 
@@ -44,10 +45,11 @@ export default async function ResultPage({ params }: PageProps<"/results/[attemp
 
   const [data, lang] = await Promise.all([getAttemptResult(user.id, attemptId), getPreferredLang(user.id)]);
   if (!data) notFound();
+  const upsell = await getResultUpsell(data.test.slug);
   return (
     <>
       <AppHeader user={user} />
-      <ResultView data={data} isGuest={false} defaultLang={lang} askName={user.name === PLACEHOLDER_NAME} />
+      <ResultView data={data} isGuest={false} defaultLang={lang} askName={user.name === PLACEHOLDER_NAME} upsell={upsell} />
     </>
   );
 }

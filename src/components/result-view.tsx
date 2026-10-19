@@ -7,7 +7,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 import { track } from "@/components/analytics";
 import { RichContent } from "@/components/rich-content";
-import type { Bilingual, ResultData } from "@/modules/assessment/types";
+import type { Bilingual, ResultData, ResultUpsell } from "@/modules/assessment/types";
 import { writeLangPref } from "@/lib/lang-pref";
 import { rupees } from "@/lib/money";
 import { site } from "@/lib/site";
@@ -53,12 +53,15 @@ export function ResultView({
   loggedIn = !isGuest,
   defaultLang = "en",
   askName = false,
+  upsell = null,
 }: {
   data: ResultData;
   isGuest: boolean;
   loggedIn?: boolean;
   defaultLang?: Lang;
   askName?: boolean;
+  /** Paid plans to offer under a free no-exam test (e.g. Himachal GK); null hides the card. */
+  upsell?: ResultUpsell | null;
 }) {
   const [lang, setLangState] = useState<Lang>(defaultLang);
   const setLang = (l: Lang) => {
@@ -210,6 +213,8 @@ export function ResultView({
         />
         {!isGuest && data.attemptId && <ResultCardButton attemptId={data.attemptId} url={`${site.url}/tests/${data.test.slug}`} />}
       </section>
+
+      {upsell && <UpsellCard upsell={upsell} />}
 
       <WhatsAppGroupCard place="result" />
 
@@ -612,6 +617,45 @@ function UnlockButton({ demo, size }: { demo: NonNullable<ResultData["demo"]>; s
     <Link href="/tests" className={btn("accent", size)}>
       See all tests
     </Link>
+  );
+}
+
+function UpsellCard({ upsell }: { upsell: ResultUpsell }) {
+  const go = (slug: string) => () => track("upsell_click", { place: "result", product: slug });
+  return (
+    <section className={`${card} space-y-4 border-primary/30 bg-primary-soft/40 p-5`}>
+      <div>
+        <p className="text-xs font-medium uppercase tracking-wider text-primary">Next step</p>
+        <h2 className="text-lg font-semibold">Himachal GK har HP exam mein aata hai</h2>
+        <p className="text-sm text-muted">Ab apne exam ki full mock series se practice karo, isi CBT screen mein, solutions aur rank ke saath.</p>
+      </div>
+      {upsell.series.length > 0 && (
+        <ul className="divide-y divide-border overflow-hidden rounded-xl border border-border bg-surface">
+          {upsell.series.map((p) => (
+            <li key={p.slug}>
+              <Link href={`/buy/${p.slug}`} onClick={go(p.slug)} className="flex items-center gap-3 px-4 py-3 hover:bg-surface-muted">
+                <span className="mr-auto min-w-0">
+                  <span className="block truncate font-medium">{p.title}</span>
+                  <span className="text-xs text-muted">{p.testCount} tests</span>
+                </span>
+                <span className="shrink-0 font-semibold">{rupees(p.priceInPaise)}</span>
+                <ArrowRight className="size-4 shrink-0 text-muted" aria-hidden />
+              </Link>
+            </li>
+          ))}
+        </ul>
+      )}
+      <div className="flex flex-wrap gap-2">
+        {upsell.pass && (
+          <Link href={`/buy/${upsell.pass.slug}`} onClick={go(upsell.pass.slug)} className={btn("accent", "sm")}>
+            {upsell.pass.title} — {rupees(upsell.pass.priceInPaise)}
+          </Link>
+        )}
+        <Link href="/pricing" onClick={go("pricing")} className={btn("outline", "sm")}>
+          All plans
+        </Link>
+      </div>
+    </section>
   );
 }
 
