@@ -10,6 +10,7 @@ import { getCurrentUser } from "@/modules/identity/session";
 
 const slugSchema = z.string().min(1).max(80);
 const codeSchema = z.string().max(40);
+const emailSchema = z.string().trim().toLowerCase().email().max(200);
 
 export async function createOrderAction(productSlug: string, couponCode?: string, useWallet = false): Promise<CreateOrderResult> {
   const user = await getCurrentUser();
@@ -18,14 +19,16 @@ export async function createOrderAction(productSlug: string, couponCode?: string
 }
 
 /** Checkout without an account: the order is remembered in this browser and attached to whoever signs in next. */
-export async function createGuestOrderAction(productSlug: string, couponCode?: string): Promise<CheckoutOrder | { error: string }> {
+export async function createGuestOrderAction(productSlug: string, couponCode?: string, email?: string): Promise<CheckoutOrder | { error: string }> {
   if (await getCurrentUser()) return { error: "You are already logged in — please refresh the page." };
+  const payerEmail = emailSchema.safeParse(email);
+  if (!payerEmail.success) return { error: "Please enter a valid email address." };
   // Same limit as logged-in buyers (10 per 10 min), keyed by IP; nginx sets X-Real-IP (see modules/identity/auth.ts).
   const ip = (await headers()).get("x-real-ip") ?? "unknown";
   if (!(await consumeRateLimit(`order-guest:${ip}`, 10 * 60, 10))) {
     return { error: "Too many payment attempts. Please wait a few minutes and try again." };
   }
-  const order = await createGuestOrderForProduct(slugSchema.parse(productSlug), couponCode ? codeSchema.parse(couponCode) : undefined);
+  const order = await createGuestOrderForProduct(slugSchema.parse(productSlug), couponCode ? codeSchema.parse(couponCode) : undefined, payerEmail.data);
   if ("error" in order) return order;
   const { claimToken, ...checkout } = order;
   await rememberGuestOrder(claimToken); // the token never reaches client code

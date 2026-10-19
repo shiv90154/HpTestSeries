@@ -93,10 +93,11 @@ export function renderEmail(m: {
   paragraphs: string[];
   cta: { label: string; url: string };
   why: string;
-  unsubscribeUrl: string;
+  /** Left out only for a mail to someone without an account (a guest checkout reminder, sent once). */
+  unsubscribeUrl?: string;
   siteUrl?: string;
 }): EmailContent {
-  const text = [m.heading, "", ...m.paragraphs.flatMap((p) => [p, ""]), `${m.cta.label}: ${m.cta.url}`, "", "—", m.why, `Unsubscribe: ${m.unsubscribeUrl}`].join("\n");
+  const text = [m.heading, "", ...m.paragraphs.flatMap((p) => [p, ""]), `${m.cta.label}: ${m.cta.url}`, "", "—", m.why, ...(m.unsubscribeUrl ? [`Unsubscribe: ${m.unsubscribeUrl}`] : [])].join("\n");
   const rows = [
     `<tr><td style="font-size:24px;line-height:1.3;font-weight:800;color:${emailColors.ink}">${esc(m.heading)}</td></tr>`,
     ...m.paragraphs.map((p, i) => paragraphRow(p, { top: i === 0 ? 12 : 14 })),
@@ -106,7 +107,9 @@ export function renderEmail(m: {
     preview: m.paragraphs[0] ?? m.heading,
     siteUrl: m.siteUrl ?? process.env.NEXT_PUBLIC_SITE_URL ?? "https://hptestseries.in",
     rows,
-    footer: `${esc(m.why)} <a href="${esc(m.unsubscribeUrl)}" style="color:${emailColors.faint};text-decoration:underline">Unsubscribe</a>`,
+    footer: m.unsubscribeUrl
+      ? `${esc(m.why)} <a href="${esc(m.unsubscribeUrl)}" style="color:${emailColors.faint};text-decoration:underline">Unsubscribe</a>`
+      : esc(m.why),
   });
   return { subject: m.subject, text, html };
 }

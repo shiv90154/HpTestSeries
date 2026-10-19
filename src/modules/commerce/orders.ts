@@ -102,7 +102,12 @@ export async function createOrderForProduct(userId: string, productSlug: string,
  * account and grants the access. The wallet needs an account; a coupon works if quoteCoupon allows it for a guest
  * (never one that makes the order free, so a guest order always goes through Razorpay).
  */
-export async function createGuestOrderForProduct(productSlug: string, couponCode?: string): Promise<(CheckoutOrder & { claimToken: string }) | { error: string }> {
+/** `email`: typed by the guest before paying; kept as payerEmail so an unpaid checkout can get one reminder. */
+export async function createGuestOrderForProduct(
+  productSlug: string,
+  couponCode?: string,
+  email?: string,
+): Promise<(CheckoutOrder & { claimToken: string }) | { error: string }> {
   const product = await db.product.findUnique({ where: { slug: productSlug } });
   if (!product || !product.isActive) return { error: "This product is not available." };
   if (product.priceInPaise <= 0) return { error: "Please log in to get this product." };
@@ -120,7 +125,7 @@ export async function createGuestOrderForProduct(productSlug: string, couponCode
 
   const claimToken = randomBytes(24).toString("base64url");
   const order = await db.order.create({
-    data: { userId: null, claimToken, productId: product.id, amountPaise, discountPaise, couponId, status: "CREATED" },
+    data: { userId: null, claimToken, productId: product.id, amountPaise, discountPaise, couponId, status: "CREATED", payerEmail: email ?? null },
   });
   try {
     const rpOrder = await createRazorpayOrder({ amountPaise: order.amountPaise, receipt: order.id, notes: { guest: "1", productSlug } });

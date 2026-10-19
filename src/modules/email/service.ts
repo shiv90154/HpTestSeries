@@ -313,6 +313,70 @@ export async function runDailyEmails(now = new Date()) {
   return { planned, ...sent };
 }
 
+// ───────────── Unpaid checkouts ─────────────
+
+const HOUR = 60 * 60 * 1000;
+
+/**
+ * One "finish your payment" email per unpaid checkout, 1 to 24 hours after it was started. Called by the 15-minute
+ * reconcile cron. Guests are reached through the email they typed before paying; a buyer who bought the same plan
+ * since, or already got a reminder for it in the last day, or said no to offers, is left alone.
+ */
+export async function remindUnpaidCheckouts(now = new Date()): Promise<{ sent: number; skipped: number }> {
+  const orders = await db.order.findMany({
+    where: {
+      status: "CREATED",
+      razorpayOrderId: { not: null },
+      reminderSentAt: null,
+      createdAt: { gt: new Date(now.getTime() - 24 * HOUR), lt: new Date(now.getTime() - HOUR) },
+    },
+    orderBy: { createdAt: "asc" },
+    take: 50,
+    select: {
+      id: true,
+      userId: true,
+      payerEmail: true,
+      productId: true,
+      product: { select: { slug: true, title: true, isActive: true } },
+      user: { select: { id: true, name: true, email: true, emailOffers: true, emailOffersAt: true } },
+    },
+  });
+  const result = { sent: 0, skipped: 0 };
+  for (const o of orders) {
+    // Claim the order first, so two overlapping cron runs can never mail it twice.
+    const { count } = await db.order.updateMany({ where: { id: o.id, reminderSentAt: null }, data: { reminderSentAt: now } });
+    if (!count) continue;
+    const email = o.user?.email ?? o.payerEmail;
+    const buyer = o.userId ? { userId: o.userId } : { payerEmail: email };
+    const [boughtSince, remindedToday] = email
+      ? await Promise.all([
+          db.order.count({ where: { ...buyer, productId: o.productId, status: "PAID" } }),
+          db.order.count({ where: { ...buyer, productId: o.productId, id: { not: o.id }, reminderSentAt: { gt: new Date(now.getTime() - 24 * HOUR) } } }),
+        ])
+      : [0, 0];
+    if (!email || !isRealEmail(email) || !o.product.isActive || (o.user && !broadcastAllowed(o.user)) || boughtSince || remindedToday) {
+      result.skipped++;
+      continue;
+    }
+    const name = o.user ? firstName(o.user.name) : "";
+    const content = renderEmail({
+      subject: `Aapka ${o.product.title} order adhoora reh gaya`,
+      heading: `${name ? `${name}, ` : ""}aapka payment poora nahi hua`,
+      paragraphs: [
+        `Aapne ${o.product.title} ka checkout shuru kiya tha, par payment poora nahi hua. UPI fail hona ya network chala jaana aam baat hai; aap ek click me dobara try kar sakte hain.`,
+        "Paise kat gaye par access nahi mila? Dobara pay mat kijiye. Aksar payment kuch minute me apne aap jud jaata hai; na jude to is email ka reply kijiye.",
+      ],
+      cta: { label: "Payment poora karein", url: withUtm(`/buy/${o.product.slug}`, site.url, "checkout-reminder") },
+      why: "You get this because you started a payment on HP Test Series. We send only this one reminder.",
+      unsubscribeUrl: o.user ? unsubscribeLinks(o.user.id, "offers").page : undefined,
+    });
+    const ok = await sendEmail(email, content, `[dev] checkout reminder for ${email}: ${content.subject}`).catch(() => false);
+    if (ok) result.sent++;
+    else result.skipped++;
+  }
+  return result;
+}
+
 // ───────────── Campaigns ─────────────
 
 const campaignSchema = z.object({

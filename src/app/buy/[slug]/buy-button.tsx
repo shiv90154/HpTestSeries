@@ -20,6 +20,8 @@ declare global {
 
 type Quote = { code: string; discountPaise: number; finalPaise: number };
 
+const looksLikeEmail = (v: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim());
+
 export function BuyButton({
   productSlug,
   pricePaise,
@@ -52,6 +54,9 @@ export function BuyButton({
   const [couponNeedsLogin, setCouponNeedsLogin] = useState(false);
   const [checking, setChecking] = useState(false);
   const [useWallet, setUseWallet] = useState(true);
+  // Guests type their email before paying: the receipt goes there, and an unpaid checkout gets one reminder.
+  const [guestEmail, setGuestEmail] = useState("");
+  const [emailError, setEmailError] = useState<string | null>(null);
   const loginHref = `/login?next=${encodeURIComponent(`/buy/${productSlug}`)}`;
 
   async function applyCode() {
@@ -85,11 +90,15 @@ export function BuyButton({
       return;
     }
     const guest = !user;
+    if (guest && !looksLikeEmail(guestEmail)) {
+      setEmailError("Please enter your email. Your receipt and access details are sent there.");
+      return;
+    }
     // Stays true while Razorpay Checkout is open, so a second tap can't create a second order.
     setLoading(true);
     try {
       // Not logged in: the order is created anyway and attached to the account on the next login (/claim).
-      const order = guest ? await createGuestOrderAction(productSlug, quote?.code) : await createOrderAction(productSlug, quote?.code, useWallet && walletPaise > 0);
+      const order = guest ? await createGuestOrderAction(productSlug, quote?.code, guestEmail.trim()) : await createOrderAction(productSlug, quote?.code, useWallet && walletPaise > 0);
       if ("error" in order) {
         toast.error(order.error);
         setLoading(false);
@@ -111,7 +120,7 @@ export function BuyButton({
         name: site.name,
         description: order.productTitle,
         order_id: order.razorpayOrderId,
-        prefill: user ? { name: user.name, email: realEmail, contact: user.phoneNumber ?? undefined } : undefined,
+        prefill: user ? { name: user.name, email: realEmail, contact: user.phoneNumber ?? undefined } : { email: guestEmail.trim() },
         theme: { color: site.themeColor },
         handler: async (response: { razorpay_payment_id: string; razorpay_order_id: string; razorpay_signature: string }) => {
           const result = await confirmPaymentAction(
@@ -219,6 +228,38 @@ export function BuyButton({
             )}
           </span>
         </label>
+      )}
+
+      {!user && (
+        <div className="space-y-1.5">
+          <label htmlFor="guest-email" className="text-sm font-medium">
+            Your email
+          </label>
+          <input
+            id="guest-email"
+            type="email"
+            inputMode="email"
+            autoComplete="email"
+            value={guestEmail}
+            onChange={(e) => {
+              setGuestEmail(e.target.value);
+              setEmailError(null);
+            }}
+            placeholder="you@gmail.com"
+            aria-invalid={!!emailError}
+            aria-describedby="guest-email-note"
+            className="h-11 w-full rounded-xl border border-border bg-surface px-3 text-sm outline-none focus:border-primary"
+          />
+          {emailError ? (
+            <p id="guest-email-note" role="alert" className="text-xs text-danger">
+              {emailError}
+            </p>
+          ) : (
+            <p id="guest-email-note" className="text-xs text-muted">
+              Receipt aur access ki details isi email par aayengi.
+            </p>
+          )}
+        </div>
       )}
 
       <button onClick={pay} disabled={loading} className={btn("primary", "lg", "w-full")}>

@@ -499,6 +499,7 @@ model Order {
   claimToken      String?     @unique // secret held in the guest buyer's browser cookie; proves they placed the order
   payerEmail      String? // email typed into Razorpay Checkout; lets a guest buyer claim from another device
   claimedAt       DateTime? // when a guest order was attached to an account
+  reminderSentAt  DateTime? // the one "finish your payment" email for an unpaid checkout (email/service.ts)
   createdAt       DateTime    @default(now())
   updatedAt       DateTime    @updatedAt
 

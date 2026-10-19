@@ -1,4 +1,4 @@
-import { BadgeCheck, CheckCircle2, ShieldCheck } from "lucide-react";
+import { BadgeCheck, CheckCircle2, FileText, RotateCcw, ShieldCheck } from "lucide-react";
 import type { Metadata } from "next";
 import { cookies } from "next/headers";
 import Link from "next/link";
@@ -46,6 +46,7 @@ export default async function BuyPage({ params }: PageProps<"/buy/[slug]">) {
   const date = (d: Date) => d.toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric", timeZone: "Asia/Kolkata" });
   const rupees = (product.priceInPaise / 100).toLocaleString("en-IN");
   const perTest = perTestLabel(product.priceInPaise, product.testCount);
+  const testCount = product.testCount; // every paid test for a pass, else the tests in its series
   // Same precedence as fulfillOrder: a fixed end date wins over relative validity.
   const validity = product.validUntil
     ? `valid till ${product.validUntil.toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric", timeZone: "Asia/Kolkata" })}`
@@ -71,6 +72,11 @@ export default async function BuyPage({ params }: PageProps<"/buy/[slug]">) {
               ₹{rupees}
               {validity && <span className="ml-2 text-sm font-normal text-muted">{validity}</span>}
             </p>
+            {testCount > 0 && (
+              <p className="mt-2 flex items-center gap-1.5 text-sm font-semibold">
+                <FileText className="size-4 text-primary" aria-hidden /> {testCount} full tests included
+              </p>
+            )}
             {product.separatePaise && <SeparateSaving was={product.separatePaise} now={product.priceInPaise} className="mt-1" />}
             {perTest && <p className="mt-1 text-sm font-medium text-primary">Just {perTest}</p>}
             <p className="mt-1 text-xs text-muted">One-time payment · final price, nothing extra · no auto-renewal</p>
@@ -135,6 +141,12 @@ export default async function BuyPage({ params }: PageProps<"/buy/[slug]">) {
           <div className="space-y-2 text-xs text-muted">
             <p className="flex items-center gap-1.5">
               <ShieldCheck className="size-4 text-success" /> Secure payment via Razorpay (UPI, cards, netbanking).
+            </p>
+            <p className="flex items-center gap-1.5">
+              <RotateCcw className="size-4 text-success" /> 7-day refund policy.{" "}
+              <Link href="/refund-policy" className="font-medium text-primary hover:underline">
+                Refund niyam padhein
+              </Link>
             </p>
             <p>
               By paying you agree to our{" "}
