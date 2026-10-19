@@ -1431,4 +1431,111 @@ Ye posts ek nayi scheme ke tahat bhare jayenge, jiski details abhi aani hain. Sc
       { q: "HP Staff Nurse ke 500 posts ki bharti kaun karega?", a: "Assistant Staff Nurse ki pichli bharti HPRCA ne ki thi, jiska CBT 25 September 2026 ko hua. Nayi bharti ki agency aur pattern advertisement me confirm hoga." },
     ],
   },
+  {
+    slug: "hp-tet-tgt-syllabus-exam-pattern-arts-medical-non-medical",
+    seoTitle: "HP TET TGT Syllabus & Exam Pattern 2026: Arts, Medical, Non-Medical",
+    seoDescription: "HP TET TGT November 2026: official section-wise pattern for Arts, Non-Medical and Medical, exam dates, qualifying marks, eligibility and a 5-week study plan.",
+    title: "HP TET TGT Syllabus and Exam Pattern 2026: Arts, Non-Medical and Medical (Official Section-wise Split)",
+    titleHi: "एचपी टेट टीजीटी सिलेबस और परीक्षा पैटर्न 2026: आर्ट्स, नॉन-मेडिकल, मेडिकल",
+    excerpt: "HPBOSE ke November 2026 prospectus ke mutabiq TGT Arts, Non-Medical aur Medical TET ka section-wise pattern, exam dates, qualifying marks, eligibility aur 5 hafte ka study plan.",
+    category: "SYLLABUS",
+    exams: ["hpbose/hp-tet"],
+    content: `**HP TET November 2026** me TGT ke teen papers hain: **TGT Arts, TGT Non-Medical aur TGT Medical**. Teeno ka pattern milta-julta hai, par aakhri do sections har stream me alag hain, aur yahin sabse zyada candidates galti karte hain. Is post me sab kuch HPBOSE ke **November 2026 prospectus** se liya gaya hai.
+
+## Exam dates (November 2026 session)
+
+| Paper | Date | Time |
+|---|---|---|
+| TGT Arts TET | **22 November 2026** | 10:00 AM to 12:30 PM |
+| TGT Non-Medical TET | **29 November 2026** | 10:00 AM to 12:30 PM |
+| TGT Medical TET | **6 December 2026** | 10:00 AM to 12:30 PM |
+
+Admit card HPBOSE ki website se **exam se 4 din pehle** download hoga. Application ki last date nikal chuki hai; poori notification ke liye padhein: [HP TET November 2026: dates, fee, pattern](/blog/hp-tet-november-2026-notification-dates-fee-exam-pattern).
+
+## Paper ka format
+
+- **150 questions, 150 marks, 150 minutes** (2.5 ghante)
+- Har question 1 mark ka, **koi negative marking nahi**
+- Question booklet **English aur Hindi dono** me
+- Answer **OMR sheet** par blue ya black ball pen se bharna hai; ek baar bhara hua circle badla nahi ja sakta
+
+## Section-wise pattern (official)
+
+Section I aur II teeno streams me same hain:
+
+| Section | Questions | Kya aata hai |
+|---|---|---|
+| I | 1 to 30 (30) | Child psychology & development, pedagogy, teaching-learning process |
+| II | 31 to 60 (30) | General awareness, **Himachal Pradesh**, current affairs aur environmental studies |
+
+Section III aur IV stream ke hisaab se:
+
+| Stream | Section III | Section IV |
+|---|---|---|
+| **TGT Arts** | Q 61 to 90: English literature & grammar (30) | Q 91 to 150: **Social Studies (60)** |
+| **TGT Non-Medical** | Q 61 to 90: Mathematics (30) | Q 91 to 150: **Physics & Chemistry (60)** |
+| **TGT Medical** | Q 61 to 120: **Botany & Zoology (60)** | Q 121 to 150: Chemistry (30) |
+
+Dhyan dein: TGT paper me **alag se Hindi language section nahi hai**. English sirf Arts wale paper me hai. Aur Medical me physics ka section nahi, chemistry ke 30 questions hain.
+
+## Kis level ke questions aate hain
+
+Prospectus ke mutabiq:
+
+- **Section I (pedagogy)** ke questions **11 se 14 saal** ke bachchon (class 6 to 8) ki educational psychology par hote hain: alag-alag learners ki zaroorat, class me interaction aur ek achhe teacher ke gun.
+- **Baaki sections** HP Board ke **class 6 to 8 syllabus** ke topics par hote hain, par unki difficulty aur linkage **10+2 level tak** ja sakti hai.
+- Subject ke questions **concept, problem solving aur pedagogy** (subject ko padhane ki samajh) teeno ko test karte hain.
+
+Matlab: sirf graduation ke notes kaafi nahi. Class 6 se 12 ki HP Board / NCERT books ka base mazboot hona chahiye.
+
+## Section-wise taiyari: kya padhein
+
+### Section I: Child Development & Pedagogy (30)
+Piaget, Vygotsky aur Kohlberg ke siddhant, learning ke tareeke, motivation, individual differences, inclusive education aur special needs, assessment (CCE, formative vs summative), RTE Act 2009 aur NEP 2020 ke main points. Questions class 6 to 8 ki situation par based hote hain.
+
+### Section II: General Awareness + Himachal (30)
+Himachal ka itihaas, bhugol, districts, nadiyan, mele-tyohar, arthvyavastha aur sarkari yojanayein; pichle 6 se 12 mahine ke current affairs; environment aur EVS. Ye section **har stream me same** hai, isliye easy marks yahin se aate hain.
+
+### TGT Arts: English (30) + Social Studies (60)
+English me grammar (tenses, voice, narration, articles, prepositions), comprehension aur literature ke basic terms. Social Studies me **itihaas, bhugol, nagrik shastra aur arthshastra**, class 6 to 10 ki books ke level par, 10+2 tak ke linkage ke saath. 60 questions wala ye section result tay karta hai.
+
+### TGT Non-Medical: Maths (30) + Physics & Chemistry (60)
+Maths me algebra, geometry, mensuration, trigonometry aur statistics ke concepts aur sawal. Physics aur Chemistry ke 60 questions sabse bada hissa hain: motion, force, energy, electricity, light, atomic structure, periodic table, chemical reactions aur acids-bases.
+
+### TGT Medical: Botany & Zoology (60) + Chemistry (30)
+Biology ke 60 questions: cell, plant aur animal physiology, genetics, ecology, human body aur bimariyan. Chemistry ke 30 questions Non-Medical wale level ke hi hote hain.
+
+## Qualifying marks
+
+| Category | Kitne % | 150 me se |
+|---|---|---|
+| Unreserved | 60% | **90** |
+| SC / ST / OBC / PHH (Himachal ke) | 55% | **82** |
+
+Negative marking nahi hai, isliye **koi bhi question khaali mat chhodiye**.
+
+## Eligibility, short me
+
+- **TGT Arts:** B.A. ya B.Com (kam se kam 50%) aur B.Ed.
+- **TGT Non-Medical:** B.Sc. Non-Medical (kam se kam 50%) aur B.Ed.
+- **TGT Medical:** B.Sc. Medical (kam se kam 50%) aur B.Ed.
+
+B.Ed. kar rahe candidates bhi TET de sakte hain. Integrated B.Ed.-M.Ed., B.El.Ed. aur 4-saal ke integrated courses ke raaste bhi hain; poori list prospectus me hai. Himachal ke SC/ST/OBC/PHH candidates ko qualification ke marks me 5% tak chhoot hai.
+
+## 5 hafte ka study plan (exam 22 November se)
+
+1. **Hafta 1:** Section I aur II ka poora syllabus ek baar. Roz 20 Himachal GK questions.
+2. **Hafta 2 aur 3:** Apne stream ka 60 questions wala section (Arts: Social Studies; Non-Medical: Physics & Chemistry; Medical: Botany & Zoology). Class 6 to 10 ki books, phir 11-12 ke linked topics.
+3. **Hafta 4:** 30 questions wala subject section, aur pedagogy ka revision.
+4. **Hafta 5:** Har doosre din ek **150 question ka full mock**, 150 minute ke timer ke saath, aur galtiyon ki list.
+
+Shuruaat ke liye free test: [HP TET free mock test](/tests/hp-tet-free-mock-1). Saare HP TET mock tests aur papers: [HP TET page](/hpbose/hp-tet). JBT ki taiyari kar rahe hain? Padhein [HP TET JBT syllabus](/blog/hp-tet-jbt-syllabus-important-topics).`,
+    faqs: [
+      { q: "HP TET TGT Arts 2026 ka exam kab hai?", a: "HPBOSE ke November 2026 prospectus ke mutabiq TGT Arts TET 22 November 2026 ko subah 10:00 se 12:30 baje tak hai. TGT Non-Medical 29 November aur TGT Medical 6 December 2026 ko usi samay par hai." },
+      { q: "HP TET TGT me kitne sections hote hain?", a: "Chaar. Section I (30) child development aur pedagogy, Section II (30) general awareness aur Himachal GK, aur Section III-IV stream ke hisaab se: Arts me English 30 aur Social Studies 60, Non-Medical me Maths 30 aur Physics-Chemistry 60, Medical me Botany-Zoology 60 aur Chemistry 30." },
+      { q: "HP TET TGT me negative marking hai?", a: "Nahi. 150 questions, har ek 1 mark ka, aur galat jawab par koi marks nahi katte." },
+      { q: "HP TET TGT pass karne ke liye kitne marks chahiye?", a: "Unreserved ke liye 60%, yani 150 me se 90. Himachal ke SC/ST/OBC/PHH candidates ke liye 55%, yani 82." },
+      { q: "Kya HP TET TGT me Hindi ka section hai?", a: "Nahi. TGT Arts, Non-Medical aur Medical paper me alag Hindi language section nahi hai. Question booklet English aur Hindi dono bhasha me hoti hai." },
+    ],
+  },
 ];
