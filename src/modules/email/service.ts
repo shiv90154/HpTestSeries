@@ -6,8 +6,13 @@ import { site } from "@/lib/site";
 import { getBuyOptionForSeries } from "@/modules/commerce/product-service";
 import { sendEmail } from "@/modules/identity/email";
 import { PLACEHOLDER_NAME } from "@/modules/identity/permissions";
+import { getOrCreateReferralCode } from "@/modules/commerce/referral";
+import { FRIEND_DISCOUNT_PAISE, MIN_REFERRAL_PRICE_PAISE, REWARD_PAISE, referralLink } from "@/modules/commerce/referral-rules";
 import {
+  BROADCAST_DAILY_LIMIT,
+  BROADCAST_KINDS,
   bodyParagraphs,
+  broadcastAllowed,
   CATEGORY,
   type EmailCategory,
   type EmailContent,
@@ -154,6 +159,41 @@ function campaignEmail(userId: string, c: CampaignBody, tag: string): EmailConte
   });
 }
 
+const BROADCAST_WHY_OPTED = "You get this because you ticked 'email me updates and offers' on HP Test Series.";
+const BROADCAST_WHY_OTHERS = "You get this update because you have an account on HP Test Series. Unsubscribe and we will not send you offers.";
+
+/** A campaign sent to every student; those who never opted in also get a line inviting them to. */
+function announcementEmail(u: { id: string; emailOffers: boolean }, c: CampaignBody, tag: string): EmailContent {
+  const invite = u.emailOffers ? [] : [`Aage bhi aise job alerts aur naye free mock tests chahiye? Profile me "Email me offers" tick karein: ${site.url}/profile`];
+  return renderEmail({
+    subject: c.subject,
+    heading: c.heading,
+    paragraphs: [...bodyParagraphs(c.body), ...invite],
+    cta: { label: c.ctaLabel, url: withUtm(c.ctaUrl, site.url, tag) },
+    why: u.emailOffers ? BROADCAST_WHY_OPTED : BROADCAST_WHY_OTHERS,
+    unsubscribeUrl: unsubscribeLinks(u.id, "offers").page,
+  });
+}
+
+/** For students who bought: their personal referral link, what a friend saves and what they earn. */
+async function referralInviteEmail(u: { id: string; name: string; emailOffers: boolean }, tag: string): Promise<EmailContent> {
+  const link = referralLink(site.url, await getOrCreateReferralCode(u.id));
+  const name = firstName(u.name);
+  return renderEmail({
+    subject: `Dosto ko HP Test Series bhejo, har dost par ${rupees(REWARD_PAISE)} kamao`,
+    heading: `${name ? `${name}, ` : ""}taiyari saath karo, paise bhi kamao`,
+    paragraphs: [
+      `Aapke dost bhi HP ke exams ki taiyari kar rahe hain? Unhe apna link bhejo. ${rupees(MIN_REFERRAL_PRICE_PAISE)} se upar ke plan par unhe ${rupees(FRIEND_DISCOUNT_PAISE)} ki seedhi chhoot milegi.`,
+      `Har dost jo aapke link se kharidega, uske liye aapke HP wallet me ${rupees(REWARD_PAISE)} aayenge. Wallet ke paise agli series ya Pass kharidne me use ho jaate hain.`,
+      `Aapka link: ${link}`,
+      "Ise apne WhatsApp ya Telegram group me share karo, jahan aapke dost exam ki baat karte hain.",
+    ],
+    cta: { label: "Mera referral page kholo", url: withUtm("/refer", site.url, tag) },
+    why: u.emailOffers ? BROADCAST_WHY_OPTED : BROADCAST_WHY_OTHERS,
+    unsubscribeUrl: unsubscribeLinks(u.id, "offers").page,
+  });
+}
+
 // ───────────── Sending ─────────────
 
 export type SendSummary = { sent: number; failed: number; skipped: number; left: number; quota: number };
@@ -165,6 +205,11 @@ export async function sendQueued(now = new Date()): Promise<SendSummary> {
 
   const sentToday = await db.emailLog.count({ where: { status: "SENT", sentAt: { gte: istDayStart(now) } } });
   let quota = Math.max(0, dailyLimit() - sentToday);
+  let broadcastQuota = Math.max(
+    0,
+    BROADCAST_DAILY_LIMIT -
+      (await db.emailLog.count({ where: { kind: { in: [...BROADCAST_KINDS] }, status: "SENT", sentAt: { gte: istDayStart(now) } } })),
+  );
   const summary: SendSummary = { sent: 0, failed: 0, skipped: 0, left: 0, quota };
 
   const queued = (
@@ -177,7 +222,7 @@ export async function sendQueued(now = new Date()): Promise<SendSummary> {
         kind: true,
         refKey: true,
         campaign: { select: { id: true, subject: true, heading: true, body: true, ctaLabel: true, ctaUrl: true } },
-        user: { select: { id: true, name: true, email: true, emailOffers: true, emailReminders: true } },
+        user: { select: { id: true, name: true, email: true, emailOffers: true, emailOffersAt: true, emailReminders: true } },
       },
     })
   ).sort((a, b) => (PRIORITY[a.kind as EmailKind] ?? 9) - (PRIORITY[b.kind as EmailKind] ?? 9));
@@ -211,14 +256,20 @@ export async function sendQueued(now = new Date()): Promise<SendSummary> {
       await skip(log.id, "no email address");
       continue;
     }
-    if (category === "offers" ? !u.emailOffers : !u.emailReminders) {
+    const broadcast = BROADCAST_KINDS.has(kind);
+    if (broadcast ? !broadcastAllowed(u) : category === "offers" ? !u.emailOffers : !u.emailReminders) {
       await skip(log.id, "unsubscribed");
       continue;
     }
     if (category === "offers" && !offerAllowed(await sentDates(u.id), now)) {
       // A follow-up is only worth sending soon after the test; a campaign can wait for a later day.
-      if (kind === "campaign") summary.left++;
+      if (kind === "campaign" || broadcast) summary.left++;
       else await skip(log.id, "frequency cap");
+      continue;
+    }
+
+    if (broadcast && broadcastQuota <= 0) {
+      summary.left++;
       continue;
     }
 
@@ -227,9 +278,13 @@ export async function sendQueued(now = new Date()): Promise<SendSummary> {
         ? await expiryEmail(u, log.refKey, now)
         : kind === "free-followup"
           ? await followUpEmail(u, log.refKey, now)
-          : log.campaign
-            ? campaignEmail(u.id, log.campaign, `campaign-${log.campaign.id}`)
-            : null;
+          : kind === "referral-invite"
+            ? await referralInviteEmail(u, `referral-invite-${log.refKey}`)
+            : log.campaign
+              ? kind === "announcement"
+                ? announcementEmail(u, log.campaign, `announcement-${log.campaign.id}`)
+                : campaignEmail(u.id, log.campaign, `campaign-${log.campaign.id}`)
+              : null;
     if (!content) {
       await skip(log.id, "no longer relevant");
       continue;
@@ -244,6 +299,7 @@ export async function sendQueued(now = new Date()): Promise<SendSummary> {
     if (ok) {
       summary.sent++;
       quota--;
+      if (broadcast) broadcastQuota--;
       (await sentDates(u.id)).push(now);
     } else summary.failed++;
   }
@@ -337,7 +393,7 @@ export async function setEmailPreferences(userId: string, prefs: { offers: boole
   const current = await db.user.findUniqueOrThrow({ where: { id: userId }, select: { emailOffers: true } });
   await db.user.update({
     where: { id: userId },
-    data: { emailOffers: prefs.offers, emailReminders: prefs.reminders, ...(prefs.offers && !current.emailOffers ? { emailOffersAt: new Date() } : {}) },
+    data: { emailOffers: prefs.offers, emailReminders: prefs.reminders, ...(prefs.offers !== current.emailOffers ? { emailOffersAt: new Date() } : {}) },
   });
 }
 
@@ -348,7 +404,7 @@ export async function optInToOffers(userId: string) {
 
 /** From an unsubscribe link: switches off one category for that student. */
 export async function unsubscribe(userId: string, category: EmailCategory) {
-  await db.user.updateMany({ where: { id: userId }, data: category === "offers" ? { emailOffers: false } : { emailReminders: false } });
+  await db.user.updateMany({ where: { id: userId }, data: category === "offers" ? { emailOffers: false, emailOffersAt: new Date() } : { emailReminders: false } });
 }
 
 export async function getEmailPreferences(userId: string) {
@@ -386,7 +442,7 @@ export async function getEmailPanel(now = new Date()) {
     users,
     sentToday,
     queued,
-    kinds: (["expiry", "free-followup", "campaign"] as const).map((kind) => {
+    kinds: (["expiry", "free-followup", "campaign", "announcement", "referral-invite"] as const).map((kind) => {
       const rows = byKind.filter((r) => r.kind === kind);
       return { kind, sent: count(rows, "SENT"), failed: count(rows, "FAILED"), skipped: count(rows, "SKIPPED"), queued: count(rows, "QUEUED") };
     }),

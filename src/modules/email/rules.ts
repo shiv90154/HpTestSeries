@@ -5,13 +5,33 @@ import { createHmac, timingSafeEqual } from "node:crypto";
 import { buttonRow, emailColors, emailShell, esc, paragraphRow } from "./layout";
 
 export type EmailCategory = "offers" | "reminders";
-export type EmailKind = "expiry" | "free-followup" | "campaign";
+export type EmailKind = "expiry" | "free-followup" | "campaign" | "announcement" | "referral-invite";
 
 /** Which consent a kind of email needs; the unsubscribe link in it switches off that one. */
-export const CATEGORY: Record<EmailKind, EmailCategory> = { expiry: "reminders", "free-followup": "offers", campaign: "offers" };
+export const CATEGORY: Record<EmailKind, EmailCategory> = {
+  expiry: "reminders",
+  "free-followup": "offers",
+  campaign: "offers",
+  announcement: "offers",
+  "referral-invite": "offers",
+};
 
 /** Sent first when the daily quota is short: a lapsing purchase matters more than a promotion. */
-export const PRIORITY: Record<EmailKind, number> = { expiry: 0, "free-followup": 1, campaign: 2 };
+export const PRIORITY: Record<EmailKind, number> = { expiry: 0, "free-followup": 1, campaign: 2, "referral-invite": 3, announcement: 4 };
+
+/** Broadcasts (see BROADCAST_KINDS) go out in daily batches of this many, so a send to every student spreads over days. */
+export const BROADCAST_DAILY_LIMIT = 40;
+
+/** Sent to every student, not only those who opted in; only an explicit "no" to offers stops them. */
+export const BROADCAST_KINDS: ReadonlySet<EmailKind> = new Set<EmailKind>(["announcement", "referral-invite"]);
+
+/**
+ * Whether a broadcast may go to this student: everyone except those who switched offers off. emailOffersAt is set
+ * whenever offers are switched on or off, so emailOffers false with a date means the student said no.
+ */
+export function broadcastAllowed(u: { emailOffers: boolean; emailOffersAt: Date | null }): boolean {
+  return u.emailOffers || u.emailOffersAt === null;
+}
 
 /** Accounts made by SMS login carry a placeholder address (see identity/auth.ts) that must never be mailed. */
 export function isRealEmail(email: string): boolean {

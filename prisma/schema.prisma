@@ -39,7 +39,7 @@ model User {
   // Email consent (modules/email): offers = opt-in promotions (free-test follow-up, campaigns); reminders = service
   // mails about what the student bought (access ending), on by default and switchable off.
   emailOffers         Boolean   @default(false)
-  emailOffersAt       DateTime? // when the student last ticked "email me offers"
+  emailOffersAt       DateTime? // when the student last switched "email me offers" on or off; null = never decided
   emailReminders      Boolean   @default(true)
   createdAt           DateTime  @default(now())
   updatedAt           DateTime  @updatedAt
