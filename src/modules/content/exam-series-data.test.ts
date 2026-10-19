@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { EXAM_PACKS, EXAM_SERIES } from "../../../prisma/exam-series";
 import { CLERK_MOCKS, HC_SECTIONALS, PROCESS_SERVER_MOCKS, PROCESS_SERVER_SCREENING_MOCKS, STENO_MOCKS } from "../../../prisma/high-court";
 import { PGT_SUBJECTS } from "../../../prisma/hp-pgt";
+import { BIOLOGY_2026, CHEMISTRY_2026 } from "../../../prisma/hp-tet-tgt";
 import { LT_MOCKS, LT_SECTIONALS, SHASTRI_MOCKS, SHASTRI_SECTIONALS } from "../../../prisma/hp-tet-lang";
 import { HPAS_FREE_TESTS } from "../../../prisma/hpas";
 import { HPAS_MOCKS } from "../../../prisma/hpas-series";
@@ -41,14 +42,33 @@ describe("exam series built from the shared bank", () => {
   });
 
   it("never gives the same question to two of these tests", () => {
+    // HP TET TGT Section II (general awareness) is common to every stream, so mock N of Arts, Non-Medical and Medical
+    // share one set by design. Anywhere else a repeat is a bug.
+    const awarenessMock = (slug: string, x: { s: number }) => (x.s === 1 ? slug.match(/^hp-tet-tgt-.+-2026-full-mock-(\d+)$/)?.[1] : undefined);
+    const shared = new Map<string, string>();
     const seen = new Set<string>();
     for (const t of ALL_TESTS) {
       for (const x of t.questions) {
         const h = hash(x);
+        const mock = awarenessMock(t.slug, x);
+        if (mock && shared.get(h) === mock) continue;
         expect(seen.has(h), `${t.slug}: ${x.en[0].slice(0, 60)}`).toBe(false);
         seen.add(h);
+        if (mock) shared.set(h, mock);
       }
     }
+  });
+
+  it("gives every HP TET TGT stream the same general awareness set for the same mock", () => {
+    const sets = new Map<string, string>();
+    for (const t of ALL_TESTS.filter((x) => /^hp-tet-tgt-.+-2026-full-mock-\d+$/.test(x.slug))) {
+      const mock = t.slug.split("-").at(-1)!;
+      const set = t.questions.filter((x) => x.s === 1).map(hash).sort().join();
+      expect(set.split(",").length, t.slug).toBe(30);
+      expect(sets.get(mock) ?? set, t.slug).toBe(set);
+      sets.set(mock, set);
+    }
+    expect(sets.size).toBe(3);
   });
 
   // The seed dedupes by stem hash, so a fresh question matching any seeded one would silently reuse that question
@@ -58,7 +78,7 @@ describe("exam series built from the shared bank", () => {
       for (const x of t.questions.filter((y) => specific.has(y.subject))) expect(otherSeries.has(hash(x)), `${t.slug}: ${x.en[0].slice(0, 60)}`).toBe(false);
     }
     const highCourt = [...HC_SECTIONALS.flatMap((t) => t.questions), ...[...PROCESS_SERVER_MOCKS, ...PROCESS_SERVER_SCREENING_MOCKS, ...STENO_MOCKS, ...CLERK_MOCKS].flat()];
-    for (const x of [...highCourt, ...PGIMER_MOCKS.flat(), ...HPAS_MOCKS.flat(), ...SHASTRI_MOCKS.flat(), ...LT_MOCKS.flat(), ...PGT_SUBJECTS.flatMap((p) => p.mocks.flat()), ...DEFENCE_QUESTIONS, ...DELHI_POLICE_QUESTIONS, ...[...SHASTRI_SECTIONALS, ...LT_SECTIONALS].flatMap((x) => x.questions)]) expect(otherSeries.has(hash(x)), x.en[0].slice(0, 60)).toBe(false);
+    for (const x of [...highCourt, ...PGIMER_MOCKS.flat(), ...HPAS_MOCKS.flat(), ...SHASTRI_MOCKS.flat(), ...LT_MOCKS.flat(), ...PGT_SUBJECTS.flatMap((p) => p.mocks.flat()), ...DEFENCE_QUESTIONS, ...DELHI_POLICE_QUESTIONS, ...CHEMISTRY_2026.flat(), ...BIOLOGY_2026.flat(), ...[...SHASTRI_SECTIONALS, ...LT_SECTIONALS].flatMap((x) => x.questions)]) expect(otherSeries.has(hash(x)), x.en[0].slice(0, 60)).toBe(false);
   });
 
   it("makes exactly the first mock of each series free", () => {

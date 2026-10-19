@@ -24,6 +24,11 @@ const nextConfig: NextConfig = {
       { source: "/tests/pgimer-nursing-officer", destination: "/pgimer/nursing-officer", permanent: true },
       { source: "/tests/hppsc-ado", destination: "/hppsc/ado", permanent: true },
       { source: "/tests/hppsc-assistant-professor", destination: "/hppsc/assistant-professor", permanent: true },
+      // HP TET TGT mocks were rebuilt on the official HPBOSE split under new slugs (October 2026).
+      ...["arts", "non-medical", "medical"].flatMap((stream) => [
+        { source: `/tests/hp-tet-tgt-${stream}-full-mock-:n(\\d+)`, destination: `/tests/hp-tet-tgt-${stream}-2026-full-mock-:n`, permanent: true },
+        { source: `/tests/hp-tet-tgt-${stream}-full-mock-:n(\\d+)/:rest*`, destination: `/tests/hp-tet-tgt-${stream}-2026-full-mock-:n`, permanent: true },
+      ]),
     ];
   },
   async headers() {

@@ -17,7 +17,7 @@ import { tetCdp } from "./fresh/tet-cdp";
 import { tgtPedagogy } from "./fresh/tgt-pedagogy";
 import { CLERK_MOCKS, HC_SECTIONALS, PROCESS_SERVER_MOCKS, PROCESS_SERVER_SCREENING_TESTS, STENO_MOCKS } from "../high-court";
 import { HP_TET_JBT_MOCKS, HP_TET_JBT_SECTIONALS } from "../hp-tet";
-import { TGT_ARTS_MOCKS, TGT_ARTS_SECTIONS, TGT_MEDICAL_MOCKS, TGT_MEDICAL_SECTIONS, TGT_NON_MEDICAL_MOCKS, TGT_NON_MEDICAL_SECTIONS } from "../hp-tet-tgt";
+import { TGT_2026_COMMON, TGT_ARTS_2026, TGT_MEDICAL_2026, TGT_NON_MEDICAL_2026 } from "../hp-tet-tgt";
 import { LT_MOCKS, LT_SECTIONALS, LT_SECTIONS, SHASTRI_MOCKS, SHASTRI_SECTIONALS, SHASTRI_SECTIONS } from "../hp-tet-lang";
 import { PGT_SUBJECTS } from "../hp-pgt";
 import { HPAS_MOCKS, HPAS_SECTIONS } from "../hpas-series";
@@ -25,7 +25,8 @@ import { PGIMER_MOCKS, PGIMER_SECTIONS } from "../pgimer";
 import { DEFENCE_SERIES } from "../defence";
 import { DELHI_POLICE_SERIES } from "../delhi-police";
 
-type Part = { n: number; pick: Pick } | PatwariQuestion[][];
+/** Bank picks, fresh questions per mock, or one set shared by several exams' mock N (picked once, on first use). */
+type Part = { n: number; pick: Pick } | PatwariQuestion[][] | { shared: (mock: number) => PatwariQuestion[] };
 type Section = { name: string; nameHi: string; parts: Part[] };
 
 type ExamDef = {
@@ -34,6 +35,12 @@ type ExamDef = {
   stageSlug?: string;
   /** Test/series slug stem, e.g. "hprca-clerk". */
   slug: string;
+  /** Stem for the test slugs when it differs from `slug`, e.g. after a pattern change replaced the first set of tests. */
+  testSlug?: string;
+  /** Full mocks built from `sections` (default 2). */
+  mocks?: number;
+  /** Where the section split comes from, when the recruiting body publishes it; the instructions then say so. */
+  officialSplit?: string;
   name: string;
   nameHi: string;
   minutes: number;
@@ -56,6 +63,15 @@ const maths = subject("quant");
 const english = subject("english");
 const hindi = subject("hindi");
 const computer = subject("computer");
+
+/**
+ * HP TET TGT Section II (general awareness incl. Himachal Pradesh, 30 questions) is the same for every stream, so mock N of
+ * each stream shares one set: 20 Himachal GK and 10 general studies from the bank, picked on first use.
+ */
+const awarenessSets: PatwariQuestion[][] = [];
+const awarenessGs = topic("general-studies", "indian-history", "indian-polity", "indian-geography", "indian-economy", "general-science");
+const tgtAwareness = (mock: number): PatwariQuestion[] =>
+  (awarenessSets[mock] ??= [...take(1, 20, hpGk, `HP TET TGT awareness ${mock + 1} Himachal GK`), ...take(1, 10, awarenessGs, `HP TET TGT awareness ${mock + 1} GS`)]);
 
 const S = (name: string, nameHi: string, ...parts: Part[]): Section => ({
   name,
@@ -341,55 +357,7 @@ const EXAMS: ExamDef[] = [
     sections: HPAS_SECTIONS.map((sec, i) => S(sec.name, sec.nameHi, HPAS_MOCKS.slice(0, 2).map((m) => m.filter((x) => x.s === i)))),
     extraMocks: HPAS_MOCKS.slice(2),
   },
-  // Written wholly fresh in prisma/hp-tet-tgt: mocks 1–2 go through the sections, mocks 3+ are extra mocks.
-  {
-    bodySlug: "hpbose",
-    examSlug: "hp-tet",
-    stageSlug: "tgt-arts",
-    slug: "hp-tet-tgt-arts",
-    name: "HP TET (TGT Arts)",
-    nameHi: "एचपी टेट (टीजीटी कला)",
-    minutes: 150,
-    marksWrong: 0,
-    price: 99,
-    description:
-      "Full-length HP TET TGT Arts mock tests: child development and pedagogy, Hindi, English, history and civics, " +
-      "geography, economics and Himachal GK.",
-    sections: TGT_ARTS_SECTIONS.map((sec, i) => S(sec.name, sec.nameHi, TGT_ARTS_MOCKS.slice(0, 2).map((m) => m.filter((x) => x.s === i)))),
-    extraMocks: TGT_ARTS_MOCKS.slice(2),
-  },
-  {
-    bodySlug: "hpbose",
-    examSlug: "hp-tet",
-    stageSlug: "tgt-non-medical",
-    slug: "hp-tet-tgt-non-medical",
-    name: "HP TET (TGT Non-Medical)",
-    nameHi: "एचपी टेट (टीजीटी नॉन-मेडिकल)",
-    minutes: 150,
-    marksWrong: 0,
-    price: 99,
-    description:
-      "Full-length HP TET TGT Non-Medical mock tests: child development and pedagogy, Hindi, English, mathematics, " +
-      "physics and chemistry.",
-    sections: TGT_NON_MEDICAL_SECTIONS.map((sec, i) => S(sec.name, sec.nameHi, TGT_NON_MEDICAL_MOCKS.slice(0, 2).map((m) => m.filter((x) => x.s === i)))),
-    extraMocks: TGT_NON_MEDICAL_MOCKS.slice(2),
-  },
-  {
-    bodySlug: "hpbose",
-    examSlug: "hp-tet",
-    stageSlug: "tgt-medical",
-    slug: "hp-tet-tgt-medical",
-    name: "HP TET (TGT Medical)",
-    nameHi: "एचपी टेट (टीजीटी मेडिकल)",
-    minutes: 150,
-    marksWrong: 0,
-    price: 99,
-    description:
-      "Full-length HP TET TGT Medical mock tests: child development and pedagogy, Hindi, English, biology, " +
-      "physics and chemistry.",
-    sections: TGT_MEDICAL_SECTIONS.map((sec, i) => S(sec.name, sec.nameHi, TGT_MEDICAL_MOCKS.slice(0, 2).map((m) => m.filter((x) => x.s === i)))),
-    extraMocks: TGT_MEDICAL_MOCKS.slice(2),
-  },
+  // (HP TET TGT Arts, Non-Medical and Medical moved to the end of this list when they switched to the official HPBOSE split.)
   // Written wholly fresh in prisma/hp-tet-lang: mocks 1–2 go through the sections, mocks 3+ are extra mocks.
   {
     bodySlug: "hpbose",
@@ -443,6 +411,78 @@ const EXAMS: ExamDef[] = [
       extraMocks: p.mocks.slice(2),
     }),
   ),
+  // HP TET TGT on the official HPBOSE split (November 2026 prospectus). It replaced the first TGT tests, which used our
+  // own split, so its tests take a new slug stem; the series and product keep theirs. Kept last: its Section II picks
+  // come from the bank after every other exam has taken its questions.
+  {
+    bodySlug: "hpbose",
+    examSlug: "hp-tet",
+    stageSlug: "tgt-arts",
+    slug: "hp-tet-tgt-arts",
+    testSlug: "hp-tet-tgt-arts-2026",
+    mocks: 3,
+    officialSplit: "HPBOSE TET prospectus (November 2026)",
+    name: "HP TET (TGT Arts)",
+    nameHi: "एचपी टेट (टीजीटी कला)",
+    minutes: 150,
+    marksWrong: 0,
+    price: 99,
+    description:
+      "Full-length HP TET TGT Arts mock tests on the official HPBOSE pattern: child development and pedagogy, general " +
+      "awareness and Himachal Pradesh, English literature and grammar, and social studies.",
+    sections: [
+      S(TGT_2026_COMMON.pedagogy.name, TGT_2026_COMMON.pedagogy.nameHi, TGT_ARTS_2026.pedagogy),
+      S(TGT_2026_COMMON.awareness.name, TGT_2026_COMMON.awareness.nameHi, { shared: tgtAwareness }),
+      S("English Literature & Grammar", "अंग्रेज़ी साहित्य एवं व्याकरण", TGT_ARTS_2026.english),
+      S("Social Studies", "सामाजिक अध्ययन", TGT_ARTS_2026.socialStudies),
+    ],
+  },
+  {
+    bodySlug: "hpbose",
+    examSlug: "hp-tet",
+    stageSlug: "tgt-non-medical",
+    slug: "hp-tet-tgt-non-medical",
+    testSlug: "hp-tet-tgt-non-medical-2026",
+    mocks: 3,
+    officialSplit: "HPBOSE TET prospectus (November 2026)",
+    name: "HP TET (TGT Non-Medical)",
+    nameHi: "एचपी टेट (टीजीटी नॉन-मेडिकल)",
+    minutes: 150,
+    marksWrong: 0,
+    price: 99,
+    description:
+      "Full-length HP TET TGT Non-Medical mock tests on the official HPBOSE pattern: child development and pedagogy, " +
+      "general awareness and Himachal Pradesh, mathematics, and physics and chemistry.",
+    sections: [
+      S(TGT_2026_COMMON.pedagogy.name, TGT_2026_COMMON.pedagogy.nameHi, TGT_NON_MEDICAL_2026.pedagogy),
+      S(TGT_2026_COMMON.awareness.name, TGT_2026_COMMON.awareness.nameHi, { shared: tgtAwareness }),
+      S("Mathematics", "गणित", TGT_NON_MEDICAL_2026.mathematics),
+      S("Physics & Chemistry", "भौतिक विज्ञान एवं रसायन विज्ञान", TGT_NON_MEDICAL_2026.physicsChemistry),
+    ],
+  },
+  {
+    bodySlug: "hpbose",
+    examSlug: "hp-tet",
+    stageSlug: "tgt-medical",
+    slug: "hp-tet-tgt-medical",
+    testSlug: "hp-tet-tgt-medical-2026",
+    mocks: 3,
+    officialSplit: "HPBOSE TET prospectus (November 2026)",
+    name: "HP TET (TGT Medical)",
+    nameHi: "एचपी टेट (टीजीटी मेडिकल)",
+    minutes: 150,
+    marksWrong: 0,
+    price: 99,
+    description:
+      "Full-length HP TET TGT Medical mock tests on the official HPBOSE pattern: child development and pedagogy, " +
+      "general awareness and Himachal Pradesh, botany and zoology, and chemistry.",
+    sections: [
+      S(TGT_2026_COMMON.pedagogy.name, TGT_2026_COMMON.pedagogy.nameHi, TGT_MEDICAL_2026.pedagogy),
+      S(TGT_2026_COMMON.awareness.name, TGT_2026_COMMON.awareness.nameHi, { shared: tgtAwareness }),
+      S("Botany & Zoology", "वनस्पति विज्ञान एवं प्राणि विज्ञान", TGT_MEDICAL_2026.botanyZoology),
+      S("Chemistry", "रसायन विज्ञान", TGT_MEDICAL_2026.chemistry),
+    ],
+  },
 ];
 
 const MOCKS = 2;
@@ -450,7 +490,9 @@ const MOCKS = 2;
 function mockQuestions(e: ExamDef, i: number): PatwariQuestion[] {
   return e.sections.flatMap((sec, si) => {
     const s = si as PatwariQuestion["s"];
-    return sec.parts.flatMap((p) => (Array.isArray(p) ? fresh(s, p[i]) : take(s, p.n, p.pick, `${e.slug} mock ${i + 1} ${sec.name}`)));
+    return sec.parts.flatMap((p) =>
+      Array.isArray(p) ? fresh(s, p[i]) : "shared" in p ? fresh(s, p.shared(i)) : take(s, p.n, p.pick, `${e.slug} mock ${i + 1} ${sec.name}`),
+    );
   });
 }
 
@@ -461,7 +503,8 @@ function instructions(e: ExamDef, qs: PatwariQuestion[]): string {
   const level = qs.filter((x) => x.d === "H").length >= qs.length * 0.3 ? "slightly above exam level" : "at exam level";
   return (
     `Full-length ${e.name} mock: ${qs.length} questions, ${qs.length} marks, ${e.minutes} minutes. Each correct answer gives 1 mark. ` +
-    `${marking}. Sections: ${split}. The official section split is not published; this one is ours and the paper is set ${level}. ` +
+    `${marking}. Sections: ${split}. ` +
+    (e.officialSplit ? `The sections follow the ${e.officialSplit}; the paper is set ${level}. ` : `The official section split is not published; this one is ours and the paper is set ${level}. `) +
     "You can switch between Hindi and English at any time."
   );
 }
@@ -469,10 +512,10 @@ function instructions(e: ExamDef, qs: PatwariQuestion[]): string {
 export type ExamSeriesSeed = SeriesSeed & { key: string };
 
 const BANK_SERIES: ExamSeriesSeed[] = EXAMS.map((e) => {
-  const mocks = [...Array.from({ length: MOCKS }, (_, i) => mockQuestions(e, i)), ...(e.extraMocks ?? [])];
+  const mocks = [...Array.from({ length: e.mocks ?? MOCKS }, (_, i) => mockQuestions(e, i)), ...(e.extraMocks ?? [])];
   const tests: TestDef[] = mocks.map((questions, i) => {
     return {
-      slug: `${e.slug}-full-mock-${i + 1}`,
+      slug: `${e.testSlug ?? e.slug}-full-mock-${i + 1}`,
       title: `${e.name} Full Mock Test ${i + 1}`,
       titleHi: `${e.nameHi} फुल मॉक टेस्ट ${i + 1}`,
       type: "MOCK",
