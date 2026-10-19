@@ -1272,4 +1272,163 @@ Upar wale 30 din ke plan me har hafte full mock aur aakhri hafte roz ek mock cha
       { q: "HP Patwari ki taiyari 30 din me kaise karein?", a: "Pehle 20 din Himachal GK, maths, science, social science, Hindi aur English cover karo aur har hafte ek full mock do. Aakhri 10 din roz ek mock aur galtiyon ki notebook se revision karo. Roz 30 minute current affairs zaroor padho." },
     ],
   },
+  {
+    slug: "hp-govt-jobs-october-2026-latest-vacancies-last-dates",
+    seoTitle: "HP Govt Jobs October 2026: Latest Vacancies & Last Dates",
+    seoDescription: "HP govt jobs open in October 2026: HPPSC ADO, Scientific Officer, HP High Court Peon, Mali, Steno and more, with last dates, upcoming exams and what was withdrawn.",
+    title: "HP Govt Jobs October 2026: Latest Vacancies, Last Dates and Upcoming Exams",
+    titleHi: "हिमाचल सरकारी नौकरी अक्टूबर 2026: नई भर्तियां और अंतिम तिथि",
+    excerpt: "Himachal ki October 2026 ki saari khuli bhartiyan ek jagah: HPPSC, HP High Court, HPRCA aur doosre vibhag, last date ke saath. Saath me aane wale exams aur HPRCA ke 79 withdrawn post codes.",
+    category: "NOTIFICATION",
+    exams: ["hppsc/ado", "hp-high-court/clerk", "hp-police/constable", "hppsc/hpas"],
+    content: `Himachal me October 2026 me kai nayi bhartiyan khuli hain aur kuch badi bhartiyon ke exam aa rahe hain. Is post me sab kuch ek jagah hai: **abhi kya apply ho sakta hai, kab tak, aur aage kaun se exam hain**. Last update: **19 October 2026**.
+
+Apply karne se pehle har bharti ka official notification zaroor padhein. Neeche har jagah official website ka naam diya hai.
+
+## Abhi apply karein: last date ke hisaab se
+
+| Bharti | Advt. No. | Posts | Last date | Official site |
+|---|---|---|---|---|
+| HPPSC Agriculture Development Officer (Group-A, Job Trainee) | 63/9-2026 | 23 | **22 October 2026** (11:59 PM) | hppsc.hp.gov.in |
+| HP High Court: Librarian, Peon, Mali, Cook-cum-Attendant | HC-Advt./2026 (3) | 15 | **27 October 2026** (11:59 PM) | hphcrecruitment.in |
+| HPPSC Scientific Officer, Dept. of Home | 65/10-2026 | 3 | 3 November 2026 | hppsc.hp.gov.in |
+| HPPSC Assistant Director, Dept. of Home | 66/10-2026 | 3 | 3 November 2026 | hppsc.hp.gov.in |
+| HP High Court Stenographer | HC-Advt./2026 (4) | 3 | **7 November 2026** | hphcrecruitment.in |
+| HPPSC Assistant Director (Digital Forensics) | 67/10-2026 | 1 | 10 November 2026 | hppsc.hp.gov.in |
+| HPPSC Scientific Officer (Digital Forensic) | 68/10-2026 | 1 | 10 November 2026 | hppsc.hp.gov.in |
+| HPPSC Assistant Professor (Super-speciality), GI Surgery | 64/10-2026 | see notification | see notification | hppsc.hp.gov.in |
+
+Advertisement numbers aur High Court ki last dates official websites se li gayi hain. HPPSC ke Home Department posts ki last dates job portals ke mutabiq hain, isliye form bharne se pehle HPPSC ke advertisement me confirm kar lein.
+
+### HPPSC ADO: sabse pehle khatam ho rahi hai
+
+**Agriculture Development Officer** ke 23 posts ke liye last date **22 October 2026** hai. Main baatein:
+
+- **Qualification:** B.Sc. Agriculture (4 saal ka degree) aur M.Sc. Agriculture, kam se kam second class
+- **Age:** 18 se 45 saal (1 January 2026 ko), reserved categories ko rules ke hisaab se chhoot
+- **Fee:** ₹600
+- **Pay:** ₹29,500 per month fixed (Job Trainee)
+- **Selection:** Paper-I objective screening (100 marks, 1 ghanta, har galat jawab par 0.25 negative), Paper-II descriptive Subject Aptitude Test (120 marks, 3 ghante), phir personality test (30 marks). Merit Paper-II aur personality test ke 150 marks se banti hai.
+
+Screening paper ki practice ke liye: [HPPSC ADO exam page](/hppsc/ado) aur [ADO free mock test](/tests/hppsc-ado-free-mock-1).
+
+### HP High Court: 10th pass ke liye bhi mauka
+
+HC-Advt./2026 (3) me **Librarian, Peon, Mali aur Cook-cum-Attendant** ke posts hain. Peon, Mali aur Cook jaise posts ke liye qualification kam hoti hai, isliye competition zyada rehta hai. Online form **27 October 2026, raat 11:59 baje** tak bhar sakte hain. Stenographer ke liye alag advertisement HC-Advt./2026 (4) hai, jiski last date **7 November 2026** hai.
+
+High Court ke written test me general knowledge, Himachal GK, English aur Hindi ka bada hissa hota hai. Practice ke liye [HP High Court Clerk mock tests](/hp-high-court/clerk) aur [High Court Stenographer mock tests](/hp-high-court/stenographer) dekhein.
+
+### Doosre vibhag aur kendriya sansthan (Himachal me)
+
+Job portals par ye bhartiyan bhi chal rahi hain. Inki details sambandhit sanstha ki website se confirm karein:
+
+- **AIIMS Bilaspur:** Senior Resident ke 69 posts (last date 27 October 2026) aur Registrar ka 1 post (31 October 2026)
+- **Jal Shakti Vibhag:** alag-alag divisions me Para Pump Operator, Para Fitter aur Multipurpose Worker ke posts; har division ki apni last date hai, kuch ki 21 October 2026
+- **HP Home Guards:** Junior Office Assistant ka 1 post, last date 31 October 2026
+- **HP State Consumer Disputes Redressal Commission:** Senior Scale Stenographer ka 1 post, last date 30 October 2026
+
+## Band ho chuki bhartiyan (October 2026)
+
+- **HPPSC Medical Officer (General Wing):** 228 posts, Advt. No. 62/9-2026; form 16 October 2026 tak bhare gaye.
+- **HPAS Combined Competitive Exam 2026:** Advt. No. 59/8-2026. HPPSC ne 6 October ko Addendum-I jaari kiya, aur portals ke mutabiq last date badhkar **15 October 2026** hui thi. Ab application band hai.
+
+## Aane wale exams aur physical test
+
+| Exam | Date | Kya karein |
+|---|---|---|
+| HP Police Constable PST & PET (734 posts) | **22 October to 5 December 2026**, district-wise | HPPSC login se e-admit card download karein (14 October ko jaari) |
+| HPRCA CBT: Post Codes 26023, 26024, 26035 (Sanskrit Teacher, Physical Education Teacher) | **27 October 2026** | Admit card exam se lagbhag ek hafta pehle aata hai |
+| HPAS Preliminary Exam 2026 | **13 December 2026** (tentative), do sessions | HPPSC ka 24 September ka tentative schedule |
+
+HP Police Constable ka written test physical test ke baad hoga. Taiyari ab se shuru karein: [HP Police Constable mock tests](/hp-police/constable). HPAS prelims ke liye: [HPAS mock tests](/hppsc/hpas).
+
+## HPRCA ne 79 purane post codes withdraw kiye
+
+News reports ke mutabiq HPRCA, Hamirpur ne purane HP Staff Selection Commission ke **79 post codes** ki bharti withdraw kar di hai. Ye posts 2022 me Advertisement No. 38-2 (24 May 2022), 38-3 (6 July 2022) aur 38-5 (24 September 2022) me nikle the. Reports me jin posts ke naam hain, unme shamil hain:
+
+- JBT, Post Code 1075 (467 posts)
+- JOA (IT), Post Code 965 (319 posts)
+- Fireman, Post Code 1088 (184 posts)
+- Junior Engineer (Electrical), Post Code 1078 (82 posts)
+- Sub-Inspector of Police, Post Code 1087 (28 posts)
+
+Reports ke mutabiq vibhag in posts ke liye HPRCA ko nayi requisition bhej sakte hain, yaani ye posts naye advertisement me dobara aa sakte hain. Agar aapne in post codes me apply kiya tha, to hprca.hp.gov.in par original notice padhein.
+
+## Aage kya aane wala hai
+
+Himachal Cabinet ne 10 October 2026 ko Jal Shakti, schools, health aur forest vibhag me hazaron posts bharne ki manzoori di hai: Assistant Staff Nurse, Forest Guard, Assistant Professor aur aur bhi. Poori list ke liye padhein: [Himachal Cabinet ne ~12,000 posts ko manzoori di](/blog/himachal-cabinet-12000-posts-approved-upcoming-recruitment-2026).`,
+    faqs: [
+      { q: "HPPSC ADO 2026 ki last date kya hai?", a: "Advertisement No. 63/9-2026 ke 23 ADO posts ke liye online form aur fee 22 October 2026, raat 11:59 baje tak jama ho sakti hai." },
+      { q: "HP High Court Peon aur Mali bharti 2026 ki last date kya hai?", a: "HC-Advt./2026 (3) me Librarian, Peon, Mali aur Cook-cum-Attendant ke liye online form 27 October 2026, raat 11:59 baje tak bhare ja sakte hain. Form hphcrecruitment.in par bharte hain." },
+      { q: "HP Police Constable ka physical test kab hai?", a: "734 posts ka PST aur PET 22 October se 5 December 2026 tak district-wise hoga. E-admit card HPPSC ki website par aapke login me milega; dak se kuch nahi aata." },
+      { q: "HPAS prelims 2026 kab hai?", a: "HPPSC ke tentative schedule ke mutabiq HPAS Preliminary Exam 2026 13 December 2026 ko do sessions me hoga. Final date admit card ke saath confirm hoti hai." },
+    ],
+  },
+  {
+    slug: "himachal-cabinet-12000-posts-approved-upcoming-recruitment-2026",
+    seoTitle: "Himachal Cabinet Approves ~12,000 Posts: Upcoming HP Bharti 2026",
+    seoDescription: "HP Cabinet (10 Oct 2026) cleared about 12,000 posts: 4,090 Jal Shakti para workers, 500 Staff Nurse, 500 Forest Guard, 320 Assistant Professor and more.",
+    title: "Himachal Cabinet Approves About 12,000 Posts: Which HP Recruitments Are Coming Next (October 2026)",
+    titleHi: "हिमाचल कैबिनेट ने लगभग 12,000 पदों को मंज़ूरी दी: आने वाली भर्तियां",
+    excerpt: "10 October 2026 ki cabinet meeting me Jal Shakti para workers, CBSE schools ke teachers, Assistant Staff Nurse, Forest Guard aur Assistant Professor samet hazaron posts ko manzoori mili. Kaunsi bharti kab aa sakti hai aur abhi se kaise taiyari karein.",
+    category: "NOTIFICATION",
+    exams: ["hprca/staff-nurse", "hprca/forest-guard", "hppsc/assistant-professor"],
+    content: `Himachal Pradesh Cabinet ne **10 October 2026** ko Mukhyamantri Sukhvinder Singh Sukhu ki adhyakshata me hui meeting me alag-alag vibhagon me bade paimane par bharti ko manzoori di. PTI ke mutabiq kul milakar **lagbhag 12,000 posts** hain. Kuch reports me ye sankhya alag batayi gayi hai, kyunki sab report har category ko nahi ginti.
+
+Dhyan rahe: **cabinet ki manzoori ka matlab abhi form khulna nahi hai.** Pehle vibhag recruitment agency (HPPSC, HPRCA ya khud vibhag) ko requisition bhejta hai, phir advertisement aata hai. Isliye ye samay taiyari shuru karne ka hai.
+
+## Kaun se posts manzoor hue
+
+| Vibhag | Post | Sankhya |
+|---|---|---|
+| Jal Shakti Vibhag | Para Pump Operator, Para Fitter, Multipurpose Worker (para workers) | 4,090 |
+| School Education (CBSE affiliated govt schools) | Teaching posts | lagbhag 3,900 |
+| School Education (CBSE affiliated govt schools) | Non-teaching posts | lagbhag 900 |
+| Health | Assistant Staff Nurse | 500 |
+| Forest | Assistant Forest Guard | 500 |
+| Higher Education (govt colleges) | Assistant Professor | 320 |
+| PWD | Multi Task Worker | 172 |
+| Animal Husbandry | alag-alag posts | 116 |
+| Horticulture | Horticulture Extension Officer | 40 |
+| Medical Education | Radiologist | 30 |
+| Medical Education | Clinical Psychologist | 13 |
+| Medical Education | Perfusionist | 6 |
+
+Ye sankhyayein news agency reports (PTI, ANI, UNI) se hain. Har bharti ki final sankhya, qualification aur selection ka tarika uske advertisement me aayega.
+
+Cabinet ne 100 aur sarkari schools ko CBSE se jodne ka faisla bhi kiya, aur un schools ke teaching aur non-teaching posts ek nayi scheme ke tahat bhare jayenge. Sarkar ne kaha hai ki ye bharti prakriya **March tak** poori karne ka lakshya hai.
+
+## Kaunsi bharti ke liye kya taiyari karein
+
+### Assistant Staff Nurse (500 posts)
+
+HPRCA ne 2026 me bhi Assistant Staff Nurse ki bharti nikali thi, aur uska CBT 25 September 2026 ko hua. Nayi bharti ka pattern bhi waisa hi rehne ki ummeed hai: nursing ke subjects ke saath Himachal GK aur general knowledge. Practice: [HPRCA Staff Nurse mock tests](/hprca/staff-nurse).
+
+### Assistant Forest Guard (500 posts)
+
+Cabinet ne assistant forest guards rakhne ki nayi policy manzoor ki hai, jisse forest vibhag me 500 posts ka raasta khula. Forest Guard bharti me aam taur par written test ke saath physical test hota hai. Written part ke liye: [HP Forest Guard exam page](/hprca/forest-guard).
+
+### Assistant Professor (320 posts)
+
+Government colleges ke Assistant Professor posts HPPSC ke zariye bhare jaate hain. HPPSC ne abhi October 2026 me College Cadre ke screening test aur Subject Aptitude Test liye hain, isliye pattern ka andaza pichli bharti se lag jata hai: [HPPSC Assistant Professor mock tests](/hppsc/assistant-professor).
+
+### Jal Shakti para workers (4,090 posts)
+
+Para Pump Operator, Para Fitter aur Multipurpose Worker ke posts par aam taur par division level par engagement hota hai, aur qualification 8th, 10th ya ITI rehti hai. Abhi bhi kai divisions me aise posts nikal rahe hain. Apne division ke notice ke liye jal shakti vibhag ke local office aur district ki website dekhte rahein.
+
+### CBSE schools ke teachers (lagbhag 3,900 posts)
+
+Ye posts ek nayi scheme ke tahat bhare jayenge, jiski details abhi aani hain. Scheme aane par ye saaf hoga ki bharti HPRCA se hogi ya kisi aur tarike se. TET pass hona zyadatar teaching posts ki shart hoti hai, isliye [HP TET](/hpbose/hp-tet) ki taiyari wale candidates ke liye ye achhi khabar hai.
+
+## Abhi kya karein
+
+1. **Documents taiyar rakhein:** Himachali bonafide, category certificate, qualification ke certificates aur employment exchange registration. Form khulne par time kam milta hai.
+2. **Himachal GK roz padhein.** Lagbhag har Himachal bharti me ye section hota hai. [Himachal GK free mock](/tests/hp-gk-free-mock-1) se shuru karein.
+3. **Abhi khuli bhartiyan miss na karein:** October 2026 ki saari khuli bhartiyan aur last dates yahan hain: [HP Govt Jobs October 2026](/blog/hp-govt-jobs-october-2026-latest-vacancies-last-dates).`,
+    faqs: [
+      { q: "Himachal Cabinet ne October 2026 me kitne posts ko manzoori di?", a: "10 October 2026 ki meeting me PTI ke mutabiq lagbhag 12,000 posts ko manzoori mili. Isme 4,090 Jal Shakti para workers, CBSE schools ke lagbhag 3,900 teaching aur 900 non-teaching posts, 500 Assistant Staff Nurse, 500 Forest Guard aur 320 Assistant Professor shamil hain." },
+      { q: "Kya in posts ke form abhi khul gaye hain?", a: "Nahi. Cabinet ki manzoori ke baad vibhag requisition bhejta hai aur phir HPPSC, HPRCA ya vibhag advertisement nikalta hai. Sarkar ne March tak bharti poori karne ka lakshya rakha hai." },
+      { q: "HP Staff Nurse ke 500 posts ki bharti kaun karega?", a: "Assistant Staff Nurse ki pichli bharti HPRCA ne ki thi, jiska CBT 25 September 2026 ko hua. Nayi bharti ki agency aur pattern advertisement me confirm hoga." },
+    ],
+  },
 ];
