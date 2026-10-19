@@ -1529,7 +1529,7 @@ B.Ed. kar rahe candidates bhi TET de sakte hain. Integrated B.Ed.-M.Ed., B.El.Ed
 3. **Hafta 4:** 30 questions wala subject section, aur pedagogy ka revision.
 4. **Hafta 5:** Har doosre din ek **150 question ka full mock**, 150 minute ke timer ke saath, aur galtiyon ki list.
 
-Shuruaat ke liye free test: [HP TET free mock test](/tests/hp-tet-free-mock-1). Saare HP TET mock tests aur papers: [HP TET page](/hpbose/hp-tet). JBT ki taiyari kar rahe hain? Padhein [HP TET JBT syllabus](/blog/hp-tet-jbt-syllabus-important-topics).`,
+Hamare TGT mock tests isi official section-wise pattern par bane hain, aur har stream ka pehla full mock free hai: [TGT Arts free mock](/tests/hp-tet-tgt-arts-2026-full-mock-1), [TGT Non-Medical free mock](/tests/hp-tet-tgt-non-medical-2026-full-mock-1), [TGT Medical free mock](/tests/hp-tet-tgt-medical-2026-full-mock-1). Saare HP TET mock tests aur papers: [HP TET page](/hpbose/hp-tet). JBT ki taiyari kar rahe hain? Padhein [HP TET JBT syllabus](/blog/hp-tet-jbt-syllabus-important-topics).`,
     faqs: [
       { q: "HP TET TGT Arts 2026 ka exam kab hai?", a: "HPBOSE ke November 2026 prospectus ke mutabiq TGT Arts TET 22 November 2026 ko subah 10:00 se 12:30 baje tak hai. TGT Non-Medical 29 November aur TGT Medical 6 December 2026 ko usi samay par hai." },
       { q: "HP TET TGT me kitne sections hote hain?", a: "Chaar. Section I (30) child development aur pedagogy, Section II (30) general awareness aur Himachal GK, aur Section III-IV stream ke hisaab se: Arts me English 30 aur Social Studies 60, Non-Medical me Maths 30 aur Physics-Chemistry 60, Medical me Botany-Zoology 60 aur Chemistry 30." },
