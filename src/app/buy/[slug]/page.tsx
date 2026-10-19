@@ -74,7 +74,7 @@ export default async function BuyPage({ params }: PageProps<"/buy/[slug]">) {
             </p>
             {testCount > 0 && (
               <p className="mt-2 flex items-center gap-1.5 text-sm font-semibold">
-                <FileText className="size-4 text-primary" aria-hidden /> {testCount} full tests included
+                <FileText className="size-4 text-primary" aria-hidden /> {testCount} tests included
               </p>
             )}
             {product.separatePaise && <SeparateSaving was={product.separatePaise} now={product.priceInPaise} className="mt-1" />}
