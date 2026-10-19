@@ -1,12 +1,13 @@
 "use client";
 
-import { driver } from "driver.js";
-import "driver.js/dist/driver.css";
 import { useEffect } from "react";
 
 const SEEN_KEY = "cbt:tour-seen";
 
-/** One-time guided tour of the real-CBT interface, shown the first time anyone reaches the exam screen. */
+/**
+ * One-time guided tour of the real-CBT interface, shown the first time anyone reaches the exam screen. driver.js and
+ * its CSS load only then, so students who have seen the tour never download them.
+ */
 export function OnboardingTour() {
   useEffect(() => {
     if (localStorage.getItem(SEEN_KEY)) return;
@@ -54,7 +55,10 @@ export function OnboardingTour() {
       },
     ];
 
-    const t = setTimeout(() => {
+    let cancelled = false;
+    const t = setTimeout(async () => {
+      const [{ driver }] = await Promise.all([import("driver.js"), import("driver.js/dist/driver.css")]);
+      if (cancelled) return;
       const d = driver({
         showProgress: true,
         steps,
@@ -63,7 +67,10 @@ export function OnboardingTour() {
       d.drive();
     }, 500);
 
-    return () => clearTimeout(t);
+    return () => {
+      cancelled = true;
+      clearTimeout(t);
+    };
   }, []);
 
   return null;
