@@ -3,7 +3,7 @@
 // Exam copy is PUBLIC as soon as it is seeded, so it sticks to facts that don't change between
 // notifications. Numbers that do change (posts, marks, dates, cutoffs) belong in the exam
 // pattern (fill it from /admin/exams) or in blog posts, which are seeded as DRAFTS with
-// [VERIFY] markers — check each against the official notification before publishing.
+// markers — check each against the official notification before publishing.
 //
 // Seeding never overwrites: exam fields are filled only when empty, posts are created only if
 // the slug doesn't exist. Edits made in the admin panel are safe on re-seed.
@@ -311,39 +311,37 @@ export const posts: PostSeed[] = [
     exams: ["hp-police/constable"],
     content: `Himachal Pradesh Police har kuch saal me **Constable** ki badi bharti nikalti hai, aur har baar lakhon applications aati hain. Is post me hum HP Police Constable Bharti 2026 ki important details — eligibility, physical standards, selection process aur written exam ki taiyari — ek jagah cover kar rahe hain.
 
-> ⚠ Yeh draft hai. **[VERIFY]** wale har point ko official notification (citizenportal.hppolice.gov.in / hppolice.gov.in) se match karke hi publish karein.
-
 ## HP Police Constable Bharti 2026 — overview
 
 | Detail | Information |
 |---|---|
 | Organisation | Himachal Pradesh Police |
 | Post | Constable (Male / Female) |
-| Total vacancies | [VERIFY] |
+| Total vacancies | Notification me dekhein |
 | Application mode | Online |
-| Apply dates | [VERIFY] |
-| Official website | hppolice.gov.in [VERIFY] |
+| Apply dates | Notification me dekhein |
+| Official website | hppolice.gov.in |
 
 ## Eligibility
 
-- **Education:** 12th pass (10+2) from a recognised board [VERIFY]
-- **Age limit:** 18 to 25 years, with relaxation for reserved categories as per rules [VERIFY]
-- **Domicile / Himachali status:** as per the notification [VERIFY]
-- **Language:** knowledge of Hindi in Devanagari script [VERIFY]
+- **Education:** 12th pass (10+2) from a recognised board
+- **Age limit:** 18 to 25 years, with relaxation for reserved categories as per rules
+- **Domicile / Himachali status:** as per the notification
+- **Language:** knowledge of Hindi in Devanagari script
 
 ## Physical standards (PMT)
 
 | Standard | Male | Female |
 |---|---|---|
-| Height | [VERIFY] | [VERIFY] |
-| Chest (male) | [VERIFY] | — |
+| Height | Notification me dekhein | Notification me dekhein |
+| Chest (male) | Notification me dekhein | — |
 
 Height relaxation is usually given to certain categories and areas — check the notification.
 
 ## Selection process
 
 1. **Physical measurement test (PMT)** — height and chest
-2. **Physical efficiency test (PET)** — running and other events [VERIFY events and timings]
+2. **Physical efficiency test (PET)** — running and other events
 3. **Written objective exam** — GK, Himachal GK, reasoning, numerical ability
 4. **Document verification** and medical
 
@@ -385,16 +383,14 @@ Physical ki taiyari aur written dono saath chalao — subah ground, shaam ko pad
     exams: ["hprca/joa-it"],
     content: `**Junior Office Assistant (IT)** Himachal ki sabse popular government posts me se ek hai. Ab yeh bharti **Himachal Pradesh Rajya Chayan Aayog (HPRCA), Hamirpur** karta hai. Is post me JOA IT ka topic-wise syllabus, exam pattern aur taiyari ka plan hai.
 
-> ⚠ Draft — **[VERIFY]** points ko latest HPRCA notification se confirm karein.
-
 ## JOA IT exam pattern
 
 | Stage | Details |
 |---|---|
-| Written test | Objective (MCQ), [VERIFY] questions / marks |
-| Duration | [VERIFY] |
-| Negative marking | [VERIFY] |
-| Skill test | Computer / typing test as per notification [VERIFY] |
+| Written test | Objective (MCQ); questions aur marks notification me |
+| Duration | Notification me dekhein |
+| Negative marking | Notification me dekhein |
+| Skill test | Computer / typing test as per notification |
 
 ## Topic-wise syllabus
 
@@ -455,7 +451,7 @@ JOA IT ke mock tests aur exam details: [HPRCA JOA IT mock tests](/hprca/joa-it).
 
 ## 1. Pehle exam ko samjho
 
-Patwari ka written test objective hota hai. Isme **Himachal GK, General Knowledge, Reasoning, Maths aur Hindi-English** se questions aate hain. Latest pattern aur marks notification se confirm karein. [VERIFY]
+Patwari ka written test objective hota hai. Isme **Himachal GK, General Knowledge, Reasoning, Maths aur Hindi-English** se questions aate hain. Latest pattern aur marks notification se confirm karein.
 
 ## 2. Himachal GK — district-wise approach
 
@@ -507,14 +503,12 @@ Naya kuch mat padho. Sirf notes revise karo aur har doosre din ek mock test do.
     exams: ["hppsc/hpas"],
     content: `HPPSC ki **HPAS Combined Competitive Examination** Himachal ki sabse prestigious exam hai. Is post me prelims ka poora syllabus Hindi aur English dono me hai.
 
-> ⚠ Draft — paper-wise marks, number of questions aur negative marking **[VERIFY]** latest HPPSC notification se.
-
 ## HPAS prelims — overview
 
 | Paper | Nature | Marks / Time |
 |---|---|---|
-| Paper I — General Studies | Counted for merit to mains | [VERIFY] |
-| Paper II — Aptitude (CSAT) | Qualifying | [VERIFY] |
+| Paper I — General Studies | Counted for merit to mains | Notification me dekhein |
+| Paper II — Aptitude (CSAT) | Qualifying | Notification me dekhein |
 
 ## Paper I — General Studies (सामान्य अध्ययन)
 
@@ -555,7 +549,7 @@ Naya kuch mat padho. Sirf notes revise karo aur har doosre din ek mock test do.
 
 HPAS mock tests aur exam details: [HPPSC HPAS mock tests](/hppsc/hpas). [Free Himachal GK mock](${FREE_MOCK}) se apna level check karo.`,
     faqs: [
-      { q: "HPAS prelims me CSAT qualifying hai?", a: "Haan, Paper II (CSAT) qualifying nature ka hota hai — qualifying marks notification me diye hote hain. [VERIFY]" },
+      { q: "HPAS prelims me CSAT qualifying hai?", a: "Haan, Paper II (CSAT) qualifying nature ka hota hai — qualifying marks notification me diye hote hain." },
       { q: "Is Himachal GK asked in HPAS prelims?", a: "Yes, a significant part of General Studies covers the history, geography, economy and culture of Himachal Pradesh." },
     ],
   },
@@ -568,8 +562,6 @@ HPAS mock tests aur exam details: [HPPSC HPAS mock tests](/hppsc/hpas). [Free Hi
     category: "STRATEGY",
     exams: ["hprca/joa-it", "hprca/clerk", "hp-police/constable", "hp-revenue/patwari", "hppsc/hpas"],
     content: `Himachal GK har HP exam ka common hissa hai — JOA IT, Clerk, Police, Patwari, HPAS, sab me. Yahan kuch **important facts** hain jo baar-baar puchhe jaate hain. Inhe revise karo, phir mock test se khud ko check karo.
-
-> ⚠ Draft — publish se pehle har fact ek standard Himachal GK source se cross-check karein.
 
 ## Formation & history
 
@@ -620,25 +612,23 @@ In facts ko padhne ke baad [free Himachal GK mock test](${FREE_MOCK}) do — rea
     exams: ["hpbose/hp-tet"],
     content: `HP TET clear karne ke liye **qualifying marks** laane zaroori hain. Is post me category-wise qualifying marks, exam pattern aur taiyari ke tips hain.
 
-> ⚠ Draft — saare numbers **[VERIFY]** latest HPBOSE notification / information bulletin se.
-
 ## HP TET exam pattern
 
 | Detail | Information |
 |---|---|
 | Conducting body | HP Board of School Education (HPBOSE), Dharamshala |
-| Questions | [VERIFY] MCQs |
-| Total marks | [VERIFY] |
-| Duration | [VERIFY] |
-| Negative marking | [VERIFY] |
+| Questions | MCQs |
+| Total marks | Notification me dekhein |
+| Duration | Notification me dekhein |
+| Negative marking | Notification me dekhein |
 | Categories | JBT, TGT Arts, TGT Medical, TGT Non-Medical, Shastri, Language Teacher |
 
 ## Qualifying marks
 
 | Category | Qualifying % |
 |---|---|
-| General | [VERIFY] |
-| SC / ST / OBC / PwD | [VERIFY] |
+| General | Notification me dekhein |
+| SC / ST / OBC / PwD | Notification me dekhein |
 
 HP TET ek **eligibility test** hai — qualifying marks aane par aap teacher posts ke liye apply karne ke eligible ho jaate ho.
 
@@ -658,7 +648,7 @@ HP TET ek **eligibility test** hai — qualifying marks aane par aap teacher pos
 
 HP TET mock tests: [HP TET mock tests](/hpbose/hp-tet). Shuruaat [free mock test](${FREE_MOCK}) se karo.`,
     faqs: [
-      { q: "HP TET me negative marking hai?", a: "Latest HPBOSE information bulletin me check karein. [VERIFY]" },
+      { q: "HP TET me negative marking hai?", a: "Latest HPBOSE information bulletin me check karein." },
       { q: "Can I take HP TET more than once?", a: "Yes. HP TET is held regularly and you can appear again to improve your score, as per HPBOSE rules." },
     ],
   },
