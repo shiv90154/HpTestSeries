@@ -5,7 +5,7 @@ import { EXAM_SERIES } from "../../../prisma/exam-series";
 import { PATWARI_TESTS } from "../../../prisma/patwari";
 import { examContent, posts } from "../../../prisma/seed-content";
 import { UPCOMING_FREE_TESTS } from "../../../prisma/upcoming-free";
-import { FREE_MOCK_SLUG } from "@/lib/site";
+import { hp } from "@/sites/hp";
 import { faqListSchema, patternSchema, seoSchema } from "./exam-content";
 import { postSchema } from "./post-input";
 
@@ -15,7 +15,7 @@ const testSlugs = new Set([
   ...UPCOMING_FREE_TESTS.map((t) => t.slug),
   ...EXAM_SERIES.flatMap((s) => s.tests.map((t) => t.slug)),
   ...PATWARI_TESTS.map((t) => t.slug),
-  FREE_MOCK_SLUG,
+  hp.freeMockSlug,
   "hpas-free-mock-1",
   "hpas-free-mock-2",
 ]);

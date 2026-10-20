@@ -2,15 +2,22 @@
 
 import { Clock } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useSite } from "@/sites/provider";
+import type { SiteCode } from "@/sites/types";
 
-const subjects = [
-  {
-    tab: "Himachal GK",
-    no: 6,
-    q: "The Chandra and Bhaga rivers meet at which place to form the Chandrabhaga?",
-    options: ["Tandi", "Keylong", "Udaipur", "Kaza"],
-    answer: 0,
+/** The state GK question the preview opens on, and the paper named in its header, per site. */
+const STATE: Record<SiteCode, { paper: string; gk: { tab: string; no: number; q: string; options: string[]; answer: number } }> = {
+  hp: {
+    paper: "HPRCA JOA IT — Mock Test 3",
+    gk: { tab: "Himachal GK", no: 6, q: "The Chandra and Bhaga rivers meet at which place to form the Chandrabhaga?", options: ["Tandi", "Keylong", "Udaipur", "Kaza"], answer: 0 },
   },
+  pb: {
+    paper: "PSSSB Clerk — Mock Test 3",
+    gk: { tab: "Punjab GK", no: 6, q: "The Beas and the Sutlej meet at which place in Punjab?", options: ["Harike", "Ropar", "Nangal", "Hussainiwala"], answer: 0 },
+  },
+};
+
+const common = [
   {
     tab: "Reasoning",
     no: 7,
@@ -42,6 +49,8 @@ const NEXT_AFTER_MS = 4200;
 
 /** Hero illustration of the CBT screen; slides through GK, Reasoning and Computer, picking the answer in each. */
 export function CbtPreview() {
+  const state = STATE[useSite().code];
+  const subjects = [state.gk, ...common];
   const [tab, setTab] = useState(0);
   const [picked, setPicked] = useState(false);
   const [animate, setAnimate] = useState(true);
@@ -59,7 +68,7 @@ export function CbtPreview() {
     const pick = setTimeout(() => setPicked(true), PICK_AFTER_MS);
     const next = setTimeout(() => {
       setPicked(false);
-      setTab((t) => (t + 1) % subjects.length);
+      setTab((t) => (t + 1) % (common.length + 1));
     }, NEXT_AFTER_MS);
     return () => {
       clearTimeout(pick);
@@ -77,7 +86,7 @@ export function CbtPreview() {
       <div className="absolute -inset-4 rotate-2 rounded-3xl bg-white/10" />
       <div className="relative overflow-hidden rounded-2xl bg-white text-foreground shadow-2xl">
         <div className="flex items-center justify-between bg-cbt-header px-4 py-2.5 text-sm text-white">
-          <span className="font-semibold">HPRCA JOA IT — Mock Test 3</span>
+          <span className="font-semibold">{state.paper}</span>
           <span className="flex items-center gap-1.5 rounded bg-white/15 px-2 py-0.5 font-mono">
             <Clock className="size-3.5" /> 01:24:37
           </span>

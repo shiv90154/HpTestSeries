@@ -6,7 +6,7 @@ import { planDemo } from "@/modules/assessment/demo";
 import { getPackForExam, type PackOffer } from "@/modules/commerce/product-service";
 import { parseFaqs, parsePattern, parseSeo } from "@/modules/content/exam-content";
 import { examLabel } from "./labels";
-import { liveTestWhere } from "./visibility";
+import { bodyOnSite, examOnSite, liveTestWhere, testOnSite } from "./visibility";
 
 export { bodyShortName, examLabel, examShortName } from "./labels";
 
@@ -25,16 +25,21 @@ export type CatalogBody = {
   slug: string;
   name: string;
   nameHi: string | null;
+  /** sites that show this body ("*" = all) */
+  sites: string[];
   exams: CatalogExam[];
 };
 
-export const getCatalog = cache(async (): Promise<CatalogBody[]> => {
+/** Bodies (with their active exams) shown on a site: its own and the national ones. */
+export const getCatalog = cache(async (site: string): Promise<CatalogBody[]> => {
   const bodies = await db.examBody.findMany({
+    where: bodyOnSite(site),
     orderBy: { order: "asc" },
     select: {
       slug: true,
       name: true,
       nameHi: true,
+      sites: true,
       exams: {
         where: { isActive: true },
         orderBy: { order: "asc" },
@@ -54,6 +59,7 @@ export const getCatalog = cache(async (): Promise<CatalogBody[]> => {
       slug: b.slug,
       name: b.name,
       nameHi: b.nameHi,
+      sites: b.sites,
       exams: b.exams.map((e) => ({
         slug: e.slug,
         bodySlug: b.slug,
@@ -80,11 +86,11 @@ export type PublicTest = {
   hasDemo: boolean;
 };
 
-export async function getPublishedTests(filter: { examId?: string | null } = {}): Promise<PublicTest[]> {
+/** Live tests shown on a site; with examId, that exam's tests plus the site's exam-less tests (state GK). */
+export async function getPublishedTests(site: string, filter: { examId?: string | null } = {}): Promise<PublicTest[]> {
   const tests = await db.test.findMany({
     where: {
-      ...liveTestWhere(),
-      ...(filter.examId !== undefined && { OR: [{ examId: filter.examId }, { examId: null }] }),
+      AND: [liveTestWhere(), testOnSite(site), ...(filter.examId !== undefined ? [{ OR: [{ examId: filter.examId }, { examId: null }] }] : [])],
     },
     orderBy: [{ isFree: "desc" }, { publishedAt: "desc" }],
     select: {
@@ -114,9 +120,9 @@ export async function getPublishedTests(filter: { examId?: string | null } = {})
 }
 
 /** Cached per request so generateMetadata and the page itself share one set of queries. */
-export const getExamPage = cache(async (bodySlug: string, examSlug: string) => {
+export const getExamPage = cache(async (site: string, bodySlug: string, examSlug: string) => {
   const exam = await db.exam.findFirst({
-    where: { slug: examSlug, isActive: true, body: { slug: bodySlug } },
+    where: { slug: examSlug, isActive: true, body: { slug: bodySlug, ...bodyOnSite(site) } },
     select: {
       id: true,
       slug: true,
@@ -128,14 +134,14 @@ export const getExamPage = cache(async (bodySlug: string, examSlug: string) => {
       faqs: true,
       seo: true,
       updatedAt: true,
-      body: { select: { slug: true, name: true, nameHi: true } },
+      body: { select: { slug: true, name: true, nameHi: true, sites: true } },
       stages: { orderBy: { order: "asc" }, select: { name: true, nameHi: true } },
     },
   });
   if (!exam) return null;
   const [tests, posts, offer] = await Promise.all([
-    getPublishedTests({ examId: exam.id }),
-    getPublishedPosts({ examId: exam.id, take: 6 }),
+    getPublishedTests(site, { examId: exam.id }),
+    getPublishedPosts(site, { examId: exam.id, take: 6 }),
     getExamOffer(exam.id),
   ]);
   return {
@@ -201,11 +207,11 @@ export type DirectoryExam = {
 const NEW_TEST_DAYS = 14;
 
 /** Every active exam with live tests, with what the /tests grid shows on its card. Unsorted. */
-export async function getExamDirectory(now: Date = new Date()): Promise<DirectoryExam[]> {
+export async function getExamDirectory(site: string, now: Date = new Date()): Promise<DirectoryExam[]> {
   const live = liveTestWhere(now);
   const [exams, products] = await Promise.all([
     db.exam.findMany({
-      where: { isActive: true, tests: { some: live } },
+      where: { isActive: true, tests: { some: live }, ...examOnSite(site) },
       select: {
         id: true,
         slug: true,
@@ -246,9 +252,9 @@ export async function getExamDirectory(now: Date = new Date()): Promise<Director
   });
 }
 
-export async function getAllExamParams() {
+export async function getAllExamParams(site: string) {
   const exams = await db.exam.findMany({
-    where: { isActive: true },
+    where: { isActive: true, ...examOnSite(site) },
     select: { slug: true, updatedAt: true, body: { select: { slug: true } } },
   });
   return exams.map((e) => ({ body: e.body.slug, exam: e.slug, updatedAt: e.updatedAt }));
@@ -258,21 +264,22 @@ export async function getAllExamParams() {
  * The extra SEO pages an exam can have, and which of them have real content: /syllabus needs a syllabus, /exam-pattern a
  * pattern and /previous-year-papers at least one live PYQ paper. A page without content is not generated or put in the sitemap.
  */
-export async function getExamSubPages() {
+export async function getExamSubPages(site: string) {
   const exams = await db.exam.findMany({
-    where: { isActive: true },
+    where: { isActive: true, ...examOnSite(site) },
     select: {
       slug: true,
       updatedAt: true,
       syllabus: true,
       pattern: true,
-      body: { select: { slug: true } },
+      body: { select: { slug: true, sites: true } },
       _count: { select: { tests: { where: { ...liveTestWhere(), type: "PYQ" } } } },
       tests: latestTestSelect(),
     },
   });
   return exams.map((e) => ({
     body: e.body.slug,
+    bodySites: e.body.sites,
     exam: e.slug,
     updatedAt: lastChanged(e),
     syllabus: !!e.syllabus?.trim(),
@@ -282,12 +289,12 @@ export async function getExamSubPages() {
 }
 
 /** Exams with at least one live test of their own: each gets a /tests page listing them. */
-export async function getExamsWithTests() {
+export async function getExamsWithTests(site: string) {
   const exams = await db.exam.findMany({
-    where: { isActive: true, tests: { some: liveTestWhere() } },
-    select: { slug: true, updatedAt: true, body: { select: { slug: true } }, tests: latestTestSelect() },
+    where: { isActive: true, tests: { some: liveTestWhere() }, ...examOnSite(site) },
+    select: { slug: true, updatedAt: true, body: { select: { slug: true, sites: true } }, tests: latestTestSelect() },
   });
-  return exams.map((e) => ({ body: e.body.slug, exam: e.slug, updatedAt: lastChanged(e) }));
+  return exams.map((e) => ({ body: e.body.slug, bodySites: e.body.sites, exam: e.slug, updatedAt: lastChanged(e) }));
 }
 
 // Exam pages list the exam's tests, so for the sitemap they change whenever a live test is added or edited.
@@ -332,12 +339,15 @@ const postCardSelect = {
 
 export const POSTS_PER_PAGE = 12;
 
+/** A site's published posts; every post belongs to exactly one site. */
 export async function getPublishedPosts(
+  site: string,
   f: { category?: PostCategory; examId?: string; page?: number; take?: number; excludeSlug?: string } = {},
 ): Promise<{ items: PublicPostCard[]; total: number }> {
   const take = f.take ?? POSTS_PER_PAGE;
   const where = {
     status: "PUBLISHED" as const,
+    site,
     ...(f.category && { category: f.category }),
     ...(f.examId && { exams: { some: { id: f.examId } } }),
     ...(f.excludeSlug && { slug: { not: f.excludeSlug } }),
@@ -355,9 +365,9 @@ export async function getPublishedPosts(
   return { items: items.map((p) => ({ ...p, publishedAt: p.publishedAt ?? p.updatedAt })), total };
 }
 
-export const getPost = cache(async (slug: string) => {
+export const getPost = cache(async (site: string, slug: string) => {
   const p = await db.post.findFirst({
-    where: { slug, status: "PUBLISHED" },
+    where: { slug, status: "PUBLISHED", site },
     select: {
       ...postCardSelect,
       id: true,
@@ -387,10 +397,10 @@ export const getPost = cache(async (slug: string) => {
 });
 
 /** Same-exam posts first, then same-category, for the "Related updates" block. */
-export async function getRelatedPosts(post: { slug: string; category: PostCategory; exams: { id: string }[] }, take = 4) {
+export async function getRelatedPosts(site: string, post: { slug: string; category: PostCategory; exams: { id: string }[] }, take = 4) {
   const byExam = post.exams.length
     ? await db.post.findMany({
-        where: { status: "PUBLISHED", slug: { not: post.slug }, exams: { some: { id: { in: post.exams.map((e) => e.id) } } } },
+        where: { status: "PUBLISHED", site, slug: { not: post.slug }, exams: { some: { id: { in: post.exams.map((e) => e.id) } } } },
         orderBy: { publishedAt: "desc" },
         take,
         select: postCardSelect,
@@ -399,7 +409,7 @@ export async function getRelatedPosts(post: { slug: string; category: PostCatego
   const rest =
     byExam.length < take
       ? await db.post.findMany({
-          where: { status: "PUBLISHED", category: post.category, slug: { notIn: [post.slug, ...byExam.map((p) => p.slug)] } },
+          where: { status: "PUBLISHED", site, category: post.category, slug: { notIn: [post.slug, ...byExam.map((p) => p.slug)] } },
           orderBy: { publishedAt: "desc" },
           take: take - byExam.length,
           select: postCardSelect,
@@ -408,6 +418,6 @@ export async function getRelatedPosts(post: { slug: string; category: PostCatego
   return [...byExam, ...rest].map((p) => ({ ...p, publishedAt: p.publishedAt ?? p.updatedAt }));
 }
 
-export async function getAllPostSlugs() {
-  return db.post.findMany({ where: { status: "PUBLISHED" }, select: { slug: true, updatedAt: true, category: true } });
+export async function getAllPostSlugs(site: string) {
+  return db.post.findMany({ where: { status: "PUBLISHED", site }, select: { slug: true, updatedAt: true, category: true } });
 }

@@ -21,6 +21,20 @@ export const taxonomy: SubjectSeed[] = [
   },
   { slug: "hp-current-affairs", name: "HP Current Affairs", nameHi: "हिमाचल समसामयिकी", topics: [] },
   {
+    slug: "punjab-gk",
+    name: "Punjab GK",
+    nameHi: "पंजाब सामान्य ज्ञान",
+    topics: [
+      ["history", "History of Punjab"],
+      ["geography", "Geography of Punjab"],
+      ["rivers", "Rivers & Wetlands"],
+      ["districts", "Districts"],
+      ["culture-religion", "Culture, Religion & Festivals"],
+      ["economy", "Economy of Punjab"],
+      ["polity-administration", "Polity & Administration"],
+    ],
+  },
+  {
     slug: "general-studies",
     name: "General Studies",
     nameHi: "सामान्य अध्ययन",

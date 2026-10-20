@@ -2,7 +2,7 @@ import "server-only";
 import { cache } from "react";
 import { db } from "@/lib/db";
 import type { ResultUpsell, UpsellPlan } from "@/modules/assessment/types";
-import { liveTestWhere } from "@/modules/catalog/visibility";
+import { liveTestWhere, productOnSite, testOnSite } from "@/modules/catalog/visibility";
 import { validateProduct, type ProductInput } from "./product-input";
 import { cheapestBySeries, separateTotalPaise, type SeriesPrices } from "./value";
 
@@ -35,15 +35,20 @@ function distinctTestCount(seriesIds: string[]) {
   return db.test.count({ where: { ...liveTestWhere(), series: { some: { seriesId: { in: seriesIds } } } } });
 }
 
+/** Paid live tests a site shows: what that site's all-access pass unlocks. */
+function paidTestCountOn(site: string) {
+  return db.test.count({ where: { AND: [liveTestWhere(), testOnSite(site)], isFree: false } });
+}
+
 async function separatePaise(kind: string, pricePaise: number, seriesIds: string[]): Promise<number | null> {
   return kind === "PACK" ? separateTotalPaise(pricePaise, seriesIds, await seriesPrices()) : null;
 }
 
-/** Active products for the public pricing section — no auth required. */
-export const listActiveProducts = cache(async (): Promise<PublicProduct[]> => {
+/** Active products a site sells, for its public pricing section — no auth required. */
+export const listActiveProducts = cache(async (site: string): Promise<PublicProduct[]> => {
   const [products, paidTestCount] = await Promise.all([
     db.product.findMany({
-      where: { isActive: true },
+      where: { isActive: true, ...productOnSite(site) },
       orderBy: { priceInPaise: "asc" },
       select: {
         slug: true,
@@ -55,7 +60,7 @@ export const listActiveProducts = cache(async (): Promise<PublicProduct[]> => {
         items: { select: { seriesId: true, series: { select: { _count: { select: { tests: { where: { test: liveTestWhere() } } } } } } } },
       },
     }),
-    db.test.count({ where: { ...liveTestWhere(), isFree: false } }),
+    paidTestCountOn(site),
   ]);
   return Promise.all(
     products.map(async ({ items, ...p }) => ({
@@ -71,11 +76,11 @@ export const listActiveProducts = cache(async (): Promise<PublicProduct[]> => {
  * Plans to show under the result of a free test that belongs to no exam (the Himachal GK mocks): its takers have
  * not picked an exam yet, so offer the best-selling exam series and the all-access pass. Null for any other test.
  */
-export async function getResultUpsell(testSlug: string): Promise<ResultUpsell | null> {
+export async function getResultUpsell(site: string, testSlug: string): Promise<ResultUpsell | null> {
   const test = await db.test.findUnique({ where: { slug: testSlug }, select: { isFree: true, examId: true } });
   if (!test?.isFree || test.examId) return null;
   const [products, sold] = await Promise.all([
-    listActiveProducts(),
+    listActiveProducts(site),
     db.order.groupBy({ by: ["productId"], where: { status: "PAID" }, _count: { _all: true } }),
   ]);
   const ids = await db.product.findMany({ where: { slug: { in: products.map((p) => p.slug) } }, select: { id: true, slug: true } });
@@ -113,20 +118,20 @@ export async function getPackForExam(examId: string): Promise<PackOffer | null> 
  * The product a visitor should buy to unlock a paid test: the cheapest active product that covers one of
  * the test's series; if none does, the cheapest all-access pass. Null when nothing is on sale for it.
  */
-export async function getBuyOptionForSeries(seriesIds: string[]) {
+export async function getBuyOptionForSeries(site: string, seriesIds: string[]) {
   const select = { slug: true, title: true, priceInPaise: true, validityDays: true } as const;
   const orderBy = { priceInPaise: "asc" } as const;
   const product =
     (seriesIds.length
       ? await db.product.findFirst({ where: { isActive: true, items: { some: { seriesId: { in: seriesIds } } } }, orderBy, select })
-      : null) ?? (await db.product.findFirst({ where: { isActive: true, kind: "PASS" }, orderBy, select }));
+      : null) ?? (await db.product.findFirst({ where: { isActive: true, kind: "PASS", site }, orderBy, select }));
   return product ? { href: `/buy/${product.slug}`, title: product.title, priceInPaise: product.priceInPaise, validityDays: product.validityDays } : null;
 }
 
-/** An active product with what it unlocks, for the /buy page. Cached so metadata and page share one query. */
-export const getProductForSale = cache(async (slug: string) => {
-  const product = await db.product.findUnique({
-    where: { slug },
+/** An active product a site sells, with what it unlocks, for the /buy page. Cached so metadata and page share one query. */
+export const getProductForSale = cache(async (site: string, slug: string) => {
+  const product = await db.product.findFirst({
+    where: { slug, ...productOnSite(site) },
     select: {
       id: true,
       slug: true,
@@ -137,6 +142,7 @@ export const getProductForSale = cache(async (slug: string) => {
       validityDays: true,
       validUntil: true,
       isActive: true,
+      site: true,
       items: {
         select: {
           seriesId: true,
@@ -152,8 +158,8 @@ export const getProductForSale = cache(async (slug: string) => {
     },
   });
   if (!product || !product.isActive) return null;
-  // A pass covers every paid test, so there are no ProductItem rows to list.
-  const paidTestCount = product.kind === "PASS" ? await db.test.count({ where: { ...liveTestWhere(), isFree: false } }) : 0;
+  // A pass covers every paid test its site shows, so there are no ProductItem rows to list.
+  const paidTestCount = product.kind === "PASS" ? await paidTestCountOn(product.site) : 0;
   const seriesIds = product.items.map((i) => i.seriesId);
   return {
     ...product,

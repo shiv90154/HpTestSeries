@@ -11,7 +11,7 @@ import { SiteHeader } from "@/components/site-header";
 import { TrackedLink } from "@/components/tracked-link";
 import { btn, card } from "@/components/ui";
 import { rupees } from "@/lib/money";
-import { site } from "@/lib/site";
+import { currentSite } from "@/sites/current";
 import { faqPageJsonLd, type Faq } from "@/modules/content/exam-content";
 import { SeparateSaving } from "@/components/pricing-plans";
 import { perTestLabel } from "@/modules/commerce/value";
@@ -47,8 +47,9 @@ type ExamData = {
   slug: string;
 };
 
-export function buildExamCtx(data: ExamData, label: string): ExamCtx {
-  const start = startTest(data.tests, label);
+/** `stateGk`: the site's state GK test name ("Himachal GK"), offered when the exam has no free test of its own. */
+export function buildExamCtx(data: ExamData, label: string, stateGk: string): ExamCtx {
+  const start = startTest(data.tests, label, stateGk);
   return {
     key: `${data.body.slug}/${data.slug}`,
     name: label,
@@ -97,7 +98,8 @@ export function ExamTabs({ ctx, active }: { ctx: ExamCtx; active: "overview" | "
 }
 
 /** Price card for the exam's paid series. `placement` tells GA4 which copy of the card was used. */
-export function OfferCard({ ctx, placement, className = "" }: { ctx: ExamCtx; placement: string; className?: string }) {
+export async function OfferCard({ ctx, placement, className = "" }: { ctx: ExamCtx; placement: string; className?: string }) {
+  const site = await currentSite();
   const offer = ctx.offer;
   if (!offer) return null;
   // Only the total is shown, never a mocks/sectional split; older titles may still carry one after a dash
@@ -108,7 +110,7 @@ export function OfferCard({ ctx, placement, className = "" }: { ctx: ExamCtx; pl
   const items = [
     `${offer.testCount} ${offer.testCount === 1 ? "test" : "tests"}`,
     "Detailed solutions in Hindi & English",
-    "Rank among Himachal aspirants",
+    `Rank among ${site.stateAdj} aspirants`,
     "Section and topic-wise analysis",
   ];
   return (
@@ -161,16 +163,17 @@ export function OfferCard({ ctx, placement, className = "" }: { ctx: ExamCtx; pl
   );
 }
 
-const STEPS = [
+const steps = (initials: string) => [
   ["Take a free test", "Start the free mock now. No signup is needed for free tests."],
   ["Attempt in real CBT mode", "Timer, question palette, Mark for Review and Save & Next, in Hindi or English."],
-  ["Analyse and improve", "See your score, HP rank, a solution for every question and your weak topics."],
+  ["Analyse and improve", `See your score, ${initials} rank, a solution for every question and your weak topics.`],
 ];
 
-export function HowItWorks() {
+export async function HowItWorks() {
+  const site = await currentSite();
   return (
     <ol className="grid gap-4 sm:grid-cols-3">
-      {STEPS.map(([t, d], i) => (
+      {steps(site.logo.initials).map(([t, d], i) => (
         <li key={t} className={`${card} relative p-5 pt-6`}>
           <span className="absolute -top-3.5 left-5 grid size-8 place-items-center rounded-full bg-accent text-sm font-bold text-[#1f1300] shadow">{i + 1}</span>
           <h3 className="font-semibold">{t}</h3>
@@ -181,22 +184,23 @@ export function HowItWorks() {
   );
 }
 
-const PERKS = [
+const perks = (initials: string) => [
   { icon: MonitorCheck, label: "Real CBT interface" },
   { icon: Languages, label: "Hindi & English" },
-  { icon: Trophy, label: "HP rank on every test" },
+  { icon: Trophy, label: `${initials} rank on every test` },
   { icon: Clock, label: "Instant solutions" },
 ];
 
 /** Closing call to action band, repeated at the end of every exam page. */
-export function ExamFinalCta({ ctx }: { ctx: ExamCtx }) {
+export async function ExamFinalCta({ ctx }: { ctx: ExamCtx }) {
+  const site = await currentSite();
   return (
-    <section className="rounded-3xl bg-linear-to-r from-[#133a9e] to-[#1e4fd8] p-6 text-white sm:p-10">
+    <section className="rounded-3xl bg-linear-to-r from-primary-strong to-primary p-6 text-white sm:p-10">
       <div className="flex flex-col gap-5 sm:flex-row sm:items-center">
         <div className="flex-1 space-y-2">
           <h2 className="text-xl font-bold sm:text-3xl">Start your {ctx.name} preparation today</h2>
           <ul className="flex flex-wrap gap-x-5 gap-y-1.5 text-sm text-white/85">
-            {PERKS.map((p) => (
+            {perks(site.logo.initials).map((p) => (
               <li key={p.label} className="flex items-center gap-1.5">
                 <p.icon className="size-4 text-accent" aria-hidden /> {p.label}
               </li>
@@ -220,7 +224,7 @@ export function ExamFinalCta({ ctx }: { ctx: ExamCtx }) {
  * Frame for the SEO sub-pages (syllabus, exam pattern, previous papers): header, a short hero with the free-test button,
  * the section tabs, the page body, the closing call to action and the footer.
  */
-export function ExamSubPage({
+export async function ExamSubPage({
   ctx,
   active,
   crumb,
@@ -240,6 +244,7 @@ export function ExamSubPage({
   updatedAt?: Date;
   children: ReactNode;
 }) {
+  const site = await currentSite();
   const path = `${ctx.base}/${{ syllabus: "syllabus", pattern: "exam-pattern", pyq: "previous-year-papers" }[active]}`;
   return (
     <>
@@ -261,7 +266,7 @@ export function ExamSubPage({
       />
       <SiteHeader />
       <main className="flex-1">
-        <section className="relative overflow-hidden bg-linear-to-br from-[#0b1f5c] via-[#133a9e] to-[#1e4fd8] text-white">
+        <section className="relative overflow-hidden bg-linear-to-br from-hero-dark via-primary-strong to-primary text-white">
           <div className="relative mx-auto w-full max-w-6xl space-y-4 px-4 pb-20 pt-6">
             <Breadcrumbs
               light
@@ -316,7 +321,7 @@ export function ExamSubPage({
               <OfferCard ctx={ctx} placement={`aside-${active}`} />
               <div className={`${card} space-y-2 p-5 text-sm`}>
                 <h2 className="font-semibold">{ctx.name} {year()}</h2>
-                <p className="text-muted">Free mock tests, solutions in Hindi and English and your rank among Himachal aspirants.</p>
+                <p className="text-muted">Free mock tests, solutions in Hindi and English and your rank among {site.stateAdj} aspirants.</p>
                 <Link href={ctx.base} className="font-medium text-primary hover:underline">
                   All {ctx.name} mock tests →
                 </Link>

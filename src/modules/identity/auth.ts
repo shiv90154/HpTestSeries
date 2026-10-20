@@ -6,6 +6,7 @@ import { nextCookies } from "better-auth/next-js";
 import { emailOTP, phoneNumber, twoFactor } from "better-auth/plugins";
 import { db } from "@/lib/db";
 import { consumeRateLimit } from "@/lib/rate-limit";
+import { PRIMARY_SITE, siteFromHost, SITES } from "@/sites";
 import { isValidIndianMobile, PLACEHOLDER_NAME } from "./permissions";
 import { sendOtpEmail } from "./email";
 import { googleLoginEnabled, phoneLoginEnabled } from "./login-methods";
@@ -14,8 +15,26 @@ import { sendOtpSms } from "./sms";
 /** BLUEPRINT §16: one session per user — a new login signs out the other device (deters account sharing). */
 export const MAX_SESSIONS_PER_USER = 1;
 
+/** The site (domain) an auth request came in on, from the request's Host header. */
+function siteOf(ctx: { request?: Request; headers?: HeadersInit } | null | undefined) {
+  const headers = ctx?.request?.headers ?? (ctx?.headers ? new Headers(ctx.headers) : null);
+  return siteFromHost(headers?.get("host"));
+}
+
+const isProd = process.env.NODE_ENV === "production";
+
 export const auth = betterAuth({
   database: prismaAdapter(db, { provider: "postgresql" }),
+
+  // One app answers on every site's domain (src/sites); links and Google's callback use the domain of the request.
+  baseURL: {
+    allowedHosts: [
+      ...Object.values(SITES).flatMap((s) => s.domains),
+      ...(isProd ? [] : ["localhost:*", "*.localhost:*", "127.0.0.1:*"]),
+    ],
+    fallback: process.env.BETTER_AUTH_URL ?? PRIMARY_SITE.url,
+    protocol: isProd ? "https" : "http",
+  },
 
   socialProviders: googleLoginEnabled
     ? {
@@ -38,6 +57,7 @@ export const auth = betterAuth({
       role: { type: "string", defaultValue: "STUDENT", input: false },
       preferredLang: { type: "string", defaultValue: "en", input: false },
       district: { type: "string", required: false, input: false },
+      signupSite: { type: "string", defaultValue: "hp", input: false },
     },
   },
 
@@ -68,6 +88,12 @@ export const auth = betterAuth({
   },
 
   databaseHooks: {
+    user: {
+      create: {
+        // Which domain the account was made on: its emails carry that site's name and links.
+        before: async (user, ctx) => ({ data: { ...user, signupSite: siteOf(ctx).code } }),
+      },
+    },
     session: {
       create: {
         // Keep only the newest MAX_SESSIONS_PER_USER sessions.
@@ -92,14 +118,14 @@ export const auth = betterAuth({
       expiresIn: 10 * 60,
       allowedAttempts: 3,
       storeOTP: "hashed",
-      sendVerificationOTP: async ({ email, otp, type }) => {
+      sendVerificationOTP: async ({ email, otp, type }, ctx) => {
         if (type !== "sign-in") return; // password/email-change flows are not used
         // Placeholder addresses of phone-only accounts can never receive mail.
         if (email.endsWith(".invalid")) throw new APIError("BAD_REQUEST", { message: "Enter a real email address." });
         if (!(await consumeRateLimit(`otp-email:${email.toLowerCase()}`, 60 * 10, 5))) {
           throw new APIError("TOO_MANY_REQUESTS", { message: "Too many codes requested. Try again in 10 minutes." });
         }
-        await sendOtpEmail(email, otp);
+        await sendOtpEmail(email, otp, siteOf(ctx));
       },
     }),
     phoneNumber({

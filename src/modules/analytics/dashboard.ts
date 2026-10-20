@@ -10,7 +10,7 @@ import { currentStreak, testsThisWeek } from "./streak";
 
 type TopicTally = { correct: number; wrong: number; skipped: number };
 
-export async function getDashboard(userId: string) {
+export async function getDashboard(site: string, userId: string) {
   const [profile, attempts, inProgress, allTests, testMeta, entitlements, liveNext] = await Promise.all([
     db.user.findUniqueOrThrow({ where: { id: userId }, select: { name: true, district: true } }),
     db.attempt.findMany({
@@ -42,9 +42,12 @@ export async function getDashboard(userId: string) {
       where: { userId, status: "IN_PROGRESS", deadlineAt: { gt: new Date() } },
       select: { deadlineAt: true, answers: true, test: { select: { slug: true, title: true } } },
     }),
-    getPublishedTests(),
+    getPublishedTests(site),
     // What getPublishedTests does not carry: each test's exam, series and live window.
-    db.test.findMany({ where: liveTestWhere(), select: { slug: true, examId: true, liveStartsAt: true, series: { select: { seriesId: true } } } }),
+    db.test.findMany({
+      where: liveTestWhere(),
+      select: { slug: true, examId: true, site: true, exam: { select: { body: { select: { sites: true } } } }, liveStartsAt: true, series: { select: { seriesId: true } } },
+    }),
     liveEntitlements(userId),
     // The next live test that has not closed yet (only one the student has not already taken).
     db.test.findFirst({
@@ -126,7 +129,8 @@ export async function getDashboard(userId: string) {
   const candidates = allTests.map((t) => {
     const m = meta.get(t.slug);
     const seriesIds = m?.series.map((s) => s.seriesId) ?? [];
-    return { ...t, examId: m?.examId ?? null, isLive: !!m?.liveStartsAt, open: canAccessTest({ isFree: t.isFree, seriesIds }, entitlements, now) };
+    const sites = m ? (m.exam ? m.exam.body.sites : [m.site]) : [];
+    return { ...t, examId: m?.examId ?? null, isLive: !!m?.liveStartsAt, open: canAccessTest({ isFree: t.isFree, seriesIds, sites }, entitlements, now) };
   });
   const preferred = preferredExams([...rows.map((r) => meta.get(r.slug)?.examId ?? null), ...candidates.filter((t) => t.open && !t.isFree).map((t) => t.examId)]);
   const ranked_ = rankSuggestions(candidates, attemptedSlugs, preferred);

@@ -39,14 +39,22 @@ export async function getWalletHistory(userId: string, take = 30): Promise<Walle
  * is locked first so two checkouts started together can't both spend the same balance.
  * `totalPaise` is the price after any coupon; the order's amountPaise ends up as the cash part only.
  */
-export async function createOrderWithWallet(a: { userId: string; productId: string; totalPaise: number; discountPaise: number; couponId: string | null; useWallet: boolean }) {
+export async function createOrderWithWallet(a: {
+  userId: string;
+  productId: string;
+  totalPaise: number;
+  discountPaise: number;
+  couponId: string | null;
+  useWallet: boolean;
+  site?: string;
+}) {
   return db.$transaction(async (tx) => {
     await tx.$queryRaw`SELECT id FROM "user" WHERE id = ${a.userId} FOR UPDATE`;
     await releaseStaleReservations(tx, a.userId);
     const balance = a.useWallet ? await balanceOf(tx, a.userId) : 0;
     const { walletPaise, cashPaise } = splitWallet(a.totalPaise, balance);
     const order = await tx.order.create({
-      data: { userId: a.userId, productId: a.productId, amountPaise: cashPaise, walletPaise, discountPaise: a.discountPaise, couponId: a.couponId, status: "CREATED" },
+      data: { userId: a.userId, productId: a.productId, amountPaise: cashPaise, walletPaise, discountPaise: a.discountPaise, couponId: a.couponId, status: "CREATED", site: a.site },
       include: { product: true },
     });
     if (walletPaise > 0) await tx.walletTransaction.create({ data: { userId: a.userId, amountPaise: -walletPaise, type: "PURCHASE", orderId: order.id } });

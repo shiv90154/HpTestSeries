@@ -35,6 +35,7 @@ model User {
   role                Role      @default(STUDENT)
   preferredLang       Lang      @default(en)
   district            String?
+  signupSite          String    @default("hp") // site the account was created on: branding of its emails
   twoFactorEnabled    Boolean   @default(false) // staff-only TOTP, see modules/identity/two-factor.ts
   // Email consent (modules/email): offers = opt-in promotions (free-test follow-up, campaigns); reminders = service
   // mails about what the student bought (access ending), on by default and switchable off.
@@ -142,7 +143,7 @@ model ExamBody {
   slug   String @unique // e.g. "hprca" — first URL segment
   name   String
   nameHi String?
-  state  String @default("HP") // future multi-state expansion
+  sites  String[] @default(["hp"]) // site codes that show this body (src/sites); "*" = national, shown on every site
   order  Int    @default(0)
   exams  Exam[]
 }
@@ -344,6 +345,7 @@ model Test {
   status       ContentStatus @default(DRAFT)
   publishedAt  DateTime?
   version      Int           @default(1) // bumped on erratum; attempts record the version they took
+  site         String        @default("hp") // site of a test with no exam (state GK mocks); with an exam, the exam's body decides
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
 
@@ -446,6 +448,7 @@ model Product {
   validityDays Int? // either relative validity...
   validUntil   DateTime? // ...or a fixed end date (e.g. exam date + buffer)
   isActive     Boolean       @default(true)
+  site         String        @default("hp") // a PASS covers this site's series; other kinds also show where their series' exams do
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
 
@@ -500,6 +503,7 @@ model Order {
   payerEmail      String? // email typed into Razorpay Checkout; lets a guest buyer claim from another device
   claimedAt       DateTime? // when a guest order was attached to an account
   reminderSentAt  DateTime? // the one "finish your payment" email for an unpaid checkout (email/service.ts)
+  site            String      @default("hp") // site (domain) the order was placed on: receipts, emails, reports
   createdAt       DateTime    @default(now())
   updatedAt       DateTime    @updatedAt
 
@@ -700,6 +704,7 @@ model Post {
   seoTitle       String?
   seoDescription String?
   faqs           Json? // [{ q, a }]
+  site           String        @default("hp") // each post belongs to one site (no cross-domain duplicates)
   authorId       String?
   author         User?         @relation(fields: [authorId], references: [id], onDelete: SetNull)
   createdAt      DateTime      @default(now())
@@ -709,6 +714,7 @@ model Post {
 
   @@index([status, publishedAt])
   @@index([category, status])
+  @@index([site, status, publishedAt])
 }
 
 // ───────────────────────── Email ─────────────────────────

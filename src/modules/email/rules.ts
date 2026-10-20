@@ -2,7 +2,8 @@
 // The sending side lives in ./service.ts.
 
 import { createHmac, timingSafeEqual } from "node:crypto";
-import { buttonRow, emailColors, emailShell, esc, paragraphRow } from "./layout";
+import type { SiteConfig } from "@/sites/types";
+import { buttonRow, emailBrand, emailColors, emailShell, esc, paragraphRow } from "./layout";
 
 export type EmailCategory = "offers" | "reminders";
 export type EmailKind = "expiry" | "free-followup" | "campaign" | "announcement" | "referral-invite";
@@ -95,7 +96,8 @@ export function renderEmail(m: {
   why: string;
   /** Left out only for a mail to someone without an account (a guest checkout reminder, sent once). */
   unsubscribeUrl?: string;
-  siteUrl?: string;
+  /** The site the mail is about (its name, colours and links); HP when left out. */
+  site?: SiteConfig;
 }): EmailContent {
   const text = [m.heading, "", ...m.paragraphs.flatMap((p) => [p, ""]), `${m.cta.label}: ${m.cta.url}`, "", "—", m.why, ...(m.unsubscribeUrl ? [`Unsubscribe: ${m.unsubscribeUrl}`] : [])].join("\n");
   const rows = [
@@ -105,7 +107,8 @@ export function renderEmail(m: {
   ].join("\n");
   const html = emailShell({
     preview: m.paragraphs[0] ?? m.heading,
-    siteUrl: m.siteUrl ?? process.env.NEXT_PUBLIC_SITE_URL ?? "https://hptestseries.in",
+    siteUrl: m.site?.url ?? process.env.NEXT_PUBLIC_SITE_URL ?? "https://hptestseries.in",
+    brand: m.site && emailBrand(m.site),
     rows,
     footer: m.unsubscribeUrl
       ? `${esc(m.why)} <a href="${esc(m.unsubscribeUrl)}" style="color:${emailColors.faint};text-decoration:underline">Unsubscribe</a>`

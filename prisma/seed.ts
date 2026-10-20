@@ -9,7 +9,8 @@ import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "../src/generated/prisma/client";
 import { catalogue } from "./catalogue";
 import { seedContent } from "./seed-content";
-import { DEMO_TEST_SLUG, seedDemoTest } from "./seed-demo";
+import { COMMON_FREE_QUESTIONS, DEMO_TEST_SLUG, seedDemoTest, seedFreeMock } from "./seed-demo";
+import { punjabFreeMock } from "./punjab/free-mock";
 import { seedHpasFree } from "./seed-hpas";
 import { seedJoaIt } from "./seed-joa-it";
 import { seedJoaItPyq } from "./seed-joa-it-pyq";
@@ -99,6 +100,7 @@ async function main() {
   }
 
   await seedDemoTest(db);
+  await seedFreeMock(db, punjabFreeMock(COMMON_FREE_QUESTIONS));
   const patwari = await seedPatwari(db);
   const police = await seedPolice(db);
   const joaIt = await seedJoaIt(db);

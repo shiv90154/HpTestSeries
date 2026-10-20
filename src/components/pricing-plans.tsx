@@ -5,17 +5,17 @@ import type { PublicProduct } from "@/modules/commerce/product-service";
 import { perTestLabel, saving } from "@/modules/commerce/value";
 import { btn } from "./ui";
 
-const PLAN_ITEMS: Record<string, string[]> = {
+const planItems = (stateAdj: string): Record<string, string[]> => ({
   SERIES: ["Full mock tests", "Previous-year style questions", "Sectional & topic tests", "Detailed analysis"],
   PACK: ["Multiple exam series", "Full mock tests", "Sectional & topic tests", "Detailed analysis"],
-  PASS: ["Every Himachal exam", "All mock tests & sectional tests", "All previous-year papers", "Best value for serious aspirants"],
-};
+  PASS: [`Every ${stateAdj} exam`, "All mock tests & sectional tests", "All previous-year papers", "Best value for serious aspirants"],
+});
 
 /** Card for one product on sale (an exam series, a pack or the all-access pass). */
-export function productPlan(p: PublicProduct) {
+export function productPlan(p: PublicProduct, stateAdj: string) {
   // Only the total is shown, never a mocks/sectional split; older titles may still carry one after a dash
   const [name] = p.title.split(/\s+[—–]\s+/);
-  const items = PLAN_ITEMS[p.kind] ?? PLAN_ITEMS.SERIES;
+  const items = planItems(stateAdj)[p.kind] ?? planItems(stateAdj).SERIES;
   const count = p.kind !== "PASS" && p.testCount > 0 ? `${p.testCount} ${p.testCount === 1 ? "test" : "tests"}` : null;
   return {
     name,

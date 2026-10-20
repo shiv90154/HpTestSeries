@@ -7,14 +7,14 @@
 //
 // Seeding never overwrites: exam fields are filled only when empty, posts are created only if
 // the slug doesn't exist. Edits made in the admin panel are safe on re-seed.
-
 import type { PrismaClient } from "../src/generated/prisma/client";
-import { FREE_MOCK_HREF as FREE_MOCK } from "../src/lib/site";
+import { hp } from "../src/sites/hp";
 import { EXAM_PAGES, NOTIFICATION_POSTS, type PostSeed } from "./exam-pages";
+
+const FREE_MOCK = `/tests/${hp.freeMockSlug}`;
 
 type Faq = { q: string; a: string };
 type ExamContent = { description: string; syllabus: string; faqs: Faq[] };
-
 
 export const examContent: Record<string, ExamContent> = {
   "hppsc/hpas": {

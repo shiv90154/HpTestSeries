@@ -1,15 +1,14 @@
+import type { SiteConfig } from "@/sites/types";
 import { business } from "./business";
-import { site } from "./site";
 
-export const YOUTUBE_URL = "https://www.youtube.com/@hptestseries";
-export const INSTAGRAM_URL = "https://www.instagram.com/hptestseries.in/";
-export const TELEGRAM_URL = "https://t.me/hptestseries";
-
-/** Social profiles for Organization.sameAs. */
-export const SOCIAL_PROFILES: string[] = [YOUTUBE_URL, INSTAGRAM_URL, TELEGRAM_URL];
+/** Social profiles for Organization.sameAs: the site's own, never another site's. */
+export function socialProfiles(site: SiteConfig): string[] {
+  return [site.social.youtube, site.social.instagram, site.social.telegram].filter((u): u is string => !!u);
+}
 
 /** schema.org Organization — the home page node and the publisher on every article. */
-export function organizationNode() {
+export function organizationNode(site: SiteConfig) {
+  const sameAs = socialProfiles(site);
   return {
     "@type": "Organization",
     "@id": `${site.url}/#organization`,
@@ -17,7 +16,7 @@ export function organizationNode() {
     url: site.url,
     logo: `${site.url}/icon.svg`,
     email: business.email,
-    areaServed: { "@type": "State", name: "Himachal Pradesh" },
+    areaServed: { "@type": "State", name: site.stateName },
     contactPoint: {
       "@type": "ContactPoint",
       contactType: "customer support",
@@ -26,6 +25,6 @@ export function organizationNode() {
       areaServed: "IN",
       availableLanguage: ["en", "hi"],
     },
-    ...(SOCIAL_PROFILES.length > 0 && { sameAs: SOCIAL_PROFILES }),
+    ...(sameAs.length > 0 && { sameAs }),
   };
 }

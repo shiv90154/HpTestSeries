@@ -2,13 +2,14 @@
 
 import { Home, LayoutGrid, NotebookPen, Play, UserRound } from "lucide-react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { FREE_MOCK_HREF } from "@/lib/site";
+import { useSite, useSitePathname } from "@/sites/provider";
+import { freeMockHref } from "@/sites";
 import { authClient } from "@/modules/identity/auth-client";
 
 /** App-style tab bar for public pages on phones; the free mock sits in the middle as the main action. */
 export function PublicBottomNav() {
-  const pathname = usePathname();
+  const site = useSite();
+  const pathname = useSitePathname();
   const { data: session } = authClient.useSession();
 
   const tabs = [
@@ -38,7 +39,7 @@ export function PublicBottomNav() {
             {t.label}
           </Link>
         ) : (
-          <Link key="free" href={FREE_MOCK_HREF} className="flex flex-col items-center justify-end gap-0.5 pb-2 text-[11px] font-semibold text-accent-ink">
+          <Link key="free" href={freeMockHref(site)} className="flex flex-col items-center justify-end gap-0.5 pb-2 text-[11px] font-semibold text-accent-ink">
             <span className="-mt-6 grid size-13 place-items-center rounded-full bg-accent text-[#1f1300] shadow-lg ring-4 ring-surface">
               <Play className="size-6 fill-current" />
             </span>

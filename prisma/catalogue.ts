@@ -5,7 +5,8 @@
 
 export type StageSeed = { slug: string; name: string; nameHi?: string };
 export type ExamSeed = { slug: string; name: string; nameHi?: string; stages?: StageSeed[] };
-export type BodySeed = { slug: string; name: string; nameHi: string; exams: ExamSeed[] };
+/** `sites`: site codes that show the body (src/sites); "*" = national, every site. Default ["hp"]. */
+export type BodySeed = { slug: string; name: string; nameHi: string; sites?: string[]; exams: ExamSeed[] };
 
 export const catalogue: BodySeed[] = [
   {
@@ -119,6 +120,7 @@ export const catalogue: BodySeed[] = [
     slug: "pgimer",
     name: "Postgraduate Institute of Medical Education and Research",
     nameHi: "स्नातकोत्तर चिकित्सा शिक्षा एवं अनुसंधान संस्थान",
+    sites: ["hp", "pb"],
     exams: [{ slug: "nursing-officer", name: "Nursing Officer", nameHi: "नर्सिंग ऑफिसर" }],
   },
   {
@@ -142,6 +144,7 @@ export const catalogue: BodySeed[] = [
     slug: "upsc",
     name: "Union Public Service Commission",
     nameHi: "संघ लोक सेवा आयोग",
+    sites: ["*"],
     exams: [
       { slug: "nda", name: "NDA & NA", nameHi: "एनडीए एवं एनए" },
       { slug: "cds", name: "CDS", nameHi: "सीडीएस" },
@@ -151,6 +154,7 @@ export const catalogue: BodySeed[] = [
     slug: "iaf",
     name: "Indian Air Force",
     nameHi: "भारतीय वायु सेना",
+    sites: ["*"],
     exams: [{ slug: "afcat", name: "AFCAT", nameHi: "एफ़कैट" }],
   },
   // Delhi Police recruits through the Staff Selection Commission; the written test is a computer-based test.
@@ -158,6 +162,7 @@ export const catalogue: BodySeed[] = [
     slug: "delhi-police",
     name: "Delhi Police",
     nameHi: "दिल्ली पुलिस",
+    sites: ["*"],
     exams: [{ slug: "constable", name: "Constable (Executive)", nameHi: "कांस्टेबल (एग्ज़ीक्यूटिव)" }],
   },
 ];

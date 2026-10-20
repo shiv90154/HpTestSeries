@@ -1,5 +1,6 @@
-import { WHATSAPP_GROUP_URL } from "@/lib/site";
-import { TELEGRAM_URL } from "@/lib/schema";
+"use client";
+
+import { useSite } from "@/sites/provider";
 import { TrackedLink } from "./tracked-link";
 import { card } from "./ui";
 
@@ -24,6 +25,8 @@ export function TelegramIcon({ className = "size-4" }: { className?: string }) {
  * `place` goes to GA4 so we can see which spot brings the most joins.
  */
 export function WhatsAppGroupCard({ place, className = "" }: { place: string; className?: string }) {
+  const { whatsappGroupUrl, social } = useSite();
+  if (!whatsappGroupUrl) return null;
   return (
     <section className={`${card} flex flex-wrap items-center gap-4 p-5 ${className}`}>
       <span className="grid size-11 shrink-0 place-items-center rounded-full bg-[#118376] text-white">
@@ -36,7 +39,7 @@ export function WhatsAppGroupCard({ place, className = "" }: { place: string; cl
         </p>
       </div>
       <TrackedLink
-        href={WHATSAPP_GROUP_URL}
+        href={whatsappGroupUrl}
         target="_blank"
         rel="noopener noreferrer"
         event="whatsapp_group_click"
@@ -45,16 +48,18 @@ export function WhatsAppGroupCard({ place, className = "" }: { place: string; cl
       >
         <WhatsAppIcon /> Join group
       </TrackedLink>
-      <TrackedLink
-        href={TELEGRAM_URL}
-        target="_blank"
-        rel="noopener noreferrer"
-        event="telegram_group_click"
-        params={{ place }}
-        className="inline-flex h-11 shrink-0 items-center justify-center gap-2 rounded-xl bg-[#229ED9] px-5 text-sm font-semibold text-white shadow-sm hover:bg-[#1b86b9] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
-      >
-        <TelegramIcon /> Telegram
-      </TrackedLink>
+      {social.telegram && (
+        <TrackedLink
+          href={social.telegram}
+          target="_blank"
+          rel="noopener noreferrer"
+          event="telegram_group_click"
+          params={{ place }}
+          className="inline-flex h-11 shrink-0 items-center justify-center gap-2 rounded-xl bg-[#229ED9] px-5 text-sm font-semibold text-white shadow-sm hover:bg-[#1b86b9] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+        >
+          <TelegramIcon /> Telegram
+        </TrackedLink>
+      )}
     </section>
   );
 }

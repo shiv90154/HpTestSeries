@@ -4,9 +4,9 @@ import { ownershipFor, renewalStart, type OwnedEntitlement, type OwnershipProduc
 const now = new Date("2026-09-28T12:00:00Z");
 const days = (n: number) => new Date(now.getTime() + n * 86_400_000);
 
-const series: OwnershipProduct = { id: "p-series", kind: "SERIES", seriesIds: ["s1"], validUntil: null };
-const pack: OwnershipProduct = { id: "p-pack", kind: "PACK", seriesIds: ["s1", "s2"], validUntil: null };
-const pass: OwnershipProduct = { id: "p-pass", kind: "PASS", seriesIds: [], validUntil: null };
+const series: OwnershipProduct = { id: "p-series", kind: "SERIES", seriesIds: ["s1"], seriesSites: [["hp"]], validUntil: null };
+const pack: OwnershipProduct = { id: "p-pack", kind: "PACK", seriesIds: ["s1", "s2"], seriesSites: [["hp"], ["hp"]], validUntil: null };
+const pass: OwnershipProduct = { id: "p-pass", kind: "PASS", seriesIds: [], seriesSites: [], validUntil: null };
 
 function ent(p: OwnershipProduct, expiresInDays: number, extra: Partial<OwnedEntitlement> = {}): OwnedEntitlement {
   return {
@@ -15,12 +15,19 @@ function ent(p: OwnershipProduct, expiresInDays: number, extra: Partial<OwnedEnt
     startsAt: days(-30),
     expiresAt: days(expiresInDays),
     revokedAt: null,
-    product: { kind: p.kind, seriesIds: p.seriesIds },
+    product: { kind: p.kind, seriesIds: p.seriesIds, site: "hp" },
     ...extra,
   };
 }
 
 describe("ownershipFor", () => {
+  it("does not let one state's pass block a series another state's site sells", () => {
+    const pbSeries: OwnershipProduct = { id: "p-pb", kind: "SERIES", seriesIds: ["pb1"], seriesSites: [["pb"]], validUntil: null };
+    const national: OwnershipProduct = { id: "p-nda", kind: "SERIES", seriesIds: ["nda"], seriesSites: [["*"]], validUntil: null };
+    expect(ownershipFor(pbSeries, [ent(pass, 100)], now)).toEqual({ kind: "none" });
+    expect(ownershipFor(national, [ent(pass, 100)], now)).toMatchObject({ kind: "owned", via: "pass" });
+  });
+
   it("is none with no entitlements", () => {
     expect(ownershipFor(series, [], now)).toEqual({ kind: "none" });
   });
@@ -59,7 +66,7 @@ describe("ownershipFor", () => {
   });
 
   it("blocks a pack whose every series is already owned, until the earliest one ends", () => {
-    const s2: OwnershipProduct = { id: "p-s2", kind: "SERIES", seriesIds: ["s2"], validUntil: null };
+    const s2: OwnershipProduct = { id: "p-s2", kind: "SERIES", seriesIds: ["s2"], seriesSites: [["hp"]], validUntil: null };
     expect(ownershipFor(pack, [ent(series, 60), ent(s2, 20)], now)).toMatchObject({ kind: "owned", via: "series", until: days(20) });
   });
 });

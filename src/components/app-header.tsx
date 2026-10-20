@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { SignOutButton } from "@/app/dashboard/sign-out-button";
+import { SignOutButton } from "@/app/[site]/dashboard/sign-out-button";
 import { can, type Role } from "@/modules/identity/permissions";
 import { AppDesktopNav, BottomNav } from "./bottom-nav";
 import { Logo } from "./logo";

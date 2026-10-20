@@ -10,7 +10,7 @@ import { RichContent } from "@/components/rich-content";
 import type { Bilingual, ResultData, ResultUpsell } from "@/modules/assessment/types";
 import { writeLangPref } from "@/lib/lang-pref";
 import { rupees } from "@/lib/money";
-import { site } from "@/lib/site";
+import { useSite } from "@/sites/provider";
 import { ReportQuestion } from "./report-question";
 import { ShareButtons } from "./share-buttons";
 import { WhatsAppGroupCard } from "./whatsapp-group";
@@ -81,6 +81,7 @@ export function ResultView({
   const jumpRef = useRef<HTMLElement>(null);
   const listRef = useRef<HTMLOListElement>(null);
   /** The "Jump to question" pill: shown while reading solutions once the question grid has scrolled away. */
+  const site = useSite();
   const [showJumpPill, setShowJumpPill] = useState(false);
   useEffect(() => {
     const jump = jumpRef.current;
@@ -118,7 +119,7 @@ export function ResultView({
     Object.assign(canvas.style, { position: "fixed", inset: "0", width: "100%", height: "100%", pointerEvents: "none", zIndex: "100" });
     document.body.appendChild(canvas);
     const fire = confetti.create(canvas, { resize: true });
-    void Promise.resolve(fire({ particleCount: 120, spread: 80, origin: { y: 0.3 }, colors: ["#1e4fd8", "#f59e0b", "#16a34a"] })).finally(() => canvas.remove());
+    void Promise.resolve(fire({ particleCount: 120, spread: 80, origin: { y: 0.3 }, colors: [site.themeColor, site.logo.accent, "#16a34a"] })).finally(() => canvas.remove());
     return () => canvas.remove();
     // eslint-disable-next-line react-hooks/exhaustive-deps -- fire once when the result mounts
   }, []);
@@ -131,7 +132,7 @@ export function ResultView({
   return (
     <main className="mx-auto w-full max-w-5xl space-y-6 px-4 py-6 sm:py-10">
       {/* Score header */}
-      <section className="overflow-hidden rounded-3xl bg-linear-to-br from-[#133a9e] via-[#1e4fd8] to-[#3b6ef5] text-white shadow-lg">
+      <section className="overflow-hidden rounded-3xl bg-linear-to-br from-primary-strong via-primary to-hero-glow text-white shadow-lg">
         <div className="grid gap-6 p-6 sm:grid-cols-[1.2fr_1fr] sm:p-8">
           <div className="space-y-3">
             <p className="text-sm font-medium text-white/75">Test result</p>
@@ -148,7 +149,7 @@ export function ResultView({
             {data.rank ? (
               <div className="space-y-3">
                 <p className="flex items-center gap-2 text-sm text-white/80">
-                  <Trophy className="size-4 text-accent" /> Your HP rank
+                  <Trophy className="size-4 text-accent" /> Your {site.logo.initials} rank
                 </p>
                 <p className="text-4xl font-bold tabular-nums">
                   #{data.rank.rank}
@@ -164,19 +165,19 @@ export function ResultView({
                   <Lock className="size-4 text-accent" /> Free demo · {total} of {data.demo.totalQuestions} questions
                 </p>
                 <p className="text-sm text-white/90">
-                  Unlock the full test to attempt the other {data.demo.lockedTotal} questions and get your HP rank, solutions and topic analysis.
+                  Unlock the full test to attempt the other {data.demo.lockedTotal} questions and get your {site.logo.initials} rank, solutions and topic analysis.
                 </p>
                 <UnlockButton demo={data.demo} size="sm" />
               </div>
             ) : isGuest ? (
               <div className="space-y-3">
                 <p className="flex items-center gap-2 text-sm text-white/80">
-                  <Trophy className="size-4 text-accent" /> Want your HP rank?
+                  <Trophy className="size-4 text-accent" /> Want your {site.logo.initials} rank?
                 </p>
                 <p className="text-sm text-white/90">
                   {data.claim
-                    ? "Log in (free) to save this result to your account, get your rank among Himachal aspirants and track weak topics."
-                    : "Log in (free) to save results, see your rank among Himachal aspirants and track weak topics."}
+                    ? `Log in (free) to save this result to your account, get your rank among ${site.stateAdj} aspirants and track weak topics.`
+                    : `Log in (free) to save results, see your rank among ${site.stateAdj} aspirants and track weak topics.`}
                 </p>
                 {data.claim ? (
                   <Link href={`/login?next=${encodeURIComponent(`/tests/${data.test.slug}/result`)}`} className={btn("accent", "sm")}>
@@ -207,7 +208,7 @@ export function ResultView({
           url={`${site.url}/tests/${data.test.slug}`}
           text={
             data.rank
-              ? `Maine "${data.test.title}" me HP rank #${data.rank.rank} paaya (${data.score}/${data.maxScore}) 🏔️ Tum bhi try karo — free mock test:`
+              ? `Maine "${data.test.title}" me ${site.logo.initials} rank #${data.rank.rank} paaya (${data.score}/${data.maxScore}) 🏔️ Tum bhi try karo — free mock test:`
               : `Maine "${data.test.title}" me ${data.score}/${data.maxScore} score kiya 🏔️ Tum bhi try karo — free mock test:`
           }
         />
@@ -465,7 +466,7 @@ export function ResultView({
             </span>
             <p className="text-lg font-semibold">{data.demo.lockedTotal} more questions are locked</p>
             <p className="mx-auto max-w-md text-sm text-foreground/85">
-              You solved the free half of this test. Unlock the rest to complete the full paper with detailed solutions and your rank among Himachal aspirants.
+              You solved the free half of this test. Unlock the rest to complete the full paper with detailed solutions and your rank among {site.stateAdj} aspirants.
             </p>
             <UnlockButton demo={data.demo} size="lg" />
           </div>
@@ -621,12 +622,13 @@ function UnlockButton({ demo, size }: { demo: NonNullable<ResultData["demo"]>; s
 }
 
 function UpsellCard({ upsell }: { upsell: ResultUpsell }) {
+  const site = useSite();
   const go = (slug: string) => () => track("upsell_click", { place: "result", product: slug });
   return (
     <section className={`${card} space-y-4 border-primary/30 bg-primary-soft/40 p-5`}>
       <div>
         <p className="text-xs font-medium uppercase tracking-wider text-primary">Next step</p>
-        <h2 className="text-lg font-semibold">Himachal GK har HP exam mein aata hai</h2>
+        <h2 className="text-lg font-semibold">{site.statePage.title} har {site.logo.initials} exam mein aata hai</h2>
         <p className="text-sm text-muted">Ab apne exam ki full mock series se practice karo, isi CBT screen mein, solutions aur rank ke saath.</p>
       </div>
       {upsell.series.length > 0 && (

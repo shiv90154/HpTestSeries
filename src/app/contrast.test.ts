@@ -1,18 +1,26 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
+import { SITES } from "@/sites";
+import type { SiteConfig } from "@/sites/types";
 
-// Colour tokens live in globals.css. This fails when an edit makes text (or white text on a coloured fill)
-// hard to read on the backgrounds it is actually used on: students read on cheap phones in bright daylight.
-// WCAG 2.x AA needs 4.5:1 for normal-size text.
+// Colour tokens live in globals.css; each site (src/sites) may override some of them. This fails when an edit makes
+// text (or white text on a coloured fill) hard to read on the backgrounds it is actually used on, on any site:
+// students read on cheap phones in bright daylight. WCAG 2.x AA needs 4.5:1 for normal-size text.
 
 const AA = 4.5;
 const css = readFileSync(new URL("./globals.css", import.meta.url), "utf8");
 const root = css.match(/:root\s*\{([\s\S]*?)\n\}/)?.[1] ?? "";
 
-function token(name: string): string {
+function cssToken(name: string): string {
   const m = root.match(new RegExp(`--${name}:\\s*(#[0-9a-fA-F]{6})`));
   if (!m) throw new Error(`--${name} is not a #rrggbb colour in globals.css`);
   return m[1];
+}
+
+function tokenOf(site: SiteConfig, name: string): string {
+  const override = site.theme[name as keyof SiteConfig["theme"]];
+  if (override && !/^#[0-9a-fA-F]{6}$/.test(override)) throw new Error(`${site.code}: --${name} is not a #rrggbb colour`);
+  return override ?? cssToken(name);
 }
 
 function luminance(hex: string): number {
@@ -38,10 +46,25 @@ const textOn: Record<string, string[]> = {
   "cbt-marked": ["surface"],
 };
 
-// solid fills that carry white text (buttons, palette buttons, badges)
-const whiteOn = ["primary", "primary-strong", "success", "danger", "cbt-answered", "cbt-not-answered", "cbt-marked", "cbt-header", "cbt-submit", "cbt-submit-strong"];
+// solid fills that carry white text (buttons, palette buttons, badges, hero and footer backgrounds)
+const whiteOn = [
+  "primary",
+  "primary-strong",
+  "success",
+  "danger",
+  "cbt-answered",
+  "cbt-not-answered",
+  "cbt-marked",
+  "cbt-header",
+  "cbt-submit",
+  "cbt-submit-strong",
+  "hero-dark",
+  "footer",
+];
 
-describe("colour tokens meet WCAG AA", () => {
+describe.each(Object.values(SITES))("$code colour tokens meet WCAG AA", (site) => {
+  const token = (name: string) => tokenOf(site, name);
+
   for (const [fg, backgrounds] of Object.entries(textOn)) {
     for (const bg of backgrounds) {
       it(`${fg} text on ${bg}`, () => {
@@ -62,9 +85,15 @@ describe("colour tokens meet WCAG AA", () => {
   });
 
   it("footer copy (Tailwind slate-400) on the footer background", () => {
-    expect(ratio("#90a1b9", "#0b1733")).toBeGreaterThanOrEqual(AA);
+    expect(ratio("#90a1b9", token("footer"))).toBeGreaterThanOrEqual(AA);
   });
 
+  it("the theme colour (browser chrome, Razorpay) is the primary token", () => {
+    expect(site.themeColor.toLowerCase()).toBe(token("primary").toLowerCase());
+  });
+});
+
+describe("contrast maths", () => {
   it("the previous, failing colours would be caught (sanity check of the maths)", () => {
     expect(ratio("#16a34a", "#e7f7ec")).toBeLessThan(AA); // old FREE badge
     expect(ratio("#d97706", "#fff4dc")).toBeLessThan(AA); // old PAID badge

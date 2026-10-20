@@ -14,7 +14,7 @@ export async function liveEntitlements(userId: string, now = new Date()): Promis
       startsAt: true,
       expiresAt: true,
       revokedAt: true,
-      product: { select: { slug: true, title: true, kind: true, items: { select: { seriesId: true } } } },
+      product: { select: { slug: true, title: true, kind: true, site: true, items: { select: { seriesId: true } } } },
     },
   });
   return rows.map((r) => ({
@@ -24,17 +24,29 @@ export async function liveEntitlements(userId: string, now = new Date()): Promis
     startsAt: r.startsAt,
     expiresAt: r.expiresAt,
     revokedAt: r.revokedAt,
-    product: { kind: r.product.kind, seriesIds: r.product.items.map((i) => i.seriesId) },
+    product: { kind: r.product.kind, site: r.product.site, seriesIds: r.product.items.map((i) => i.seriesId) },
   }));
 }
 
 export async function getOwnership(userId: string, productId: string): Promise<Ownership> {
   const [product, entitlements] = await Promise.all([
-    db.product.findUnique({ where: { id: productId }, select: { id: true, kind: true, validUntil: true, items: { select: { seriesId: true } } } }),
+    db.product.findUnique({
+      where: { id: productId },
+      select: { id: true, kind: true, validUntil: true, items: { select: { seriesId: true, series: { select: { exam: { select: { body: { select: { sites: true } } } } } } } } },
+    }),
     liveEntitlements(userId),
   ]);
   if (!product) return { kind: "none" };
-  return ownershipFor({ id: product.id, kind: product.kind, validUntil: product.validUntil, seriesIds: product.items.map((i) => i.seriesId) }, entitlements);
+  return ownershipFor(
+    {
+      id: product.id,
+      kind: product.kind,
+      validUntil: product.validUntil,
+      seriesIds: product.items.map((i) => i.seriesId),
+      seriesSites: product.items.map((i) => i.series.exam.body.sites),
+    },
+    entitlements,
+  );
 }
 
 export type Plan = { slug: string; title: string; kind: "SERIES" | "PACK" | "PASS"; startsAt: Date; expiresAt: Date; daysLeft: number; upcoming: boolean };
@@ -135,11 +147,16 @@ export async function getAccessibleTestSlugs(userId: string): Promise<string[]> 
   const [entitlements, tests] = await Promise.all([
     db.entitlement.findMany({
       where: { userId, revokedAt: null, expiresAt: { gt: new Date() } },
-      select: { startsAt: true, expiresAt: true, revokedAt: true, product: { select: { kind: true, items: { select: { seriesId: true } } } } },
+      select: { startsAt: true, expiresAt: true, revokedAt: true, product: { select: { kind: true, site: true, items: { select: { seriesId: true } } } } },
     }),
-    db.test.findMany({ where: { ...liveTestWhere(), isFree: false }, select: { slug: true, series: { select: { seriesId: true } } } }),
+    db.test.findMany({
+      where: { ...liveTestWhere(), isFree: false },
+      select: { slug: true, site: true, exam: { select: { body: { select: { sites: true } } } }, series: { select: { seriesId: true } } },
+    }),
   ]);
   if (!entitlements.length) return [];
-  const owned = entitlements.map((e) => ({ ...e, product: { kind: e.product.kind, seriesIds: e.product.items.map((i) => i.seriesId) } }));
-  return tests.filter((t) => canAccessTest({ isFree: false, seriesIds: t.series.map((s) => s.seriesId) }, owned)).map((t) => t.slug);
+  const owned = entitlements.map((e) => ({ ...e, product: { kind: e.product.kind, site: e.product.site, seriesIds: e.product.items.map((i) => i.seriesId) } }));
+  return tests
+    .filter((t) => canAccessTest({ isFree: false, seriesIds: t.series.map((s) => s.seriesId), sites: t.exam ? t.exam.body.sites : [t.site] }, owned))
+    .map((t) => t.slug);
 }

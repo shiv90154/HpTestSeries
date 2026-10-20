@@ -2,11 +2,11 @@
 // Idempotent: questions are matched by text hash, the test by slug.
 
 import type { PrismaClient } from "../src/generated/prisma/client";
-import { FREE_MOCK_SLUG } from "../src/lib/site";
+import { hp } from "../src/sites/hp";
 import { questionTextHash } from "../src/modules/content/text-hash";
 
 type Lang = { q: string; o: [string, string, string, string]; e: string };
-type DemoQuestion = {
+export type DemoQuestion = {
   section: 0 | 1 | 2;
   subject: string;
   topic: string;
@@ -16,7 +16,7 @@ type DemoQuestion = {
   hi: Lang;
 };
 
-export const DEMO_TEST_SLUG = FREE_MOCK_SLUG;
+export const DEMO_TEST_SLUG = hp.freeMockSlug;
 
 const sections = [
   { name: "Himachal GK", nameHi: "हिमाचल सामान्य ज्ञान" },
@@ -154,7 +154,36 @@ const questions: DemoQuestion[] = [
   },
 ];
 
+/** A free no-login mock: one per site (src/sites freeMockSlug). `site` places it, since it belongs to no exam. */
+export type FreeMockDef = {
+  slug: string;
+  site: string;
+  title: string;
+  titleHi: string;
+  instructions: string;
+  sections: { name: string; nameHi: string }[];
+  questions: DemoQuestion[];
+};
+
+const HP_FREE_MOCK: FreeMockDef = {
+  slug: DEMO_TEST_SLUG,
+  site: hp.code,
+  title: "Himachal GK Free Mock Test 1",
+  titleHi: "हिमाचल GK फ्री मॉक टेस्ट 1",
+  instructions: "This free mock covers Himachal GK, Reasoning & Maths and Computer — the common core of HPRCA, HP Police, Patwari and HPAS exams.",
+  sections,
+  questions,
+};
+
+/** The Reasoning & Maths and Computer questions every site's free mock shares. */
+export const COMMON_FREE_QUESTIONS = questions.filter((q) => q.section > 0);
+
 export async function seedDemoTest(db: PrismaClient) {
+  await seedFreeMock(db, HP_FREE_MOCK);
+}
+
+export async function seedFreeMock(db: PrismaClient, def: FreeMockDef) {
+  const { questions } = def;
   const topics = await db.topic.findMany({ select: { id: true, slug: true, subject: { select: { slug: true } } } });
   const topicId = new Map(topics.map((t) => [`${t.subject.slug}/${t.slug}`, t.id]));
 
@@ -193,23 +222,23 @@ export async function seedDemoTest(db: PrismaClient) {
     questionIds.push(created.id);
   }
 
-  const existingTest = await db.test.findUnique({ where: { slug: DEMO_TEST_SLUG }, select: { id: true } });
+  const existingTest = await db.test.findUnique({ where: { slug: def.slug }, select: { id: true } });
   if (existingTest) return;
 
   const test = await db.test.create({
     select: { id: true, sections: { select: { id: true, order: true } } },
     data: {
-      slug: DEMO_TEST_SLUG,
-      title: "Himachal GK Free Mock Test 1",
-      titleHi: "हिमाचल GK फ्री मॉक टेस्ट 1",
+      slug: def.slug,
+      site: def.site,
+      title: def.title,
+      titleHi: def.titleHi,
       type: "MOCK",
       durationSec: 20 * 60,
       isFree: true,
       status: "PUBLISHED",
       publishedAt: new Date(),
-      instructions:
-        "This free mock covers Himachal GK, Reasoning & Maths and Computer — the common core of HPRCA, HP Police, Patwari and HPAS exams.",
-      sections: { create: sections.map((s, order) => ({ ...s, order, marksCorrect: 1, marksWrong: 0.25 })) },
+      instructions: def.instructions,
+      sections: { create: def.sections.map((s, order) => ({ ...s, order, marksCorrect: 1, marksWrong: 0.25 })) },
     },
   });
 

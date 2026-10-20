@@ -2,7 +2,7 @@
 
 import { LayoutDashboard, LayoutGrid, Newspaper, NotebookPen, ShieldCheck, UserRound, type LucideIcon } from "lucide-react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { useSitePathname } from "@/sites/provider";
 
 type Tab = { href: string; icon: LucideIcon; label: string; desktopLabel?: string; also?: string[] };
 
@@ -19,7 +19,7 @@ function isActive(pathname: string, tab: Tab): boolean {
 
 /** Header links for logged-in pages on tablets and desktops (phones use BottomNav). */
 export function AppDesktopNav({ showAdmin }: { showAdmin: boolean }) {
-  const pathname = usePathname();
+  const pathname = useSitePathname();
   const tabs = showAdmin ? [DASHBOARD, TESTS, EXAMS, UPDATES, PROFILE, ADMIN] : [DASHBOARD, TESTS, EXAMS, UPDATES, PROFILE];
   return (
     <nav aria-label="Main" className="hidden gap-5 text-sm font-medium text-muted md:flex">
@@ -37,7 +37,7 @@ export function AppDesktopNav({ showAdmin }: { showAdmin: boolean }) {
 
 /** Fixed bottom tab bar for mobile — easier thumb-reach than a scrolling top nav strip. */
 export function BottomNav({ showAdmin }: { showAdmin: boolean }) {
-  const pathname = usePathname();
+  const pathname = useSitePathname();
   // Five tabs at most (a sixth squeezes "Dashboard" past its 60px column on a 360px phone): staff get Admin
   // in place of Exam Updates.
   const items = showAdmin ? [DASHBOARD, TESTS, EXAMS, PROFILE, ADMIN] : [DASHBOARD, TESTS, EXAMS, UPDATES, PROFILE];

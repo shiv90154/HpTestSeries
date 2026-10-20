@@ -3,7 +3,7 @@ import { cache } from "react";
 import { db } from "@/lib/db";
 import { Prisma } from "@/generated/prisma/client";
 import { examLabel } from "@/modules/catalog/queries";
-import { liveTestWhere, resultVisibleStatuses } from "@/modules/catalog/visibility";
+import { bodyVisibleOn, liveTestWhere, resultVisibleStatuses } from "@/modules/catalog/visibility";
 import { canAccessTest } from "@/modules/commerce/access";
 import { getBuyOptionForSeries } from "@/modules/commerce/product-service";
 import { demoDurationSec, planDemo } from "./demo";
@@ -12,6 +12,8 @@ import { signClaim, verifyClaim } from "./guest-claim";
 import { competitionRanks, publicName } from "./leaderboard";
 import { isLiveTest, liveDeadline, liveState, resultsLocked } from "./live";
 import type { Bilingual, GuestClaim, LeaderboardRow, Paper, ResultData, SubmittedAnswers } from "./types";
+import { isRealDistrict } from "@/lib/districts";
+import { getSite } from "@/sites";
 
 /** Late submissions within this window still count (network delays at the deadline). */
 const SUBMIT_GRACE_MS = 90_000;
@@ -36,10 +38,15 @@ const fullTestInclude = {
   },
   series: { select: { seriesId: true } },
   prizes: { orderBy: { rank: "asc" }, select: { rank: true, title: true, awardedAt: true, winner: { select: { name: true } } } },
-  exam: { select: { id: true, slug: true, name: true, isActive: true, syllabus: true, body: { select: { slug: true } } } },
+  exam: { select: { id: true, slug: true, name: true, isActive: true, syllabus: true, body: { select: { slug: true, sites: true } } } },
 } satisfies Prisma.TestInclude;
 
 type FullTest = Prisma.TestGetPayload<{ include: typeof fullTestInclude }>;
+
+/** Sites that show a test: its exam body's ("*" = all), or its own site when it has no exam (state GK mocks). */
+export function testSites(t: { site: string; exam: { body: { sites: string[] } } | null }): string[] {
+  return t.exam ? t.exam.body.sites : [t.site];
+}
 
 /** A test students can see and start right now (published, scheduled time reached). */
 const loadFullTest = cache(async (slug: string): Promise<FullTest | null> =>
@@ -62,7 +69,7 @@ function bilingual(rows: { lang: string; text?: string; stem?: string; explanati
 
 // ─────────────── Access ───────────────
 
-export async function canUserAccessTest(userId: string | null, test: { isFree: boolean; series: { seriesId: string }[] }) {
+export async function canUserAccessTest(userId: string | null, test: { isFree: boolean; series: { seriesId: string }[]; sites: readonly string[] }) {
   if (test.isFree) return true;
   if (!userId) return false;
   const entitlements = await db.entitlement.findMany({
@@ -71,20 +78,23 @@ export async function canUserAccessTest(userId: string | null, test: { isFree: b
       startsAt: true,
       expiresAt: true,
       revokedAt: true,
-      product: { select: { kind: true, items: { select: { seriesId: true } } } },
+      product: { select: { kind: true, site: true, items: { select: { seriesId: true } } } },
     },
   });
   return canAccessTest(
-    { isFree: test.isFree, seriesIds: test.series.map((s) => s.seriesId) },
-    entitlements.map((e) => ({ ...e, product: { kind: e.product.kind, seriesIds: e.product.items.map((i) => i.seriesId) } })),
+    { isFree: test.isFree, seriesIds: test.series.map((s) => s.seriesId), sites: test.sites },
+    entitlements.map((e) => ({ ...e, product: { kind: e.product.kind, site: e.product.site, seriesIds: e.product.items.map((i) => i.seriesId) } })),
   );
 }
 
 // ─────────────── Paper (no answers) ───────────────
 
-export async function getTestMeta(slug: string) {
+/** A live test's public details; null when it doesn't exist, isn't live, or `site` doesn't show it. */
+export async function getTestMeta(slug: string, site?: string) {
   const t = await loadFullTest(slug);
   if (!t) return null;
+  const sites = testSites(t);
+  if (site && !bodyVisibleOn(sites, site)) return null;
   const questionCount = t.sections.reduce((n, s) => n + s.questions.length, 0);
   // Set per test in the admin panel; free tests and tests with nothing left to lock have no demo.
   const demoPlan = planDemo(t.sections.map((s) => s.questions.length), t.isFree ? 0 : t.demoPercent);
@@ -109,6 +119,7 @@ export async function getTestMeta(slug: string) {
       topics: topTopics(s.questions.map((q) => q.question.topics.map((qt) => qt.topic.name))),
     })),
     series: t.series,
+    sites,
     live: isLiveTest(t) ? { startsAt: t.liveStartsAt!.toISOString(), endsAt: t.liveEndsAt!.toISOString() } : null,
     // Winners' names appear only once an admin has confirmed them.
     prizes: t.prizes.map((p) => ({ rank: p.rank, title: p.title, winner: p.awardedAt && p.winner ? publicName(p.winner.name) : null })),
@@ -344,19 +355,19 @@ export async function claimGuestAttempt(userId: string, slug: string, claim: Gue
 // ─────────────── Free demo of a paid test ───────────────
 
 /** The demo view of a paid test: only the free questions of each section, plus what is left locked. Null when the test has no demo. */
-async function demoView(t: FullTest) {
+async function demoView(site: string, t: FullTest) {
   if (t.isFree) return null;
   const plan = planDemo(t.sections.map((s) => s.questions.length), t.demoPercent);
   if (!plan.available) return null;
   const view: FullTest = { ...t, sections: t.sections.map((s, i) => ({ ...s, questions: s.questions.slice(0, plan.free[i]) })) };
-  const buy = await getBuyOptionForSeries(t.series.map((s) => s.seriesId));
+  const buy = await getBuyOptionForSeries(site, t.series.map((s) => s.seriesId));
   return { view, plan, buy, totalQuestions: plan.freeTotal + plan.lockedTotal };
 }
 
 /** Paper for the free demo. Locked questions never leave the server. Null for free tests or nothing to lock. */
-export async function getDemoPaper(slug: string): Promise<Paper | null> {
+export async function getDemoPaper(site: string, slug: string): Promise<Paper | null> {
   const t = await loadFullTest(slug);
-  const demo = t && (await demoView(t));
+  const demo = t && (await demoView(site, t));
   if (!demo) return null;
   const paper = await getPaper(slug, demo.view);
   if (!paper) return null;
@@ -368,9 +379,9 @@ export async function getDemoPaper(slug: string): Promise<Paper | null> {
 }
 
 /** Grades a demo attempt statelessly (nothing stored, no rank), counting only the free questions. */
-export async function gradeDemoAttempt(slug: string, answers: SubmittedAnswers): Promise<ResultData | null> {
+export async function gradeDemoAttempt(site: string, slug: string, answers: SubmittedAnswers): Promise<ResultData | null> {
   const t = await loadFullTest(slug);
-  const demo = t && (await demoView(t));
+  const demo = t && (await demoView(site, t));
   if (!demo) return null;
   const clean = sanitizeAnswers(demo.view, answers);
   const grade = gradeAttempt(gradingSections(demo.view), clean);
@@ -411,7 +422,7 @@ export async function liveGate(userId: string | null, t: { id: string; liveStart
 export async function startAttempt(userId: string, slug: string): Promise<StartedAttempt | { error: string }> {
   const t = await loadFullTest(slug);
   if (!t) return { error: "Test not found." };
-  if (!(await canUserAccessTest(userId, t))) return { error: "This test is part of a paid series." };
+  if (!(await canUserAccessTest(userId, { ...t, sites: testSites(t) }))) return { error: "This test is part of a paid series." };
 
   const live = isLiveTest(t);
   if (live) {
@@ -512,10 +523,10 @@ export async function submitAttempt(
 }
 
 async function notifyResultReady(userId: string, attemptId: string, testTitle: string): Promise<void> {
-  const user = await db.user.findUnique({ where: { id: userId }, select: { email: true, emailVerified: true } });
+  const user = await db.user.findUnique({ where: { id: userId }, select: { email: true, emailVerified: true, signupSite: true } });
   if (!user?.email || !user.emailVerified) return;
   const { sendResultReadyEmail } = await import("@/modules/identity/email");
-  await sendResultReadyEmail(user.email, testTitle, attemptId);
+  await sendResultReadyEmail(user.email, testTitle, attemptId, getSite(user.signupSite));
 }
 
 /** When this attempt belongs to a live test whose window is still open, the time its result appears; otherwise null. */
@@ -573,7 +584,7 @@ export async function getResultCard(userId: string, attemptId: string) {
   const attempted = (a.correct ?? 0) + (a.wrong ?? 0);
   return {
     name: publicName(a.user.name),
-    district: a.user.district && a.user.district !== "Outside HP" ? a.user.district : null,
+    district: isRealDistrict(a.user.district) ? a.user.district : null,
     testTitle: a.test.title,
     score,
     maxScore: a.test.sections.reduce((n, s) => n + s._count.questions * Number(s.marksCorrect), 0),
@@ -615,7 +626,7 @@ async function topAttempts(testId: string, userId: string): Promise<LeaderboardR
   return rows.map((r, i) => ({
     rank: ranks[i],
     name: publicName(r.user.name),
-    district: r.user.district && r.user.district !== "Outside HP" ? r.user.district : null,
+    district: isRealDistrict(r.user.district) ? r.user.district : null,
     score: Number(r.score ?? 0),
     isYou: r.userId === userId,
   }));

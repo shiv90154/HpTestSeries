@@ -1,5 +1,7 @@
-import { FREE_MOCK_HREF } from "../../src/lib/site";
+import { hp } from "../../src/sites/hp";
 import type { ExamPages } from "./types";
+
+const FREE_MOCK_HREF = `/tests/${hp.freeMockSlug}`;
 
 // HP Police, HPBOSE, Revenue (Patwari), PGIMER, HPSEBL, HPSCB and the High Court of Himachal Pradesh. Constable, HP TET and
 // Patwari already have hand-written copy in prisma/seed-content.ts; only their SEO fields (and the TET pattern) live here.

@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { faqListSchema } from "./exam-content";
+import { SITE_CODES } from "@/sites/types";
 
 const SLUG_RE = /^[a-z0-9]+(-[a-z0-9]+)*$/;
 
@@ -106,6 +107,8 @@ export const postSchema = z.object({
   content: z.string().trim().min(100, "Content is too short").max(100_000, "Content is too long"),
   coverImage: optionalUrl,
   category: z.enum(POST_CATEGORIES),
+  /** The one site (domain) the post is published on; national news goes on the primary site. */
+  site: z.enum(SITE_CODES).default("hp"),
   seoTitle: z.string().trim().max(70, "SEO title should be at most 70 characters"),
   seoDescription: z.string().trim().max(170, "SEO description should be at most 170 characters"),
   faqs: faqListSchema,

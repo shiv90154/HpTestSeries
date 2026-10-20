@@ -22,6 +22,11 @@
   --accent-ink: #b05109; /* accent-coloured TEXT and icons */
   --accent-soft: #fff4dc;
 
+  /* Dark brand shades behind white text: hero gradients (dark -> primary-strong -> primary, glow blobs) and the footer. */
+  --hero-dark: #0b1f5c;
+  --hero-glow: #3b6ef5;
+  --footer: #0b1733;
+
   /*
    * Text colours below meet WCAG AA (4.5:1) on white, --background, --surface-muted and their own *-soft
    * fill. src/app/contrast.test.ts fails `npm test` if a token edit breaks that.
@@ -56,6 +61,9 @@
   --color-accent-strong: var(--accent-strong);
   --color-accent-ink: var(--accent-ink);
   --color-accent-soft: var(--accent-soft);
+  --color-hero-dark: var(--hero-dark);
+  --color-hero-glow: var(--hero-glow);
+  --color-footer: var(--footer);
   --color-success: var(--success);
   --color-success-soft: var(--success-soft);
   --color-danger: var(--danger);

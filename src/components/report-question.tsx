@@ -3,7 +3,7 @@
 import { CheckCircle2, Flag } from "lucide-react";
 import Link from "next/link";
 import { useState, useTransition } from "react";
-import { reportQuestionAction } from "@/app/results/actions";
+import { reportQuestionAction } from "@/app/[site]/results/actions";
 import { MAX_REPORT_NOTE, REPORT_ERROR_TEXT, REPORT_REASONS, REPORT_REASON_LABEL, type ReportError, type ReportReason } from "@/modules/content/report";
 
 type Lang = "en" | "hi";

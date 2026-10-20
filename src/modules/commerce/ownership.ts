@@ -1,7 +1,7 @@
 // "Does this student already have what they are about to buy?" — pure, so it can be unit tested.
 // Callers load the product and the user's unrevoked, unexpired entitlements from the DB.
 
-import { isEntitlementActive } from "./access";
+import { isEntitlementActive, passCovers } from "./access";
 
 /** A student may buy the same product again this close to its expiry; the new period starts when the old one ends. */
 export const RENEW_WINDOW_DAYS = 7;
@@ -11,6 +11,8 @@ export type OwnershipProduct = {
   kind: "SERIES" | "PACK" | "PASS";
   /** series the product unlocks (ignored for PASS) */
   seriesIds: string[];
+  /** for each of those series, the sites its exam is shown on ("*" = all): a pass covers it only on its own site */
+  seriesSites: string[][];
   /** fixed end date: buying again would not extend anything */
   validUntil: Date | null;
 };
@@ -21,7 +23,7 @@ export type OwnedEntitlement = {
   startsAt: Date;
   expiresAt: Date;
   revokedAt: Date | null;
-  product: { kind: "SERIES" | "PACK" | "PASS"; seriesIds: string[] };
+  product: { kind: "SERIES" | "PACK" | "PASS"; seriesIds: string[]; site: string };
 };
 
 export type Ownership =
@@ -46,9 +48,11 @@ export function ownershipFor(product: OwnershipProduct, entitlements: OwnedEntit
 
   const active = live.filter((e) => isEntitlementActive(e, now));
 
-  // Any pass covers every series. Buying a different pass stays allowed (e.g. a longer one).
+  // A pass covers every series its site shows. Buying a different pass stays allowed (e.g. a longer one).
   if (product.kind !== "PASS") {
-    const pass = active.filter((e) => e.product.kind === "PASS").sort((a, b) => b.expiresAt.getTime() - a.expiresAt.getTime())[0];
+    const pass = active
+      .filter((e) => e.product.kind === "PASS" && product.seriesSites.every((sites) => passCovers(e.product.site, sites)))
+      .sort((a, b) => b.expiresAt.getTime() - a.expiresAt.getTime())[0];
     if (pass) return { kind: "owned", until: pass.expiresAt, via: "pass", viaTitle: pass.productTitle };
 
     // Every series of this pack/series is already unlocked by other purchases.

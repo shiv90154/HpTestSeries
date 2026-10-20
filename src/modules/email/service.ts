@@ -2,7 +2,7 @@ import "server-only";
 import { z } from "zod";
 import { db } from "@/lib/db";
 import { rupees } from "@/lib/money";
-import { site } from "@/lib/site";
+import { getSite, PRIMARY_SITE, type SiteConfig } from "@/sites";
 import { getBuyOptionForSeries } from "@/modules/commerce/product-service";
 import { sendEmail } from "@/modules/identity/email";
 import { PLACEHOLDER_NAME } from "@/modules/identity/permissions";
@@ -40,7 +40,7 @@ export function dailyLimit(): number {
 
 const secret = () => process.env.BETTER_AUTH_SECRET ?? "";
 
-function unsubscribeLinks(userId: string, category: EmailCategory) {
+function unsubscribeLinks(site: SiteConfig, userId: string, category: EmailCategory) {
   const q = `u=${encodeURIComponent(userId)}&c=${category}&t=${unsubscribeToken(secret(), userId, category)}`;
   return { page: `${site.url}/unsubscribe?${q}`, oneClick: `${site.url}/api/email/unsubscribe?${q}` };
 }
@@ -88,9 +88,11 @@ export async function planReminders(now = new Date()): Promise<{ expiry: number;
 
 // ───────────── Content ─────────────
 
-type Recipient = { id: string; name: string };
+/** `signupSite`: the site the account was made on; its mails carry that site's name, colours and links. */
+type Recipient = { id: string; name: string; signupSite: string };
 
 async function expiryEmail(user: Recipient, entitlementId: string, now: Date): Promise<EmailContent | null> {
+  const site = getSite(user.signupSite);
   const e = await db.entitlement.findUnique({
     where: { id: entitlementId },
     select: { revokedAt: true, expiresAt: true, productId: true, product: { select: { title: true, slug: true, isActive: true } } },
@@ -110,12 +112,14 @@ async function expiryEmail(user: Recipient, entitlementId: string, now: Date): P
       `आपका एक्सेस ${date} को समाप्त हो रहा है। अभी रिन्यू करें, कोई दिन बेकार नहीं जाएगा।`,
     ],
     cta: { label: "Renew now", url: withUtm(e.product.isActive ? `/buy/${e.product.slug}` : "/pricing", site.url, "expiry") },
-    why: "You get this because you bought this series on HP Test Series. You can turn off reminders in your profile.",
-    unsubscribeUrl: unsubscribeLinks(user.id, "reminders").page,
+    why: `You get this because you bought this series on ${site.name}. You can turn off reminders in your profile.`,
+    unsubscribeUrl: unsubscribeLinks(site, user.id, "reminders").page,
+    site,
   });
 }
 
 async function followUpEmail(user: Recipient, refKey: string, now: Date): Promise<EmailContent | null> {
+  const site = getSite(user.signupSite);
   const owns = await db.entitlement.count({ where: { userId: user.id, revokedAt: null, expiresAt: { gt: now } } });
   if (owns) return null;
   const attempt = await db.attempt.findFirst({
@@ -124,7 +128,7 @@ async function followUpEmail(user: Recipient, refKey: string, now: Date): Promis
     select: { id: true, correct: true, wrong: true, skipped: true, test: { select: { title: true, series: { select: { seriesId: true } } } } },
   });
   if (!attempt) return null;
-  const offer = await getBuyOptionForSeries(attempt.test.series.map((s) => s.seriesId));
+  const offer = await getBuyOptionForSeries(site.code, attempt.test.series.map((s) => s.seriesId));
   const total = (attempt.correct ?? 0) + (attempt.wrong ?? 0) + (attempt.skipped ?? 0);
   const name = firstName(user.name);
   const resultUrl = withUtm(`/results/${attempt.id}`, site.url, "free-followup");
@@ -141,56 +145,62 @@ async function followUpEmail(user: Recipient, refKey: string, now: Date): Promis
       "रोज़ एक टेस्ट दें और अपनी कमज़ोर टॉपिक पर काम करें।",
     ],
     cta: offer ? { label: `Get the full series for ${rupees(offer.priceInPaise)}`, url: withUtm(offer.href, site.url, "free-followup") } : { label: "Take another free test", url: withUtm("/tests", site.url, "free-followup") },
-    why: "You get this because you ticked 'email me updates and offers' on HP Test Series.",
-    unsubscribeUrl: unsubscribeLinks(user.id, "offers").page,
+    why: `You get this because you ticked 'email me updates and offers' on ${site.name}.`,
+    unsubscribeUrl: unsubscribeLinks(site, user.id, "offers").page,
+    site,
   });
 }
 
 type CampaignBody = { subject: string; heading: string; body: string; ctaLabel: string; ctaUrl: string };
 
-function campaignEmail(userId: string, c: CampaignBody, tag: string): EmailContent {
+function campaignEmail(site: SiteConfig, userId: string, c: CampaignBody, tag: string): EmailContent {
   return renderEmail({
     subject: c.subject,
     heading: c.heading,
     paragraphs: bodyParagraphs(c.body),
     cta: { label: c.ctaLabel, url: withUtm(c.ctaUrl, site.url, tag) },
-    why: "You get this because you ticked 'email me updates and offers' on HP Test Series.",
-    unsubscribeUrl: unsubscribeLinks(userId, "offers").page,
+    why: `You get this because you ticked 'email me updates and offers' on ${site.name}.`,
+    unsubscribeUrl: unsubscribeLinks(site, userId, "offers").page,
+    site,
   });
 }
 
-const BROADCAST_WHY_OPTED = "You get this because you ticked 'email me updates and offers' on HP Test Series.";
-const BROADCAST_WHY_OTHERS = "You get this update because you have an account on HP Test Series. Unsubscribe and we will not send you offers.";
+const broadcastWhy = (site: SiteConfig, optedIn: boolean) =>
+  optedIn
+    ? `You get this because you ticked 'email me updates and offers' on ${site.name}.`
+    : `You get this update because you have an account on ${site.name}. Unsubscribe and we will not send you offers.`;
 
 /** A campaign sent to every student; those who never opted in also get a line inviting them to. */
-function announcementEmail(u: { id: string; emailOffers: boolean }, c: CampaignBody, tag: string): EmailContent {
+function announcementEmail(site: SiteConfig, u: { id: string; emailOffers: boolean }, c: CampaignBody, tag: string): EmailContent {
   const invite = u.emailOffers ? [] : [`Aage bhi aise job alerts aur naye free mock tests chahiye? Profile me "Email me offers" tick karein: ${site.url}/profile`];
   return renderEmail({
     subject: c.subject,
     heading: c.heading,
     paragraphs: [...bodyParagraphs(c.body), ...invite],
     cta: { label: c.ctaLabel, url: withUtm(c.ctaUrl, site.url, tag) },
-    why: u.emailOffers ? BROADCAST_WHY_OPTED : BROADCAST_WHY_OTHERS,
-    unsubscribeUrl: unsubscribeLinks(u.id, "offers").page,
+    why: broadcastWhy(site, u.emailOffers),
+    unsubscribeUrl: unsubscribeLinks(site, u.id, "offers").page,
+    site,
   });
 }
 
 /** For students who bought: their personal referral link, what a friend saves and what they earn. */
-async function referralInviteEmail(u: { id: string; name: string; emailOffers: boolean }, tag: string): Promise<EmailContent> {
+async function referralInviteEmail(site: SiteConfig, u: { id: string; name: string; emailOffers: boolean }, tag: string): Promise<EmailContent> {
   const link = referralLink(site.url, await getOrCreateReferralCode(u.id));
   const name = firstName(u.name);
   return renderEmail({
-    subject: `Dosto ko HP Test Series bhejo, har dost par ${rupees(REWARD_PAISE)} kamao`,
+    subject: `Dosto ko ${site.name} bhejo, har dost par ${rupees(REWARD_PAISE)} kamao`,
     heading: `${name ? `${name}, ` : ""}taiyari saath karo, paise bhi kamao`,
     paragraphs: [
-      `Aapke dost bhi HP ke exams ki taiyari kar rahe hain? Unhe apna link bhejo. ${rupees(MIN_REFERRAL_PRICE_PAISE)} se upar ke plan par unhe ${rupees(FRIEND_DISCOUNT_PAISE)} ki seedhi chhoot milegi.`,
-      `Har dost jo aapke link se kharidega, uske liye aapke HP wallet me ${rupees(REWARD_PAISE)} aayenge. Wallet ke paise agli series ya Pass kharidne me use ho jaate hain.`,
+      `Aapke dost bhi ${site.stateAdj} ke exams ki taiyari kar rahe hain? Unhe apna link bhejo. ${rupees(MIN_REFERRAL_PRICE_PAISE)} se upar ke plan par unhe ${rupees(FRIEND_DISCOUNT_PAISE)} ki seedhi chhoot milegi.`,
+      `Har dost jo aapke link se kharidega, uske liye aapke ${site.logo.initials} wallet me ${rupees(REWARD_PAISE)} aayenge. Wallet ke paise agli series ya Pass kharidne me use ho jaate hain.`,
       `Aapka link: ${link}`,
       "Ise apne WhatsApp ya Telegram group me share karo, jahan aapke dost exam ki baat karte hain.",
     ],
     cta: { label: "Mera referral page kholo", url: withUtm("/refer", site.url, tag) },
-    why: u.emailOffers ? BROADCAST_WHY_OPTED : BROADCAST_WHY_OTHERS,
-    unsubscribeUrl: unsubscribeLinks(u.id, "offers").page,
+    why: broadcastWhy(site, u.emailOffers),
+    unsubscribeUrl: unsubscribeLinks(site, u.id, "offers").page,
+    site,
   });
 }
 
@@ -222,7 +232,7 @@ export async function sendQueued(now = new Date()): Promise<SendSummary> {
         kind: true,
         refKey: true,
         campaign: { select: { id: true, subject: true, heading: true, body: true, ctaLabel: true, ctaUrl: true } },
-        user: { select: { id: true, name: true, email: true, emailOffers: true, emailOffersAt: true, emailReminders: true } },
+        user: { select: { id: true, name: true, email: true, emailOffers: true, emailOffersAt: true, emailReminders: true, signupSite: true } },
       },
     })
   ).sort((a, b) => (PRIORITY[a.kind as EmailKind] ?? 9) - (PRIORITY[b.kind as EmailKind] ?? 9));
@@ -248,6 +258,7 @@ export async function sendQueued(now = new Date()): Promise<SendSummary> {
     const kind = log.kind as EmailKind;
     const category = CATEGORY[kind];
     const u = log.user;
+    const site = getSite(u.signupSite);
     if (!category) {
       await skip(log.id, "unknown kind");
       continue;
@@ -279,19 +290,19 @@ export async function sendQueued(now = new Date()): Promise<SendSummary> {
         : kind === "free-followup"
           ? await followUpEmail(u, log.refKey, now)
           : kind === "referral-invite"
-            ? await referralInviteEmail(u, `referral-invite-${log.refKey}`)
+            ? await referralInviteEmail(site, u, `referral-invite-${log.refKey}`)
             : log.campaign
               ? kind === "announcement"
-                ? announcementEmail(u, log.campaign, `announcement-${log.campaign.id}`)
-                : campaignEmail(u.id, log.campaign, `campaign-${log.campaign.id}`)
+                ? announcementEmail(site, u, log.campaign, `announcement-${log.campaign.id}`)
+                : campaignEmail(site, u.id, log.campaign, `campaign-${log.campaign.id}`)
               : null;
     if (!content) {
       await skip(log.id, "no longer relevant");
       continue;
     }
 
-    const links = unsubscribeLinks(u.id, category);
-    const ok = await sendEmail(u.email, content, `[dev] ${kind} email for ${u.email}: ${content.subject}`, {
+    const links = unsubscribeLinks(site, u.id, category);
+    const ok = await sendEmail(u.email, content, `[dev] ${kind} email for ${u.email}: ${content.subject}`, site, {
       "List-Unsubscribe": `<${links.oneClick}>`,
       "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
     }).catch(() => false);
@@ -337,6 +348,7 @@ export async function remindUnpaidCheckouts(now = new Date()): Promise<{ sent: n
       userId: true,
       payerEmail: true,
       productId: true,
+      site: true,
       product: { select: { slug: true, title: true, isActive: true } },
       user: { select: { id: true, name: true, email: true, emailOffers: true, emailOffersAt: true } },
     },
@@ -359,6 +371,7 @@ export async function remindUnpaidCheckouts(now = new Date()): Promise<{ sent: n
       continue;
     }
     const name = o.user ? firstName(o.user.name) : "";
+    const site = getSite(o.site);
     const content = renderEmail({
       subject: `Aapka ${o.product.title} order adhoora reh gaya`,
       heading: `${name ? `${name}, ` : ""}aapka payment poora nahi hua`,
@@ -367,10 +380,11 @@ export async function remindUnpaidCheckouts(now = new Date()): Promise<{ sent: n
         "Paise kat gaye par access nahi mila? Dobara pay mat kijiye. Aksar payment kuch minute me apne aap jud jaata hai; na jude to is email ka reply kijiye.",
       ],
       cta: { label: "Payment poora karein", url: withUtm(`/buy/${o.product.slug}`, site.url, "checkout-reminder") },
-      why: "You get this because you started a payment on HP Test Series. We send only this one reminder.",
-      unsubscribeUrl: o.user ? unsubscribeLinks(o.user.id, "offers").page : undefined,
+      why: `You get this because you started a payment on ${site.name}. We send only this one reminder.`,
+      unsubscribeUrl: o.user ? unsubscribeLinks(site, o.user.id, "offers").page : undefined,
+      site,
     });
-    const ok = await sendEmail(email, content, `[dev] checkout reminder for ${email}: ${content.subject}`).catch(() => false);
+    const ok = await sendEmail(email, content, `[dev] checkout reminder for ${email}: ${content.subject}`, site).catch(() => false);
     if (ok) result.sent++;
     else result.skipped++;
   }
@@ -437,7 +451,7 @@ export function previewCampaign(raw: Partial<CampaignBody>, adminId: string): { 
     ctaLabel: raw.ctaLabel?.trim() || "Button text",
     ctaUrl: raw.ctaUrl?.trim() && (raw.ctaUrl.startsWith("/") || raw.ctaUrl.startsWith("https://")) ? raw.ctaUrl.trim() : "/",
   };
-  const e = campaignEmail(adminId, c, "campaign-preview");
+  const e = campaignEmail(PRIMARY_SITE, adminId, c, "campaign-preview");
   return { subject: e.subject, html: e.html };
 }
 
@@ -446,7 +460,7 @@ export async function sendCampaignTest(raw: unknown, admin: { id: string; email:
   const v = campaignSchema.safeParse(raw);
   if (!v.success) return { ok: false, errors: v.error.issues.map((i) => i.message) };
   if (!isRealEmail(admin.email)) return { ok: false, errors: ["Your account has no email address to send the test to."] };
-  const content = campaignEmail(admin.id, v.data, "campaign-test");
+  const content = campaignEmail(PRIMARY_SITE, admin.id, v.data, "campaign-test");
   const ok = await sendEmail(admin.email, { ...content, subject: `[Test] ${content.subject}` }, `[dev] campaign test to ${admin.email}: ${content.subject}`);
   return ok ? { ok: true } : { ok: false, errors: ["Sending failed. Check RESEND_API_KEY and EMAIL_FROM on the server."] };
 }

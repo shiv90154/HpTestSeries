@@ -1,5 +1,7 @@
-import { FREE_MOCK_HREF } from "../../src/lib/site";
+import { hp } from "../../src/sites/hp";
 import type { ExamPages } from "./types";
+
+const FREE_MOCK_HREF = `/tests/${hp.freeMockSlug}`;
 
 // Exams recruited by the Himachal Pradesh Rajya Chayan Aayog (HPRCA), Hamirpur. JOA IT and Clerk already have hand-written
 // copy in prisma/seed-content.ts; only their SEO fields live here.

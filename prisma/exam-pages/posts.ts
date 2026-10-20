@@ -1,5 +1,7 @@
-import { FREE_MOCK_HREF as FREE_MOCK } from "../../src/lib/site";
+import { hp } from "../../src/sites/hp";
 import type { PostSeed } from "./types";
+
+const FREE_MOCK = `/tests/${hp.freeMockSlug}`;
 
 // Draft notification posts for the drives that were open or recent in October 2026. They are seeded as DRAFT (see
 // prisma/seed-content.ts), so nothing here is public until it is published from /admin/blog. Figures come from news and

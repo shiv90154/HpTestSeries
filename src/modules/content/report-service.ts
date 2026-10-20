@@ -2,6 +2,7 @@ import "server-only";
 import { after } from "next/server";
 import { db } from "@/lib/db";
 import { MAX_REPORTS_PER_DAY, stemPreview, validateReport, type ReportError } from "./report";
+import { getSite } from "@/sites";
 
 /** Files (or updates) a student's report. One open report per student per question. */
 export async function submitQuestionReport(userId: string, raw: unknown): Promise<{ ok: true } | { ok: false; error: ReportError }> {
@@ -76,7 +77,7 @@ export async function resolveQuestionReports(questionId: string, status: "FIXED"
       ? await db.questionReport.findMany({
           where: { questionId, status: "OPEN", user: { emailVerified: true } },
           distinct: ["userId"],
-          select: { user: { select: { email: true } } },
+          select: { user: { select: { email: true, signupSite: true } } },
         })
       : [];
   const res = await db.questionReport.updateMany({ where: { questionId, status: "OPEN" }, data: { status } });
@@ -88,7 +89,7 @@ export async function resolveQuestionReports(questionId: string, status: "FIXED"
       const q = await db.questionContent.findMany({ where: { questionId }, select: { lang: true, stem: true } });
       const stem = (q.find((c) => c.lang === "en") ?? q[0])?.stem ?? "";
       const { sendReportFixedEmail } = await import("@/modules/identity/email");
-      await Promise.allSettled(reporters.map((r) => sendReportFixedEmail(r.user.email, stemPreview(stem))));
+      await Promise.allSettled(reporters.map((r) => sendReportFixedEmail(r.user.email, stemPreview(stem), getSite(r.user.signupSite))));
     });
   }
   return res.count;
