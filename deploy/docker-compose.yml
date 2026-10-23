@@ -43,7 +43,9 @@ services:
     network_mode: host
     env_file: .env.production
     environment:
-      HOSTNAME: 127.0.0.1
+      # Not 127.0.0.1: Next's proxy sees a loopback listen address as "localhost", so every host rewrite in
+      # src/proxy.ts looks like another origin and is proxied (and fails). ufw keeps 3030 closed to the outside.
+      HOSTNAME: 0.0.0.0
       PORT: "3030"
       UPLOAD_DIR: /app/uploads
     volumes:
