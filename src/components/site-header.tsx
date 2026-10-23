@@ -5,13 +5,14 @@ import { currentSite } from "@/sites/current";
 import { Logo } from "./logo";
 import { ExploreButton } from "./explore-button";
 import { MobileMenu } from "./mobile-menu";
+import { T, UiLangToggle } from "./ui-lang";
 
 const nav = [
-  { href: "/exams", label: "Exams" },
-  { href: "/tests", label: "Mock Tests" },
-  { href: "/previous-year-papers", label: "Previous Papers" },
-  { href: "/blog", label: "Exam Updates" },
-  { href: "/pricing", label: "Pricing" },
+  { href: "/exams", label: <T en="Exams" pa="ਪ੍ਰੀਖਿਆਵਾਂ" /> },
+  { href: "/tests", label: <T en="Mock Tests" pa="ਮੌਕ ਟੈਸਟ" /> },
+  { href: "/previous-year-papers", label: <T en="Previous Papers" pa="ਪਿਛਲੇ ਪੇਪਰ" /> },
+  { href: "/blog", label: <T en="Exam Updates" pa="ਪ੍ਰੀਖਿਆ ਅਪਡੇਟ" /> },
+  { href: "/pricing", label: <T en="Pricing" pa="ਕੀਮਤਾਂ" /> },
 ];
 
 export async function SiteHeader() {
@@ -34,8 +35,9 @@ export async function SiteHeader() {
             href={freeMockHref(site)}
             className="hidden h-11 items-center rounded-xl px-3 text-sm font-semibold text-accent-ink hover:bg-accent-soft sm:inline-flex"
           >
-            Free Mock
+            <T en="Free Mock" pa="ਮੁਫ਼ਤ ਮੌਕ" />
           </Link>
+          <UiLangToggle />
           <AuthCta />
           <MobileMenu links={site.exploreUrl ? [...nav, { href: site.exploreUrl, label: "Explore" }] : nav} />
         </div>

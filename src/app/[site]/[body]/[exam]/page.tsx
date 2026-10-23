@@ -14,6 +14,7 @@ import { SiteHeader } from "@/components/site-header";
 import { TestCard } from "@/components/test-card";
 import { TrackedLink } from "@/components/tracked-link";
 import { btn, card } from "@/components/ui";
+import { T, Tx } from "@/components/ui-lang";
 import { rupees } from "@/lib/money";
 import { canonicalFor, PRIMARY_SITE } from "@/sites";
 import { currentSite } from "@/sites/current";
@@ -165,7 +166,7 @@ export default async function ExamPage({ params }: PageProps<"/[site]/[body]/[ex
             />
             <p className="inline-block rounded-lg bg-white/10 px-3 py-1 text-xs font-semibold ring-1 ring-white/20">{data.body.name}</p>
             <h1 className="max-w-3xl text-[28px] font-bold leading-tight tracking-tight sm:text-4xl">
-              {name} Mock Test {year()}
+              <T en={`${name} Mock Test ${year()}`} pa={`${name} ਮੌਕ ਟੈਸਟ ${year()}`} />
             </h1>
             {data.nameHi && (
               <p lang="hi" className="text-[15px] text-white/85 sm:text-lg">
@@ -173,25 +174,32 @@ export default async function ExamPage({ params }: PageProps<"/[site]/[body]/[ex
               </p>
             )}
             <p className="max-w-2xl text-white/85">
-              Practise {name} in the real computer-based format: Hindi and English questions, a solution for every question and your rank among {site.stateAdj} aspirants.
+              <T
+                en={`Practise ${name} in the real computer-based format: Hindi and English questions, a solution for every question and your rank among ${site.stateAdj} aspirants.`}
+                pa={`${name} ਦਾ ਅਭਿਆਸ ਅਸਲ ਕੰਪਿਊਟਰ ਅਧਾਰਤ ਫਾਰਮੈਟ ਵਿੱਚ ਕਰੋ: ਹਿੰਦੀ ਅਤੇ ਅੰਗਰੇਜ਼ੀ ਪ੍ਰਸ਼ਨ, ਹਰ ਪ੍ਰਸ਼ਨ ਦਾ ਹੱਲ ਅਤੇ ਪੰਜਾਬ ਦੇ ਉਮੀਦਵਾਰਾਂ ਵਿੱਚ ਤੁਹਾਡਾ ਰੈਂਕ।`}
+              />
             </p>
             <p className="text-xs text-white/70">
-              Last updated: <time dateTime={data.updatedAt.toISOString()}>{formatDate(data.updatedAt)}</time>
+              <T en="Last updated" pa="ਆਖਰੀ ਅਪਡੇਟ" />: <time dateTime={data.updatedAt.toISOString()}>{formatDate(data.updatedAt)}</time>
             </p>
             <div className="grid gap-2.5 pt-1 sm:flex sm:flex-wrap sm:gap-3">
               {ctx.startHref && (
                 <TrackedLink href={ctx.startHref} event="landing_cta_click" params={{ exam: ctx.key, placement: "hero" }} className={btn("accent", "lg", "w-full sm:w-auto")}>
-                  {ctx.startLabel} <ChevronRight className="size-5" />
+                  <Tx>{ctx.startLabel}</Tx> <ChevronRight className="size-5" />
                 </TrackedLink>
               )}
               <a href="#tests" className={btn("white", "lg", "w-full sm:w-auto")}>
-                View all tests
+                <T en="View all tests" pa="ਸਾਰੇ ਟੈਸਟ ਵੇਖੋ" />
               </a>
             </div>
             <ul className="flex flex-wrap gap-2 text-xs text-white/90 sm:gap-x-6 sm:text-sm">
-              {["No login for free tests", "Hindi & English", "Instant solutions"].map((t) => (
-                <li key={t} className="flex items-center gap-1.5 rounded-full bg-white/10 px-2.5 py-1 sm:bg-transparent sm:p-0">
-                  <CheckCircle2 className="size-3.5 text-accent sm:size-4" aria-hidden /> {t}
+              {[
+                ["No login for free tests", "ਮੁਫ਼ਤ ਟੈਸਟਾਂ ਲਈ ਲੌਗ ਇਨ ਨਹੀਂ"],
+                ["Hindi & English", "ਹਿੰਦੀ ਅਤੇ ਅੰਗਰੇਜ਼ੀ"],
+                ["Instant solutions", "ਤੁਰੰਤ ਹੱਲ"],
+              ].map(([en, pa]) => (
+                <li key={en} className="flex items-center gap-1.5 rounded-full bg-white/10 px-2.5 py-1 sm:bg-transparent sm:p-0">
+                  <CheckCircle2 className="size-3.5 text-accent sm:size-4" aria-hidden /> <T en={en} pa={pa} />
                 </li>
               ))}
             </ul>
@@ -205,7 +213,9 @@ export default async function ExamPage({ params }: PageProps<"/[site]/[body]/[ex
             {stats.map(([v, l]) => (
               // dt first in the DOM (screen readers read "Mock tests, 26"); flex-col-reverse puts the figure on top.
               <div key={l} className="flex flex-col-reverse px-1 py-3 text-center sm:p-4">
-                <dt className="text-[11px] text-muted sm:text-xs">{l}</dt>
+                <dt className="text-[11px] text-muted sm:text-xs">
+                  <Tx>{l}</Tx>
+                </dt>
                 <dd className="text-base font-bold text-primary sm:text-2xl">{v}</dd>
               </div>
             ))}
@@ -219,7 +229,9 @@ export default async function ExamPage({ params }: PageProps<"/[site]/[body]/[ex
 
             {data.description && (
               <section className="space-y-3">
-                <h2 className="text-2xl font-bold tracking-tight">About the {name} exam</h2>
+                <h2 className="text-2xl font-bold tracking-tight">
+                  <T en={`About the ${name} exam`} pa={`${name} ਪ੍ਰੀਖਿਆ ਬਾਰੇ`} />
+                </h2>
                 <Markdown text={data.description} />
                 {data.stages.length > 0 && (
                   <div className="flex flex-wrap gap-2 pt-1">
@@ -230,20 +242,27 @@ export default async function ExamPage({ params }: PageProps<"/[site]/[body]/[ex
                     ))}
                   </div>
                 )}
-                <p className="text-xs text-muted">Always check the latest official notification for the current exam pattern, syllabus and eligibility.</p>
+                <p className="text-xs text-muted">
+                  <T
+                    en="Always check the latest official notification for the current exam pattern, syllabus and eligibility."
+                    pa="ਮੌਜੂਦਾ ਪ੍ਰੀਖਿਆ ਪੈਟਰਨ, ਸਿਲੇਬਸ ਅਤੇ ਯੋਗਤਾ ਲਈ ਹਮੇਸ਼ਾ ਤਾਜ਼ਾ ਅਧਿਕਾਰਤ ਨੋਟੀਫਿਕੇਸ਼ਨ ਵੇਖੋ।"
+                  />
+                </p>
               </section>
             )}
 
             {data.pattern && (
               <section className="space-y-3">
                 <h2 className="text-2xl font-bold tracking-tight">
-                  {name} exam pattern {year()}
+                  <T en={`${name} exam pattern ${year()}`} pa={`${name} ਪ੍ਰੀਖਿਆ ਪੈਟਰਨ ${year()}`} />
                 </h2>
                 {patternFacts.length > 0 && (
                   <dl className="grid grid-cols-2 gap-3 sm:grid-cols-4">
                     {patternFacts.map(([k, v]) => (
                       <div key={k} className={`${card} p-4`}>
-                        <dt className="text-xs font-semibold uppercase tracking-wide text-primary">{k}</dt>
+                        <dt className="text-xs font-semibold uppercase tracking-wide text-primary">
+                          <Tx>{k}</Tx>
+                        </dt>
                         <dd className="mt-1 font-semibold">{v}</dd>
                       </div>
                     ))}
@@ -252,7 +271,7 @@ export default async function ExamPage({ params }: PageProps<"/[site]/[body]/[ex
                 {data.pattern.note && <p className="text-sm text-muted">{data.pattern.note}</p>}
                 {ctx.has.pattern && (
                   <Link href={`${ctx.base}/exam-pattern`} className="inline-flex min-h-10 items-center text-sm font-semibold text-primary hover:underline">
-                    Full {name} exam pattern →
+                    <T en={`Full ${name} exam pattern →`} pa={`${name} ਦਾ ਪੂਰਾ ਪ੍ਰੀਖਿਆ ਪੈਟਰਨ →`} />
                   </Link>
                 )}
               </section>
@@ -260,7 +279,9 @@ export default async function ExamPage({ params }: PageProps<"/[site]/[body]/[ex
 
             {outline.length > 0 && (
               <section className="space-y-3">
-                <h2 className="text-2xl font-bold tracking-tight">{name} syllabus at a glance</h2>
+                <h2 className="text-2xl font-bold tracking-tight">
+                  <T en={`${name} syllabus at a glance`} pa={`${name} ਸਿਲੇਬਸ ਇੱਕ ਨਜ਼ਰ ਵਿੱਚ`} />
+                </h2>
                 <ul className="flex flex-wrap gap-2">
                   {outline.slice(0, 10).map((h) => (
                     <li key={h} className="rounded-full border border-border bg-surface px-3 py-1 text-sm">
@@ -269,13 +290,15 @@ export default async function ExamPage({ params }: PageProps<"/[site]/[body]/[ex
                   ))}
                 </ul>
                 <Link href={`${ctx.base}/syllabus`} className="inline-flex min-h-10 items-center text-sm font-semibold text-primary hover:underline">
-                  Read the full {name} syllabus {year()} →
+                  <T en={`Read the full ${name} syllabus ${year()} →`} pa={`${name} ਦਾ ਪੂਰਾ ਸਿਲੇਬਸ ${year()} ਪੜ੍ਹੋ →`} />
                 </Link>
               </section>
             )}
 
             <section id="tests" className="scroll-mt-24 space-y-6">
-              <h2 className="text-2xl font-bold tracking-tight">{name} mock tests</h2>
+              <h2 className="text-2xl font-bold tracking-tight">
+                <T en={`${name} mock tests`} pa={`${name} ਮੌਕ ਟੈਸਟ`} />
+              </h2>
               {groups.map((g) => (
                 <div key={g.id} className="space-y-3">
                   <h3 className="text-lg font-semibold">
@@ -293,27 +316,34 @@ export default async function ExamPage({ params }: PageProps<"/[site]/[body]/[ex
                   href={`${ctx.base}/tests`}
                   className="inline-flex min-h-10 items-center text-sm font-semibold text-primary hover:underline"
                 >
-                  See all {own.length} {name} tests →
+                  <T en={`See all ${own.length} ${name} tests →`} pa={`ਸਾਰੇ ${own.length} ${name} ਟੈਸਟ ਵੇਖੋ →`} />
                 </Link>
               )}
               {own.length === 0 && (
                 <p className={`${card} p-5 text-muted`}>
-                  Full {name} mock tests are being added. Start with the free test above meanwhile, and check back for the complete series.
+                  <T
+                    en={`Full ${name} mock tests are being added. Start with the free test above meanwhile, and check back for the complete series.`}
+                    pa={`${name} ਦੇ ਪੂਰੇ ਮੌਕ ਟੈਸਟ ਜੋੜੇ ਜਾ ਰਹੇ ਹਨ। ਉਦੋਂ ਤੱਕ ਉੱਪਰ ਦਿੱਤੇ ਮੁਫ਼ਤ ਟੈਸਟ ਨਾਲ ਸ਼ੁਰੂ ਕਰੋ, ਅਤੇ ਪੂਰੀ ਸੀਰੀਜ਼ ਲਈ ਦੁਬਾਰਾ ਵੇਖੋ।`}
+                  />
                 </p>
               )}
             </section>
 
             <section className="space-y-5">
-              <h2 className="text-2xl font-bold tracking-tight">How to practise for {name}</h2>
+              <h2 className="text-2xl font-bold tracking-tight">
+                <T en={`How to practise for ${name}`} pa={`${name} ਲਈ ਅਭਿਆਸ ਕਿਵੇਂ ਕਰੀਏ`} />
+              </h2>
               <HowItWorks />
             </section>
 
             {data.posts.length > 0 && (
               <section className="space-y-4">
                 <div className="flex items-end justify-between gap-4">
-                  <h2 className="text-2xl font-bold tracking-tight">Latest {name} updates</h2>
+                  <h2 className="text-2xl font-bold tracking-tight">
+                    <T en={`Latest ${name} updates`} pa={`${name} ਦੇ ਤਾਜ਼ਾ ਅਪਡੇਟ`} />
+                  </h2>
                   <Link href="/blog" className="shrink-0 text-sm font-medium text-primary hover:underline">
-                    All exam updates →
+                    <T en="All exam updates →" pa="ਸਾਰੇ ਪ੍ਰੀਖਿਆ ਅਪਡੇਟ →" />
                   </Link>
                 </div>
                 <div className="grid gap-4 sm:grid-cols-2">
@@ -325,7 +355,9 @@ export default async function ExamPage({ params }: PageProps<"/[site]/[body]/[ex
             )}
 
             <section className="space-y-4">
-              <h2 className="text-2xl font-bold tracking-tight">{name} — FAQs</h2>
+              <h2 className="text-2xl font-bold tracking-tight">
+                <T en={`${name} — FAQs`} pa={`${name} — ਅਕਸਰ ਪੁੱਛੇ ਸਵਾਲ`} />
+              </h2>
               <FaqList faqs={faqs} />
             </section>
           </div>
@@ -333,34 +365,44 @@ export default async function ExamPage({ params }: PageProps<"/[site]/[body]/[ex
           <aside className="space-y-6 lg:sticky lg:top-24 lg:self-start">
             <OfferCard ctx={ctx} placement="aside" className="hidden lg:block" />
             <div className={`${card} space-y-4 p-5`}>
-              <h2 className="font-semibold">What you get</h2>
+              <h2 className="font-semibold">
+                <T en="What you get" pa="ਤੁਹਾਨੂੰ ਕੀ ਮਿਲਦਾ ਹੈ" />
+              </h2>
               <ul className="space-y-2.5 text-sm">
-                {["Real CBT exam interface", "Hindi & English questions", "Detailed solutions", `Rank among ${site.logo.initials} aspirants`, "Section & topic analysis"].map((t) => (
-                  <li key={t} className="flex items-center gap-2">
-                    <CheckCircle2 className="size-4 text-success" aria-hidden /> {t}
+                {[
+                  ["Real CBT exam interface", "ਅਸਲ CBT ਪ੍ਰੀਖਿਆ ਸਕਰੀਨ"],
+                  ["Hindi & English questions", "ਹਿੰਦੀ ਅਤੇ ਅੰਗਰੇਜ਼ੀ ਪ੍ਰਸ਼ਨ"],
+                  ["Detailed solutions", "ਵਿਸਥਾਰ ਨਾਲ ਹੱਲ"],
+                  [`Rank among ${site.logo.initials} aspirants`, "ਪੰਜਾਬ ਦੇ ਉਮੀਦਵਾਰਾਂ ਵਿੱਚ ਰੈਂਕ"],
+                  ["Section & topic analysis", "ਸੈਕਸ਼ਨ ਅਤੇ ਵਿਸ਼ਾ ਵਿਸ਼ਲੇਸ਼ਣ"],
+                ].map(([en, pa]) => (
+                  <li key={en} className="flex items-center gap-2">
+                    <CheckCircle2 className="size-4 text-success" aria-hidden /> <T en={en} pa={pa} />
                   </li>
                 ))}
               </ul>
               {ctx.startHref && (
                 <TrackedLink href={ctx.startHref} event="landing_cta_click" params={{ exam: ctx.key, placement: "aside" }} className={btn("primary", "md", "w-full")}>
-                  Take free test
+                  <T en="Take free test" pa="ਮੁਫ਼ਤ ਟੈਸਟ ਦਿਓ" />
                 </TrackedLink>
               )}
             </div>
             {related.length > 0 && (
               <div className={`${card} p-5`}>
-                <h2 className="mb-3 font-semibold">Other {site.stateAdj} exams</h2>
+                <h2 className="mb-3 font-semibold">
+                  <T en={`Other ${site.stateAdj} exams`} pa="ਪੰਜਾਬ ਦੀਆਂ ਹੋਰ ਪ੍ਰੀਖਿਆਵਾਂ" />
+                </h2>
                 <ul className="space-y-1 text-sm">
                   {related.map((e) => (
                     <li key={e.href}>
                       <Link href={e.href} className="block py-1.5 text-muted hover:text-primary">
-                        {examLabel(e.bodySlug, e.name)} Mock Test
+                        <T en={`${examLabel(e.bodySlug, e.name)} Mock Test`} pa={`${examLabel(e.bodySlug, e.name)} ਮੌਕ ਟੈਸਟ`} />
                       </Link>
                     </li>
                   ))}
                 </ul>
                 <Link href="/exams" className="mt-2 inline-flex min-h-10 items-center text-sm font-semibold text-primary hover:underline">
-                  All {site.stateAdj} exams →
+                  <T en={`All ${site.stateAdj} exams →`} pa="ਪੰਜਾਬ ਦੀਆਂ ਸਾਰੀਆਂ ਪ੍ਰੀਖਿਆਵਾਂ →" />
                 </Link>
               </div>
             )}

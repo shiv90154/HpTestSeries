@@ -1,11 +1,12 @@
 import type { Metadata, Viewport } from "next";
-import { Noto_Sans, Noto_Sans_Devanagari, Poppins } from "next/font/google";
+import { Noto_Sans, Noto_Sans_Devanagari, Noto_Sans_Gurmukhi, Poppins } from "next/font/google";
 import { Toaster } from "sonner";
 import { Analytics } from "@/components/analytics";
 import { notFound } from "next/navigation";
 import { isSiteCode, siteStaticParams } from "@/sites";
 import { currentSite } from "@/sites/current";
 import { SiteProvider } from "@/sites/provider";
+import { UiLangSync } from "@/components/ui-lang";
 import { themeStyle } from "@/sites/theme";
 import "../globals.css";
 
@@ -24,6 +25,14 @@ const notoSans = Noto_Sans({ variable: "--font-noto-sans", subsets: ["latin"], d
 const notoDevanagari = Noto_Sans_Devanagari({
   variable: "--font-noto-devanagari",
   subsets: ["devanagari"],
+  weight: ["400", "500", "600"],
+  display: "swap",
+  preload: false,
+});
+// Punjabi (Gurmukhi) on pbtestseries.in. Never preloaded: the browser fetches it only for pages with Gurmukhi text.
+const notoGurmukhi = Noto_Sans_Gurmukhi({
+  variable: "--font-noto-gurmukhi",
+  subsets: ["gurmukhi"],
   weight: ["400", "500", "600"],
   display: "swap",
   preload: false,
@@ -66,11 +75,12 @@ export default async function RootLayout({ children, params }: LayoutProps<"/[si
     <html
       lang="en"
       data-scroll-behavior="smooth"
-      className={`${poppins.variable} ${notoSans.variable} ${notoDevanagari.variable} h-full antialiased`}
+      className={`${poppins.variable} ${notoSans.variable} ${notoDevanagari.variable} ${notoGurmukhi.variable} h-full antialiased`}
       style={themeStyle(site)}
     >
       <body className="flex min-h-full flex-col">
         <SiteProvider code={site.code}>
+          <UiLangSync />
           {children}
           <Toaster position="top-center" richColors />
           <Analytics />

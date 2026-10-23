@@ -4,6 +4,7 @@ import { JsonLd } from "@/components/json-ld";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { currentSite } from "@/sites/current";
+import { T } from "@/components/ui-lang";
 import { getPublishedPosts, POSTS_PER_PAGE } from "@/modules/catalog/queries";
 import { parsePage, PostList } from "./post-list";
 
@@ -40,9 +41,14 @@ export default async function BlogPage({ searchParams }: PageProps<"/[site]/blog
       <SiteHeader />
       <main className="mx-auto w-full max-w-6xl flex-1 space-y-8 px-4 py-12">
         <header className="max-w-3xl space-y-2">
-          <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">{site.stateAdj} govt exam updates</h1>
+          <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">
+            <T en={`${site.stateAdj} govt exam updates`} pa="ਪੰਜਾਬ ਸਰਕਾਰੀ ਪ੍ਰੀਖਿਆ ਅਪਡੇਟ" />
+          </h1>
           <p lang="hi" className="text-lg text-muted">
-            {site.stateAdjHi} की सरकारी भर्तियों की ताज़ा जानकारी — नोटिफिकेशन, सिलेबस, कट ऑफ और परीक्षा तिथि।
+            <T
+              en={`${site.stateAdjHi} की सरकारी भर्तियों की ताज़ा जानकारी — नोटिफिकेशन, सिलेबस, कट ऑफ और परीक्षा तिथि।`}
+              pa="ਪੰਜਾਬ ਦੀਆਂ ਸਰਕਾਰੀ ਭਰਤੀਆਂ ਦੀ ਤਾਜ਼ਾ ਜਾਣਕਾਰੀ — ਨੋਟੀਫਿਕੇਸ਼ਨ, ਸਿਲੇਬਸ, ਕੱਟ ਆਫ ਅਤੇ ਪ੍ਰੀਖਿਆ ਦੀਆਂ ਤਾਰੀਖਾਂ।"
+            />
           </p>
         </header>
         <PostList posts={items} page={page} pages={pages} basePath="/blog" active={null} site={site.code} />

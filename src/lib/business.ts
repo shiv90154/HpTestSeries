@@ -58,9 +58,9 @@ export const telHref = (phone: string) => `tel:${phone.replace(/[^\d+]/g, "")}`;
 
 /** Policy pages, linked from the footer (Razorpay checks the site for these). */
 export const LEGAL_LINKS = [
-  { href: "/contact", label: "Contact us" },
-  { href: "/terms", label: "Terms of use" },
-  { href: "/privacy", label: "Privacy policy" },
-  { href: "/refund-policy", label: "Refund & cancellation" },
-  { href: "/shipping-policy", label: "Shipping & delivery" },
+  { href: "/contact", label: "Contact us", labelPa: "ਸੰਪਰਕ ਕਰੋ" },
+  { href: "/terms", label: "Terms of use", labelPa: "ਵਰਤੋਂ ਦੀਆਂ ਸ਼ਰਤਾਂ" },
+  { href: "/privacy", label: "Privacy policy", labelPa: "ਪਰਦੇਦਾਰੀ ਨੀਤੀ" },
+  { href: "/refund-policy", label: "Refund & cancellation", labelPa: "ਰਿਫੰਡ ਅਤੇ ਰੱਦ ਕਰਨਾ" },
+  { href: "/shipping-policy", label: "Shipping & delivery", labelPa: "ਸ਼ਿਪਿੰਗ ਅਤੇ ਡਿਲੀਵਰੀ" },
 ] as const;

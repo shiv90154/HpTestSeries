@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState, type FormEvent } from "react";
 import { authClient } from "@/modules/identity/auth-client";
 import { normalizeIndianMobile, PLACEHOLDER_NAME } from "@/modules/identity/permissions";
+import { T } from "@/components/ui-lang";
 import { OtpInput } from "./otp-input";
 
 type Method = "email" | "phone";
@@ -147,11 +148,13 @@ export function LoginForm({ next, googleEnabled, emailEnabled, phoneEnabled }: {
             className="flex h-12 w-full items-center justify-center gap-3 rounded-xl border border-border bg-surface font-semibold shadow-sm transition hover:border-primary disabled:opacity-60"
             onClick={() => run(async () => void (await authClient.signIn.social({ provider: "google", callbackURL: next, errorCallbackURL: "/login?error=google" })))}
           >
-            <GoogleIcon /> Continue with Google
+            <GoogleIcon /> <T en="Continue with Google" pa="Google ਨਾਲ ਜਾਰੀ ਰੱਖੋ" />
           </button>
           {codeLogin && (
           <div className="flex items-center gap-3 text-xs text-muted">
-            <span className="h-px flex-1 bg-border" /> or get a code by {method === "email" ? "email" : "SMS"} <span className="h-px flex-1 bg-border" />
+            <span className="h-px flex-1 bg-border" />{" "}
+            {method === "email" ? <T en="or get a code by email" pa="ਜਾਂ ਈਮੇਲ ਰਾਹੀਂ ਕੋਡ ਲਓ" /> : <T en="or get a code by SMS" pa="ਜਾਂ SMS ਰਾਹੀਂ ਕੋਡ ਲਓ" />}{" "}
+            <span className="h-px flex-1 bg-border" />
           </div>
           )}
         </>
@@ -161,7 +164,7 @@ export function LoginForm({ next, googleEnabled, emailEnabled, phoneEnabled }: {
       <form onSubmit={onSubmit} className="space-y-3">
         {step.kind === "enter" ? (
           <label className="block space-y-1.5">
-            <span className="text-sm font-medium">{ch.label}</span>
+            <span className="text-sm font-medium">{method === "email" ? <T en={ch.label} pa="ਈਮੇਲ ਪਤਾ" /> : <T en={ch.label} pa="ਮੋਬਾਈਲ ਨੰਬਰ" />}</span>
             <input
               key={method}
               className={inputClass}
@@ -179,7 +182,9 @@ export function LoginForm({ next, googleEnabled, emailEnabled, phoneEnabled }: {
                 {method === "email" ? <MailCheck className="size-5" /> : <MessageSquareText className="size-5" />}
               </span>
               <div className="min-w-0">
-                <p className="text-sm text-muted">{ch.sentTo}</p>
+                <p className="text-sm text-muted">
+                  {method === "email" ? <T en={ch.sentTo} pa="ਅਸੀਂ 6 ਅੰਕਾਂ ਦਾ ਕੋਡ ਈਮੇਲ ਕੀਤਾ ਹੈ" /> : <T en={ch.sentTo} pa="ਅਸੀਂ 6 ਅੰਕਾਂ ਦਾ ਕੋਡ SMS ਰਾਹੀਂ ਭੇਜਿਆ ਹੈ" />}
+                </p>
                 <p className="truncate font-semibold">{step.to}</p>
               </div>
             </div>
@@ -195,8 +200,17 @@ export function LoginForm({ next, googleEnabled, emailEnabled, phoneEnabled }: {
               }}
               onComplete={(code) => run(() => verifyCode(step.to, code))}
             />
-            <p className="text-xs text-muted">The code works for {method === "email" ? 10 : 5} minutes. It signs you in automatically once all 6 digits are in.</p>
-            {ch.hint && <p className="text-xs text-muted">{ch.hint}</p>}
+            <p className="text-xs text-muted">
+              <T
+                en={`The code works for ${method === "email" ? 10 : 5} minutes. It signs you in automatically once all 6 digits are in.`}
+                pa={`ਕੋਡ ${method === "email" ? 10 : 5} ਮਿੰਟ ਲਈ ਚੱਲਦਾ ਹੈ। ਸਾਰੇ 6 ਅੰਕ ਭਰਦੇ ਹੀ ਤੁਸੀਂ ਆਪਣੇ ਆਪ ਲੌਗ ਇਨ ਹੋ ਜਾਓਗੇ।`}
+              />
+            </p>
+            {ch.hint && (
+              <p className="text-xs text-muted">
+                <T en={ch.hint} pa="ਨਹੀਂ ਮਿਲਿਆ? ਆਪਣਾ Spam ਜਾਂ Promotions ਫੋਲਡਰ ਵੇਖੋ।" />
+              </p>
+            )}
           </div>
         )}
 
@@ -212,13 +226,23 @@ export function LoginForm({ next, googleEnabled, emailEnabled, phoneEnabled }: {
         )}
 
         <button type="submit" className={buttonClass} disabled={pending || (step.kind === "code" && value.length < 6)}>
-          {pending ? (step.kind === "enter" ? "Sending code…" : "Checking…") : step.kind === "enter" ? "Send code" : "Verify and sign in"}
+          {pending ? (
+            step.kind === "enter" ? (
+              <T en="Sending code…" pa="ਕੋਡ ਭੇਜਿਆ ਜਾ ਰਿਹਾ ਹੈ…" />
+            ) : (
+              <T en="Checking…" pa="ਜਾਂਚ ਹੋ ਰਹੀ ਹੈ…" />
+            )
+          ) : step.kind === "enter" ? (
+            <T en="Send code" pa="ਕੋਡ ਭੇਜੋ" />
+          ) : (
+            <T en="Verify and sign in" pa="ਪੁਸ਼ਟੀ ਕਰੋ ਅਤੇ ਲੌਗ ਇਨ ਕਰੋ" />
+          )}
         </button>
 
         {step.kind === "code" && (
           <div className="flex justify-between text-sm">
             <button type="button" className="text-muted underline" onClick={() => switchMethod(method)}>
-              {ch.change}
+              {method === "email" ? <T en={ch.change} pa="ਈਮੇਲ ਬਦਲੋ" /> : <T en={ch.change} pa="ਨੰਬਰ ਬਦਲੋ" />}
             </button>
             <button
               type="button"
@@ -233,7 +257,11 @@ export function LoginForm({ next, googleEnabled, emailEnabled, phoneEnabled }: {
                 })
               }
             >
-              {cooldown > 0 ? `Resend code in ${cooldown}s` : "Resend code"}
+              {cooldown > 0 ? (
+                <T en={`Resend code in ${cooldown}s`} pa={`${cooldown} ਸਕਿੰਟ ਵਿੱਚ ਕੋਡ ਦੁਬਾਰਾ ਭੇਜੋ`} />
+              ) : (
+                <T en="Resend code" pa="ਕੋਡ ਦੁਬਾਰਾ ਭੇਜੋ" />
+              )}
             </button>
           </div>
         )}
@@ -247,7 +275,7 @@ export function LoginForm({ next, googleEnabled, emailEnabled, phoneEnabled }: {
           className="flex w-full items-center justify-center gap-2 text-sm font-medium text-muted hover:text-primary"
         >
           {method === "email" ? <Smartphone className="size-4" /> : <Mail className="size-4" />}
-          {method === "email" ? "Use mobile number instead" : "Use email instead"}
+          {method === "email" ? <T en="Use mobile number instead" pa="ਇਸਦੀ ਥਾਂ ਮੋਬਾਈਲ ਨੰਬਰ ਵਰਤੋ" /> : <T en="Use email instead" pa="ਇਸਦੀ ਥਾਂ ਈਮੇਲ ਵਰਤੋ" />}
         </button>
       )}
     </div>

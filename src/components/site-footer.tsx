@@ -7,6 +7,7 @@ import { AuthFooterLink } from "./auth-cta";
 import { Logo } from "./logo";
 import { PublicBottomNav } from "./public-bottom-nav";
 import { TrackedLink } from "./tracked-link";
+import { T } from "./ui-lang";
 import { TelegramIcon, WhatsAppIcon } from "./whatsapp-group";
 
 /** Footer links are 40px tall so they are easy to tap on phones. */
@@ -27,7 +28,7 @@ export async function SiteFooter() {
       <div className="mx-auto grid w-full max-w-6xl gap-8 px-4 py-10 sm:grid-cols-2 lg:grid-cols-[1.2fr_1fr_1fr_1fr_1.3fr] lg:gap-6 lg:py-12">
         <div className="space-y-4">
           <Logo light />
-          <p className="max-w-xs text-sm leading-relaxed text-slate-400">{site.description}</p>
+          <p className="max-w-xs text-sm leading-relaxed text-slate-400">{site.pa ? <T en={site.description} pa={site.pa.description} /> : site.description}</p>
           <p lang="hi" className="text-sm text-slate-400">
             {site.taglineHi}
           </p>
@@ -40,7 +41,7 @@ export async function SiteFooter() {
               params={{ place: "footer" }}
               className="inline-flex h-10 items-center gap-2 rounded-xl bg-[#118376] px-4 text-sm font-semibold text-white hover:bg-[#0d6b60]"
             >
-              <WhatsAppIcon /> Join WhatsApp group
+              <WhatsAppIcon /> <T en="Join WhatsApp group" pa="WhatsApp ਗਰੁੱਪ ਨਾਲ ਜੁੜੋ" />
             </TrackedLink>
           )}
           <div className="flex gap-2">
@@ -86,26 +87,28 @@ export async function SiteFooter() {
           </div>
         </div>
         <div>
-          <h2 className={heading}>Practice</h2>
+          <h2 className={heading}>
+            <T en="Practice" pa="ਅਭਿਆਸ" />
+          </h2>
           <ul className="text-sm">
             <li>
               <Link href={freeMockHref(site)} className={link}>
-                Free {site.statePage.title} Mock Test
+                <T en={`Free ${site.statePage.title} Mock Test`} pa={`ਮੁਫ਼ਤ ${site.statePage.title} ਮੌਕ ਟੈਸਟ`} />
               </Link>
             </li>
             <li>
               <Link href="/tests" className={link}>
-                All Mock Tests
+                <T en="All Mock Tests" pa="ਸਾਰੇ ਮੌਕ ਟੈਸਟ" />
               </Link>
             </li>
             <li>
               <Link href="/exams" className={link}>
-                All {site.stateAdj} Exams
+                <T en={`All ${site.stateAdj} Exams`} pa="ਪੰਜਾਬ ਦੀਆਂ ਸਾਰੀਆਂ ਪ੍ਰੀਖਿਆਵਾਂ" />
               </Link>
             </li>
             <li>
               <Link href="/blog" className={link}>
-                Exam Updates &amp; Notifications
+                <T en="Exam Updates & Notifications" pa="ਪ੍ਰੀਖਿਆ ਅਪਡੇਟ ਅਤੇ ਨੋਟੀਫਿਕੇਸ਼ਨ" />
               </Link>
             </li>
             <li>
@@ -115,7 +118,9 @@ export async function SiteFooter() {
         </div>
         {latest.items.length > 0 && (
           <div>
-            <h2 className={heading}>Latest updates</h2>
+            <h2 className={heading}>
+              <T en="Latest updates" pa="ਤਾਜ਼ਾ ਅਪਡੇਟ" />
+            </h2>
             <ul className="text-sm">
               {latest.items.map((p) => (
                 <li key={p.slug} className="py-2 md:py-1.5">
@@ -128,12 +133,14 @@ export async function SiteFooter() {
           </div>
         )}
         <div>
-          <h2 className={heading}>Help</h2>
+          <h2 className={heading}>
+            <T en="Help" pa="ਮਦਦ" />
+          </h2>
           <ul className="text-sm">
             {LEGAL_LINKS.map((l) => (
               <li key={l.href}>
                 <Link href={l.href} className={link}>
-                  {l.label}
+                  <T en={l.label} pa={l.labelPa} />
                 </Link>
               </li>
             ))}
@@ -141,18 +148,20 @@ export async function SiteFooter() {
         </div>
         {exams.length > 0 && (
           <div>
-            <h2 className={heading}>Popular exams</h2>
+            <h2 className={heading}>
+              <T en="Popular exams" pa="ਪ੍ਰਸਿੱਧ ਪ੍ਰੀਖਿਆਵਾਂ" />
+            </h2>
             <ul className="text-sm">
               {exams.map((e) => (
                 <li key={e.href}>
                   <Link href={e.href} className={link}>
-                    {examLabel(e.bodySlug, e.name)} Mock Test
+                    <T en={`${examLabel(e.bodySlug, e.name)} Mock Test`} pa={`${examLabel(e.bodySlug, e.name)} ਮੌਕ ਟੈਸਟ`} />
                   </Link>
                 </li>
               ))}
               <li>
                 <Link href="/exams" className={`${link} font-medium text-accent`}>
-                  View all exams →
+                  <T en="View all exams →" pa="ਸਾਰੀਆਂ ਪ੍ਰੀਖਿਆਵਾਂ ਵੇਖੋ →" />
                 </Link>
               </li>
             </ul>
@@ -161,8 +170,11 @@ export async function SiteFooter() {
       </div>
       <div className="border-t border-white/10">
         <p className="mx-auto w-full max-w-6xl px-4 py-5 text-xs text-slate-400">
-          © {new Date().getFullYear()} {site.name}. An independent practice platform — not affiliated with {site.disclaimerBodies} or any government
-          body.
+          © {new Date().getFullYear()} {site.name}.{" "}
+          <T
+            en={`An independent practice platform — not affiliated with ${site.disclaimerBodies} or any government body.`}
+            pa={`ਇੱਕ ਸੁਤੰਤਰ ਅਭਿਆਸ ਪਲੇਟਫਾਰਮ — ${site.disclaimerBodies} ਜਾਂ ਕਿਸੇ ਵੀ ਸਰਕਾਰੀ ਸੰਸਥਾ ਨਾਲ ਸੰਬੰਧਿਤ ਨਹੀਂ।`}
+          />
         </p>
       </div>
       <PublicBottomNav />

@@ -6,6 +6,7 @@ import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { card } from "@/components/ui";
 import { currentSite } from "@/sites/current";
+import { T } from "@/components/ui-lang";
 import { hasBodyPage } from "@/modules/catalog/body-info";
 import { bodyShortName, getCatalog, getPublishedTests } from "@/modules/catalog/queries";
 
@@ -51,18 +52,25 @@ export default async function ExamsPage() {
       <main className="mx-auto w-full max-w-6xl flex-1 space-y-10 px-4 py-12">
         <header className="space-y-5">
           <div className="max-w-2xl space-y-2">
-            <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">{site.stateName} government exams</h1>
-            <p className="text-muted">Choose your exam for free mock tests, exam information and the complete test series.</p>
+            <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">
+              <T en={`${site.stateName} government exams`} pa="ਪੰਜਾਬ ਦੀਆਂ ਸਰਕਾਰੀ ਪ੍ਰੀਖਿਆਵਾਂ" />
+            </h1>
+            <p className="text-muted">
+              <T
+                en="Choose your exam for free mock tests, exam information and the complete test series."
+                pa="ਮੁਫ਼ਤ ਮੌਕ ਟੈਸਟ, ਪ੍ਰੀਖਿਆ ਦੀ ਜਾਣਕਾਰੀ ਅਤੇ ਪੂਰੀ ਟੈਸਟ ਸੀਰੀਜ਼ ਲਈ ਆਪਣੀ ਪ੍ਰੀਖਿਆ ਚੁਣੋ।"
+              />
+            </p>
           </div>
           <p className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-muted">
             <span>
-              <strong className="text-foreground">{totalExams}</strong> exams
+              <strong className="text-foreground">{totalExams}</strong> <T en="exams" pa="ਪ੍ਰੀਖਿਆਵਾਂ" />
             </span>
             <span>
-              <strong className="text-foreground">{catalog.length}</strong> recruitment bodies
+              <strong className="text-foreground">{catalog.length}</strong> <T en="recruitment bodies" pa="ਭਰਤੀ ਸੰਸਥਾਵਾਂ" />
             </span>
             <span>
-              <strong className="text-foreground">{totalTests}</strong> mock tests
+              <strong className="text-foreground">{totalTests}</strong> <T en="mock tests" pa="ਮੌਕ ਟੈਸਟ" />
             </span>
           </p>
           <nav aria-label="Jump to a recruitment body" className="flex flex-wrap gap-2">

@@ -81,4 +81,11 @@ export const pb: SiteConfig = {
     "Punjab Police Constable, PSSSB (Clerk, Patwari, Excise & Taxation Inspector and more), PPSC, PSTET and national exams such as Delhi Police, NDA, CDS and AFCAT, with Punjab GK tests that help in every exam. Full test series are being added exam by exam.",
   disclaimerBodies: "PSSSB, PPSC, PSEB, Punjab Police",
   emailFrom: "PB Test Series <noreply@pbtestseries.in>",
+  pa: {
+    examsCoveredFaq:
+      "ਪੰਜਾਬ ਪੁਲਿਸ ਕਾਂਸਟੇਬਲ, PSSSB (ਕਲਰਕ, ਗਰੁੱਪ ਡੀ, ਜੂਨੀਅਰ ਇੰਜੀਨੀਅਰ ਅਤੇ ਹੋਰ), PPSC ਅਤੇ ਦਿੱਲੀ ਪੁਲਿਸ, NDA, CDS, AFCAT ਵਰਗੀਆਂ ਰਾਸ਼ਟਰੀ ਪ੍ਰੀਖਿਆਵਾਂ, ਨਾਲ ਹੀ ਪੰਜਾਬ GK ਟੈਸਟ ਜੋ ਹਰ ਪ੍ਰੀਖਿਆ ਵਿੱਚ ਕੰਮ ਆਉਂਦੇ ਹਨ। ਪੂਰੀਆਂ ਟੈਸਟ ਸੀਰੀਜ਼ ਇੱਕ-ਇੱਕ ਕਰਕੇ ਜੋੜੀਆਂ ਜਾ ਰਹੀਆਂ ਹਨ।",
+    tagline: "ਪੰਜਾਬ ਦੀ ਹਰ ਸਰਕਾਰੀ ਪ੍ਰੀਖਿਆ ਦੀ ਤਿਆਰੀ — ਅਸਲ CBT ਪ੍ਰੀਖਿਆ ਵਰਗੇ ਮਾਹੌਲ ਵਿੱਚ।",
+    description:
+      "ਪੰਜਾਬ ਪੁਲਿਸ, PSSSB, PPSC ਅਤੇ PSTET ਪ੍ਰੀਖਿਆਵਾਂ ਲਈ ਕਿਫ਼ਾਇਤੀ ਮੌਕ ਟੈਸਟ। ਅਸਲ CBT ਇੰਟਰਫੇਸ, ਹਿੰਦੀ ਅਤੇ ਅੰਗਰੇਜ਼ੀ ਵਿੱਚ ਪ੍ਰਸ਼ਨ, ਵਿਸਥਾਰ ਨਾਲ ਹੱਲ ਅਤੇ ਪੰਜਾਬ ਦੇ ਉਮੀਦਵਾਰਾਂ ਵਿੱਚ ਤੁਹਾਡਾ ਰੈਂਕ।",
+  },
 };

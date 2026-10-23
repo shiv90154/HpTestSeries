@@ -8,6 +8,7 @@ import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { OwnedGate } from "@/components/my-access";
 import { btn, card } from "@/components/ui";
+import { T, Tx } from "@/components/ui-lang";
 import { rupees } from "@/lib/money";
 import { canonicalFor, PRIMARY_SITE } from "@/sites";
 import { currentSite } from "@/sites/current";
@@ -105,13 +106,15 @@ export default async function TestDetailPage({ params }: PageProps<"/[site]/test
           {t.instructions && <p className="max-w-2xl text-foreground/85">{t.instructions}</p>}
           {t.exam && (
             <Link href={t.exam.href} className="inline-flex items-center gap-1 text-sm font-medium text-primary hover:underline">
-              {t.exam.name} exam — pattern, syllabus &amp; all tests <ChevronRight className="size-4" />
+              <T en={`${t.exam.name} exam — pattern, syllabus & all tests`} pa={`${t.exam.name} ਪ੍ਰੀਖਿਆ — ਪੈਟਰਨ, ਸਿਲੇਬਸ ਅਤੇ ਸਾਰੇ ਟੈਸਟ`} /> <ChevronRight className="size-4" />
             </Link>
           )}
         </header>
 
         <section className="space-y-2">
-          <h2 className="font-semibold">About this test</h2>
+          <h2 className="font-semibold">
+            <T en="About this test" pa="ਇਸ ਟੈਸਟ ਬਾਰੇ" />
+          </h2>
           <p className="max-w-2xl text-foreground/85">{intro}</p>
         </section>
 
@@ -128,7 +131,7 @@ export default async function TestDetailPage({ params }: PageProps<"/[site]/test
             return (
               <div key={l as string} className={`${card} p-4`}>
                 <dt className="flex items-center gap-1.5 text-xs text-muted">
-                  <I className="size-4" /> {l as string}
+                  <I className="size-4" /> <Tx>{l as string}</Tx>
                 </dt>
                 <dd className="mt-1 text-xl font-semibold">{v as string}</dd>
               </div>
@@ -137,16 +140,28 @@ export default async function TestDetailPage({ params }: PageProps<"/[site]/test
         </dl>
 
         <section className={`${card} overflow-hidden`}>
-          <h2 className="border-b border-border px-5 py-3 font-semibold">Sections</h2>
+          <h2 className="border-b border-border px-5 py-3 font-semibold">
+            <Tx>Sections</Tx>
+          </h2>
           <table className="w-full text-sm">
             <thead className="bg-surface-muted text-left text-xs text-muted">
               <tr>
-                <th className="px-4 py-2 sm:px-5">Section</th>
-                <th className="px-3 py-2 text-right sm:px-5">Questions</th>
+                <th className="px-4 py-2 sm:px-5">
+                  <Tx>Section</Tx>
+                </th>
+                <th className="px-3 py-2 text-right sm:px-5">
+                  <Tx>Questions</Tx>
+                </th>
                 {/* Phones: Correct and Wrong share one column, or the table is wider than the screen */}
-                <th className="px-3 py-2 text-right sm:hidden">Marks</th>
-                <th className="hidden px-5 py-2 text-right sm:table-cell">Correct</th>
-                <th className="hidden px-5 py-2 text-right sm:table-cell">Wrong</th>
+                <th className="px-3 py-2 text-right sm:hidden">
+                  <Tx>Marks</Tx>
+                </th>
+                <th className="hidden px-5 py-2 text-right sm:table-cell">
+                  <Tx>Correct</Tx>
+                </th>
+                <th className="hidden px-5 py-2 text-right sm:table-cell">
+                  <Tx>Wrong</Tx>
+                </th>
               </tr>
             </thead>
             <tbody>
@@ -185,43 +200,46 @@ export default async function TestDetailPage({ params }: PageProps<"/[site]/test
         <div className="flex flex-col items-start gap-4 rounded-2xl bg-primary-soft p-6 sm:flex-row sm:items-center">
           <Languages className="size-8 shrink-0 text-primary" />
           <p className="flex-1 text-sm">
-            Real CBT interface with question palette, Mark for Review and a live timer. Switch between Hindi and English any time.
+            <T
+              en="Real CBT interface with question palette, Mark for Review and a live timer. Switch between Hindi and English any time."
+              pa="ਪ੍ਰਸ਼ਨ ਪੈਲੇਟ, Mark for Review ਅਤੇ ਚੱਲਦੇ ਟਾਈਮਰ ਨਾਲ ਅਸਲ CBT ਸਕਰੀਨ। ਕਿਸੇ ਵੀ ਸਮੇਂ ਹਿੰਦੀ ਅਤੇ ਅੰਗਰੇਜ਼ੀ ਵਿੱਚ ਬਦਲੋ।"
+            />
           </p>
           {/* Cached page: a student who already bought this test gets "Start" instead of the buy prompt. */}
           <OwnedGate
             slug={slug}
             owned={
               <Link href={`/tests/${slug}/attempt`} className={btn("primary", "lg")}>
-                Start test now <ChevronRight className="size-5" />
+                <T en="Start test now" pa="ਹੁਣੇ ਟੈਸਟ ਸ਼ੁਰੂ ਕਰੋ" /> <ChevronRight className="size-5" />
               </Link>
             }
           >
             {hasDemo ? (
               <div className="flex w-full flex-col gap-2 sm:w-auto">
                 <Link href={`/tests/${slug}/demo`} className={btn("primary", "lg")}>
-                  Try free demo <ChevronRight className="size-5" />
+                  <T en="Try free demo" pa="ਮੁਫ਼ਤ ਡੈਮੋ ਅਜ਼ਮਾਓ" /> <ChevronRight className="size-5" />
                 </Link>
                 {buy && (
                   <Link href={buy.href} className={btn("accent", "lg")}>
-                    Unlock full test — {rupees(buy.priceInPaise)}
+                    <T en={`Unlock full test — ${rupees(buy.priceInPaise)}`} pa={`ਪੂਰਾ ਟੈਸਟ ਖੋਲ੍ਹੋ — ${rupees(buy.priceInPaise)}`} />
                   </Link>
                 )}
                 <Link href={`/tests/${slug}/attempt`} className="flex min-h-10 items-center justify-center text-center text-sm font-medium text-primary hover:underline">
-                  Already purchased? Start the full test
+                  <T en="Already purchased? Start the full test" pa="ਪਹਿਲਾਂ ਹੀ ਖਰੀਦਿਆ ਹੈ? ਪੂਰਾ ਟੈਸਟ ਸ਼ੁਰੂ ਕਰੋ" />
                 </Link>
               </div>
             ) : buy ? (
               <div className="flex w-full flex-col gap-2 sm:w-auto">
                 <Link href={buy.href} className={btn("accent", "lg")}>
-                  Unlock full test — {rupees(buy.priceInPaise)}
+                  <T en={`Unlock full test — ${rupees(buy.priceInPaise)}`} pa={`ਪੂਰਾ ਟੈਸਟ ਖੋਲ੍ਹੋ — ${rupees(buy.priceInPaise)}`} />
                 </Link>
                 <Link href={`/tests/${slug}/attempt`} className="flex min-h-10 items-center justify-center text-center text-sm font-medium text-primary hover:underline">
-                  Already purchased? Start the test
+                  <T en="Already purchased? Start the test" pa="ਪਹਿਲਾਂ ਹੀ ਖਰੀਦਿਆ ਹੈ? ਟੈਸਟ ਸ਼ੁਰੂ ਕਰੋ" />
                 </Link>
               </div>
             ) : (
               <Link href={`/tests/${slug}/attempt`} className={btn("primary", "lg")}>
-                Start test now <ChevronRight className="size-5" />
+                <T en="Start test now" pa="ਹੁਣੇ ਟੈਸਟ ਸ਼ੁਰੂ ਕਰੋ" /> <ChevronRight className="size-5" />
               </Link>
             )}
           </OwnedGate>
@@ -235,7 +253,9 @@ export default async function TestDetailPage({ params }: PageProps<"/[site]/test
 
         {t.exam && (
           <section className="space-y-3">
-            <h2 className="font-semibold">Prepare for {t.exam.name}</h2>
+            <h2 className="font-semibold">
+              <T en={`Prepare for ${t.exam.name}`} pa={`${t.exam.name} ਦੀ ਤਿਆਰੀ ਕਰੋ`} />
+            </h2>
             <ul className="flex flex-wrap gap-x-5 gap-y-2 text-sm">
               <li>
                 <Link href={t.exam.href} className="font-medium text-primary hover:underline">

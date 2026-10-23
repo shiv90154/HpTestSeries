@@ -2,13 +2,13 @@
 
 import { Menu, X } from "lucide-react";
 import Link from "next/link";
-import { useEffect, useId, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState, type ReactNode } from "react";
 
 /**
  * Phone-only menu button for the public header: the full site nav (the bottom tab bar has room for only
  * five tabs, so Exam Updates and Pricing live here). Closes on a link tap, Escape or a tap outside.
  */
-export function MobileMenu({ links }: { links: { href: string; label: string }[] }) {
+export function MobileMenu({ links }: { links: { href: string; label: ReactNode }[] }) {
   const [open, setOpen] = useState(false);
   const id = useId();
   const ref = useRef<HTMLDivElement>(null);

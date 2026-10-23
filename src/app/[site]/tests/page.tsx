@@ -10,6 +10,7 @@ import { perTestLabel } from "@/modules/commerce/value";
 import { ContinueCard } from "./continue-card";
 import { ExamDirectory, type DirectoryCard } from "./exam-directory";
 import { currentSite } from "@/sites/current";
+import { T } from "@/components/ui-lang";
 
 export const revalidate = 600;
 
@@ -59,31 +60,50 @@ export default async function TestsPage() {
       <SiteHeader />
       <main className="mx-auto w-full max-w-6xl flex-1 space-y-10 px-4 py-10 sm:py-12">
         <header className="max-w-2xl space-y-2">
-          <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">Which exam are you preparing for?</h1>
+          <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">
+            <T en="Which exam are you preparing for?" pa="ਤੁਸੀਂ ਕਿਹੜੀ ਪ੍ਰੀਖਿਆ ਦੀ ਤਿਆਰੀ ਕਰ ਰਹੇ ਹੋ?" />
+          </h1>
           <p lang="hi" className="text-muted">
-            आप किस परीक्षा की तैयारी कर रहे हैं? अपनी परीक्षा चुनें और उसके सारे टेस्ट एक ही पेज पर देखें।
+            <T
+              en="आप किस परीक्षा की तैयारी कर रहे हैं? अपनी परीक्षा चुनें और उसके सारे टेस्ट एक ही पेज पर देखें।"
+              pa="ਆਪਣੀ ਪ੍ਰੀਖਿਆ ਚੁਣੋ ਅਤੇ ਉਸਦੇ ਸਾਰੇ ਟੈਸਟ ਇੱਕੋ ਪੰਨੇ ਉੱਤੇ ਵੇਖੋ।"
+            />
           </p>
         </header>
 
         <ContinueCard />
 
         {ready.length > 0 && <ExamDirectory exams={ready} />}
-        {ready.length === 0 && <p className="text-muted">New tests are being added. Check back soon.</p>}
+        {ready.length === 0 && (
+          <p className="text-muted">
+            <T en="New tests are being added. Check back soon." pa="ਨਵੇਂ ਟੈਸਟ ਜੋੜੇ ਜਾ ਰਹੇ ਹਨ। ਜਲਦੀ ਦੁਬਾਰਾ ਵੇਖੋ।" />
+          </p>
+        )}
 
         <div className="flex flex-col gap-3 rounded-2xl border border-primary/30 bg-primary-soft p-4 sm:flex-row sm:items-center sm:justify-between sm:p-5">
           <div>
-            <p className="font-semibold">All previous year papers for just ₹29</p>
-            <p className="text-sm text-muted">Solve past {site.stateAdj} exam papers in real CBT, with solutions in Hindi &amp; English.</p>
+            <p className="font-semibold">
+              <T en="All previous year papers for just ₹29" pa="ਪਿਛਲੇ ਸਾਲਾਂ ਦੇ ਸਾਰੇ ਪੇਪਰ ਸਿਰਫ਼ ₹29 ਵਿੱਚ" />
+            </p>
+            <p className="text-sm text-muted">
+              <T
+                en={`Solve past ${site.stateAdj} exam papers in real CBT, with solutions in Hindi & English.`}
+                pa="ਪੰਜਾਬ ਦੀਆਂ ਪਿਛਲੀਆਂ ਪ੍ਰੀਖਿਆਵਾਂ ਦੇ ਪੇਪਰ ਅਸਲ CBT ਵਿੱਚ ਹੱਲ ਕਰੋ, ਹਿੰਦੀ ਅਤੇ ਅੰਗਰੇਜ਼ੀ ਵਿੱਚ ਹੱਲ ਸਮੇਤ।"
+              />
+            </p>
           </div>
           <Link href="/previous-year-papers" className={btn("primary", "md", "shrink-0")}>
-            View papers
+            <T en="View papers" pa="ਪੇਪਰ ਵੇਖੋ" />
           </Link>
         </div>
 
         {soon.length > 0 && (
           <section aria-labelledby="soon-h" className="space-y-3">
             <h2 id="soon-h" className="font-semibold">
-              More exams <span className="font-normal text-muted">· tests launching soon</span>
+              <T en="More exams" pa="ਹੋਰ ਪ੍ਰੀਖਿਆਵਾਂ" />{" "}
+              <span className="font-normal text-muted">
+                · <T en="tests launching soon" pa="ਟੈਸਟ ਜਲਦੀ ਆ ਰਹੇ ਹਨ" />
+              </span>
             </h2>
             <ul className="flex flex-wrap gap-2">
               {soon.map((e) => (

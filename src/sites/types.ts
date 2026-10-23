@@ -81,4 +81,6 @@ export type SiteConfig = {
   disclaimerBodies: string;
   /** From-address for this site's emails. */
   emailFrom: string;
+  /** Punjabi interface copy, on sites that offer the Punjabi switch (src/components/ui-lang.tsx). */
+  pa?: { tagline: string; description: string; examsCoveredFaq: string };
 };

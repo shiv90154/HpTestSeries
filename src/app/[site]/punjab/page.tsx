@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { btn, card } from "@/components/ui";
+import { T } from "@/components/ui-lang";
 import { freeMockHref } from "@/sites";
 import { currentSite } from "@/sites/current";
 
@@ -64,15 +65,20 @@ export default async function KnowYourPunjabPage() {
       <main className="mx-auto w-full max-w-6xl flex-1 space-y-10 px-4 py-10 sm:py-14">
         <header className="max-w-3xl space-y-2">
           <p className="text-xs font-semibold uppercase tracking-wider text-primary sm:text-sm">Free to read</p>
-          <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">Know Your Punjab</h1>
+          <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">
+            <T en="Know Your Punjab" pa="ਆਪਣਾ ਪੰਜਾਬ ਜਾਣੋ" />
+          </h1>
           <p lang="hi" className="text-lg text-muted">
-            पंजाब के सभी 23 जिलों की आसान जानकारी — परीक्षा में पूछे जाने वाले तथ्यों के साथ।
+            <T
+              en="पंजाब के सभी 23 जिलों की आसान जानकारी — परीक्षा में पूछे जाने वाले तथ्यों के साथ।"
+              pa="ਪੰਜਾਬ ਦੇ ਸਾਰੇ 23 ਜ਼ਿਲ੍ਹਿਆਂ ਦੀ ਸੌਖੀ ਜਾਣਕਾਰੀ — ਪ੍ਰੀਖਿਆ ਵਿੱਚ ਪੁੱਛੇ ਜਾਂਦੇ ਤੱਥਾਂ ਸਮੇਤ।"
+            />
           </p>
         </header>
 
         <section aria-labelledby="quick-facts" className="space-y-4">
           <h2 id="quick-facts" className="text-xl font-bold sm:text-2xl">
-            Quick facts
+            <T en="Quick facts" pa="ਮੁੱਖ ਤੱਥ" />
           </h2>
           <dl className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {FACTS.map(([k, v]) => (
@@ -86,7 +92,7 @@ export default async function KnowYourPunjabPage() {
 
         <section aria-labelledby="districts" className="space-y-4">
           <h2 id="districts" className="text-xl font-bold sm:text-2xl">
-            All {DISTRICTS.length} districts
+            <T en={`All ${DISTRICTS.length} districts`} pa={`ਸਾਰੇ ${DISTRICTS.length} ਜ਼ਿਲ੍ਹੇ`} />
           </h2>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {DISTRICTS.map((d) => (
@@ -94,7 +100,7 @@ export default async function KnowYourPunjabPage() {
                 <div className="space-y-0.5">
                   <h3 className="text-lg font-semibold">{d.name}</h3>
                   <p className="flex items-center gap-1 text-sm text-muted">
-                    <MapPin className="size-3.5" aria-hidden /> HQ: {d.hq}
+                    <MapPin className="size-3.5" aria-hidden /> <T en="HQ" pa="ਮੁੱਖ ਦਫ਼ਤਰ" />: {d.hq}
                   </p>
                 </div>
                 {d.known.length > 0 && (
@@ -109,15 +115,20 @@ export default async function KnowYourPunjabPage() {
               </div>
             ))}
           </div>
-          <p className="text-xs text-muted">Summary for exam revision. Always confirm figures against the latest official sources.</p>
+          <p className="text-xs text-muted">
+            <T
+              en="Summary for exam revision. Always confirm figures against the latest official sources."
+              pa="ਪ੍ਰੀਖਿਆ ਦੀ ਦੁਹਰਾਈ ਲਈ ਸਾਰ। ਅੰਕੜਿਆਂ ਦੀ ਪੁਸ਼ਟੀ ਹਮੇਸ਼ਾ ਤਾਜ਼ਾ ਅਧਿਕਾਰਤ ਸਰੋਤਾਂ ਤੋਂ ਕਰੋ।"
+            />
+          </p>
         </section>
 
         <div className="flex flex-wrap gap-3">
           <Link href={freeMockHref(site)} className={btn("primary")}>
-            Test yourself — free Punjab GK mock
+            <T en="Test yourself — free Punjab GK mock" pa="ਆਪਣੇ ਆਪ ਨੂੰ ਪਰਖੋ — ਮੁਫ਼ਤ ਪੰਜਾਬ GK ਮੌਕ" />
           </Link>
           <Link href="/blog" className={btn("outline")}>
-            Exam updates
+            <T en="Exam updates" pa="ਪ੍ਰੀਖਿਆ ਅਪਡੇਟ" />
           </Link>
         </div>
       </main>

@@ -11,6 +11,7 @@ import { btn, card } from "@/components/ui";
 import { rupees } from "@/lib/money";
 import { freeMockHref } from "@/sites";
 import { currentSite } from "@/sites/current";
+import { T } from "@/components/ui-lang";
 import { faqPageJsonLd } from "@/modules/content/exam-content";
 import { listActiveProducts } from "@/modules/commerce/product-service";
 
@@ -69,9 +70,11 @@ export default async function PricingPage() {
         <section className="relative overflow-hidden bg-linear-to-br from-hero-dark via-primary-strong to-primary text-white">
           <div className="relative mx-auto w-full max-w-6xl space-y-3 px-4 pb-20 pt-6 sm:pb-24">
             <Breadcrumbs light links={[{ href: "/", label: "Home" }]} current="Pricing" />
-            <h1 className="max-w-3xl text-[28px] font-bold leading-tight tracking-tight sm:text-4xl">Cheaper than a single guide book</h1>
+            <h1 className="max-w-3xl text-[28px] font-bold leading-tight tracking-tight sm:text-4xl">
+              <T en="Cheaper than a single guide book" pa="ਇੱਕ ਗਾਈਡ ਕਿਤਾਬ ਤੋਂ ਵੀ ਸਸਤਾ" />
+            </h1>
             <p lang="hi" className="text-[15px] text-white/85 sm:text-lg">
-              सस्ती कीमत, एक बार का भुगतान, कोई auto-renewal नहीं।
+              <T en="सस्ती कीमत, एक बार का भुगतान, कोई auto-renewal नहीं।" pa="ਸਸਤੀ ਕੀਮਤ, ਇੱਕ ਵਾਰ ਦਾ ਭੁਗਤਾਨ, ਕੋਈ auto-renewal ਨਹੀਂ।" />
             </p>
             <p className="max-w-2xl text-white/85">
               Many tests are free. Paid series start {cheapest ? `at ${rupees(cheapest.priceInPaise)}` : "at a very low price"}, and you pay only for the exam you are preparing for.
@@ -97,7 +100,7 @@ export default async function PricingPage() {
 
           <section aria-labelledby="how-h" className="space-y-5">
             <h2 id="how-h" className="text-2xl font-bold tracking-tight">
-              How buying works
+              <T en="How buying works" pa="ਖਰੀਦਣਾ ਕਿਵੇਂ ਕੰਮ ਕਰਦਾ ਹੈ" />
             </h2>
             <ul className="grid gap-4 sm:grid-cols-3">
               {STEPS.map((s) => (
@@ -113,13 +116,14 @@ export default async function PricingPage() {
               ))}
             </ul>
             <p className="flex items-center gap-1.5 text-sm text-muted">
-              <ShieldCheck className="size-4 text-success" aria-hidden /> Secure payment via Razorpay. The price shown is the final amount.
+              <ShieldCheck className="size-4 text-success" aria-hidden />{" "}
+              <T en="Secure payment via Razorpay. The price shown is the final amount." pa="Razorpay ਰਾਹੀਂ ਸੁਰੱਖਿਅਤ ਭੁਗਤਾਨ। ਦਿਖਾਈ ਗਈ ਕੀਮਤ ਹੀ ਅੰਤਿਮ ਰਕਮ ਹੈ।" />
             </p>
           </section>
 
           <section aria-labelledby="faq-h" className="mx-auto w-full max-w-3xl space-y-4">
             <h2 id="faq-h" className="text-2xl font-bold tracking-tight">
-              Pricing questions
+              <T en="Pricing questions" pa="ਕੀਮਤਾਂ ਬਾਰੇ ਸਵਾਲ" />
             </h2>
             <div className="space-y-2.5">
               {FAQS.map((f) => (
@@ -137,11 +141,15 @@ export default async function PricingPage() {
 
           <section className="flex flex-col gap-4 rounded-3xl bg-linear-to-r from-primary-strong to-primary p-6 text-white sm:flex-row sm:items-center sm:justify-between sm:p-10">
             <div className="space-y-1">
-              <h2 className="text-xl font-bold sm:text-2xl">Not sure yet? Take a free test first.</h2>
-              <p className="text-white/80">Same CBT screen as the paid tests. No login, no payment.</p>
+              <h2 className="text-xl font-bold sm:text-2xl">
+                <T en="Not sure yet? Take a free test first." pa="ਹਾਲੇ ਪੱਕਾ ਨਹੀਂ? ਪਹਿਲਾਂ ਮੁਫ਼ਤ ਟੈਸਟ ਦਿਓ।" />
+              </h2>
+              <p className="text-white/80">
+                <T en="Same CBT screen as the paid tests. No login, no payment." pa="ਪੇਡ ਟੈਸਟਾਂ ਵਾਲੀ ਹੀ CBT ਸਕਰੀਨ। ਨਾ ਲੌਗ ਇਨ, ਨਾ ਭੁਗਤਾਨ।" />
+              </p>
             </div>
             <Link href="/tests" className={btn("accent", "lg", "shrink-0")}>
-              Choose your exam
+              <T en="Choose your exam" pa="ਆਪਣੀ ਪ੍ਰੀਖਿਆ ਚੁਣੋ" />
             </Link>
           </section>
         </div>

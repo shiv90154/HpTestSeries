@@ -1,6 +1,7 @@
 import { ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { Fragment } from "react";
+import { Tx } from "./ui-lang";
 
 /**
  * Visible breadcrumb trail (the BreadcrumbList JSON-LD is separate). Links are 40px tall so they are easy to
@@ -14,7 +15,7 @@ export function Breadcrumbs({ links, current, light = false }: { links: { href: 
         <Fragment key={l.href}>
           {i > 0 && chevron}
           <Link href={l.href} className={`inline-flex min-h-10 items-center ${light ? "hover:text-white" : "hover:text-primary"}`}>
-            {l.label}
+            <Tx>{l.label}</Tx>
           </Link>
         </Fragment>
       ))}

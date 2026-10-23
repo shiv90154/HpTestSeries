@@ -5,19 +5,21 @@ import Link from "next/link";
 import { useSite, useSitePathname } from "@/sites/provider";
 import { freeMockHref } from "@/sites";
 import { authClient } from "@/modules/identity/auth-client";
+import { useUiLang } from "./ui-lang";
 
 /** App-style tab bar for public pages on phones; the free mock sits in the middle as the main action. */
 export function PublicBottomNav() {
   const site = useSite();
   const pathname = useSitePathname();
   const { data: session } = authClient.useSession();
+  const pa = useUiLang() === "pa";
 
   const tabs = [
-    { href: "/", icon: Home, label: "Home" },
-    { href: "/exams", icon: LayoutGrid, label: "Exams" },
+    { href: "/", icon: Home, label: pa ? "ਹੋਮ" : "Home" },
+    { href: "/exams", icon: LayoutGrid, label: pa ? "ਪ੍ਰੀਖਿਆਵਾਂ" : "Exams" },
     null, // centre action
-    { href: "/tests", icon: NotebookPen, label: "Tests" },
-    { href: session ? "/dashboard" : "/login", icon: UserRound, label: session ? "Account" : "Login" },
+    { href: "/tests", icon: NotebookPen, label: pa ? "ਟੈਸਟ" : "Tests" },
+    { href: session ? "/dashboard" : "/login", icon: UserRound, label: session ? (pa ? "ਖਾਤਾ" : "Account") : pa ? "ਲੌਗ ਇਨ" : "Login" },
   ];
 
   const isActive = (href: string) => (href === "/" ? pathname === "/" : pathname === href || pathname.startsWith(`${href}/`));
@@ -30,7 +32,7 @@ export function PublicBottomNav() {
       {tabs.map((t) =>
         t ? (
           <Link
-            key={t.label}
+            key={t.href}
             href={t.href}
             aria-current={isActive(t.href) ? "page" : undefined}
             className={`flex flex-col items-center justify-center gap-0.5 py-2 text-[11px] font-medium ${isActive(t.href) ? "text-primary" : "text-muted"}`}
@@ -43,7 +45,7 @@ export function PublicBottomNav() {
             <span className="-mt-6 grid size-13 place-items-center rounded-full bg-accent text-[#1f1300] shadow-lg ring-4 ring-surface">
               <Play className="size-6 fill-current" />
             </span>
-            Free Mock
+            {pa ? "ਮੁਫ਼ਤ ਮੌਕ" : "Free Mock"}
           </Link>
         ),
       )}
