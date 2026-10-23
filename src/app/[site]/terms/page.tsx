@@ -32,7 +32,7 @@ export default async function TermsPage() {
         government recruitment exams. Some tests are free; others are part of paid test series or passes.
       </p>
       <p>
-        <strong>{site.name} is an independent practice platform.</strong> It is not affiliated with, endorsed by or connected to
+        <strong>{site.name} is an independent practice platform.</strong> It is not affiliated with, endorsed by or connected to{" "}
         {site.disclaimerBodies} or any government body. Exam patterns, syllabus and dates can change — always confirm
         official details from the official notification. Practising on this site does not guarantee selection in any exam.
       </p>
