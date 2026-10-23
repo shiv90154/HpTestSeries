@@ -1,11 +1,12 @@
 import { describe, expect, it } from "vitest";
 import { catalogue } from "../../../prisma/catalogue";
-import { EXAM_PAGES, NOTIFICATION_POSTS } from "../../../prisma/exam-pages";
+import { EXAM_PAGES, NOTIFICATION_POSTS, PUNJAB_POSTS } from "../../../prisma/exam-pages";
 import { EXAM_SERIES } from "../../../prisma/exam-series";
 import { PATWARI_TESTS } from "../../../prisma/patwari";
 import { examContent, posts } from "../../../prisma/seed-content";
 import { UPCOMING_FREE_TESTS } from "../../../prisma/upcoming-free";
 import { hp } from "@/sites/hp";
+import { pb } from "@/sites/pb";
 import { faqListSchema, patternSchema, seoSchema } from "./exam-content";
 import { postSchema } from "./post-input";
 
@@ -16,9 +17,13 @@ const testSlugs = new Set([
   ...EXAM_SERIES.flatMap((s) => s.tests.map((t) => t.slug)),
   ...PATWARI_TESTS.map((t) => t.slug),
   hp.freeMockSlug,
+  pb.freeMockSlug,
   "hpas-free-mock-1",
   "hpas-free-mock-2",
 ]);
+
+/** The state GK pages (/himachal on hp, /punjab on pb), which exam pages may link to. */
+const STATE_PAGES = new Set(["/himachal", "/punjab"]);
 
 /** Everything a page shows, merged the way prisma/seed-content.ts merges it. */
 function pageFor(key: string) {
@@ -83,7 +88,7 @@ describe("exam page copy", () => {
         const href = m[1];
         const tests = href.match(/^\/tests\/([^/?#]+)$/);
         if (tests) expect(testSlugs.has(tests[1]), `${key}: ${href}`).toBe(true);
-        else expect(known.has(href.slice(1)), `${key}: ${href}`).toBe(true);
+        else if (!STATE_PAGES.has(href)) expect(known.has(href.slice(1)), `${key}: ${href}`).toBe(true);
       }
     });
   });
@@ -103,6 +108,9 @@ describe("exam page copy", () => {
       "hprca/clerk",
       "hprca/staff-nurse",
       "hpscb/clerk",
+      "psssb/clerk",
+      "psssb/group-d",
+      "punjab-police/constable",
     ]);
   });
 });
@@ -113,7 +121,7 @@ const PYQ_EXAMS = new Set(["hp-revenue/patwari", "hp-police/constable", "hprca/j
 /** Whether an internal link in a draft post points at a page that exists (or will, once the page's own content is seeded). */
 function linkExists(href: string): boolean {
   const path = href.split(/[?#]/)[0];
-  if (["/exams", "/tests", "/previous-year-papers", "/himachal"].includes(path)) return true;
+  if (["/exams", "/tests", "/previous-year-papers", "/himachal", "/punjab"].includes(path)) return true;
   const test = path.match(/^\/tests\/([^/]+)$/);
   if (test) return testSlugs.has(test[1]);
   const blog = path.match(/^\/blog\/([^/]+)$/);
@@ -131,7 +139,7 @@ describe("draft posts", () => {
     expect(new Set(slugs).size).toBe(slugs.length);
   });
 
-  describe.each(NOTIFICATION_POSTS.map((p) => [p.slug, p] as const))("%s", (_slug, p) => {
+  describe.each([...NOTIFICATION_POSTS, ...PUNJAB_POSTS].map((p) => [p.slug, p] as const))("%s", (_slug, p) => {
     it("passes the same validation as the admin blog editor", () => {
       const r = postSchema.safeParse({ ...p, titleHi: p.titleHi ?? "", coverImage: "", seoTitle: p.seoTitle ?? "", seoDescription: p.seoDescription ?? "", faqs: p.faqs ?? [], examIds: [] });
       expect(r.success ? [] : r.error.issues.map((i) => i.message)).toEqual([]);

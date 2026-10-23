@@ -82,4 +82,20 @@ Technical subject knowledge is the core of these papers, with a smaller general 
       },
     ],
   },
+
+  psssb: {
+    about: `The **Subordinate Services Selection Board, Punjab (PSSSB)**, Van Bhawan, Sector-68, SAS Nagar (Mohali), recruits Group B, Group C and Group D staff for Punjab government departments: [Clerks](/psssb/clerk), [Group D posts](/psssb/group-d) such as Sewadar and Chowkidar, [Junior Engineers](/psssb/junior-engineer), Patwaris, Excise and Taxation Inspectors, Stenotypists and many more. Each advertisement has a number such as "Advt. No. 02 of 2026" and is published on sssb.punjab.gov.in.
+
+Most PSSSB written tests have two parts: a **qualifying Punjabi language paper**, which you must pass before the rest of your paper is checked, and a merit paper on general knowledge, Punjab history and culture, reasoning, English, Punjabi and computers, with subject questions for technical posts. Clerical posts add a Punjabi and English typing test. The advertisement gives the exact pattern, so read it before you plan your preparation.`,
+    faqs: [
+      {
+        q: "Is the Punjabi paper compulsory in PSSSB exams?",
+        a: "Yes. PSSSB papers include a qualifying Punjabi language section, and Punjab rules require knowledge of Punjabi up to matriculation level for these posts. Fail the Punjabi section and the rest of the paper is not counted.",
+      },
+      {
+        q: "Where are PSSSB admit cards, answer keys and results published?",
+        a: "Everything is announced on sssb.punjab.gov.in. Admit cards are often downloaded from the exam agency's portal linked there. Do not trust notices forwarded on WhatsApp: in October 2026 PSSSB warned that a fake postponement notice for the Group D exam was circulating.",
+      },
+    ],
+  },
 };

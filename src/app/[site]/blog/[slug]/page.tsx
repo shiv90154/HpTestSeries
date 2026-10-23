@@ -16,7 +16,7 @@ import { organizationNode } from "@/lib/schema";
 import { currentSite } from "@/sites/current";
 import { getAllPostSlugs, getPost, getPublishedTests, getRelatedPosts } from "@/modules/catalog/queries";
 import { faqPageJsonLd } from "@/modules/content/exam-content";
-import { CATEGORY_META, readingMinutes } from "@/modules/content/post-input";
+import { categoryMeta, readingMinutes } from "@/modules/content/post-input";
 
 export const revalidate = 3600;
 
@@ -42,7 +42,7 @@ export async function generateMetadata({ params }: PageProps<"/[site]/blog/[slug
       url: `/blog/${post.slug}`,
       publishedTime: post.publishedAt.toISOString(),
       modifiedTime: post.updatedAt.toISOString(),
-      section: CATEGORY_META[post.category].label,
+      section: categoryMeta(post.category, site.code).label,
     },
   };
 }
@@ -52,7 +52,7 @@ export default async function PostPage({ params }: PageProps<"/[site]/blog/[slug
   const post = await getPost(site.code, (await params).slug);
   if (!post) notFound();
 
-  const cat = CATEGORY_META[post.category];
+  const cat = categoryMeta(post.category, site.code);
   const url = `${site.url}/blog/${post.slug}`;
   // Only show "Updated" when the post changed meaningfully after publishing (not same-day typo fixes).
   const updated = post.updatedAt.getTime() - post.publishedAt.getTime() > 24 * 3600 * 1000;

@@ -19,7 +19,7 @@ export const revalidate = 3600;
 export async function generateMetadata(): Promise<Metadata> {
   const site = await currentSite();
   return {
-    title: "Pricing — HP Mock Test Series, One-Time Payment",
+    title: `Pricing — ${site.logo.initials} Mock Test Series, One-Time Payment`,
     description: `Prices of the ${site.stateAdj} mock test series: ${site.pricingExams} and more. One-time payment, no auto-renewal, 7-day refund. Many tests are free.`,
     alternates: { canonical: "/pricing" },
   };

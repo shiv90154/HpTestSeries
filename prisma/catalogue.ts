@@ -139,6 +139,42 @@ export const catalogue: BodySeed[] = [
     nameHi: "हिमाचल प्रदेश राज्य सहकारी बैंक",
     exams: [{ slug: "clerk", name: "Clerk", nameHi: "क्लर्क" }],
   },
+  // Punjab (pbtestseries.in only). Exam names carry the body so they stay unique in the /tests filter.
+  {
+    slug: "psssb",
+    name: "Subordinate Services Selection Board, Punjab",
+    nameHi: "अधीनस्थ सेवा चयन बोर्ड, पंजाब",
+    sites: ["pb"],
+    exams: [
+      { slug: "clerk", name: "PSSSB Clerk", nameHi: "पीएसएसएसबी क्लर्क" },
+      { slug: "group-d", name: "PSSSB Group D", nameHi: "पीएसएसएसबी ग्रुप डी" },
+      { slug: "junior-engineer", name: "PSSSB Junior Engineer", nameHi: "पीएसएसएसबी जूनियर इंजीनियर" },
+    ],
+  },
+  {
+    slug: "punjab-police",
+    name: "Punjab Police",
+    nameHi: "पंजाब पुलिस",
+    sites: ["pb"],
+    exams: [{ slug: "constable", name: "Constable", nameHi: "कांस्टेबल" }],
+  },
+  {
+    slug: "ppsc",
+    name: "Punjab Public Service Commission",
+    nameHi: "पंजाब लोक सेवा आयोग",
+    sites: ["pb"],
+    exams: [
+      {
+        slug: "pcs",
+        name: "PCS Combined Competitive Exam",
+        nameHi: "पीसीएस संयुक्त प्रतियोगी परीक्षा",
+        stages: [
+          { slug: "prelims", name: "Prelims", nameHi: "प्रारंभिक" },
+          { slug: "mains", name: "Mains", nameHi: "मुख्य" },
+        ],
+      },
+    ],
+  },
   // National defence entries that many Himachal aspirants sit; not Himachal recruitments.
   {
     slug: "upsc",

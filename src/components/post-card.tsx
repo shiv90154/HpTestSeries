@@ -1,15 +1,16 @@
 import { CalendarDays } from "lucide-react";
 import Link from "next/link";
 import type { PublicPostCard } from "@/modules/catalog/queries";
-import { CATEGORY_META } from "@/modules/content/post-input";
+import { categoryMeta } from "@/modules/content/post-input";
+import { currentSite } from "@/sites/current";
 import { card } from "./ui";
 
 export function formatDate(d: Date): string {
   return d.toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric", timeZone: "Asia/Kolkata" });
 }
 
-export function PostCard({ post, compact = false }: { post: PublicPostCard; compact?: boolean }) {
-  const cat = CATEGORY_META[post.category];
+export async function PostCard({ post, compact = false }: { post: PublicPostCard; compact?: boolean }) {
+  const cat = categoryMeta(post.category, (await currentSite()).code);
   return (
     <article className={`${card} group flex flex-col gap-3 p-5 hover:border-primary`}>
       <div className="flex flex-wrap items-center gap-2 text-xs">

@@ -45,7 +45,7 @@ export default async function BlogPage({ searchParams }: PageProps<"/[site]/blog
             {site.stateAdjHi} की सरकारी भर्तियों की ताज़ा जानकारी — नोटिफिकेशन, सिलेबस, कट ऑफ और परीक्षा तिथि।
           </p>
         </header>
-        <PostList posts={items} page={page} pages={pages} basePath="/blog" active={null} />
+        <PostList posts={items} page={page} pages={pages} basePath="/blog" active={null} site={site.code} />
       </main>
       <SiteFooter />
     </>

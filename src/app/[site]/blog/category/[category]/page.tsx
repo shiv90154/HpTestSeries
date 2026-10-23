@@ -6,7 +6,7 @@ import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { currentSite } from "@/sites/current";
 import { getPublishedPosts, POSTS_PER_PAGE } from "@/modules/catalog/queries";
-import { CATEGORY_META, categoryFromSlug, POST_CATEGORIES } from "@/modules/content/post-input";
+import { CATEGORY_META, categoryFromSlug, categoryMeta, POST_CATEGORIES } from "@/modules/content/post-input";
 import { parsePage, PostList } from "../../post-list";
 
 export function generateStaticParams() {
@@ -17,7 +17,7 @@ export async function generateMetadata({ params, searchParams }: PageProps<"/[si
   const site = await currentSite();
   const category = categoryFromSlug((await params).category);
   if (!category) return {};
-  const meta = CATEGORY_META[category];
+  const meta = categoryMeta(category, site.code);
   const page = parsePage((await searchParams).page);
   const path = `/blog/category/${meta.slug}`;
   const { total } = await getPublishedPosts(site.code, { category, take: 1 });
@@ -34,7 +34,7 @@ export default async function BlogCategoryPage({ params, searchParams }: PagePro
   const site = await currentSite();
   const category = categoryFromSlug((await params).category);
   if (!category) notFound();
-  const meta = CATEGORY_META[category];
+  const meta = categoryMeta(category, site.code);
   const page = parsePage((await searchParams).page);
   const { items, total } = await getPublishedPosts(site.code, { category, page });
   const pages = Math.max(1, Math.ceil(total / POSTS_PER_PAGE));
@@ -68,7 +68,7 @@ export default async function BlogCategoryPage({ params, searchParams }: PagePro
             {meta.blurb} <span lang="hi">({meta.labelHi})</span>
           </p>
         </header>
-        <PostList posts={items} page={page} pages={pages} basePath={path} active={category} />
+        <PostList posts={items} page={page} pages={pages} basePath={path} active={category} site={site.code} />
       </main>
       <SiteFooter />
     </>

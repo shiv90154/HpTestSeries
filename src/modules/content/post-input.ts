@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { faqListSchema } from "./exam-content";
-import { SITE_CODES } from "@/sites/types";
+import { SITE_CODES, type SiteCode } from "@/sites/types";
 
 const SLUG_RE = /^[a-z0-9]+(-[a-z0-9]+)*$/;
 
@@ -83,6 +83,42 @@ export const CATEGORY_META: Record<PostCategory, { slug: string; label: string; 
     blurb: "Himachal Pradesh current affairs for HPAS, HPRCA, HP Police and Patwari exams.",
   },
 };
+
+type CategoryCopy = Partial<Pick<(typeof CATEGORY_META)[PostCategory], "label" | "labelHi" | "heading" | "blurb">>;
+
+/** Where a site's category pages differ from the HP copy above. */
+const SITE_CATEGORY_COPY: Partial<Record<SiteCode, Record<PostCategory, CategoryCopy>>> = {
+  pb: {
+    NOTIFICATION: {
+      heading: "Punjab Govt Job Notifications",
+      blurb: "Latest Punjab government recruitment notifications — PSSSB, PPSC, Punjab Police and more, with vacancies, eligibility and how to apply.",
+    },
+    SYLLABUS: { heading: "Punjab Exam Syllabus", blurb: "Topic-wise syllabus for PSSSB, Punjab Police and PPSC exams, with what to study first." },
+    EXAM_PATTERN: {
+      heading: "Punjab Exam Pattern",
+      blurb: "Questions, marks, time, negative marking and the qualifying Punjabi paper for every major Punjab government exam.",
+    },
+    EXAM_DATE: { heading: "Punjab Exam Dates", blurb: "Exam calendar and date updates for PSSSB, PPSC, Punjab Police and other Punjab government exams." },
+    ADMIT_CARD: { heading: "Punjab Exam Admit Cards", blurb: "When and how to download admit cards for PSSSB, PPSC and Punjab Police exams." },
+    RESULT: { heading: "Punjab Exam Results", blurb: "Results, answer keys and merit list news for Punjab government recruitment exams." },
+    CUTOFF: { heading: "Punjab Exam Cutoff Marks", blurb: "Previous cutoff and qualifying marks for PSSSB, Punjab Police and PPSC exams, category-wise." },
+    STRATEGY: {
+      heading: "Punjab Exam Preparation Strategy",
+      blurb: "How to prepare for Punjab government exams — study plans, Punjab GK, the Punjabi paper and mock test strategy.",
+    },
+    CURRENT_AFFAIRS: {
+      label: "Punjab Current Affairs",
+      labelHi: "पंजाब समसामयिकी",
+      heading: "Punjab Current Affairs",
+      blurb: "Punjab current affairs for PSSSB, PPSC, Punjab Police and Patwari exams.",
+    },
+  },
+};
+
+/** A category's label and landing-page copy as shown on one site. */
+export function categoryMeta(category: PostCategory, site: SiteCode) {
+  return { ...CATEGORY_META[category], ...SITE_CATEGORY_COPY[site]?.[category] };
+}
 
 export function categoryFromSlug(slug: string): PostCategory | null {
   return POST_CATEGORIES.find((c) => CATEGORY_META[c].slug === slug) ?? null;

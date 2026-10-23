@@ -3,7 +3,8 @@ import Link from "next/link";
 import { PostCard } from "@/components/post-card";
 import { card } from "@/components/ui";
 import type { PublicPostCard } from "@/modules/catalog/queries";
-import { CATEGORY_META, POST_CATEGORIES, type PostCategory } from "@/modules/content/post-input";
+import { CATEGORY_META, categoryMeta, POST_CATEGORIES, type PostCategory } from "@/modules/content/post-input";
+import type { SiteCode } from "@/sites/types";
 
 /** Shared body of /blog and /blog/category/[category]: category chips, post grid, pagination. */
 export function PostList({
@@ -12,12 +13,14 @@ export function PostList({
   pages,
   basePath,
   active,
+  site,
 }: {
   posts: PublicPostCard[];
   page: number;
   pages: number;
   basePath: string;
   active: PostCategory | null;
+  site: SiteCode;
 }) {
   const pageHref = (n: number) => (n === 1 ? basePath : `${basePath}?page=${n}`);
   return (
@@ -28,7 +31,7 @@ export function PostList({
         </Chip>
         {POST_CATEGORIES.map((c) => (
           <Chip key={c} href={`/blog/category/${CATEGORY_META[c].slug}`} active={active === c}>
-            {CATEGORY_META[c].label}
+            {categoryMeta(c, site).label}
           </Chip>
         ))}
         <a href="/blog/feed.xml" className="ml-auto flex min-h-10 items-center gap-1.5 text-sm text-muted hover:text-primary">

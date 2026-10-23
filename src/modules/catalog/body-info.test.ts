@@ -10,7 +10,7 @@ describe("body pages", () => {
   });
 
   it("exist for exactly the bodies with text and two or more exams", () => {
-    expect(catalogue.filter(hasBodyPage).map((b) => b.slug).sort()).toEqual(["hp-high-court", "hp-police", "hppsc", "hprca", "hpsebl"]);
+    expect(catalogue.filter(hasBodyPage).map((b) => b.slug).sort()).toEqual(["hp-high-court", "hp-police", "hppsc", "hprca", "hpsebl", "psssb"]);
   });
 
   it("link only to exam pages that exist", () => {

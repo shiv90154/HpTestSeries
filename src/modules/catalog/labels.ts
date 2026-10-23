@@ -9,6 +9,9 @@ const EXAM_PREFIX: Record<string, string> = {
   hpscb: "HPSCB",
   upsc: "UPSC",
   "delhi-police": "Delhi Police",
+  psssb: "PSSSB",
+  ppsc: "PPSC",
+  "punjab-police": "Punjab Police",
   // Candidates search "AFCAT", never "IAF AFCAT"
   iaf: "",
 };

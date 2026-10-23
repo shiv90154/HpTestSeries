@@ -1,7 +1,7 @@
 // RSS 2.0 feed of published posts — for feed readers, Telegram/WhatsApp auto-posting bots and faster discovery.
 import { getSite } from "@/sites";
 import { getPublishedPosts } from "@/modules/catalog/queries";
-import { CATEGORY_META } from "@/modules/content/post-input";
+import { categoryMeta } from "@/modules/content/post-input";
 import { siteStaticParams } from "@/sites";
 
 export const revalidate = 3600;
@@ -20,7 +20,7 @@ export async function GET(_req: Request, ctx: RouteContext<"/[site]/blog/feed.xm
 <title>${esc(site.name)} — ${site.stateAdj} Govt Exam Updates</title>
 <link>${site.url}/blog</link>
 <atom:link href="${site.url}/blog/feed.xml" rel="self" type="application/rss+xml" />
-<description>${esc("HPRCA, HPPSC, HP Police, HP TET and Patwari notifications, syllabus, cutoff and exam dates.")}</description>
+<description>${esc(`${site.examList} notifications, syllabus, cutoff and exam dates.`)}</description>
 <language>en-in</language>
 ${items[0] ? `<lastBuildDate>${items[0].updatedAt.toUTCString()}</lastBuildDate>` : ""}
 ${items
@@ -30,7 +30,7 @@ ${items
 <link>${site.url}/blog/${p.slug}</link>
 <guid isPermaLink="true">${site.url}/blog/${p.slug}</guid>
 <pubDate>${p.publishedAt.toUTCString()}</pubDate>
-<category>${esc(CATEGORY_META[p.category].label)}</category>
+<category>${esc(categoryMeta(p.category, site.code).label)}</category>
 <description>${esc(p.excerpt)}</description>
 </item>`,
   )

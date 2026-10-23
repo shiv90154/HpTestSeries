@@ -1,4 +1,6 @@
 import type { ExamPattern, ExamSeo, Faq } from "../../src/modules/content/exam-content";
+import type { PostCategory } from "../../src/modules/content/post-input";
+import type { SiteCode } from "../../src/sites/types";
 
 /**
  * Public copy for one exam page (hub, /syllabus, /exam-pattern). It is seeded by prisma/seed-content.ts, which only fills
@@ -26,7 +28,9 @@ export type PostSeed = {
   title: string;
   titleHi?: string;
   excerpt: string;
-  category: "NOTIFICATION" | "SYLLABUS" | "EXAM_PATTERN" | "CUTOFF" | "STRATEGY" | "CURRENT_AFFAIRS";
+  category: PostCategory;
+  /** The site the post is published on; default "hp". */
+  site?: SiteCode;
   exams: string[];
   content: string;
   faqs?: Faq[];

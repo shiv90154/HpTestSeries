@@ -33,7 +33,7 @@ export default async function TermsPage() {
       </p>
       <p>
         <strong>{site.name} is an independent practice platform.</strong> It is not affiliated with, endorsed by or connected to
-        HPPSC, HPRCA, HPBOSE, HP Police or any government body. Exam patterns, syllabus and dates can change — always confirm
+        {site.disclaimerBodies} or any government body. Exam patterns, syllabus and dates can change — always confirm
         official details from the official notification. Practising on this site does not guarantee selection in any exam.
       </p>
 
