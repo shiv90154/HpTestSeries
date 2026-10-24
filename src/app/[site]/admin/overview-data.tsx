@@ -12,23 +12,28 @@ import {
 } from "lucide-react";
 import { missingBusinessDetails } from "@/lib/business";
 import { db } from "@/lib/db";
+import { SITES, type SiteCode } from "@/sites";
 import { OverviewCharts } from "./overview-charts";
+import { siteDomain } from "./site-filter";
 
-export async function OverviewData() {
+export async function OverviewData({ site }: { site: SiteCode | null }) {
   await connection(); // always render per request; counts must be live
 
   const todayStart = new Date();
   todayStart.setHours(0, 0, 0, 0);
+  // Money and people belong to a site; exams, questions and attempts are shared, so they are never filtered.
+  const orderSite = site ? { site } : {};
 
-  const [exams, questions, published, users, revenue, ordersToday, attemptsToday, flagged] = await Promise.all([
+  const [exams, questions, published, users, revenue, ordersToday, attemptsToday, flagged, bySite] = await Promise.all([
     db.exam.count(),
     db.question.count(),
     db.question.count({ where: { status: "PUBLISHED" } }),
-    db.user.count(),
-    db.order.aggregate({ where: { status: "PAID" }, _sum: { amountPaise: true } }),
-    db.order.count({ where: { status: "PAID", createdAt: { gte: todayStart } } }),
+    db.user.count({ where: site ? { signupSite: site } : {} }),
+    db.order.aggregate({ where: { ...orderSite, status: "PAID" }, _sum: { amountPaise: true } }),
+    db.order.count({ where: { ...orderSite, status: "PAID", createdAt: { gte: todayStart } } }),
     db.attempt.count({ where: { status: "SUBMITTED", submittedAt: { gte: todayStart } } }),
     db.attempt.count({ where: { flagged: true } }),
+    siteBreakdown(),
   ]);
 
   const missing = missingBusinessDetails();
@@ -83,7 +88,9 @@ export async function OverviewData() {
         })}
       </dl>
 
-      <OverviewCharts />
+      <SiteBreakdown rows={bySite} current={site} />
+
+      <OverviewCharts site={site} />
 
       <div className="rounded-xl border border-border bg-surface p-4">
         <h2 className="mb-3 text-sm font-semibold text-muted">Quick actions</h2>
@@ -100,5 +107,70 @@ export async function OverviewData() {
         </div>
       </div>
     </>
+  );
+}
+
+type SiteRow = { code: SiteCode; paidRupees: number; paidOrders: number; unpaidOrders: number; last30Rupees: number; users: number };
+
+/** Paid revenue, orders and signups per domain, all time, plus the last 30 days of revenue. */
+async function siteBreakdown(): Promise<SiteRow[]> {
+  const since = new Date(Date.now() - 30 * 86_400_000);
+  const [orders, recent, users] = await Promise.all([
+    db.order.groupBy({ by: ["site", "status"], _sum: { amountPaise: true }, _count: { _all: true } }),
+    db.order.groupBy({ by: ["site"], where: { status: "PAID", createdAt: { gte: since } }, _sum: { amountPaise: true } }),
+    db.user.groupBy({ by: ["signupSite"], _count: { _all: true } }),
+  ]);
+  return Object.values(SITES).map(({ code }) => {
+    const mine = orders.filter((o) => o.site === code);
+    const paid = mine.find((o) => o.status === "PAID");
+    return {
+      code,
+      paidRupees: (paid?._sum.amountPaise ?? 0) / 100,
+      paidOrders: paid?._count._all ?? 0,
+      unpaidOrders: mine.filter((o) => o.status === "CREATED" || o.status === "FAILED").reduce((n, o) => n + o._count._all, 0),
+      last30Rupees: (recent.find((o) => o.site === code)?._sum.amountPaise ?? 0) / 100,
+      users: users.find((u) => u.signupSite === code)?._count._all ?? 0,
+    };
+  });
+}
+
+function SiteBreakdown({ rows, current }: { rows: SiteRow[]; current: SiteCode | null }) {
+  const inr = (n: number) => `₹${n.toLocaleString("en-IN")}`;
+  const total = rows.reduce((n, r) => n + r.paidRupees, 0);
+  return (
+    <div className="overflow-x-auto rounded-xl border border-border bg-surface">
+      <table className="w-full text-sm">
+        <caption className="px-4 pt-3 text-left text-sm font-semibold text-muted">Revenue by site</caption>
+        <thead className="text-left text-xs text-muted">
+          <tr>
+            <th className="px-4 py-2">Domain</th>
+            <th className="px-4 py-2 text-right">Revenue (paid)</th>
+            <th className="px-4 py-2 text-right">Last 30 days</th>
+            <th className="px-4 py-2 text-right">Paid orders</th>
+            <th className="px-4 py-2 text-right">Not paid</th>
+            <th className="px-4 py-2 text-right">Users</th>
+          </tr>
+        </thead>
+        <tbody className="tabular-nums">
+          {rows.map((r) => (
+            <tr key={r.code} className={`border-t border-border ${r.code === current ? "bg-primary-soft" : ""}`}>
+              <td className="px-4 py-2">
+                <Link href={`/admin/orders?site=${r.code}`} className="font-medium hover:text-primary hover:underline">
+                  {siteDomain(r.code)}
+                </Link>
+              </td>
+              <td className="px-4 py-2 text-right font-semibold">
+                {inr(r.paidRupees)}
+                {total > 0 && <span className="ml-1 text-xs font-normal text-muted">{Math.round((r.paidRupees / total) * 100)}%</span>}
+              </td>
+              <td className="px-4 py-2 text-right">{inr(r.last30Rupees)}</td>
+              <td className="px-4 py-2 text-right">{r.paidOrders.toLocaleString("en-IN")}</td>
+              <td className="px-4 py-2 text-right text-muted">{r.unpaidOrders.toLocaleString("en-IN")}</td>
+              <td className="px-4 py-2 text-right">{r.users.toLocaleString("en-IN")}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
   );
 }

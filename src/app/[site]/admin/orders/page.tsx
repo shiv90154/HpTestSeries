@@ -4,6 +4,7 @@ import { requirePermission } from "@/modules/identity/session";
 import { SkeletonTableRow } from "@/components/skeleton";
 import { ReconcileButton } from "./reconcile-button";
 import { OrdersTableData } from "./orders-table-data";
+import { SiteFilter, siteParam } from "../site-filter";
 
 export const metadata: Metadata = { title: "Orders" };
 
@@ -14,6 +15,7 @@ function OrdersTableSkeleton() {
         <thead className="bg-surface-muted text-left text-xs text-muted">
           <tr>
             <th className="px-4 py-2">When</th>
+            <th className="px-4 py-2">Site</th>
             <th className="px-4 py-2">User</th>
             <th className="px-4 py-2">Product</th>
             <th className="px-4 py-2 text-right">Amount</th>
@@ -23,7 +25,7 @@ function OrdersTableSkeleton() {
         </thead>
         <tbody>
           {Array.from({ length: 6 }).map((_, i) => (
-            <SkeletonTableRow key={i} cols={6} />
+            <SkeletonTableRow key={i} cols={7} />
           ))}
         </tbody>
       </table>
@@ -31,8 +33,9 @@ function OrdersTableSkeleton() {
   );
 }
 
-export default async function OrdersAdminPage() {
+export default async function OrdersAdminPage({ searchParams }: PageProps<"/[site]/admin/orders">) {
   await requirePermission("commerce:manage");
+  const site = siteParam(await searchParams);
 
   return (
     <div className="space-y-5">
@@ -40,8 +43,9 @@ export default async function OrdersAdminPage() {
         <h1 className="text-xl font-semibold">Orders</h1>
         <ReconcileButton />
       </div>
-      <Suspense fallback={<OrdersTableSkeleton />}>
-        <OrdersTableData />
+      <SiteFilter path="/admin/orders" current={site} />
+      <Suspense key={site ?? "all"} fallback={<OrdersTableSkeleton />}>
+        <OrdersTableData site={site} />
       </Suspense>
     </div>
   );

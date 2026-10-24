@@ -3,14 +3,21 @@ import Link from "next/link";
 import { StatusBadge } from "../ui";
 import { Table } from "../table";
 import { listOrders } from "@/modules/commerce/order-service";
+import type { SiteCode } from "@/sites";
+import { SiteBadge, siteDomain } from "../site-filter";
 
-export async function OrdersTableData() {
+export async function OrdersTableData({ site }: { site: SiteCode | null }) {
   await connection();
-  const orders = await listOrders();
+  const orders = await listOrders(site);
+  const paid = orders.filter((o) => o.status === "PAID");
+  const paidRupees = paid.reduce((sum, o) => sum + o.amountPaise, 0) / 100;
 
   return (
     <>
-      <p className="mb-3 text-sm text-muted">Latest {orders.length}</p>
+      <p className="mb-3 text-sm text-muted">
+        Latest {orders.length}
+        {site ? ` on ${siteDomain(site)}` : ""} · {paid.length} paid, ₹{paidRupees.toLocaleString("en-IN")}
+      </p>
       <Table
         caption="Orders"
         rows={orders}
@@ -18,6 +25,7 @@ export async function OrdersTableData() {
         emptyMessage="No orders yet."
         columns={[
           { header: "When", render: (o) => o.createdAt.toLocaleString("en-IN"), cellClassName: "whitespace-nowrap text-muted" },
+          { header: "Site", render: (o) => <SiteBadge code={o.site} /> },
           {
             header: "User",
             render: (o) => (

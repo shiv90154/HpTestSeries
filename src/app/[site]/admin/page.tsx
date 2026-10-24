@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 import { SkeletonCard, SkeletonStatTile } from "@/components/skeleton";
 import { OverviewData } from "./overview-data";
+import { SiteFilter, siteParam } from "./site-filter";
 
 function AdminOverviewSkeleton() {
   return (
@@ -15,7 +16,8 @@ function AdminOverviewSkeleton() {
   );
 }
 
-export default function AdminOverviewPage() {
+export default async function AdminOverviewPage({ searchParams }: PageProps<"/[site]/admin">) {
+  const site = siteParam(await searchParams);
   return (
     <div className="space-y-6">
       <div>
@@ -23,8 +25,10 @@ export default function AdminOverviewPage() {
         <p className="mt-1 text-sm text-muted">Live snapshot of content, learners, and revenue.</p>
       </div>
 
-      <Suspense fallback={<AdminOverviewSkeleton />}>
-        <OverviewData />
+      <SiteFilter path="/admin" current={site} />
+
+      <Suspense key={site ?? "all"} fallback={<AdminOverviewSkeleton />}>
+        <OverviewData site={site} />
       </Suspense>
     </div>
   );

@@ -1,4 +1,5 @@
 import { db } from "@/lib/db";
+import type { SiteCode } from "@/sites";
 
 const DAYS = 30;
 const DAY_MS = 86_400_000;
@@ -114,16 +115,17 @@ function BarChart({
   );
 }
 
-export async function OverviewCharts() {
+/** Revenue and signups follow the site filter; attempts are shared by every site, so those charts never do. */
+export async function OverviewCharts({ site }: { site: SiteCode | null }) {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
   const days = Array.from({ length: DAYS }, (_, i) => new Date(today.getTime() - (DAYS - 1 - i) * DAY_MS));
   const since = days[0];
 
   const [orders, attempts, signups, topGroups] = await Promise.all([
-    db.order.findMany({ where: { status: "PAID", createdAt: { gte: since } }, select: { createdAt: true, amountPaise: true } }),
+    db.order.findMany({ where: { ...(site ? { site } : {}), status: "PAID", createdAt: { gte: since } }, select: { createdAt: true, amountPaise: true } }),
     db.attempt.findMany({ where: { status: "SUBMITTED", submittedAt: { gte: since } }, select: { submittedAt: true } }),
-    db.user.findMany({ where: { createdAt: { gte: since } }, select: { createdAt: true } }),
+    db.user.findMany({ where: { ...(site ? { signupSite: site } : {}), createdAt: { gte: since } }, select: { createdAt: true } }),
     db.attempt.groupBy({
       by: ["testId"],
       where: { status: "SUBMITTED", submittedAt: { gte: since } },

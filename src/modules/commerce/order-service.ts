@@ -11,11 +11,13 @@ export type OrderListItem = {
   status: string;
   razorpayOrderId: string | null;
   paymentId: string | null;
+  site: string; // domain the order was placed on
   createdAt: Date;
 };
 
-export async function listOrders(limit = 200): Promise<OrderListItem[]> {
+export async function listOrders(site: string | null = null, limit = 200): Promise<OrderListItem[]> {
   const orders = await db.order.findMany({
+    where: site ? { site } : {},
     orderBy: { createdAt: "desc" },
     take: limit,
     select: {
@@ -25,6 +27,7 @@ export async function listOrders(limit = 200): Promise<OrderListItem[]> {
       status: true,
       razorpayOrderId: true,
       payerEmail: true,
+      site: true,
       createdAt: true,
       user: { select: { name: true, email: true } },
       product: { select: { title: true } },
@@ -41,6 +44,7 @@ export async function listOrders(limit = 200): Promise<OrderListItem[]> {
     status: o.status,
     razorpayOrderId: o.razorpayOrderId,
     paymentId: o.payments[0]?.razorpayPaymentId ?? null,
+    site: o.site,
     createdAt: o.createdAt,
   }));
 }

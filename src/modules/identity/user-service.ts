@@ -4,19 +4,25 @@ import { settleWalletOnRefund } from "@/modules/commerce/wallet";
 
 export const USERS_PAGE_SIZE = 25;
 
-/** Staff user list: every user, newest first, or only those matching name, email, phone or id when `q` is given. One page at a time. */
-export async function listUsers(q: string, page: number) {
+/**
+ * Staff user list: every user, newest first, or only those matching name, email, phone or id when `q` is given,
+ * and only those who signed up on `site` when it is given. One page at a time.
+ */
+export async function listUsers(q: string, page: number, site: string | null = null) {
   const term = q.trim();
-  const where = term
-    ? {
-        OR: [
-          { email: { contains: term, mode: "insensitive" as const } },
-          { name: { contains: term, mode: "insensitive" as const } },
-          { phoneNumber: { contains: term.replace(/\s/g, "") } },
-          { id: term },
-        ],
-      }
-    : {};
+  const where = {
+    ...(site ? { signupSite: site } : {}),
+    ...(term
+      ? {
+          OR: [
+            { email: { contains: term, mode: "insensitive" as const } },
+            { name: { contains: term, mode: "insensitive" as const } },
+            { phoneNumber: { contains: term.replace(/\s/g, "") } },
+            { id: term },
+          ],
+        }
+      : {}),
+  };
   const [total, rows] = await Promise.all([
     db.user.count({ where }),
     db.user.findMany({
@@ -24,7 +30,7 @@ export async function listUsers(q: string, page: number) {
       orderBy: [{ createdAt: "desc" }, { id: "desc" }],
       skip: (page - 1) * USERS_PAGE_SIZE,
       take: USERS_PAGE_SIZE,
-      select: { id: true, name: true, email: true, phoneNumber: true, role: true, createdAt: true },
+      select: { id: true, name: true, email: true, phoneNumber: true, role: true, signupSite: true, createdAt: true },
     }),
   ]);
   return { rows, total };
