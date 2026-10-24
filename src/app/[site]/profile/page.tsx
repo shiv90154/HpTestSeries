@@ -7,7 +7,7 @@ import { WhatsAppGroupCard } from "@/components/whatsapp-group";
 import { db } from "@/lib/db";
 import { rupees } from "@/lib/money";
 import { getMyPurchases } from "@/modules/commerce/purchases";
-import { isRealEmail } from "@/modules/email/rules";
+import { isRealEmail, offersAllowed } from "@/modules/email/rules";
 import { requireUser } from "@/modules/identity/session";
 import { EmailPrefsForm } from "./email-prefs-form";
 import { ProfileForm } from "./profile-form";
@@ -31,6 +31,7 @@ export default async function ProfilePage() {
       preferredLang: true,
       createdAt: true,
       emailOffers: true,
+      emailOffersAt: true,
       emailReminders: true,
     },
   });
@@ -91,7 +92,7 @@ export default async function ProfilePage() {
         {isRealEmail(profile.email) && (
           <section id="email" className={`${card} scroll-mt-24 p-5`}>
             <h2 className="mb-4 font-semibold">Email settings</h2>
-            <EmailPrefsForm offers={profile.emailOffers} reminders={profile.emailReminders} />
+            <EmailPrefsForm offers={offersAllowed(profile)} reminders={profile.emailReminders} />
           </section>
         )}
 

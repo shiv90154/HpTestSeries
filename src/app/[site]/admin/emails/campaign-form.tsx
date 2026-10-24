@@ -83,7 +83,7 @@ export function CampaignForm({ exams }: { exams: { id: string; name: string }[] 
     <form onSubmit={(e) => e.preventDefault()} className={`${panel} space-y-4`}>
       <div>
         <h2 className="font-semibold">New email to students</h2>
-        <p className="mt-1 text-xs text-muted">Goes only to students who ticked &ldquo;email me offers&rdquo;. Keep it short: one message, one button.</p>
+        <p className="mt-1 text-xs text-muted">Goes to every student with an email address, except those who unsubscribed. Keep it short: one message, one button.</p>
       </div>
       <fieldset disabled={pending} className="grid gap-4 sm:grid-cols-2">
         <div className="sm:col-span-2">
@@ -121,7 +121,7 @@ export function CampaignForm({ exams }: { exams: { id: string; name: string }[] 
             Send to
           </label>
           <select id="examId" className={inputCls} value={m.examId} onChange={(e) => set("examId", e.target.value)}>
-            <option value="">Everyone who opted in</option>
+            <option value="">Everyone</option>
             {exams.map((e) => (
               <option key={e.id} value={e.id}>
                 Students of {e.name} (took a test or bought it)

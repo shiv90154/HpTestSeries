@@ -23,6 +23,30 @@ export function buttonRow(label: string, url: string) {
   return `<tr><td style="padding-top:24px"><table role="presentation" cellpadding="0" cellspacing="0"><tr><td bgcolor="${c.primary}" style="border-radius:10px"><a href="${esc(url)}" style="display:inline-block;padding:14px 26px;font-family:${FONT};font-size:15px;font-weight:700;color:#ffffff;text-decoration:none;border-radius:10px">${esc(label)}&nbsp;&rarr;</a></td></tr></table></td></tr>`;
 }
 
+/** Up to four big numbers side by side in a tinted box (e.g. correct / wrong / skipped). */
+export function statsRow(stats: { label: string; value: string }[]) {
+  const c = emailColors;
+  const cells = stats
+    .map(
+      (s) =>
+        `<td align="center" style="padding:14px 6px"><div style="font-size:24px;line-height:1.2;font-weight:800;color:${c.strong}">${esc(s.value)}</div><div style="padding-top:4px;font-size:12px;line-height:1.3;color:${c.muted}">${esc(s.label)}</div></td>`,
+    )
+    .join("");
+  return `<tr><td style="padding-top:20px"><table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr><td bgcolor="${c.soft}" style="background:${c.soft};border-radius:14px"><table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr>${cells}</tr></table></td></tr></table></td></tr>`;
+}
+
+/** Short benefit lines, each with a tick. */
+export function pointsRow(points: string[]) {
+  const c = emailColors;
+  const rows = points
+    .map(
+      (p) =>
+        `<tr><td width="26" valign="top" style="width:26px;padding:5px 0;font-size:15px;line-height:1.5;font-weight:800;color:${c.primary}">&#10003;</td><td style="padding:5px 0;font-size:15px;line-height:1.5;color:${c.ink}">${esc(p)}</td></tr>`,
+    )
+    .join("");
+  return `<tr><td style="padding-top:16px"><table role="presentation" width="100%" cellpadding="0" cellspacing="0">${rows}</table></td></tr>`;
+}
+
 /** Name and colours an email is branded with: the site of the student (or order) it is about. */
 export type EmailBrand = Pick<SiteConfig, "name" | "url"> & { initials: string; primary: string; strong: string; soft: string; accent: string };
 

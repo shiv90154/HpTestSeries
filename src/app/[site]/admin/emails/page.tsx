@@ -12,6 +12,7 @@ export const metadata: Metadata = { title: "Emails" };
 const KIND_LABEL: Record<string, string> = {
   expiry: "Access ending (7 days before)",
   "free-followup": "Free test follow-up (next day)",
+  nudge: "Never bought: next-step mail (once)",
   campaign: "Your emails to students",
 };
 
@@ -30,7 +31,7 @@ export default async function EmailsAdminPage() {
   const p = await getEmailPanel();
 
   const stats = [
-    { label: "Opted in to offers", value: `${p.optedIn}`, hint: `of ${p.users} students with an email` },
+    { label: "Get offers", value: `${p.optedIn}`, hint: `of ${p.users} students with an email; the rest unsubscribed` },
     { label: "Get purchase reminders", value: `${p.reminders}`, hint: "on unless they switch it off" },
     { label: "Sent today", value: `${p.sentToday} / ${p.limit}`, hint: "daily limit, resets at midnight" },
     { label: "Waiting to send", value: `${p.queued}`, hint: "goes out at 7 pm" },

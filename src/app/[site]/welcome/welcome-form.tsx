@@ -53,12 +53,9 @@ export function WelcomeForm({ next, canEmail }: { next: string; canEmail: boolea
         </select>
       </div>
       {canEmail && (
-        <label className="flex cursor-pointer items-start gap-3 rounded-xl border border-border bg-surface p-3 text-sm">
-          <input type="checkbox" name="emailOffers" className="mt-0.5 size-5 shrink-0 accent-primary" />
-          <span>
-            Email me new mock tests, exam updates and offers <span className="text-muted">(at most 4 a month, unsubscribe any time)</span>
-          </span>
-        </label>
+        <p className="text-xs text-muted">
+          We email you new mock tests, exam updates and offers, at most 4 a month. Unsubscribe from any email or in your profile.
+        </p>
       )}
       {state.error && (
         <p role="alert" className="text-sm text-danger">

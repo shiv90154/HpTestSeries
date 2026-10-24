@@ -3,36 +3,40 @@
 
 import { createHmac, timingSafeEqual } from "node:crypto";
 import type { SiteConfig } from "@/sites/types";
-import { buttonRow, emailBrand, emailColors, emailShell, esc, paragraphRow } from "./layout";
+import { buttonRow, emailBrand, emailColors, emailShell, esc, paragraphRow, pointsRow, statsRow } from "./layout";
 
 export type EmailCategory = "offers" | "reminders";
-export type EmailKind = "expiry" | "free-followup" | "campaign" | "announcement" | "referral-invite";
+export type EmailKind = "expiry" | "free-followup" | "nudge" | "campaign" | "announcement" | "referral-invite";
 
 /** Which consent a kind of email needs; the unsubscribe link in it switches off that one. */
 export const CATEGORY: Record<EmailKind, EmailCategory> = {
   expiry: "reminders",
   "free-followup": "offers",
+  nudge: "offers",
   campaign: "offers",
   announcement: "offers",
   "referral-invite": "offers",
 };
 
 /** Sent first when the daily quota is short: a lapsing purchase matters more than a promotion. */
-export const PRIORITY: Record<EmailKind, number> = { expiry: 0, "free-followup": 1, campaign: 2, "referral-invite": 3, announcement: 4 };
+export const PRIORITY: Record<EmailKind, number> = { expiry: 0, "free-followup": 1, nudge: 2, campaign: 3, "referral-invite": 4, announcement: 5 };
 
 /** Broadcasts (see BROADCAST_KINDS) go out in daily batches of this many, so a send to every student spreads over days. */
 export const BROADCAST_DAILY_LIMIT = 40;
 
-/** Sent to every student, not only those who opted in; only an explicit "no" to offers stops them. */
+/** Admin-sent mails to every student; capped per day by BROADCAST_DAILY_LIMIT. */
 export const BROADCAST_KINDS: ReadonlySet<EmailKind> = new Set<EmailKind>(["announcement", "referral-invite"]);
 
 /**
- * Whether a broadcast may go to this student: everyone except those who switched offers off. emailOffersAt is set
- * whenever offers are switched on or off, so emailOffers false with a date means the student said no.
+ * Whether offer emails may go to this student: everyone except those who switched offers off (an unsubscribe link
+ * or the profile). emailOffersAt is set whenever the student decides, so emailOffers false with a date means "no".
  */
-export function broadcastAllowed(u: { emailOffers: boolean; emailOffersAt: Date | null }): boolean {
+export function offersAllowed(u: { emailOffers: boolean; emailOffersAt: Date | null }): boolean {
   return u.emailOffers || u.emailOffersAt === null;
 }
+
+/** The same rule as a Prisma User filter. */
+export const OFFERS_ALLOWED_WHERE = { OR: [{ emailOffers: true }, { emailOffersAt: null }] };
 
 /** Accounts made by SMS login carry a placeholder address (see identity/auth.ts) that must never be mailed. */
 export function isRealEmail(email: string): boolean {
@@ -85,28 +89,52 @@ export function withUtm(url: string, siteUrl: string, campaign: string): string 
 export type EmailContent = { subject: string; text: string; html: string };
 
 /**
- * One layout for every reminder and offer: heading, short paragraphs, one button, and a footer saying why the student
- * got it with the unsubscribe link. Every value is escaped; paragraphs are plain text.
+ * One layout for every reminder and offer: heading, short paragraphs, an optional stats box and tick list, one button,
+ * a closing line, and a footer saying why the student got it with the unsubscribe link. Every value is escaped;
+ * paragraphs are plain text.
  */
 export function renderEmail(m: {
   subject: string;
   heading: string;
+  /** Inbox preview line next to the subject; the first paragraph when left out. */
+  preview?: string;
   paragraphs: string[];
+  /** Big numbers in a tinted box, e.g. a test score. */
+  stats?: { label: string; value: string }[];
+  /** Short benefit lines shown with a tick. */
+  points?: string[];
   cta: { label: string; url: string };
+  /** Muted line under the button (a tip or sign-off). */
+  after?: string;
   why: string;
   /** Left out only for a mail to someone without an account (a guest checkout reminder, sent once). */
   unsubscribeUrl?: string;
   /** The site the mail is about (its name, colours and links); HP when left out. */
   site?: SiteConfig;
 }): EmailContent {
-  const text = [m.heading, "", ...m.paragraphs.flatMap((p) => [p, ""]), `${m.cta.label}: ${m.cta.url}`, "", "—", m.why, ...(m.unsubscribeUrl ? [`Unsubscribe: ${m.unsubscribeUrl}`] : [])].join("\n");
+  const text = [
+    m.heading,
+    "",
+    ...m.paragraphs.flatMap((p) => [p, ""]),
+    ...(m.stats?.length ? [m.stats.map((s) => `${s.label}: ${s.value}`).join("  |  "), ""] : []),
+    ...(m.points?.length ? [...m.points.map((p) => `✓ ${p}`), ""] : []),
+    `${m.cta.label}: ${m.cta.url}`,
+    ...(m.after ? ["", m.after] : []),
+    "",
+    "—",
+    m.why,
+    ...(m.unsubscribeUrl ? [`Unsubscribe: ${m.unsubscribeUrl}`] : []),
+  ].join("\n");
   const rows = [
     `<tr><td style="font-size:24px;line-height:1.3;font-weight:800;color:${emailColors.ink}">${esc(m.heading)}</td></tr>`,
     ...m.paragraphs.map((p, i) => paragraphRow(p, { top: i === 0 ? 12 : 14 })),
+    ...(m.stats?.length ? [statsRow(m.stats)] : []),
+    ...(m.points?.length ? [pointsRow(m.points)] : []),
     buttonRow(m.cta.label, m.cta.url),
+    ...(m.after ? [paragraphRow(m.after, { muted: true, top: 20 })] : []),
   ].join("\n");
   const html = emailShell({
-    preview: m.paragraphs[0] ?? m.heading,
+    preview: m.preview ?? m.paragraphs[0] ?? m.heading,
     siteUrl: m.site?.url ?? process.env.NEXT_PUBLIC_SITE_URL ?? "https://hptestseries.in",
     brand: m.site && emailBrand(m.site),
     rows,

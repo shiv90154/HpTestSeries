@@ -1,14 +1,14 @@
 import { describe, expect, it } from "vitest";
-import { bodyParagraphs, broadcastAllowed, istDayStart, isRealEmail, offerAllowed, renderEmail, unsubscribeToken, verifyUnsubscribeToken, withUtm } from "./rules";
+import { bodyParagraphs, offersAllowed, istDayStart, isRealEmail, offerAllowed, renderEmail, unsubscribeToken, verifyUnsubscribeToken, withUtm } from "./rules";
 
 const DAY = 24 * 60 * 60 * 1000;
 const now = new Date("2026-10-10T13:30:00Z"); // 7 pm IST
 
 describe("who can be mailed", () => {
-  it("sends broadcasts to everyone except students who switched offers off", () => {
-    expect(broadcastAllowed({ emailOffers: true, emailOffersAt: now })).toBe(true);
-    expect(broadcastAllowed({ emailOffers: false, emailOffersAt: null })).toBe(true);
-    expect(broadcastAllowed({ emailOffers: false, emailOffersAt: now })).toBe(false);
+  it("sends offers to everyone except students who switched them off", () => {
+    expect(offersAllowed({ emailOffers: true, emailOffersAt: now })).toBe(true);
+    expect(offersAllowed({ emailOffers: false, emailOffersAt: null })).toBe(true);
+    expect(offersAllowed({ emailOffers: false, emailOffersAt: now })).toBe(false);
   });
 
   it("skips the placeholder address of SMS-login accounts", () => {

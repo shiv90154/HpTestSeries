@@ -1,5 +1,6 @@
 import "server-only";
 import { buttonRow, emailBrand, emailColors, emailShell, esc, otpRows, paragraphRow } from "@/modules/email/layout";
+import { istDayStart } from "@/modules/email/rules";
 import { PRIMARY_SITE } from "@/sites";
 import type { SiteConfig } from "@/sites/types";
 
@@ -89,9 +90,56 @@ export async function sendReportFixedEmail(email: string, questionPreview: strin
   await sendEmail(email, reportFixedEmail(questionPreview, site), `[dev] Report-fixed email for ${email}`, site);
 }
 
+// Brevo is the second sender (free tier: 300/day). Once Resend answers 429 (daily or monthly quota used up), the rest of
+// the day's mail goes through Brevo; a mail Resend rejects for any other reason is retried there too. Brevo needs the
+// same from-address verified as a sender (or its domain authenticated) in its dashboard.
+const BREVO_URL = "https://api.brevo.com/v3/smtp/email";
+
+/** Resend is skipped until this instant after it reports its quota used up (next midnight in India). */
+let resendPausedUntil = 0;
+
+const nextIstMidnight = (now: number) => istDayStart(new Date(now)).getTime() + 24 * 60 * 60 * 1000;
+
+/** "HP Test Series <login@hptestseries.in>" → { name, email }. */
+function parseFrom(from: string): { name?: string; email: string } {
+  const m = from.match(/^\s*"?([^"<]*?)"?\s*<([^>]+)>\s*$/);
+  return m ? { ...(m[1] ? { name: m[1] } : {}), email: m[2].trim() } : { email: from.trim() };
+}
+
+type Mail = { to: string; from: string; content: Content; headers?: Record<string, string> };
+
+async function viaResend(apiKey: string, m: Mail): Promise<boolean> {
+  const res = await fetch(RESEND_URL, {
+    method: "POST",
+    headers: { authorization: `Bearer ${apiKey}`, "content-type": "application/json" },
+    body: JSON.stringify({ from: m.from, to: [m.to], ...m.content, ...(m.headers ? { headers: m.headers } : {}) }),
+  });
+  if (res.status === 429) resendPausedUntil = nextIstMidnight(Date.now());
+  // Resend explains rejections (unverified domain, bad "from", revoked key) in the body; keep it in the server log.
+  if (!res.ok) console.error(`Resend rejected an email (${res.status}): ${(await res.text().catch(() => "")).slice(0, 300)}`);
+  return res.ok;
+}
+
+async function viaBrevo(apiKey: string, m: Mail): Promise<boolean> {
+  const res = await fetch(BREVO_URL, {
+    method: "POST",
+    headers: { "api-key": apiKey, "content-type": "application/json", accept: "application/json" },
+    body: JSON.stringify({
+      sender: parseFrom(m.from),
+      to: [{ email: m.to }],
+      subject: m.content.subject,
+      htmlContent: m.content.html,
+      textContent: m.content.text,
+      ...(m.headers ? { headers: m.headers } : {}),
+    }),
+  });
+  if (!res.ok) console.error(`Brevo rejected an email (${res.status}): ${(await res.text().catch(() => "")).slice(0, 300)}`);
+  return res.ok;
+}
+
 /**
- * Sends one email through Resend, from the site's address (EMAIL_FROM_<CODE>, else EMAIL_FROM); extra headers
- * (e.g. List-Unsubscribe) are passed through. Locally it only logs.
+ * Sends one email from the site's address (EMAIL_FROM_<CODE>, else EMAIL_FROM): Resend first, Brevo when Resend is
+ * out of quota or fails. Extra headers (e.g. List-Unsubscribe) are passed through. Locally it only logs.
  */
 export async function sendEmail(
   email: string,
@@ -100,22 +148,18 @@ export async function sendEmail(
   site: SiteConfig = PRIMARY_SITE,
   headers?: Record<string, string>,
 ): Promise<boolean> {
-  const apiKey = process.env.RESEND_API_KEY;
+  const resendKey = process.env.RESEND_API_KEY;
+  const brevoKey = process.env.BREVO_API_KEY;
   const from = process.env[`EMAIL_FROM_${site.code.toUpperCase()}`] || process.env.EMAIL_FROM;
 
-  if (!apiKey || !from) {
+  if ((!resendKey && !brevoKey) || !from) {
     if (process.env.NODE_ENV === "production") return false;
     // Local development: no email is sent.
     console.info(devLogLine);
     return true;
   }
 
-  const res = await fetch(RESEND_URL, {
-    method: "POST",
-    headers: { authorization: `Bearer ${apiKey}`, "content-type": "application/json" },
-    body: JSON.stringify({ from, to: [email], ...content, ...(headers ? { headers } : {}) }),
-  });
-  // Resend explains rejections (unverified domain, bad "from", revoked key) in the body; keep it in the server log.
-  if (!res.ok) console.error(`Resend rejected an email (${res.status}): ${(await res.text().catch(() => "")).slice(0, 300)}`);
-  return res.ok;
+  const mail = { to: email, from, content, headers };
+  if (resendKey && Date.now() >= resendPausedUntil && (await viaResend(resendKey, mail).catch(() => false))) return true;
+  return brevoKey ? viaBrevo(brevoKey, mail).catch(() => false) : false;
 }

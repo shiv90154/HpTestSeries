@@ -12,7 +12,6 @@ import {
   BROADCAST_DAILY_LIMIT,
   BROADCAST_KINDS,
   bodyParagraphs,
-  broadcastAllowed,
   CATEGORY,
   type EmailCategory,
   type EmailContent,
@@ -20,6 +19,8 @@ import {
   istDayStart,
   isRealEmail,
   offerAllowed,
+  OFFERS_ALLOWED_WHERE,
+  offersAllowed,
   PRIORITY,
   renderEmail,
   unsubscribeToken,
@@ -27,15 +28,18 @@ import {
 } from "./rules";
 
 // Reminder and offer emails. A daily cron (POST /api/cron/emails, 7 pm IST) queues the due reminders and sends what is
-// queued; campaigns from /admin/emails are queued the same way. Resend's free plan allows 100 emails a day and login
-// codes share it, so these stop at EMAIL_DAILY_LIMIT (default 60) and the rest wait for the next run.
+// queued; campaigns from /admin/emails are queued the same way. Offers go to every student who has not switched them
+// off. Resend's free plan allows 100 emails a day and login codes share it; with BREVO_API_KEY set, sendEmail moves on
+// to Brevo (300 a day) when Resend runs out. These stop at EMAIL_DAILY_LIMIT (default 60, or 330 with Brevo) and the
+// rest wait for the next run.
 
 const DAY = 24 * 60 * 60 * 1000;
 const PHONE_PLACEHOLDER = "@phone.invalid";
 
 export function dailyLimit(): number {
   const n = Number(process.env.EMAIL_DAILY_LIMIT);
-  return Number.isInteger(n) && n > 0 ? n : 60;
+  if (Number.isInteger(n) && n > 0) return n;
+  return process.env.BREVO_API_KEY ? 330 : 60;
 }
 
 const secret = () => process.env.BETTER_AUTH_SECRET ?? "";
@@ -51,7 +55,7 @@ const istDate = (d: Date) => d.toLocaleDateString("en-IN", { day: "numeric", mon
 // ───────────── Queueing ─────────────
 
 /** Queues the reminders that are due now. The unique (user, kind, refKey) key makes this safe to run any number of times. */
-export async function planReminders(now = new Date()): Promise<{ expiry: number; followUp: number }> {
+export async function planReminders(now = new Date()): Promise<{ expiry: number; followUp: number; nudge: number }> {
   // Access ending within 7 days, unless the student already renewed (a later entitlement to the same product).
   const ending = await db.entitlement.findMany({
     where: { revokedAt: null, expiresAt: { gt: now, lte: new Date(now.getTime() + 7 * DAY) }, user: { emailReminders: true } },
@@ -69,13 +73,13 @@ export async function planReminders(now = new Date()): Promise<{ expiry: number;
     skipDuplicates: true,
   });
 
-  // A free test submitted 20 hours to 3 days ago by a student who opted in and owns nothing yet: one follow-up per exam.
+  // A free test submitted 20 hours to 3 days ago by a student who owns nothing yet: one follow-up per exam.
   const attempts = await db.attempt.findMany({
     where: {
       status: "SUBMITTED",
       submittedAt: { gte: new Date(now.getTime() - 3 * DAY), lte: new Date(now.getTime() - 20 * 60 * 60 * 1000) },
       test: { isFree: true },
-      user: { emailOffers: true, entitlements: { none: { revokedAt: null, expiresAt: { gt: now } } } },
+      user: { ...OFFERS_ALLOWED_WHERE, entitlements: { none: { revokedAt: null, expiresAt: { gt: now } } } },
     },
     select: { userId: true, testId: true, test: { select: { examId: true } } },
   });
@@ -83,8 +87,25 @@ export async function planReminders(now = new Date()): Promise<{ expiry: number;
     data: attempts.map((a) => ({ userId: a.userId, kind: "free-followup", refKey: a.test.examId ?? a.testId })),
     skipDuplicates: true,
   });
-  return { expiry: expiry.count, followUp: followUp.count };
+
+  // Students with an account for 3+ days who never bought anything: one personal "next step" mail each. The 3 days
+  // leave room for the free-test follow-up first; the frequency cap spaces the two apart.
+  const nonBuyers = await db.user.findMany({
+    where: {
+      ...OFFERS_ALLOWED_WHERE,
+      role: "STUDENT",
+      createdAt: { lte: new Date(now.getTime() - 3 * DAY) },
+      NOT: { email: { endsWith: PHONE_PLACEHOLDER } },
+      entitlements: { none: {} },
+    },
+    select: { id: true },
+  });
+  const nudge = await db.emailLog.createMany({ data: nonBuyers.map((u) => ({ userId: u.id, kind: "nudge", refKey: NUDGE_REF })), skipDuplicates: true });
+  return { expiry: expiry.count, followUp: followUp.count, nudge: nudge.count };
 }
+
+/** Bump to send the non-buyer mail once more to everyone who still has not bought. */
+const NUDGE_REF = "v1";
 
 // ───────────── Content ─────────────
 
@@ -104,18 +125,43 @@ async function expiryEmail(user: Recipient, entitlementId: string, now: Date): P
   const date = istDate(e.expiresAt);
   const name = firstName(user.name);
   return renderEmail({
-    subject: `Your ${title} access ends on ${date}`,
-    heading: "Your access ends soon",
+    subject: `${title} ka access ${date} ko khatam ho raha hai`,
+    heading: `${name ? `${name}, aapka` : "Aapka"} access jaldi khatam hoga`,
+    preview: `Renew karo, ek bhi din bekaar nahi jaayega.`,
     paragraphs: [
-      `${name ? `Hi ${name}, your` : "Your"} access to ${title} ends on ${date}.`,
-      "Renew before it ends and the new period starts right after the current one, so you do not lose any days.",
-      `आपका एक्सेस ${date} को समाप्त हो रहा है। अभी रिन्यू करें, कोई दिन बेकार नहीं जाएगा।`,
+      `${title} ka aapka access ${date} ko khatam ho jaayega.`,
+      "Abhi renew karoge toh naya period purane ke khatam hone ke baad hi shuru hoga, yaani ek bhi din bekaar nahi jaayega.",
     ],
-    cta: { label: "Renew now", url: withUtm(e.product.isActive ? `/buy/${e.product.slug}` : "/pricing", site.url, "expiry") },
-    why: `You get this because you bought this series on ${site.name}. You can turn off reminders in your profile.`,
+    points: ["Saare mock tests aur unke solutions khule rahenge", "Exam se pehle practice ka flow nahi tootega"],
+    cta: { label: "Abhi renew karo", url: withUtm(e.product.isActive ? `/buy/${e.product.slug}` : "/pricing", site.url, "expiry") },
+    after: `आपका एक्सेस ${date} को समाप्त हो रहा है। अभी रिन्यू करें, कोई दिन बेकार नहीं जाएगा।`,
+    why: `Ye reminder isliye aaya kyunki aapne ${site.name} pe ye series kharidi hai. Reminders band karne hain?`,
     unsubscribeUrl: unsubscribeLinks(site, user.id, "reminders").page,
     site,
   });
+}
+
+/** What a paid series gives, in the student's words; shown in offer mails next to the price. */
+const SERIES_POINTS = [
+  "Asli exam jaise full-length mock tests, wahi pattern aur timer",
+  "Har sawaal ka solution Hindi aur English dono mein",
+  "All-India rank aur aapke weak topics ki report",
+  "Mobile pe kabhi bhi, kahin bhi practice",
+];
+
+const offersWhy = (site: SiteConfig) => `Ye mail aapko isliye mila kyunki aapka ${site.name} pe account hai. Aage nahi chahiye?`;
+
+/** Correct / wrong / skipped and accuracy of an attempt, for the stats box. */
+function scoreStats(a: { correct: number | null; wrong: number | null; skipped: number | null }) {
+  const [correct, wrong, skipped] = [a.correct ?? 0, a.wrong ?? 0, a.skipped ?? 0];
+  if (!correct && !wrong && !skipped) return undefined;
+  const accuracy = correct + wrong ? Math.round((correct / (correct + wrong)) * 100) : 0;
+  return [
+    { label: "Sahi", value: String(correct) },
+    { label: "Galat", value: String(wrong) },
+    { label: "Chhode", value: String(skipped) },
+    { label: "Accuracy", value: `${accuracy}%` },
+  ];
 }
 
 async function followUpEmail(user: Recipient, refKey: string, now: Date): Promise<EmailContent | null> {
@@ -129,23 +175,80 @@ async function followUpEmail(user: Recipient, refKey: string, now: Date): Promis
   });
   if (!attempt) return null;
   const offer = await getBuyOptionForSeries(site.code, attempt.test.series.map((s) => s.seriesId));
-  const total = (attempt.correct ?? 0) + (attempt.wrong ?? 0) + (attempt.skipped ?? 0);
   const name = firstName(user.name);
   const resultUrl = withUtm(`/results/${attempt.id}`, site.url, "free-followup");
   const [offerTitle] = offer ? offer.title.split(/\s+[—–]\s+/) : [""];
   return renderEmail({
-    subject: `${name ? `${name}, your` : "Your"} ${attempt.test.title} result and what to do next`,
-    heading: "Your free test result",
+    subject: `${name ? `${name}, aapka` : "Aapka"} ${attempt.test.title} result aa gaya. Ab aage kya?`,
+    heading: "Aapka free test result",
+    preview: "Score, accuracy aur aage ki taiyari ka plan.",
     paragraphs: [
-      total ? `You answered ${attempt.correct ?? 0} of ${total} questions correctly in ${attempt.test.title}.` : `You finished ${attempt.test.title}.`,
-      `Your full result, every solution and your weak topics: ${resultUrl}`,
+      `${attempt.test.title} dene ke liye shabaash! Ye raha aapka score:`,
       offer
-        ? `To keep practising at exam level, the full ${offerTitle} has more full-length tests with solutions in Hindi and English, for ${rupees(offer.priceInPaise)}.`
-        : "Keep practising with another free test.",
-      "रोज़ एक टेस्ट दें और अपनी कमज़ोर टॉपिक पर काम करें।",
+        ? `Ek mock se shuruaat hoti hai, selection baar-baar practice se hota hai. ${offerTitle} mein aisi hi poori taiyari milti hai, sirf ${rupees(offer.priceInPaise)} mein:`
+        : "Ek mock se shuruaat hoti hai, selection baar-baar practice se hota hai. Agla free test do aur dekho score kitna badhta hai.",
     ],
-    cta: offer ? { label: `Get the full series for ${rupees(offer.priceInPaise)}`, url: withUtm(offer.href, site.url, "free-followup") } : { label: "Take another free test", url: withUtm("/tests", site.url, "free-followup") },
-    why: `You get this because you ticked 'email me updates and offers' on ${site.name}.`,
+    stats: scoreStats(attempt),
+    points: offer ? SERIES_POINTS : undefined,
+    cta: offer
+      ? { label: `${offerTitle} lo, ${rupees(offer.priceInPaise)}`, url: withUtm(offer.href, site.url, "free-followup") }
+      : { label: "Agla free test do", url: withUtm("/tests", site.url, "free-followup") },
+    after: `Har sawaal ka solution aur aapke weak topics yahan dekho: ${resultUrl}`,
+    why: offersWhy(site),
+    unsubscribeUrl: unsubscribeLinks(site, user.id, "offers").page,
+    site,
+  });
+}
+
+/** For a student who never bought: their last test and the series for it, or an invitation to a first free mock. */
+async function nudgeEmail(user: Recipient): Promise<EmailContent | null> {
+  const site = getSite(user.signupSite);
+  if (await db.entitlement.count({ where: { userId: user.id } })) return null;
+  const name = firstName(user.name);
+  const attempt = await db.attempt.findFirst({
+    where: { userId: user.id, status: "SUBMITTED" },
+    orderBy: { submittedAt: "desc" },
+    select: { correct: true, wrong: true, skipped: true, test: { select: { title: true, exam: { select: { name: true } }, series: { select: { seriesId: true } } } } },
+  });
+
+  if (!attempt) {
+    return renderEmail({
+      subject: `${name ? `${name}, aapka` : "Aapka"} free mock test intezaar kar raha hai`,
+      heading: "Ek free mock se shuruaat karo",
+      preview: "15 minute nikaalo, pata chalega aap exam mein kahan khade ho.",
+      paragraphs: [
+        `${name ? `Namaste ${name}! Aapne` : "Namaste! Aapne"} ${site.name} pe account toh bana liya, par abhi tak koi test nahi diya.`,
+        "Sirf ek free mock dene se pata chal jaata hai ki aap exam mein kahan khade ho: kaunse topic strong hain aur kahan mehnat chahiye.",
+      ],
+      points: ["Bilkul free, koi payment nahi", "Asli exam jaisa CBT screen aur timer", "Turant result, rank aur har sawaal ka solution", "Hindi aur English dono mein"],
+      cta: { label: "Free mock test shuru karo", url: withUtm("/tests", site.url, "nudge") },
+      after: "Shuruaat hi sabse mushkil step hota hai. Aaj ek test do, kal se raasta saaf dikhega. 💪",
+      why: offersWhy(site),
+      unsubscribeUrl: unsubscribeLinks(site, user.id, "offers").page,
+      site,
+    });
+  }
+
+  const offer = await getBuyOptionForSeries(site.code, attempt.test.series.map((s) => s.seriesId));
+  const exam = attempt.test.exam?.name;
+  const [offerTitle] = offer ? offer.title.split(/\s+[—–]\s+/) : [""];
+  return renderEmail({
+    subject: `${name ? `${name}, ` : ""}${exam ? `${exam} ki` : "aapki"} taiyari kahan tak pahunchi?`,
+    heading: "Aapki taiyari ka agla step",
+    preview: offer ? `${offerTitle}: poori taiyari ${rupees(offer.priceInPaise)} mein.` : "Agla free mock aapka intezaar kar raha hai.",
+    paragraphs: [
+      `${name ? `Namaste ${name}! Aapne` : "Namaste! Aapne"} ${attempt.test.title} diya tha. Achchi shuruaat thi:`,
+      offer
+        ? `Exam mein wahi aage nikalta hai jo exam jaise mahaul mein baar-baar practice karta hai aur har galti se seekhta hai. ${offerTitle} isi ke liye bana hai, sirf ${rupees(offer.priceInPaise)} mein:`
+        : "Exam mein wahi aage nikalta hai jo exam jaise mahaul mein baar-baar practice karta hai. Agla free mock do aur apna score badhte dekho.",
+    ],
+    stats: scoreStats(attempt),
+    points: offer ? SERIES_POINTS : undefined,
+    cta: offer
+      ? { label: `${offerTitle} dekho, ${rupees(offer.priceInPaise)}`, url: withUtm(offer.href, site.url, "nudge") }
+      : { label: "Agla free test do", url: withUtm("/tests", site.url, "nudge") },
+    after: "Tip: roz ek test aur uska analysis. Bas yahi formula hai.",
+    why: offersWhy(site),
     unsubscribeUrl: unsubscribeLinks(site, user.id, "offers").page,
     site,
   });
@@ -153,52 +256,39 @@ async function followUpEmail(user: Recipient, refKey: string, now: Date): Promis
 
 type CampaignBody = { subject: string; heading: string; body: string; ctaLabel: string; ctaUrl: string };
 
+/** An admin-written campaign or announcement. */
 function campaignEmail(site: SiteConfig, userId: string, c: CampaignBody, tag: string): EmailContent {
   return renderEmail({
     subject: c.subject,
     heading: c.heading,
     paragraphs: bodyParagraphs(c.body),
     cta: { label: c.ctaLabel, url: withUtm(c.ctaUrl, site.url, tag) },
-    why: `You get this because you ticked 'email me updates and offers' on ${site.name}.`,
+    why: offersWhy(site),
     unsubscribeUrl: unsubscribeLinks(site, userId, "offers").page,
     site,
   });
 }
 
-const broadcastWhy = (site: SiteConfig, optedIn: boolean) =>
-  optedIn
-    ? `You get this because you ticked 'email me updates and offers' on ${site.name}.`
-    : `You get this update because you have an account on ${site.name}. Unsubscribe and we will not send you offers.`;
-
-/** A campaign sent to every student; those who never opted in also get a line inviting them to. */
-function announcementEmail(site: SiteConfig, u: { id: string; emailOffers: boolean }, c: CampaignBody, tag: string): EmailContent {
-  const invite = u.emailOffers ? [] : [`Aage bhi aise job alerts aur naye free mock tests chahiye? Profile me "Email me offers" tick karein: ${site.url}/profile`];
-  return renderEmail({
-    subject: c.subject,
-    heading: c.heading,
-    paragraphs: [...bodyParagraphs(c.body), ...invite],
-    cta: { label: c.ctaLabel, url: withUtm(c.ctaUrl, site.url, tag) },
-    why: broadcastWhy(site, u.emailOffers),
-    unsubscribeUrl: unsubscribeLinks(site, u.id, "offers").page,
-    site,
-  });
-}
-
 /** For students who bought: their personal referral link, what a friend saves and what they earn. */
-async function referralInviteEmail(site: SiteConfig, u: { id: string; name: string; emailOffers: boolean }, tag: string): Promise<EmailContent> {
+async function referralInviteEmail(site: SiteConfig, u: { id: string; name: string }, tag: string): Promise<EmailContent> {
   const link = referralLink(site.url, await getOrCreateReferralCode(u.id));
   const name = firstName(u.name);
   return renderEmail({
     subject: `Dosto ko ${site.name} bhejo, har dost par ${rupees(REWARD_PAISE)} kamao`,
     heading: `${name ? `${name}, ` : ""}taiyari saath karo, paise bhi kamao`,
+    preview: `Dost ko ${rupees(FRIEND_DISCOUNT_PAISE)} ki chhoot, aapko ${rupees(REWARD_PAISE)} wallet mein.`,
     paragraphs: [
-      `Aapke dost bhi ${site.stateAdj} ke exams ki taiyari kar rahe hain? Unhe apna link bhejo. ${rupees(MIN_REFERRAL_PRICE_PAISE)} se upar ke plan par unhe ${rupees(FRIEND_DISCOUNT_PAISE)} ki seedhi chhoot milegi.`,
-      `Har dost jo aapke link se kharidega, uske liye aapke ${site.logo.initials} wallet me ${rupees(REWARD_PAISE)} aayenge. Wallet ke paise agli series ya Pass kharidne me use ho jaate hain.`,
+      `Aapke dost bhi ${site.stateAdj} ke exams ki taiyari kar rahe hain? Unhe apna link bhejo.`,
       `Aapka link: ${link}`,
-      "Ise apne WhatsApp ya Telegram group me share karo, jahan aapke dost exam ki baat karte hain.",
+    ],
+    points: [
+      `Dost ko ${rupees(MIN_REFERRAL_PRICE_PAISE)} se upar ke plan par ${rupees(FRIEND_DISCOUNT_PAISE)} ki seedhi chhoot`,
+      `Har dost ki kharid par aapke ${site.logo.initials} wallet mein ${rupees(REWARD_PAISE)}`,
+      "Wallet ke paise agli series ya Pass kharidne mein lag jaate hain",
     ],
     cta: { label: "Mera referral page kholo", url: withUtm("/refer", site.url, tag) },
-    why: broadcastWhy(site, u.emailOffers),
+    after: "Link apne WhatsApp ya Telegram group mein share karo, jahan aapke dost exam ki baat karte hain.",
+    why: offersWhy(site),
     unsubscribeUrl: unsubscribeLinks(site, u.id, "offers").page,
     site,
   });
@@ -268,14 +358,14 @@ export async function sendQueued(now = new Date()): Promise<SendSummary> {
       continue;
     }
     const broadcast = BROADCAST_KINDS.has(kind);
-    if (broadcast ? !broadcastAllowed(u) : category === "offers" ? !u.emailOffers : !u.emailReminders) {
+    if (category === "offers" ? !offersAllowed(u) : !u.emailReminders) {
       await skip(log.id, "unsubscribed");
       continue;
     }
     if (category === "offers" && !offerAllowed(await sentDates(u.id), now)) {
-      // A follow-up is only worth sending soon after the test; a campaign can wait for a later day.
-      if (kind === "campaign" || broadcast) summary.left++;
-      else await skip(log.id, "frequency cap");
+      // A follow-up is only worth sending soon after the test; the others can wait for a later day.
+      if (kind === "free-followup") await skip(log.id, "frequency cap");
+      else summary.left++;
       continue;
     }
 
@@ -289,13 +379,13 @@ export async function sendQueued(now = new Date()): Promise<SendSummary> {
         ? await expiryEmail(u, log.refKey, now)
         : kind === "free-followup"
           ? await followUpEmail(u, log.refKey, now)
-          : kind === "referral-invite"
-            ? await referralInviteEmail(site, u, `referral-invite-${log.refKey}`)
-            : log.campaign
-              ? kind === "announcement"
-                ? announcementEmail(site, u, log.campaign, `announcement-${log.campaign.id}`)
-                : campaignEmail(site, u.id, log.campaign, `campaign-${log.campaign.id}`)
-              : null;
+          : kind === "nudge"
+            ? await nudgeEmail(u)
+            : kind === "referral-invite"
+              ? await referralInviteEmail(site, u, `referral-invite-${log.refKey}`)
+              : log.campaign
+                ? campaignEmail(site, u.id, log.campaign, `${kind}-${log.campaign.id}`)
+                : null;
     if (!content) {
       await skip(log.id, "no longer relevant");
       continue;
@@ -366,7 +456,7 @@ export async function remindUnpaidCheckouts(now = new Date()): Promise<{ sent: n
           db.order.count({ where: { ...buyer, productId: o.productId, id: { not: o.id }, reminderSentAt: { gt: new Date(now.getTime() - 24 * HOUR) } } }),
         ])
       : [0, 0];
-    if (!email || !isRealEmail(email) || !o.product.isActive || (o.user && !broadcastAllowed(o.user)) || boughtSince || remindedToday) {
+    if (!email || !isRealEmail(email) || !o.product.isActive || (o.user && !offersAllowed(o.user)) || boughtSince || remindedToday) {
       result.skipped++;
       continue;
     }
@@ -375,12 +465,14 @@ export async function remindUnpaidCheckouts(now = new Date()): Promise<{ sent: n
     const content = renderEmail({
       subject: `Aapka ${o.product.title} order adhoora reh gaya`,
       heading: `${name ? `${name}, ` : ""}aapka payment poora nahi hua`,
+      preview: "Ek click mein dobara try karo, aapka plan wahi hai.",
       paragraphs: [
-        `Aapne ${o.product.title} ka checkout shuru kiya tha, par payment poora nahi hua. UPI fail hona ya network chala jaana aam baat hai; aap ek click me dobara try kar sakte hain.`,
-        "Paise kat gaye par access nahi mila? Dobara pay mat kijiye. Aksar payment kuch minute me apne aap jud jaata hai; na jude to is email ka reply kijiye.",
+        `Aapne ${o.product.title} ka checkout shuru kiya tha, par payment poora nahi hua. UPI fail hona ya network chala jaana aam baat hai, aap ek click mein dobara try kar sakte ho.`,
       ],
-      cta: { label: "Payment poora karein", url: withUtm(`/buy/${o.product.slug}`, site.url, "checkout-reminder") },
-      why: `You get this because you started a payment on ${site.name}. We send only this one reminder.`,
+      points: ["UPI, card, net banking, sab chalta hai", "Payment hote hi turant access", ...SERIES_POINTS.slice(0, 2)],
+      cta: { label: "Payment poora karo", url: withUtm(`/buy/${o.product.slug}`, site.url, "checkout-reminder") },
+      after: "Paise kat gaye par access nahi mila? Dobara pay mat karo. Aksar payment kuch minute mein apne aap jud jaata hai; na jude toh is email ka reply karo.",
+      why: `Ye mail isliye aaya kyunki aapne ${site.name} pe payment shuru kiya tha. Ye sirf ek baar aata hai.`,
       unsubscribeUrl: o.user ? unsubscribeLinks(site, o.user.id, "offers").page : undefined,
       site,
     });
@@ -409,16 +501,20 @@ type Fail = { ok: false; errors: string[] };
 
 function audienceWhere(examId: string | null) {
   return {
-    emailOffers: true,
     NOT: { email: { endsWith: PHONE_PLACEHOLDER } },
-    ...(examId
-      ? {
-          OR: [
-            { attempts: { some: { test: { examId } } } },
-            { entitlements: { some: { revokedAt: null, product: { items: { some: { series: { examId } } } } } } },
-          ],
-        }
-      : {}),
+    AND: [
+      OFFERS_ALLOWED_WHERE,
+      ...(examId
+        ? [
+            {
+              OR: [
+                { attempts: { some: { test: { examId } } } },
+                { entitlements: { some: { revokedAt: null, product: { items: { some: { series: { examId } } } } } } },
+              ],
+            },
+          ]
+        : []),
+    ],
   };
 }
 
@@ -432,7 +528,7 @@ export async function queueCampaign(raw: unknown, actorId: string): Promise<{ ok
   const v = campaignSchema.safeParse(raw);
   if (!v.success) return { ok: false, errors: v.error.issues.map((i) => i.message) };
   const users = await db.user.findMany({ where: audienceWhere(v.data.examId), select: { id: true } });
-  if (!users.length) return { ok: false, errors: ["Nobody in this audience has opted in to emails yet."] };
+  if (!users.length) return { ok: false, errors: ["Nobody in this audience can be emailed."] };
   const campaign = await db.emailCampaign.create({ data: { ...v.data, createdById: actorId }, select: { id: true } });
   const { count } = await db.emailLog.createMany({
     data: users.map((u) => ({ userId: u.id, kind: "campaign", refKey: campaign.id, campaignId: campaign.id })),
@@ -467,17 +563,9 @@ export async function sendCampaignTest(raw: unknown, admin: { id: string; email:
 
 // ───────────── Preferences ─────────────
 
+/** Saving the profile form is the student's own decision, so it is recorded even when the offers box did not change. */
 export async function setEmailPreferences(userId: string, prefs: { offers: boolean; reminders: boolean }) {
-  const current = await db.user.findUniqueOrThrow({ where: { id: userId }, select: { emailOffers: true } });
-  await db.user.update({
-    where: { id: userId },
-    data: { emailOffers: prefs.offers, emailReminders: prefs.reminders, ...(prefs.offers !== current.emailOffers ? { emailOffersAt: new Date() } : {}) },
-  });
-}
-
-/** The "email me offers" box on the welcome screen; never switches anything off. */
-export async function optInToOffers(userId: string) {
-  await db.user.update({ where: { id: userId }, data: { emailOffers: true, emailOffersAt: new Date() } });
+  await db.user.update({ where: { id: userId }, data: { emailOffers: prefs.offers, emailOffersAt: new Date(), emailReminders: prefs.reminders } });
 }
 
 /** From an unsubscribe link: switches off one category for that student. */
@@ -486,7 +574,8 @@ export async function unsubscribe(userId: string, category: EmailCategory) {
 }
 
 export async function getEmailPreferences(userId: string) {
-  return db.user.findUniqueOrThrow({ where: { id: userId }, select: { email: true, emailOffers: true, emailReminders: true } });
+  const u = await db.user.findUniqueOrThrow({ where: { id: userId }, select: { email: true, emailOffers: true, emailOffersAt: true, emailReminders: true } });
+  return { email: u.email, emailOffers: offersAllowed(u), emailReminders: u.emailReminders };
 }
 
 // ───────────── Admin panel ─────────────
@@ -495,7 +584,7 @@ export async function getEmailPanel(now = new Date()) {
   const real = { NOT: { email: { endsWith: PHONE_PLACEHOLDER } } };
   const since = new Date(now.getTime() - 30 * DAY);
   const [optedIn, reminders, users, sentToday, queued, byKind, campaigns, campaignCounts, recent, exams] = await Promise.all([
-    db.user.count({ where: { ...real, emailOffers: true } }),
+    db.user.count({ where: { ...real, ...OFFERS_ALLOWED_WHERE } }),
     db.user.count({ where: { ...real, emailReminders: true } }),
     db.user.count({ where: real }),
     db.emailLog.count({ where: { status: "SENT", sentAt: { gte: istDayStart(now) } } }),
@@ -513,20 +602,20 @@ export async function getEmailPanel(now = new Date()) {
   const count = (rows: { status: string; _count: { _all: number } }[], status: string) => rows.filter((r) => r.status === status).reduce((n, r) => n + r._count._all, 0);
   const examName = new Map(exams.map((e) => [e.id, e.name]));
   return {
-    configured: !!process.env.RESEND_API_KEY && !!process.env.EMAIL_FROM,
+    configured: (!!process.env.RESEND_API_KEY || !!process.env.BREVO_API_KEY) && !!process.env.EMAIL_FROM,
     limit: dailyLimit(),
     optedIn,
     reminders,
     users,
     sentToday,
     queued,
-    kinds: (["expiry", "free-followup", "campaign", "announcement", "referral-invite"] as const).map((kind) => {
+    kinds: (["expiry", "free-followup", "nudge", "campaign", "announcement", "referral-invite"] as const).map((kind) => {
       const rows = byKind.filter((r) => r.kind === kind);
       return { kind, sent: count(rows, "SENT"), failed: count(rows, "FAILED"), skipped: count(rows, "SKIPPED"), queued: count(rows, "QUEUED") };
     }),
     campaigns: campaigns.map((c) => {
       const rows = campaignCounts.filter((r) => r.campaignId === c.id);
-      return { ...c, audience: c.examId ? (examName.get(c.examId) ?? "One exam") : "Everyone opted in", sent: count(rows, "SENT"), queued: count(rows, "QUEUED"), failed: count(rows, "FAILED"), skipped: count(rows, "SKIPPED") };
+      return { ...c, audience: c.examId ? (examName.get(c.examId) ?? "One exam") : "Everyone", sent: count(rows, "SENT"), queued: count(rows, "QUEUED"), failed: count(rows, "FAILED"), skipped: count(rows, "SKIPPED") };
     }),
     recent,
     exams,

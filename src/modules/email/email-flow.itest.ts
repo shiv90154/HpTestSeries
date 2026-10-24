@@ -2,8 +2,9 @@ import "dotenv/config";
 import { randomBytes } from "node:crypto";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
-// Never reach Resend from tests: without a key, sendEmail only logs (outside production).
+// Never reach Resend or Brevo from tests: without a key, sendEmail only logs (outside production).
 delete process.env.RESEND_API_KEY;
+delete process.env.BREVO_API_KEY;
 process.env.EMAIL_DAILY_LIMIT = "500";
 
 const { db } = await import("@/lib/db");
@@ -17,8 +18,16 @@ let productId = "";
 let testId = "";
 let examId = "";
 
-async function newUser(label: string, data: { emailOffers?: boolean; emailReminders?: boolean; email?: string } = {}) {
-  const u = await db.user.create({ data: { name: `IT ${label}`, email: data.email ?? `it-${tag}-${label}@example.com`, emailOffers: data.emailOffers ?? false, emailReminders: data.emailReminders ?? true } });
+async function newUser(label: string, data: { emailOffers?: boolean; emailOffersAt?: Date; emailReminders?: boolean; email?: string } = {}) {
+  const u = await db.user.create({
+    data: {
+      name: `IT ${label}`,
+      email: data.email ?? `it-${tag}-${label}@example.com`,
+      emailOffers: data.emailOffers ?? false,
+      emailOffersAt: data.emailOffersAt ?? null,
+      emailReminders: data.emailReminders ?? true,
+    },
+  });
   userIds.push(u.id);
   return u.id;
 }
@@ -40,6 +49,8 @@ let ending = "";
 let renewer = "";
 let followUp = "";
 let notOptedIn = "";
+let saidNo = "";
+let oldNonBuyer = "";
 let owner = "";
 let phoneUser = "";
 
@@ -64,6 +75,12 @@ beforeAll(async () => {
   notOptedIn = await newUser("noconsent");
   await freeAttempt(notOptedIn, DAY);
 
+  saidNo = await newUser("saidno", { emailOffersAt: new Date(now.getTime() - 10 * DAY) });
+  await freeAttempt(saidNo, DAY);
+
+  oldNonBuyer = await newUser("old");
+  await db.user.update({ where: { id: oldNonBuyer }, data: { createdAt: new Date(now.getTime() - 5 * DAY) } });
+
   owner = await newUser("owner", { emailOffers: true });
   await freeAttempt(owner, DAY);
   await entitlement(owner, 60 * DAY);
@@ -82,12 +99,14 @@ afterAll(async () => {
 });
 
 describe("daily reminders", () => {
-  it("queues access-ending and free-test follow-ups only for the right students, once", async () => {
+  it("queues access-ending, free-test follow-ups and the non-buyer mail only for the right students, once", async () => {
     await planReminders(now);
     expect((await logs(ending)).map((l) => l.kind)).toEqual(["expiry"]);
     expect(await logs(renewer)).toEqual([]); // already renewed
     expect((await logs(followUp)).map((l) => [l.kind, l.refKey])).toEqual([["free-followup", examId]]);
-    expect(await logs(notOptedIn)).toEqual([]); // no consent to offers
+    expect((await logs(notOptedIn)).map((l) => l.kind)).toEqual(["free-followup"]); // never decided: offers go out
+    expect(await logs(saidNo)).toEqual([]); // switched offers off
+    expect((await logs(oldNonBuyer)).map((l) => l.kind)).toEqual(["nudge"]); // 3+ days old, never bought
     expect((await logs(owner)).map((l) => l.kind)).toEqual([]); // already bought; their entitlement does not end soon
 
     const before = await db.emailLog.count({ where: { userId: { in: userIds } } });
@@ -99,6 +118,7 @@ describe("daily reminders", () => {
     await sendQueued(now);
     expect((await logs(ending))[0].status).toBe("SENT");
     expect((await logs(followUp))[0].status).toBe("SENT");
+    expect((await logs(oldNonBuyer))[0].status).toBe("SENT");
     const phone = await logs(phoneUser);
     expect(phone.map((l) => [l.status, l.error])).toEqual([["SKIPPED", "no email address"]]);
   });
@@ -115,7 +135,7 @@ describe("daily reminders", () => {
     const followUpCampaign = await db.emailLog.findFirstOrThrow({ where: { userId: followUp, campaignId } });
     expect(followUpCampaign.status).toBe("QUEUED"); // got the follow-up today
     expect((await db.emailLog.findUniqueOrThrow({ where: { id: ownerLog.id } })).status).toBe("SKIPPED");
-    expect(await db.emailLog.count({ where: { userId: notOptedIn, campaignId } })).toBe(0);
+    expect(await db.emailLog.count({ where: { userId: saidNo, campaignId } })).toBe(0);
 
     // Four days later the gap has passed and it goes out.
     await sendQueued(new Date(now.getTime() + 4 * DAY));
