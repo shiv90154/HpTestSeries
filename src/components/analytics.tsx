@@ -3,11 +3,10 @@
 import Script from "next/script";
 import { useReportWebVitals } from "next/web-vitals";
 
-// Google Analytics 4. Renders nothing unless NEXT_PUBLIC_GA_ID (G-XXXXXXX) is set at build time.
+// Google Analytics 4. Each site has its own GA property; the layout passes that site's measurement ID
+// (see gaIdFor in src/sites/analytics.ts) and nothing loads without one.
 // Page views: gtag's enhanced measurement tracks client-side navigations via the History API
 // (GA4 → Admin → Data streams → Enhanced measurement → "Page changes based on browser history events").
-
-const GA_ID = process.env.NEXT_PUBLIC_GA_ID;
 
 type Gtag = (...args: unknown[]) => void;
 
@@ -17,7 +16,7 @@ export function track(event: string, params: Record<string, string | number | bo
   if (gtag) gtag("event", event, params);
 }
 
-export function Analytics() {
+export function Analytics({ gaId }: { gaId?: string }) {
   // Core Web Vitals from real users → GA4 events, to watch LCP/CLS/INP (a ranking factor).
   useReportWebVitals((metric) => {
     track(metric.name, {
@@ -28,12 +27,12 @@ export function Analytics() {
     });
   });
 
-  if (!GA_ID) return null;
+  if (!gaId) return null;
   return (
     <>
-      <Script src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`} strategy="afterInteractive" />
+      <Script src={`https://www.googletagmanager.com/gtag/js?id=${gaId}`} strategy="afterInteractive" />
       <Script id="ga4-init" strategy="afterInteractive">
-        {`window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','${GA_ID}');`}
+        {`window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','${gaId}');`}
       </Script>
     </>
   );

@@ -4,6 +4,7 @@ import { Toaster } from "sonner";
 import { Analytics } from "@/components/analytics";
 import { notFound } from "next/navigation";
 import { isSiteCode, siteStaticParams } from "@/sites";
+import { gaIdFor } from "@/sites/analytics";
 import { currentSite } from "@/sites/current";
 import { SiteProvider } from "@/sites/provider";
 import { UiLangSync } from "@/components/ui-lang";
@@ -83,7 +84,7 @@ export default async function RootLayout({ children, params }: LayoutProps<"/[si
           <UiLangSync />
           {children}
           <Toaster position="top-center" richColors />
-          <Analytics />
+          <Analytics gaId={gaIdFor(site.code)} />
         </SiteProvider>
       </body>
     </html>

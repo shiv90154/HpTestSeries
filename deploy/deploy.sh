@@ -35,7 +35,9 @@ RAZORPAY_KEY_SECRET=
 RAZORPAY_WEBHOOK_SECRET=
 CRON_SECRET=$(openssl rand -hex 24)
 
-# NEXT_PUBLIC_GA_ID=G-XXXXXXXXXX
+# Google Analytics 4, one property per site
+# GA_ID_HP=G-XXXXXXXXXX
+# GA_ID_PB=G-XXXXXXXXXX
 EOF
   echo "Created deploy/.env.production and deploy/.env.db"
 fi
