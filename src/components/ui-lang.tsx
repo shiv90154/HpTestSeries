@@ -107,22 +107,30 @@ export function UiLangSync() {
   return null;
 }
 
-/** Header switch between English and Punjabi; renders nothing on sites without a Punjabi interface. */
-export function UiLangToggle({ className = "" }: { className?: string }) {
+/**
+ * Switch between English and Punjabi; renders nothing on sites without a Punjabi interface. The header button is
+ * hidden on phones, where the header has no room for it, and the phone menu shows the "menu" variant instead.
+ */
+export function UiLangToggle({ variant = "header" }: { variant?: "header" | "menu" }) {
   const site = useSite();
   const lang = useUiLang();
   if (site.code !== "pb") return null;
   const next = lang === "pa" ? "en" : "pa";
+  const menu = variant === "menu";
   return (
     <button
       type="button"
       onClick={() => setUiLang(next)}
       lang={next}
       aria-label={next === "pa" ? "ਪੰਜਾਬੀ ਵਿੱਚ ਵੇਖੋ (View in Punjabi)" : "View in English"}
-      className={`inline-flex h-11 items-center gap-1.5 rounded-xl px-2.5 text-sm font-semibold text-primary hover:bg-primary-soft ${className}`}
+      className={
+        menu
+          ? "flex min-h-12 w-full items-center gap-2 rounded-xl px-3 text-base font-semibold text-primary hover:bg-primary-soft"
+          : "hidden h-11 items-center gap-1.5 rounded-xl px-2.5 text-sm font-semibold text-primary hover:bg-primary-soft sm:inline-flex"
+      }
     >
-      <Languages className="hidden size-4 sm:block" aria-hidden />
-      {next === "pa" ? "ਪੰਜਾਬੀ" : "English"}
+      <Languages className={menu ? "size-5" : "size-4"} aria-hidden />
+      {next === "pa" ? (menu ? "ਪੰਜਾਬੀ ਵਿੱਚ ਵੇਖੋ" : "ਪੰਜਾਬੀ") : menu ? "View in English" : "English"}
     </button>
   );
 }

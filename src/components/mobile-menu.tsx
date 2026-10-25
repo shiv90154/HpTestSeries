@@ -3,10 +3,12 @@
 import { Menu, X } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useId, useRef, useState, type ReactNode } from "react";
+import { UiLangToggle } from "./ui-lang";
 
 /**
  * Phone-only menu button for the public header: the full site nav (the bottom tab bar has room for only
- * five tabs, so Exam Updates and Pricing live here). Closes on a link tap, Escape or a tap outside.
+ * five tabs, so Exam Updates and Pricing live here), plus the language switch on phones where the header has no
+ * room for it. Closes on a link tap, Escape or a tap outside.
  */
 export function MobileMenu({ links }: { links: { href: string; label: ReactNode }[] }) {
   const [open, setOpen] = useState(false);
@@ -71,6 +73,9 @@ export function MobileMenu({ links }: { links: { href: string; label: ReactNode 
               )}
             </li>
           ))}
+          <li className="sm:hidden">
+            <UiLangToggle variant="menu" />
+          </li>
         </ul>
       </nav>
     </div>
