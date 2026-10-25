@@ -151,9 +151,9 @@ valid topics and answer spread; questions use markdown + KaTeX rules (wrap `$` a
 | Item | Status |
 |---|---|
 | Phone header fix (Punjabi switch in menu) | ✅ live (55055e7) |
-| Court Clerk exam body + page | in progress |
-| Court Clerk free mock | in progress |
-| Court Clerk mocks 1–2 | in progress |
+| Court Clerk exam body + page | ✅ pushed (7ff819c), needs deploy |
+| Court Clerk free mock | ✅ pushed, needs deploy |
+| Court Clerk mocks 1–2 | ✅ pushed, needs deploy |
 | Court Clerk mocks 3–6, sectionals | not started |
 | Court Clerk posts (syllabus, subjective, CPT) | not started |
 | Launch checklist | owner's tasks open |
