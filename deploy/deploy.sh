@@ -38,6 +38,7 @@ CRON_SECRET=$(openssl rand -hex 24)
 # Google Analytics 4, one property per site
 # GA_ID_HP=G-XXXXXXXXXX
 # GA_ID_PB=G-XXXXXXXXXX
+# GA_ID_RJ=G-XXXXXXXXXX
 EOF
   echo "Created deploy/.env.production and deploy/.env.db"
 fi
