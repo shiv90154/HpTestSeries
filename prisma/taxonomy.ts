@@ -35,6 +35,20 @@ export const taxonomy: SubjectSeed[] = [
     ],
   },
   {
+    slug: "rajasthan-gk",
+    name: "Rajasthan GK",
+    nameHi: "राजस्थान सामान्य ज्ञान",
+    topics: [
+      ["history", "History of Rajasthan"],
+      ["geography", "Geography of Rajasthan"],
+      ["rivers-lakes", "Rivers & Lakes"],
+      ["districts", "Districts"],
+      ["art-culture", "Art, Culture & Folk Traditions"],
+      ["economy", "Economy of Rajasthan"],
+      ["polity-administration", "Polity & Administration"],
+    ],
+  },
+  {
     slug: "general-studies",
     name: "General Studies",
     nameHi: "सामान्य अध्ययन",

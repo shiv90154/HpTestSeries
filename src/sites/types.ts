@@ -2,7 +2,7 @@
 // lives in a SiteConfig; shared code reads the request's site instead of hard-coding a state.
 // See docs/MULTI-SITE-PLAN.md.
 
-export const SITE_CODES = ["hp", "pb"] as const;
+export const SITE_CODES = ["hp", "pb", "rj"] as const;
 export type SiteCode = (typeof SITE_CODES)[number];
 
 /** Colour tokens from globals.css that a site may override. */
@@ -49,14 +49,14 @@ export type SiteConfig = {
   theme: Partial<Record<ThemeToken, string>>;
   /**
    * Logo: the wordmark prefix ("HP" Test Series), the mark's fill and sun colours, and the landscape drawn
-   * inside the answer bubble (Himalayan peaks for HP, fields for Punjab). See src/lib/brand-mark.ts.
+   * inside the answer bubble (Himalayan peaks for HP, fields for Punjab, dunes for Rajasthan). See src/lib/brand-mark.ts.
    */
-  logo: { initials: string; fill: string; accent: string; landscape: "peaks" | "fields" };
+  logo: { initials: string; fill: string; accent: string; landscape: "peaks" | "fields" | "dunes" };
   /** Share-image (OG) background, dark to light, and the exam line under the headline. */
   og: { gradient: [string, string, string]; exams: string };
   /** The free no-login mock linked from the header, footer, home and login pages. */
   freeMockSlug: string;
-  /** The state GK page: /himachal on hp, /punjab on pb. */
+  /** The state GK page: /himachal on hp, /punjab on pb, /rajasthan on rj. */
   statePage: { slug: string; title: string };
   districts: readonly string[];
   /** Open WhatsApp group for exam news; omitted until the site has one. */

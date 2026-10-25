@@ -12,6 +12,9 @@ const LANDSCAPES: Record<Mark["landscape"], (fill: string) => string> = {
   // Rolling fields with furrows
   fields: (fill) =>
     `<path d="M9.4 23.4 Q15 19.6 20 22 T30.6 22.6 A11 11 0 0 1 9.4 23.4 Z" fill="${fill}"/><path d="M12.6 27.6 Q20 24.2 27.4 27.6" fill="none" stroke="#fff" stroke-width="1.1" stroke-linecap="round"/>`,
+  // Overlapping sand dunes with a ridge line
+  dunes: (fill) =>
+    `<path d="M9.2 22.2 Q13.5 18.6 18.5 21.6 Q24.5 17.8 30.8 22.2 A11 11 0 0 1 9.2 22.2 Z" fill="${fill}"/><path d="M11.4 26.2 Q17.5 22.6 23.5 25.4 Q26.4 24.2 28.8 25.6" fill="none" stroke="#fff" stroke-width="1.1" stroke-linecap="round"/>`,
 };
 
 /** Inner SVG of the mark on a 40×40 viewBox. */

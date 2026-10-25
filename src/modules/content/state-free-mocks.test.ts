@@ -1,17 +1,23 @@
 import { describe, expect, it } from "vitest";
 import { punjabFreeMock } from "../../../prisma/punjab/free-mock";
+import { rajasthanFreeMock } from "../../../prisma/rajasthan/free-mock";
 import { COMMON_FREE_QUESTIONS } from "../../../prisma/seed-demo";
 import { taxonomy } from "../../../prisma/taxonomy";
 import { pb } from "@/sites/pb";
+import { rj } from "@/sites/rj";
 import { questionTextHash } from "./text-hash";
 
-const mock = punjabFreeMock(COMMON_FREE_QUESTIONS);
 const topics = new Set(taxonomy.flatMap((s) => s.topics.map(([slug]) => `${s.slug}/${slug}`)));
 
-describe("pb free mock", () => {
-  it("is the mock the pb site links as its free test, placed on pb", () => {
-    expect(mock.slug).toBe(pb.freeMockSlug);
-    expect(mock.site).toBe("pb");
+const MOCKS = [
+  { site: pb, subject: "punjab-gk", mock: punjabFreeMock(COMMON_FREE_QUESTIONS) },
+  { site: rj, subject: "rajasthan-gk", mock: rajasthanFreeMock(COMMON_FREE_QUESTIONS) },
+];
+
+describe.each(MOCKS)("$site.code free mock", ({ site, subject, mock }) => {
+  it("is the mock the site links as its free test, placed on that site", () => {
+    expect(mock.slug).toBe(site.freeMockSlug);
+    expect(mock.site).toBe(site.code);
   });
 
   it("has well-formed bilingual questions in every section", () => {
@@ -30,7 +36,7 @@ describe("pb free mock", () => {
 
   it("shares only the non-state sections with the HP free mock and repeats no stem", () => {
     const own = mock.questions.filter((q) => q.section === 0);
-    expect(own.every((q) => q.subject === "punjab-gk")).toBe(true);
+    expect(own.every((q) => q.subject === subject)).toBe(true);
     const hashes = mock.questions.map((q) => questionTextHash(q.en.q));
     expect(new Set(hashes).size).toBe(hashes.length);
   });
@@ -39,4 +45,9 @@ describe("pb free mock", () => {
     const counts = [0, 1, 2, 3].map((a) => mock.questions.filter((q) => q.section === 0 && q.answer === a).length);
     expect(Math.max(...counts)).toBeLessThanOrEqual(6);
   });
+});
+
+it("state free mocks share no stem with each other", () => {
+  const own = MOCKS.flatMap(({ mock }) => mock.questions.filter((q) => q.section === 0).map((q) => questionTextHash(q.en.q)));
+  expect(new Set(own).size).toBe(own.length);
 });

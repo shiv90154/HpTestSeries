@@ -6,10 +6,13 @@ describe("siteFromHost", () => {
     expect(siteFromHost("hptestseries.in").code).toBe("hp");
     expect(siteFromHost("www.pbtestseries.in").code).toBe("pb");
     expect(siteFromHost("PBTESTSERIES.IN:443").code).toBe("pb");
+    expect(siteFromHost("rjtestseries.in").code).toBe("rj");
+    expect(siteFromHost("www.rjtestseries.in").code).toBe("rj");
   });
 
   it("maps <code>.localhost for local dev and plain localhost to the primary site", () => {
     expect(siteFromHost("pb.localhost:3000").code).toBe("pb");
+    expect(siteFromHost("rj.localhost:3000").code).toBe("rj");
     expect(siteFromHost("localhost:3000").code).toBe(PRIMARY_SITE.code);
   });
 

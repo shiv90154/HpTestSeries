@@ -1,5 +1,6 @@
 import "server-only";
 import { db } from "@/lib/db";
+import { isSiteCode } from "@/sites";
 import { parseFaqs } from "./exam-content";
 import { validatePost, type PostInput } from "./post-input";
 
@@ -35,7 +36,7 @@ export async function getPostForEdit(id: string): Promise<({ id: string; status:
     content: p.content,
     coverImage: p.coverImage ?? "",
     category: p.category,
-    site: p.site === "pb" ? "pb" : "hp",
+    site: isSiteCode(p.site) ? p.site : "hp",
     seoTitle: p.seoTitle ?? "",
     seoDescription: p.seoDescription ?? "",
     faqs: parseFaqs(p.faqs),

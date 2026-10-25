@@ -2,12 +2,13 @@
 
 import { hp } from "./hp";
 import { pb } from "./pb";
+import { rj } from "./rj";
 import { SITE_CODES, type SiteCode, type SiteConfig } from "./types";
 
 export type { SiteCode, SiteConfig } from "./types";
 export { SITE_CODES } from "./types";
 
-export const SITES: Record<SiteCode, SiteConfig> = { hp, pb };
+export const SITES: Record<SiteCode, SiteConfig> = { hp, pb, rj };
 
 /** Owns /admin, the canonical copy of national-exam pages, and any host we don't recognise. */
 export const PRIMARY_SITE = hp;

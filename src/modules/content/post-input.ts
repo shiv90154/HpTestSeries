@@ -113,6 +113,31 @@ const SITE_CATEGORY_COPY: Partial<Record<SiteCode, Record<PostCategory, Category
       blurb: "Punjab current affairs for PSSSB, PPSC, Punjab Police and Patwari exams.",
     },
   },
+  rj: {
+    NOTIFICATION: {
+      heading: "Rajasthan Govt Job Notifications",
+      blurb: "Latest Rajasthan government recruitment notifications — RSSB, RPSC, Rajasthan Police and more, with vacancies, eligibility and how to apply.",
+    },
+    SYLLABUS: { heading: "Rajasthan Exam Syllabus", blurb: "Topic-wise syllabus for RSSB, Rajasthan Police, RPSC and REET exams, with what to study first." },
+    EXAM_PATTERN: {
+      heading: "Rajasthan Exam Pattern",
+      blurb: "Questions, marks, time and negative marking for every major Rajasthan government exam.",
+    },
+    EXAM_DATE: { heading: "Rajasthan Exam Dates", blurb: "Exam calendar and date updates for RSSB, RPSC, Rajasthan Police and other Rajasthan government exams." },
+    ADMIT_CARD: { heading: "Rajasthan Exam Admit Cards", blurb: "When and how to download admit cards for RSSB, RPSC and Rajasthan Police exams." },
+    RESULT: { heading: "Rajasthan Exam Results", blurb: "Results, answer keys and merit list news for Rajasthan government recruitment exams." },
+    CUTOFF: { heading: "Rajasthan Exam Cutoff Marks", blurb: "Previous cutoff marks for RSSB, Rajasthan Police and RPSC exams, category-wise." },
+    STRATEGY: {
+      heading: "Rajasthan Exam Preparation Strategy",
+      blurb: "How to prepare for Rajasthan government exams — study plans, Rajasthan GK and mock test strategy.",
+    },
+    CURRENT_AFFAIRS: {
+      label: "Rajasthan Current Affairs",
+      labelHi: "राजस्थान समसामयिकी",
+      heading: "Rajasthan Current Affairs",
+      blurb: "Rajasthan current affairs for RSSB, RPSC, Rajasthan Police and Patwari exams.",
+    },
+  },
 };
 
 /** A category's label and landing-page copy as shown on one site. */

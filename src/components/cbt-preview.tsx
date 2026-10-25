@@ -15,6 +15,10 @@ const STATE: Record<SiteCode, { paper: string; gk: { tab: string; no: number; q:
     paper: "PSSSB Clerk — Mock Test 3",
     gk: { tab: "Punjab GK", no: 6, q: "The Beas and the Sutlej meet at which place in Punjab?", options: ["Harike", "Ropar", "Nangal", "Hussainiwala"], answer: 0 },
   },
+  rj: {
+    paper: "RSSB Patwari — Mock Test 3",
+    gk: { tab: "Rajasthan GK", no: 6, q: "Which is the longest river that flows entirely within Rajasthan?", options: ["Banas", "Luni", "Chambal", "Mahi"], answer: 0 },
+  },
 };
 
 const common = [
