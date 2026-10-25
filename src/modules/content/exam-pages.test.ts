@@ -3,6 +3,7 @@ import { catalogue } from "../../../prisma/catalogue";
 import { EXAM_PAGES, NOTIFICATION_POSTS, PUNJAB_POSTS } from "../../../prisma/exam-pages";
 import { EXAM_SERIES } from "../../../prisma/exam-series";
 import { PATWARI_TESTS } from "../../../prisma/patwari";
+import { COURT_CLERK_TESTS } from "../../../prisma/pb-court-clerk";
 import { examContent, posts } from "../../../prisma/seed-content";
 import { UPCOMING_FREE_TESTS } from "../../../prisma/upcoming-free";
 import { hp } from "@/sites/hp";
@@ -16,6 +17,7 @@ const testSlugs = new Set([
   ...UPCOMING_FREE_TESTS.map((t) => t.slug),
   ...EXAM_SERIES.flatMap((s) => s.tests.map((t) => t.slug)),
   ...PATWARI_TESTS.map((t) => t.slug),
+  ...COURT_CLERK_TESTS.map((t) => t.slug),
   hp.freeMockSlug,
   pb.freeMockSlug,
   "hpas-free-mock-1",
@@ -110,6 +112,7 @@ describe("exam page copy", () => {
       "hpscb/clerk",
       "psssb/clerk",
       "psssb/group-d",
+      "punjab-courts/clerk",
       "punjab-police/constable",
     ]);
   });

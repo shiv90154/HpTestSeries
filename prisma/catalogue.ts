@@ -175,6 +175,15 @@ export const catalogue: BodySeed[] = [
       },
     ],
   },
+  {
+    // District court staff are hired by the Society for Centralized Recruitment of Staff in Subordinate Courts (sssc.gov.in)
+    // under the Punjab and Haryana High Court.
+    slug: "punjab-courts",
+    name: "District Courts of Punjab (SSSC)",
+    nameHi: "पंजाब ज़िला न्यायालय (SSSC)",
+    sites: ["pb"],
+    exams: [{ slug: "clerk", name: "Punjab District Court Clerk", nameHi: "पंजाब ज़िला न्यायालय क्लर्क" }],
+  },
   // National defence entries that many Himachal aspirants sit; not Himachal recruitments.
   {
     slug: "upsc",

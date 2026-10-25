@@ -1,7 +1,9 @@
 import { pb } from "../../src/sites/pb";
 import type { ExamPages } from "./types";
+import { COURT_CLERK_FREE_MOCK_SLUG } from "../pb-court-clerk";
 
 const FREE_MOCK = `/tests/${pb.freeMockSlug}`;
+const COURT_CLERK_FREE_MOCK = `/tests/${COURT_CLERK_FREE_MOCK_SLUG}`;
 
 // Punjab exams, shown on pbtestseries.in only. Facts that outlive one drive; anything dated says which drive it is from.
 // The PSSSB and Punjab Police patterns match the 2026 drives as reported by several sources and as far as the official
@@ -76,6 +78,79 @@ The written test has two parts. **Part A is a qualifying Punjabi paper**: if you
     ],
   },
 
+
+  "punjab-courts/clerk": {
+    seo: {
+      title: "Punjab Court Clerk Mock Test {year} — 1270 Posts, GK & English",
+      description:
+        "Punjab District Court Clerk mock tests in the SSSC pattern: 50 GK and 20 English questions with negative marking, solutions in English and Hindi. Free mock, no login.",
+    },
+    pattern: {
+      sections: [
+        { name: "General Knowledge (objective)", questions: 50, marks: 50 },
+        { name: "English Composition (objective)", questions: 20, marks: 20 },
+        { name: "English Composition (subjective, typed on screen)", questions: 4, marks: 30 },
+      ],
+      durationMin: 120,
+      negativeMarking: "0.25 mark per wrong answer in the objective questions",
+      note: "2026 notice (Advt. 37C/SSSC/PB/2026). The subjective part is an essay, a letter, a précis and a Punjabi to English translation. You need 33% in each subject and 40% overall; the subjective English is marked only if you score 33% in GK. Confirm in the official notice.",
+    },
+    description: `**Punjab District Court Clerk** posts are filled by the **Society for Centralized Recruitment of Staff in Subordinate Courts (SSSC)** for the district and sessions courts of Punjab, under the Punjab and Haryana High Court. The 2026 drive (Advertisement No. 37C/SSSC/PB/2026) is for **1,270 Clerk posts**, with online applications on sssc.gov.in from 7 October to **4 November 2026**. The post is at **Level 5 (₹29,200)** of the pay matrix.
+
+You need a **BA or BSc degree**, **Punjabi passed at matriculation level** and computer proficiency; the general age limit is 18 to 37 years as on 1 January 2026, with relaxation for reserved categories of Punjab.
+
+Selection has three steps. The **written exam** is an online CBT of 100 marks in 2 hours: **50 General Knowledge** and **20 English** objective questions with a quarter-mark negative, plus **30 marks of typed English**: an essay of about 150 words, a letter, a précis and a Punjabi to English translation. Candidates shortlisted on the written marks take a qualifying **Computer Proficiency Test**: a 10-minute spreadsheet task and English typing at 30 words per minute. The final merit list follows the written exam marks only.
+
+**How to prepare:** GK is half the paper, so revise Indian polity, history and geography alongside **Punjab GK** (our [Know Your Punjab](/punjab) page is a quick start). Practise English grammar and vocabulary daily, and write one essay or letter a week and type it, because the subjective part is typed on screen. Take a full mock every few days with negative marking on. Start with the [free Punjab Court Clerk mock test](${COURT_CLERK_FREE_MOCK}).`,
+    syllabus: `The notice gives the scheme; the topics below are what the paper usually covers.
+
+### General Knowledge (50 marks)
+- Indian history and the national movement, with Punjab's role (Ghadar, Jallianwala Bagh, Bhagat Singh)
+- Indian polity: Constitution, Fundamental Rights, Parliament, judiciary and High Courts
+- Indian and world geography, rivers and the geography of Punjab
+- Indian economy, banking and government schemes
+- General science and environment
+- Punjab GK: Sikh Gurus, Maharaja Ranjit Singh, districts, rivers, culture, fairs and festivals
+- Current affairs, sports, awards and books
+
+### English Composition — objective (20 marks)
+- Grammar: tenses, subject-verb agreement, articles, prepositions
+- Error spotting and sentence improvement
+- Active and passive voice, direct and indirect speech
+- Synonyms, antonyms, one-word substitution, idioms and spellings
+
+### English Composition — subjective (30 marks, typed)
+- Essay of about 150 words (10 marks)
+- Letter: official or personal (5 marks)
+- Précis (5 marks)
+- Translation of a Punjabi passage into English (10 marks)
+
+### Computer Proficiency Test (qualifying)
+- Spreadsheet: 10 marks in 10 minutes, at least 4 to pass
+- English typing at 30 words per minute`,
+    faqs: [
+      {
+        q: "How many posts are there in the Punjab District Court Clerk 2026 recruitment?",
+        a: "The 2026 notice (Advt. No. 37C/SSSC/PB/2026) is for 1,270 Clerk posts in the district courts of Punjab. Applications are online on sssc.gov.in until 4 November 2026.",
+      },
+      {
+        q: "Is there negative marking in the Punjab Court Clerk exam?",
+        a: "Yes. A quarter mark (0.25) is deducted for each wrong answer in the objective General Knowledge and English questions. Unattempted questions carry no penalty.",
+      },
+      {
+        q: "Is the subjective English part typed or handwritten?",
+        a: "It is typed on the computer during the online exam: an essay, a letter, a précis and a Punjabi to English translation, 30 marks in all. Practise typing your answers, not just writing them.",
+      },
+      {
+        q: "Is the typing test counted in the merit?",
+        a: "No. The Computer Proficiency Test (spreadsheet and 30 wpm English typing) is qualifying. The final merit list follows the written exam marks.",
+      },
+      {
+        q: "Do the mock tests include the subjective English part?",
+        a: "Our mocks cover the 70 objective marks with negative marking, in the exam's online format. The essay, letter, précis and translation have to be practised separately, since an online test cannot mark them.",
+      },
+    ],
+  },
   "psssb/group-d": {
     seo: {
       title: "PSSSB Group D Mock Test {year} — Sewadar, Chowkidar & More",
