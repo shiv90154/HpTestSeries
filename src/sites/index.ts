@@ -33,6 +33,9 @@ export function siteFromHost(host: string | null | undefined): SiteConfig {
   return PRIMARY_SITE;
 }
 
+/** The site a user's emails come from: where they last logged in, else where they signed up. */
+export const userSite = (u: { lastSite?: string | null; signupSite: string }) => getSite(u.lastSite ?? u.signupSite);
+
 /** Free no-login mock link for a site. */
 export const freeMockHref = (s: SiteConfig) => `/tests/${s.freeMockSlug}`;
 

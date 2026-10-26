@@ -13,7 +13,7 @@ import { competitionRanks, publicName } from "./leaderboard";
 import { isLiveTest, liveDeadline, liveState, resultsLocked } from "./live";
 import type { Bilingual, GuestClaim, LeaderboardRow, Paper, ResultData, SubmittedAnswers } from "./types";
 import { isRealDistrict } from "@/lib/districts";
-import { getSite } from "@/sites";
+import { userSite } from "@/sites";
 
 /** Late submissions within this window still count (network delays at the deadline). */
 const SUBMIT_GRACE_MS = 90_000;
@@ -523,10 +523,10 @@ export async function submitAttempt(
 }
 
 async function notifyResultReady(userId: string, attemptId: string, testTitle: string): Promise<void> {
-  const user = await db.user.findUnique({ where: { id: userId }, select: { email: true, emailVerified: true, signupSite: true } });
+  const user = await db.user.findUnique({ where: { id: userId }, select: { email: true, emailVerified: true, signupSite: true, lastSite: true } });
   if (!user?.email || !user.emailVerified) return;
   const { sendResultReadyEmail } = await import("@/modules/identity/email");
-  await sendResultReadyEmail(user.email, testTitle, attemptId, getSite(user.signupSite));
+  await sendResultReadyEmail(user.email, testTitle, attemptId, userSite(user));
 }
 
 /** When this attempt belongs to a live test whose window is still open, the time its result appears; otherwise null. */

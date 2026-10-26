@@ -35,7 +35,8 @@ model User {
   role                Role      @default(STUDENT)
   preferredLang       Lang      @default(en)
   district            String?
-  signupSite          String    @default("hp") // site the account was created on: branding of its emails
+  signupSite          String    @default("hp") // site the account was created on (analytics, admin filter)
+  lastSite            String? // site of the latest login: its emails carry this site's name and links (else signupSite)
   twoFactorEnabled    Boolean   @default(false) // staff-only TOTP, see modules/identity/two-factor.ts
   // Email consent (modules/email): offers = opt-in promotions (free-test follow-up, campaigns); reminders = service
   // mails about what the student bought (access ending), on by default and switchable off.

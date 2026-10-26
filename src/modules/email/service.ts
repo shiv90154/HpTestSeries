@@ -2,7 +2,7 @@ import "server-only";
 import { z } from "zod";
 import { db } from "@/lib/db";
 import { rupees } from "@/lib/money";
-import { getSite, PRIMARY_SITE, type SiteConfig } from "@/sites";
+import { getSite, PRIMARY_SITE, type SiteConfig, userSite } from "@/sites";
 import { getBuyOptionForSeries } from "@/modules/commerce/product-service";
 import { sendEmail } from "@/modules/identity/email";
 import { PLACEHOLDER_NAME } from "@/modules/identity/permissions";
@@ -109,11 +109,11 @@ const NUDGE_REF = "v1";
 
 // ───────────── Content ─────────────
 
-/** `signupSite`: the site the account was made on; its mails carry that site's name, colours and links. */
-type Recipient = { id: string; name: string; signupSite: string };
+/** Mails carry the name, colours and links of the user's latest login site (`userSite`). */
+type Recipient = { id: string; name: string; signupSite: string; lastSite: string | null };
 
 async function expiryEmail(user: Recipient, entitlementId: string, now: Date): Promise<EmailContent | null> {
-  const site = getSite(user.signupSite);
+  const site = userSite(user);
   const e = await db.entitlement.findUnique({
     where: { id: entitlementId },
     select: { revokedAt: true, expiresAt: true, productId: true, product: { select: { title: true, slug: true, isActive: true } } },
@@ -165,7 +165,7 @@ function scoreStats(a: { correct: number | null; wrong: number | null; skipped: 
 }
 
 async function followUpEmail(user: Recipient, refKey: string, now: Date): Promise<EmailContent | null> {
-  const site = getSite(user.signupSite);
+  const site = userSite(user);
   const owns = await db.entitlement.count({ where: { userId: user.id, revokedAt: null, expiresAt: { gt: now } } });
   if (owns) return null;
   const attempt = await db.attempt.findFirst({
@@ -202,7 +202,7 @@ async function followUpEmail(user: Recipient, refKey: string, now: Date): Promis
 
 /** For a student who never bought: their last test and the series for it, or an invitation to a first free mock. */
 async function nudgeEmail(user: Recipient): Promise<EmailContent | null> {
-  const site = getSite(user.signupSite);
+  const site = userSite(user);
   if (await db.entitlement.count({ where: { userId: user.id } })) return null;
   const name = firstName(user.name);
   const attempt = await db.attempt.findFirst({
@@ -322,7 +322,7 @@ export async function sendQueued(now = new Date()): Promise<SendSummary> {
         kind: true,
         refKey: true,
         campaign: { select: { id: true, subject: true, heading: true, body: true, ctaLabel: true, ctaUrl: true } },
-        user: { select: { id: true, name: true, email: true, emailOffers: true, emailOffersAt: true, emailReminders: true, signupSite: true } },
+        user: { select: { id: true, name: true, email: true, emailOffers: true, emailOffersAt: true, emailReminders: true, signupSite: true, lastSite: true } },
       },
     })
   ).sort((a, b) => (PRIORITY[a.kind as EmailKind] ?? 9) - (PRIORITY[b.kind as EmailKind] ?? 9));
@@ -348,7 +348,7 @@ export async function sendQueued(now = new Date()): Promise<SendSummary> {
     const kind = log.kind as EmailKind;
     const category = CATEGORY[kind];
     const u = log.user;
-    const site = getSite(u.signupSite);
+    const site = userSite(u);
     if (!category) {
       await skip(log.id, "unknown kind");
       continue;

@@ -58,6 +58,7 @@ export const auth = betterAuth({
       preferredLang: { type: "string", defaultValue: "en", input: false },
       district: { type: "string", required: false, input: false },
       signupSite: { type: "string", defaultValue: "hp", input: false },
+      lastSite: { type: "string", required: false, input: false },
     },
   },
 
@@ -97,7 +98,9 @@ export const auth = betterAuth({
     session: {
       create: {
         // Keep only the newest MAX_SESSIONS_PER_USER sessions.
-        after: async (session) => {
+        after: async (session, ctx) => {
+          // Emails follow the site the student is using now, not only the one they signed up on.
+          await db.user.update({ where: { id: session.userId }, data: { lastSite: siteOf(ctx).code } });
           const stale = await db.session.findMany({
             where: { userId: session.userId },
             orderBy: { createdAt: "desc" },
