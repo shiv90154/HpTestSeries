@@ -19,7 +19,7 @@ export const business = {
   grievanceOfficer: "Nikhil Sharma",
   supportHours: "Monday to Saturday, 10:00 AM – 6:00 PM IST",
   /** Date the current policies took effect (YYYY-MM-DD) */
-  policiesUpdated: "2026-09-27",
+  policiesUpdated: "2026-10-26",
 } as const;
 
 const labels: Record<keyof typeof business, string> = {

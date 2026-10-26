@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState, type FormEvent } from "react";
 import { authClient } from "@/modules/identity/auth-client";
 import { normalizeIndianMobile, PLACEHOLDER_NAME } from "@/modules/identity/permissions";
+import { track } from "@/components/analytics";
 import { T } from "@/components/ui-lang";
 import { OtpInput } from "./otp-input";
 
@@ -105,6 +106,9 @@ export function LoginForm({ next, googleEnabled, emailEnabled, phoneEnabled }: {
       setValue("");
       throw new Error(error.status === 429 ? "Too many attempts. Try again in a few minutes." : "That code is incorrect or has expired.");
     }
+    // Accounts are created on the first code sign-in; createdAt tells a sign-up from a returning student.
+    const createdAt = data?.user.createdAt ? new Date(data.user.createdAt).getTime() : 0;
+    if (Date.now() - createdAt < 5 * 60_000) track("sign_up", { method: method === "email" ? "email" : "sms" });
     // New code accounts are called "Aspirant" (also on leaderboards) until the student gives their name.
     router.replace(data?.user.name === PLACEHOLDER_NAME ? `/welcome?next=${encodeURIComponent(next)}` : next);
     router.refresh();

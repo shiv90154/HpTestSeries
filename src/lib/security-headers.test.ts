@@ -22,6 +22,12 @@ describe("contentSecurityPolicy", () => {
     expect(csp).toMatch(/connect-src [^;]*google-analytics\.com/);
   });
 
+  it("allows the Meta Pixel", () => {
+    const csp = contentSecurityPolicy(false);
+    expect(csp).toMatch(/script-src [^;]*https:\/\/connect\.facebook\.net/);
+    expect(csp).toMatch(/connect-src [^;]*https:\/\/www\.facebook\.com/);
+  });
+
   it("only allows eval in development", () => {
     expect(contentSecurityPolicy(false)).not.toContain("unsafe-eval");
     expect(contentSecurityPolicy(true)).toContain("unsafe-eval");

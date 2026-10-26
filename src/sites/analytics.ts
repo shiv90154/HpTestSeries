@@ -10,3 +10,11 @@ export function gaIdFor(code: SiteCode, env: Record<string, string | undefined> 
   const id = (env[`GA_ID_${code.toUpperCase()}`] ?? (code === "hp" ? env.NEXT_PUBLIC_GA_ID : undefined))?.trim();
   return id && GA_ID.test(id) ? id : undefined;
 }
+
+const META_PIXEL_ID = /^\d{10,20}$/;
+
+/** The site's Meta (Facebook) Pixel ID from META_PIXEL_<CODE> (META_PIXEL_HP, …), or undefined when unset or malformed. */
+export function metaPixelIdFor(code: SiteCode, env: Record<string, string | undefined> = process.env): string | undefined {
+  const id = env[`META_PIXEL_${code.toUpperCase()}`]?.trim();
+  return id && META_PIXEL_ID.test(id) ? id : undefined;
+}

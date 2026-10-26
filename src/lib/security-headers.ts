@@ -9,16 +9,19 @@ type Header = { key: string; value: string };
 // Google Analytics 4 (gtag.js): script from googletagmanager.com, hits to *.google-analytics.com.
 const GA_SCRIPT = "https://www.googletagmanager.com";
 const GA_CONNECT = "https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com";
+// Meta Pixel: fbevents.js from connect.facebook.net, hits to www.facebook.com (images, already allowed by img-src https:).
+const META_SCRIPT = "https://connect.facebook.net";
+const META_CONNECT = "https://www.facebook.com https://connect.facebook.net";
 
 export function contentSecurityPolicy(isDev: boolean): string {
   const directives = [
     "default-src 'self'",
-    `script-src 'self' 'unsafe-inline' https://checkout.razorpay.com https://cdn.razorpay.com ${GA_SCRIPT}${isDev ? " 'unsafe-eval'" : ""}`,
+    `script-src 'self' 'unsafe-inline' https://checkout.razorpay.com https://cdn.razorpay.com ${GA_SCRIPT} ${META_SCRIPT}${isDev ? " 'unsafe-eval'" : ""}`,
     "style-src 'self' 'unsafe-inline'",
     // Any https image: blog posts embed cover/inline images by URL (images can't run script).
     "img-src 'self' data: blob: https:",
     "font-src 'self' data:",
-    `connect-src 'self' https://*.razorpay.com ${GA_CONNECT}${isDev ? " ws: wss:" : ""}`,
+    `connect-src 'self' https://*.razorpay.com ${GA_CONNECT} ${META_CONNECT}${isDev ? " ws: wss:" : ""}`,
     "frame-src https://*.razorpay.com",
     "object-src 'none'",
     "base-uri 'self'",

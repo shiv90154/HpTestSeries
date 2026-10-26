@@ -62,8 +62,7 @@ export default async function PrivacyPage() {
         <li>To prevent fraud, cheating and abuse, and to meet legal and tax obligations.</li>
       </ul>
       <p>
-        We do not sell your personal data, and we do not use it for third-party advertising. We will ask for your consent
-        before sending promotional messages.
+        We do not sell your personal data. We will ask for your consent before sending promotional messages.
       </p>
 
       <h2>3. Who we share it with</h2>
@@ -72,6 +71,10 @@ export default async function PrivacyPage() {
         <li>SMS/OTP provider (MSG91) — your mobile number, to send login codes.</li>
         <li>Google — if you choose Google sign-in.</li>
         <li>Payment gateway (Razorpay) — to process your payment.</li>
+        <li>
+          Google Analytics and Meta (Facebook) — pages you visit and actions such as starting a test, signing up or buying,
+          sent from your browser with a device identifier. We never send them your name, phone number, email or answers.
+        </li>
         <li>Hosting and database providers — to store and serve the site and your data securely.</li>
       </ul>
       <p>
@@ -81,8 +84,11 @@ export default async function PrivacyPage() {
 
       <h2>4. Cookies</h2>
       <p>
-        We use only essential cookies that keep you logged in and protect your session. We do not use advertising cookies. If
-        we add privacy-friendly analytics in future, we will update this policy first.
+        We use essential cookies that keep you logged in and protect your session. We also use Google Analytics cookies to
+        see which pages and tests students use, and the Meta Pixel to measure our ads on Facebook and Instagram and show
+        them to people likely to find our tests useful. You can block these with your browser&rsquo;s tracking protection or
+        an ad blocker; the site works the same without them. You can also manage ad preferences in your Facebook or
+        Instagram settings.
       </p>
 
       <h2>5. How long we keep it</h2>

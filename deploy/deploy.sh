@@ -39,6 +39,9 @@ CRON_SECRET=$(openssl rand -hex 24)
 # GA_ID_HP=G-XXXXXXXXXX
 # GA_ID_PB=G-XXXXXXXXXX
 # GA_ID_RJ=G-XXXXXXXXXX
+
+# Meta Pixel, one per site (digits only)
+# META_PIXEL_HP=
 EOF
   echo "Created deploy/.env.production and deploy/.env.db"
 fi
