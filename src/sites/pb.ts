@@ -1,9 +1,9 @@
 import type { SiteConfig } from "./types";
 
-// Soft launch: live on its domain but noindex and out of the sitemap until the Punjab content is checked.
+// Launched 26 October 2026 for the Court Clerk exam: indexed and in the sitemap.
 export const pb: SiteConfig = {
   code: "pb",
-  launched: false,
+  launched: true,
   domains: ["pbtestseries.in", "www.pbtestseries.in"],
   url: process.env.NEXT_PUBLIC_PB_SITE_URL ?? "https://pbtestseries.in",
   name: "PB Test Series",
