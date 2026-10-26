@@ -29,6 +29,9 @@ const nextConfig: NextConfig = {
         { source: `/tests/hp-tet-tgt-${stream}-full-mock-:n(\\d+)`, destination: `/tests/hp-tet-tgt-${stream}-2026-full-mock-:n`, permanent: true },
         { source: `/tests/hp-tet-tgt-${stream}-full-mock-:n(\\d+)/:rest*`, destination: `/tests/hp-tet-tgt-${stream}-2026-full-mock-:n`, permanent: true },
       ]),
+      // HPRCA Clerk mocks were rebuilt on the 2026 pattern (120 questions, 90 minutes) under new slugs (October 2026).
+      { source: "/tests/hprca-clerk-full-mock-:n(\\d+)", destination: "/tests/hprca-clerk-2026-full-mock-:n", permanent: true },
+      { source: "/tests/hprca-clerk-full-mock-:n(\\d+)/:rest*", destination: "/tests/hprca-clerk-2026-full-mock-:n", permanent: true },
     ];
   },
   async headers() {

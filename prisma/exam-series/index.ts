@@ -21,6 +21,7 @@ import { TGT_2026_COMMON, TGT_ARTS_2026, TGT_MEDICAL_2026, TGT_NON_MEDICAL_2026 
 import { LT_MOCKS, LT_SECTIONALS, LT_SECTIONS, SHASTRI_MOCKS, SHASTRI_SECTIONALS, SHASTRI_SECTIONS } from "../hp-tet-lang";
 import { PGT_SUBJECTS } from "../hp-pgt";
 import { HPAS_MOCKS, HPAS_SECTIONS } from "../hpas-series";
+import { HPRCA_CLERK_MOCKS, HPRCA_CLERK_SECTIONS } from "../hprca-clerk";
 import { PGIMER_MOCKS, PGIMER_SECTIONS } from "../pgimer";
 import { DEFENCE_SERIES } from "../defence";
 import { DELHI_POLICE_SERIES } from "../delhi-police";
@@ -81,23 +82,22 @@ const S = (name: string, nameHi: string, ...parts: Part[]): Section => ({
 const from = (n: number, pick: Pick): Part => ({ n, pick });
 
 const EXAMS: ExamDef[] = [
+  // Written wholly fresh in prisma/hprca-clerk on the 2026 pattern (120 questions, 90 minutes, no maths): mocks 1–2 go
+  // through the sections, mocks 3+ are extra mocks. The first two bank-built mocks (hprca-clerk-full-mock-N) are retired.
   {
     bodySlug: "hprca",
     examSlug: "clerk",
     slug: "hprca-clerk",
+    testSlug: "hprca-clerk-2026",
     name: "HPRCA Clerk",
     nameHi: "एचपीआरसीए क्लर्क",
-    minutes: 120,
+    minutes: 90,
     price: 99,
-    description: "Full-length HPRCA Clerk mock tests: Himachal GK, general studies, reasoning, maths, Hindi, English and computer.",
-    sections: [
-      S("Himachal GK", "हिमाचल सामान्य ज्ञान", from(30, hpGk)),
-      S("General Studies", "सामान्य अध्ययन", from(25, gs)),
-      S("Reasoning", "तर्कशक्ति", from(20, reasoning)),
-      S("Mathematics", "गणित", from(20, maths)),
-      S("Hindi & English", "हिंदी एवं अंग्रेज़ी", from(8, english), from(7, hindi)),
-      S("Computer", "कंप्यूटर", from(10, computer)),
-    ],
+    description:
+      "Full-length HPRCA Clerk (Job Trainee) mock tests on the 2026 pattern: Himachal GK and current affairs, general knowledge " +
+      "and social science, everyday science, logical reasoning, General English and Hindi, and computer word processing.",
+    sections: HPRCA_CLERK_SECTIONS.map((sec, i) => S(sec.name, sec.nameHi, HPRCA_CLERK_MOCKS.slice(0, 2).map((m) => m.filter((x) => x.s === i)))),
+    extraMocks: HPRCA_CLERK_MOCKS.slice(2),
   },
   {
     bodySlug: "hprca",
