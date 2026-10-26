@@ -1,9 +1,9 @@
 import type { SiteConfig } from "./types";
 
-// Soft launch: live on its domain but noindex and out of the sitemap until the Rajasthan content is checked.
+// Launched 26 October 2026 once the owner had checked the Rajasthan content: indexed and in the sitemap.
 export const rj: SiteConfig = {
   code: "rj",
-  launched: false,
+  launched: true,
   domains: ["rjtestseries.in", "www.rjtestseries.in"],
   url: process.env.NEXT_PUBLIC_RJ_SITE_URL ?? "https://rjtestseries.in",
   name: "RJ Test Series",
