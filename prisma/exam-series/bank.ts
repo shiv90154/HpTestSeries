@@ -52,6 +52,11 @@ export function take(s: PatwariQuestion["s"], n: number, pick: Pick, label: stri
   return out;
 }
 
+/** Marks questions already placed in a test as taken, so later picks never repeat them. */
+export function reserve(qs: PatwariQuestion[]) {
+  for (const x of qs) used.add(hash(x));
+}
+
 /** Places freshly written questions in section `s` (their own `s` is ignored). */
 export const fresh = (s: PatwariQuestion["s"], qs: PatwariQuestion[]) => qs.map((x) => ({ ...x, s }));
 

@@ -6,13 +6,17 @@
 
 import type { PatwariQuestion, TestDef } from "../patwari/types";
 import type { SeriesSeed } from "../seed-series";
-import { fresh, subject, take, topic, type Pick } from "./bank";
+import { fresh, reserve, subject, take, topic, type Pick } from "./bank";
 import { banking } from "./fresh/banking";
 import { forestry } from "./fresh/forestry";
+import { forestryLate } from "./fresh/forestry-late";
 import { jbtPedagogy } from "./fresh/jbt-pedagogy";
 import { law } from "./fresh/law";
 import { libraryScience } from "./fresh/library-science";
 import { nursingCommunity, nursingFundamentals, nursingMedSurg } from "./fresh/nursing";
+import { pharmacyMock1 } from "./fresh/pharmacy-1";
+import { pharmacyMock2 } from "./fresh/pharmacy-2";
+import { pharmacyMock3 } from "./fresh/pharmacy-3";
 import { tetCdp } from "./fresh/tet-cdp";
 import { tgtPedagogy } from "./fresh/tgt-pedagogy";
 import { CLERK_MOCKS, HC_SECTIONALS, PROCESS_SERVER_MOCKS, PROCESS_SERVER_SCREENING_TESTS, STENO_MOCKS } from "../high-court";
@@ -54,6 +58,11 @@ type ExamDef = {
   extraMocks?: PatwariQuestion[][];
   /** Further tests in the series, e.g. sectional tests shared by several series (a test is seeded once, by slug). */
   extraTests?: TestDef[];
+  /**
+   * Full mocks added after the series launched, numbered after the others. Their bank picks are made only once every
+   * exam's own mocks have picked, so adding them never shifts another exam's questions.
+   */
+  lateMocks?: { count: number; sections: Section[] };
 };
 
 const hpGk = subject("hp-gk");
@@ -174,6 +183,18 @@ const EXAMS: ExamDef[] = [
       S("Mathematics", "गणित", from(10, maths)),
       S("Hindi & English", "हिंदी एवं अंग्रेज़ी", from(5, english), from(5, hindi)),
     ],
+    // Mocks 3–5 (October 2026): same split, fresh forestry questions.
+    lateMocks: {
+      count: 3,
+      sections: [
+        S("Himachal GK", "हिमाचल सामान्य ज्ञान", from(25, hpGk)),
+        S("General Studies", "सामान्य अध्ययन", from(20, gs)),
+        S("Forestry & Environment", "वानिकी एवं पर्यावरण", forestryLate),
+        S("Reasoning", "तर्कशक्ति", from(15, reasoning)),
+        S("Mathematics", "गणित", from(10, maths)),
+        S("Hindi & English", "हिंदी एवं अंग्रेज़ी", from(5, english), from(5, hindi)),
+      ],
+    },
   },
   {
     bodySlug: "hp-police",
@@ -483,12 +504,33 @@ const EXAMS: ExamDef[] = [
       S("Chemistry", "रसायन विज्ञान", TGT_MEDICAL_2026.chemistry),
     ],
   },
+  // Pharmacy sections written fresh in ./fresh/pharmacy-N; general awareness comes from the bank.
+  {
+    bodySlug: "hprca",
+    examSlug: "pharmacist",
+    slug: "hprca-pharmacist",
+    mocks: 3,
+    name: "HPRCA Pharmacist",
+    nameHi: "एचपीआरसीए फार्मासिस्ट",
+    minutes: 120,
+    price: 99,
+    description:
+      "Full-length HPRCA Pharmacist (Pharmacy Officer) mock tests: pharmaceutics, pharmacology, pharmaceutical chemistry " +
+      "and pharmacognosy, hospital pharmacy and drug laws, and Himachal GK.",
+    sections: [
+      S("Pharmaceutics", "फार्मास्युटिक्स", [pharmacyMock1, pharmacyMock2, pharmacyMock3].map((m) => m.pharmaceutics)),
+      S("Pharmacology", "फार्माकोलॉजी", [pharmacyMock1, pharmacyMock2, pharmacyMock3].map((m) => m.pharmacology)),
+      S("Pharmaceutical Chemistry & Pharmacognosy", "फार्मास्युटिकल रसायन एवं फार्माकोग्नॉसी", [pharmacyMock1, pharmacyMock2, pharmacyMock3].map((m) => m.chemistry)),
+      S("Hospital Pharmacy & Drug Laws", "हॉस्पिटल फार्मेसी एवं औषधि विधि", [pharmacyMock1, pharmacyMock2, pharmacyMock3].map((m) => m.practice)),
+      S("General Awareness", "सामान्य जागरूकता", from(10, hpGk), from(5, gs)),
+    ],
+  },
 ];
 
 const MOCKS = 2;
 
-function mockQuestions(e: ExamDef, i: number): PatwariQuestion[] {
-  return e.sections.flatMap((sec, si) => {
+function mockQuestions(e: ExamDef, i: number, sections = e.sections): PatwariQuestion[] {
+  return sections.flatMap((sec, si) => {
     const s = si as PatwariQuestion["s"];
     return sec.parts.flatMap((p) =>
       Array.isArray(p) ? fresh(s, p[i]) : "shared" in p ? fresh(s, p.shared(i)) : take(s, p.n, p.pick, `${e.slug} mock ${i + 1} ${sec.name}`),
@@ -511,8 +553,15 @@ function instructions(e: ExamDef, qs: PatwariQuestion[]): string {
 
 export type ExamSeriesSeed = SeriesSeed & { key: string };
 
-const BANK_SERIES: ExamSeriesSeed[] = EXAMS.map((e) => {
-  const mocks = [...Array.from({ length: e.mocks ?? MOCKS }, (_, i) => mockQuestions(e, i)), ...(e.extraMocks ?? [])];
+const ALL_MOCKS = EXAMS.map((e) => [...Array.from({ length: e.mocks ?? MOCKS }, (_, i) => mockQuestions(e, i)), ...(e.extraMocks ?? [])]);
+// Fresh questions in earlier mocks can share their text with a bank question; late picks must not repeat them.
+ALL_MOCKS.flat().forEach(reserve);
+EXAMS.forEach((e, k) => {
+  if (e.lateMocks) ALL_MOCKS[k].push(...Array.from({ length: e.lateMocks.count }, (_, i) => mockQuestions(e, i, e.lateMocks!.sections)));
+});
+
+const BANK_SERIES: ExamSeriesSeed[] = EXAMS.map((e, k) => {
+  const mocks = ALL_MOCKS[k];
   const tests: TestDef[] = mocks.map((questions, i) => {
     return {
       slug: `${e.testSlug ?? e.slug}-full-mock-${i + 1}`,
