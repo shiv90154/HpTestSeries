@@ -12,11 +12,11 @@ import {
   PlayCircle,
   Radio,
   Target,
-  Trophy,
   TrendingUp,
   type LucideIcon,
 } from "lucide-react";
 import Link from "next/link";
+import { AttemptList } from "@/components/attempt-list";
 import { LiveCountdown } from "@/components/live-countdown";
 import { btn, card } from "@/components/ui";
 import { rupees } from "@/lib/money";
@@ -307,97 +307,23 @@ export function Performance({ d }: { d: Dashboard }) {
   );
 }
 
-/** Latest results: cards on a phone, a table from `sm` (a sideways-scrolling table is painful on a phone). */
-export async function RecentTests({ recent }: { recent: Dashboard["recent"] }) {
+/** Latest results; "View all" opens the full history at /results. */
+export async function RecentTests({ recent, total }: { recent: Dashboard["recent"]; total: number }) {
   const site = await currentSite();
   return (
     <section className={`${card} overflow-hidden`}>
       <div className="flex items-center justify-between border-b border-border px-5 py-4">
         <h2 className="font-semibold">Recent tests</h2>
-        <Link href="/tests" className="text-sm font-medium text-primary">
-          All tests
-        </Link>
+        {total > 0 && (
+          <Link href="/results" className="inline-flex items-center gap-1 text-sm font-medium text-primary">
+            View all {total} results <ArrowRight className="size-4" aria-hidden />
+          </Link>
+        )}
       </div>
       {recent.length === 0 ? (
         <p className="px-5 py-8 text-center text-sm text-muted">No tests yet — your attempts will show up here.</p>
       ) : (
-        <>
-          <ul className="divide-y divide-border sm:hidden">
-            {recent.map((r) => (
-              <li key={r.id}>
-                <Link href={`/results/${r.id}`} className="flex flex-col gap-2 px-5 py-3.5 active:bg-surface-muted">
-                  <div className="flex items-start justify-between gap-3">
-                    <div className="min-w-0">
-                      <p className="truncate font-medium">{r.title}</p>
-                      <p className="text-xs text-muted">
-                        {r.submittedAt.toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}
-                        {!r.isFirst && " · re-attempt"}
-                      </p>
-                    </div>
-                    <p className="shrink-0 text-right tabular-nums">
-                      <b>{r.score}</b>
-                      <span className="text-muted">/{r.maxScore}</span>
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-2 text-xs">
-                    <span className="rounded-full bg-surface-muted px-2 py-1 font-medium tabular-nums">{r.accuracy}% accuracy</span>
-                    {r.rank && (
-                      <span className="inline-flex items-center gap-1 rounded-full bg-accent-soft px-2 py-1 font-medium tabular-nums text-accent-ink">
-                        <Trophy className="size-3" aria-hidden /> #{r.rank.rank}/{r.rank.total}
-                      </span>
-                    )}
-                  </div>
-                </Link>
-              </li>
-            ))}
-          </ul>
-
-          <div className="hidden overflow-x-auto sm:block">
-            <table className="w-full min-w-[560px] text-sm">
-              <thead className="bg-surface-muted text-left text-xs text-muted">
-                <tr>
-                  <th className="px-5 py-2.5 font-medium">Test</th>
-                  <th className="px-5 py-2.5 text-right font-medium">Score</th>
-                  <th className="px-5 py-2.5 text-right font-medium">Accuracy</th>
-                  <th className="px-5 py-2.5 text-right font-medium">{site.logo.initials} rank</th>
-                  <th className="px-5 py-2.5 font-medium" />
-                </tr>
-              </thead>
-              <tbody>
-                {recent.map((r) => (
-                  <tr key={r.id} className="border-t border-border">
-                    <td className="px-5 py-3">
-                      <p className="font-medium">{r.title}</p>
-                      <p className="text-xs text-muted">
-                        {r.submittedAt.toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}
-                        {!r.isFirst && " · re-attempt"}
-                      </p>
-                    </td>
-                    <td className="px-5 py-3 text-right tabular-nums">
-                      <b>{r.score}</b>/{r.maxScore}
-                    </td>
-                    <td className="px-5 py-3 text-right tabular-nums">{r.accuracy}%</td>
-                    <td className="px-5 py-3 text-right tabular-nums">
-                      {r.rank ? (
-                        <span className="inline-flex items-center gap-1">
-                          <Trophy className="size-3.5 text-accent-ink" aria-hidden /> #{r.rank.rank}
-                          <span className="text-muted">/{r.rank.total}</span>
-                        </span>
-                      ) : (
-                        <span className="text-muted">—</span>
-                      )}
-                    </td>
-                    <td className="px-5 py-3 text-right">
-                      <Link href={`/results/${r.id}`} className="font-medium text-primary">
-                        Analysis
-                      </Link>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </>
+        <AttemptList rows={recent} rankLabel={site.logo.initials} />
       )}
     </section>
   );

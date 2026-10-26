@@ -57,7 +57,7 @@ export async function DashboardData({ user, purchaseNotice }: { user: Awaited<Re
           </section>
         )}
 
-        {hasTests && <RecentTests recent={d.recent} />}
+        {hasTests && <RecentTests recent={d.recent} total={d.stats.tests} />}
         {reports.length > 0 && <MyReports reports={reports} />}
         {!purchaseNotice && <WhatsAppGroupCard place="dashboard" />}
       </main>

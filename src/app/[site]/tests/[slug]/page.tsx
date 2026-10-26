@@ -17,6 +17,7 @@ import { getTestMeta } from "@/modules/assessment/service";
 import { getPublishedTests } from "@/modules/catalog/queries";
 import { getBuyOptionForSeries } from "@/modules/commerce/product-service";
 import { LiveBanner } from "./live-banner";
+import { MyResults } from "./my-results";
 
 export const revalidate = 600;
 
@@ -119,6 +120,7 @@ export default async function TestDetailPage({ params }: PageProps<"/[site]/test
         </section>
 
         {t.live && <LiveBanner live={t.live} prizes={t.prizes} slug={slug} />}
+        <MyResults slug={slug} />
 
         <dl className="grid grid-cols-2 gap-3 sm:grid-cols-4">
           {[

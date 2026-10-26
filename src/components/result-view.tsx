@@ -487,8 +487,8 @@ export function ResultView({
           </Link>
         )}
         {!isGuest && (
-          <Link href="/dashboard" className={btn("ghost")}>
-            Go to dashboard
+          <Link href="/results" className={btn("ghost")}>
+            All my results
           </Link>
         )}
       </div>
