@@ -383,6 +383,8 @@ Physical ki taiyari aur written dono saath chalao — subah ground, shaam ko pad
       "Complete HPRCA JOA IT syllabus — computer, Himachal GK, reasoning, maths, English and Hindi — with the exam pattern, skill test and a study plan.",
     category: "SYLLABUS",
     exams: ["hprca/joa-it"],
+    seoTitle: "HPRCA JOA IT Syllabus 2026 & Exam Pattern + Free Mock Test",
+    seoDescription: "HPRCA JOA IT syllabus 2026 topic-wise: computer, Himachal GK, reasoning, maths, English and Hindi. Exam pattern, typing skill test and a free JOA IT mock test.",
     content: `**Junior Office Assistant (IT)** Himachal ki sabse popular government posts me se ek hai. Ab yeh bharti **Himachal Pradesh Rajya Chayan Aayog (HPRCA), Hamirpur** karta hai. Is post me JOA IT ka topic-wise syllabus, exam pattern aur taiyari ka plan hai.
 
 ## JOA IT exam pattern
@@ -658,6 +660,12 @@ HP TET mock tests: [HP TET mock tests](/hpbose/hp-tet). Shuruaat [free mock test
 
 export async function seedContent(db: PrismaClient) {
   let filled = 0;
+  // Earlier seeded SEO copy that was rewritten for click-through (GSC, Oct 2026): still unchanged in the database means
+  // nobody edited it in admin, so the new copy replaces it.
+  const replacedSeo: Record<string, string> = {
+    "hpbose/hp-tet": "HP TET Mock Test {year} — Free HPBOSE TET Series (JBT, TGT)",
+    "hppsc/food-safety-officer": "HPPSC Food Safety Officer Mock Test {year} — Free FSO Series",
+  };
   // The six hand-written pages above win for description, syllabus and FAQs; prisma/exam-pages adds the SEO title and
   // description for every exam, the exam pattern where it is known, and full copy for all the other exams.
   for (const key of new Set([...Object.keys(examContent), ...Object.keys(EXAM_PAGES)])) {
@@ -678,7 +686,7 @@ export async function seedContent(db: PrismaClient) {
         ...(content.syllabus && !exam.syllabus && { syllabus: content.syllabus }),
         ...(content.faqs && exam.faqs == null && { faqs: content.faqs }),
         // SEO and pattern are only ever filled while empty, so /admin/exams edits are never overwritten.
-        ...(page?.seo && exam.seo == null && { seo: page.seo }),
+        ...(page?.seo && (exam.seo == null || (exam.seo as { title?: string }).title === replacedSeo[key]) && { seo: page.seo }),
         ...(page?.pattern && exam.pattern == null && { pattern: page.pattern }),
       },
     });
@@ -687,8 +695,12 @@ export async function seedContent(db: PrismaClient) {
 
   let created = 0;
   for (const p of posts) {
-    const exists = await db.post.findUnique({ where: { slug: p.slug }, select: { id: true } });
-    if (exists) continue;
+    const exists = await db.post.findUnique({ where: { slug: p.slug }, select: { id: true, seoTitle: true } });
+    if (exists) {
+      // Search-result copy added to an already-seeded post fills it while it is still empty.
+      if (!exists.seoTitle && p.seoTitle) await db.post.update({ where: { id: exists.id }, data: { seoTitle: p.seoTitle, seoDescription: p.seoDescription ?? null } });
+      continue;
+    }
     const examIds = [];
     for (const key of p.exams) {
       const [bodySlug, examSlug] = key.split("/");

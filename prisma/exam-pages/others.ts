@@ -68,8 +68,8 @@ SI written paper me **General Knowledge, Himachal GK, Reasoning, Quantitative Ap
 
   "hpbose/hp-tet": {
     seo: {
-      title: "HP TET Mock Test {year} — Free HPBOSE TET Series (JBT, TGT)",
-      description: "Free HP TET mock tests for JBT, TGT Arts, Medical and Non-Medical: child pedagogy, languages and subjects in real CBT format, with Hindi & English solutions.",
+      title: "HP TET Mock Test {year} Free — JBT, TGT Arts, Medical, Non-Medical",
+      description: "Free HP TET {year} mock tests: 150 MCQ, 150 marks, 150 minutes, no negative marking. JBT, TGT, Shastri & LT papers in real CBT format with Hindi-English solutions.",
     },
     pattern: {
       sections: [{ name: "Objective MCQ paper (category-wise)", questions: 150, marks: 150 }],

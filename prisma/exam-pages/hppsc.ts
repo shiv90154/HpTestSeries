@@ -257,8 +257,8 @@ VO paper me **veterinary medicine, surgery, gynaecology and obstetrics, patholog
 
   "hppsc/food-safety-officer": {
     seo: {
-      title: "HPPSC Food Safety Officer Mock Test {year} — Free FSO Series",
-      description: "Free Food Safety Officer mock tests: FSS Act 2006, food chemistry, microbiology, adulteration and Himachal GK in real CBT format, with solutions.",
+      title: "HPPSC Food Safety Officer Mock Test {year} — Free FSO Test & Syllabus",
+      description: "Free HPPSC FSO mock test {year}: FSS Act 2006, food chemistry, microbiology, adulteration and Himachal GK in real CBT format, with topic-wise syllabus and solutions.",
     },
     description: `**Food Safety Officer (FSO)** enforces the **Food Safety and Standards Act, 2006** at district level: inspecting food businesses, drawing samples, sending them to labs and starting action against adulteration. In Himachal Pradesh the post sits in the Health and Family Welfare Department and is filled through **HPPSC, Shimla** advertisements.
 

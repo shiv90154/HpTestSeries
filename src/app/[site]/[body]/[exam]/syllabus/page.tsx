@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { buildExamCtx, ExamSubPage } from "@/components/exam-landing";
 import { JsonLd } from "@/components/json-ld";
+import { PrintButton } from "@/components/print-button";
 import { Markdown } from "@/components/markdown";
 import { TestCard } from "@/components/test-card";
 import { card } from "@/components/ui";
@@ -11,6 +12,7 @@ import { currentSite } from "@/sites/current";
 import { canonicalSiteCode } from "@/modules/catalog/visibility";
 import { clipDescription } from "@/lib/seo";
 import { syllabusFaqs } from "@/modules/content/subpage-faqs";
+import { syllabusSeo } from "@/modules/content/syllabus-seo";
 import { examLabel, examShortName, getExamPage, getExamSubPages, syllabusOutline } from "@/modules/catalog/queries";
 
 export const revalidate = 3600;
@@ -28,10 +30,14 @@ export async function generateMetadata({ params }: PageProps<"/[site]/[body]/[ex
   const data = await getExamPage(site.code, body, exam);
   if (!data?.syllabus?.trim()) return {};
   const name = examShortName(examLabel(data.body.slug, data.name), data.seo.title);
-  const title = `${name} Syllabus ${year()} — Topic-wise`;
-  const description = clipDescription(`${name} syllabus ${year()}, topic-wise: every subject and topic, with free CBT mock tests to practise each part. Confirm changes in the official notification.`);
+  // Hand-written copy for pages that get impressions but few clicks; it is used as-is, without the site-name suffix.
+  const custom = syllabusSeo(`${body}/${exam}`, year());
+  const title = custom?.title ?? `${name} Syllabus ${year()} — Topic-wise`;
+  const description =
+    custom?.description ??
+    clipDescription(`${name} syllabus ${year()}, topic-wise: every subject and topic, with free CBT mock tests to practise each part. Confirm changes in the official notification.`);
   return {
-    title,
+    title: custom ? { absolute: title } : title,
     description,
     alternates: { canonical: canonicalFor(site, canonicalSiteCode(data.body.sites, PRIMARY_SITE.code), `/${body}/${exam}/syllabus`) },
     openGraph: { title, description, url: `/${body}/${exam}/syllabus` },
@@ -74,7 +80,12 @@ export default async function SyllabusPage({ params }: PageProps<"/[site]/[body]
         updatedAt={data.updatedAt}
       >
         <section className="space-y-3">
-          <h2 className="text-2xl font-bold tracking-tight">{name} syllabus, topic-wise</h2>
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <h2 className="text-2xl font-bold tracking-tight">{name} syllabus, topic-wise</h2>
+            <span className="print:hidden">
+              <PrintButton />
+            </span>
+          </div>
           <Markdown text={data.syllabus} />
           <p className="text-xs text-muted">The syllabus is a summary and can change with each notification. The official notification is final.</p>
         </section>

@@ -248,6 +248,52 @@ export async function ExamFinalCta({ ctx }: { ctx: ExamCtx }) {
 }
 
 /**
+ * Free-mock and paid-series links shown above a sub-page's content. Most syllabus readers are on phones, where the
+ * offer card in the sidebar only appears below the whole page, and "free mock test" searches click best (GSC, Oct 2026).
+ */
+function PracticeStrip({ ctx, placement }: { ctx: ExamCtx; placement: string }) {
+  const offer = ctx.offer;
+  if (!ctx.startHref && !offer) return null;
+  const [title] = offer ? offer.title.split(/\s+[—–]\s+/) : [""];
+  return (
+    <section className={`${card} flex flex-col gap-4 border-primary/40 p-4 sm:flex-row sm:items-center sm:p-5 print:hidden`}>
+      <div className="flex-1 space-y-1">
+        <h2 className="font-semibold">
+          <T en={`Practise the ${ctx.name} syllabus in the real exam format`} pa={`${ctx.name} ਸਿਲੇਬਸ ਦਾ ਅਸਲ ਪ੍ਰੀਖਿਆ ਫਾਰਮੈਟ ਵਿੱਚ ਅਭਿਆਸ ਕਰੋ`} />
+        </h2>
+        <p className="text-sm text-muted">
+          {offer ? (
+            <T
+              en={`Start with a free mock. ${title}: ${offer.testCount} tests for ${rupees(offer.priceInPaise)}, with solutions and your rank.`}
+              pa={`ਮੁਫ਼ਤ ਮੌਕ ਨਾਲ ਸ਼ੁਰੂ ਕਰੋ। ${title}: ${offer.testCount} ਟੈਸਟ ${rupees(offer.priceInPaise)} ਵਿੱਚ, ਹੱਲ ਅਤੇ ਰੈਂਕ ਦੇ ਨਾਲ।`}
+            />
+          ) : (
+            <T en="Free CBT mock with a timer, solutions in Hindi and English and your rank." pa="ਟਾਈਮਰ, ਹਿੰਦੀ ਅਤੇ ਅੰਗਰੇਜ਼ੀ ਹੱਲ ਅਤੇ ਰੈਂਕ ਦੇ ਨਾਲ ਮੁਫ਼ਤ CBT ਮੌਕ।" />
+          )}
+        </p>
+      </div>
+      <div className="flex flex-col gap-2 sm:flex-row">
+        {ctx.startHref && (
+          <TrackedLink href={ctx.startHref} event="landing_cta_click" params={{ exam: ctx.key, placement }} className={btn("accent", "md", "w-full sm:w-auto")}>
+            <T en="Free mock test" pa="ਮੁਫ਼ਤ ਮੌਕ ਟੈਸਟ" /> <ChevronRight className="size-4" />
+          </TrackedLink>
+        )}
+        {offer && (
+          <TrackedLink
+            href={`/buy/${offer.slug}`}
+            event="landing_buy_click"
+            params={{ exam: ctx.key, placement, price: offer.priceInPaise / 100 }}
+            className={btn("outline", "md", "w-full sm:w-auto")}
+          >
+            <T en={`Full series ${rupees(offer.priceInPaise)}`} pa={`ਪੂਰੀ ਸੀਰੀਜ਼ ${rupees(offer.priceInPaise)}`} />
+          </TrackedLink>
+        )}
+      </div>
+    </section>
+  );
+}
+
+/**
  * Frame for the SEO sub-pages (syllabus, exam pattern, previous papers): header, a short hero with the free-test button,
  * the section tabs, the page body, the closing call to action and the footer.
  */
@@ -336,6 +382,7 @@ export async function ExamSubPage({
           <ExamTabs ctx={ctx} active={active} />
           <div className="grid gap-10 lg:grid-cols-[1fr_320px]">
             <div className="min-w-0 space-y-10">
+              <PracticeStrip ctx={ctx} placement={`top-${active}`} />
               {children}
               {faqs.length > 0 && (
                 <section className="space-y-4">

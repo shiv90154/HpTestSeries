@@ -7,7 +7,7 @@ import { rupees } from "@/lib/money";
 import { currentSite } from "@/sites/current";
 import { getReceipt } from "@/modules/commerce/purchases";
 import { requireUser } from "@/modules/identity/session";
-import { PrintButton } from "./print-button";
+import { PrintButton } from "@/components/print-button";
 
 export const metadata: Metadata = { title: "Payment receipt", robots: { index: false, follow: false } };
 
