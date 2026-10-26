@@ -184,6 +184,35 @@ export const catalogue: BodySeed[] = [
     sites: ["pb"],
     exams: [{ slug: "clerk", name: "Punjab District Court Clerk", nameHi: "पंजाब ज़िला न्यायालय क्लर्क" }],
   },
+  // Rajasthan (rjtestseries.in only). Exam names carry the body so they stay unique in the /tests filter.
+  {
+    slug: "rssb",
+    name: "Rajasthan Staff Selection Board",
+    nameHi: "राजस्थान कर्मचारी चयन बोर्ड",
+    sites: ["rj"],
+    exams: [
+      { slug: "cet-senior-secondary", name: "Rajasthan CET (12th Level)", nameHi: "राजस्थान सीईटी (12वीं स्तर)" },
+      { slug: "cet-graduation", name: "Rajasthan CET (Graduation Level)", nameHi: "राजस्थान सीईटी (स्नातक स्तर)" },
+      { slug: "teaching-associate", name: "RSSB Teaching Associate", nameHi: "आरएसएसबी टीचिंग एसोसिएट" },
+    ],
+  },
+  {
+    slug: "rpsc",
+    name: "Rajasthan Public Service Commission",
+    nameHi: "राजस्थान लोक सेवा आयोग",
+    sites: ["rj"],
+    exams: [
+      {
+        slug: "ras",
+        name: "RAS/RTS Combined Competitive Exam",
+        nameHi: "आरएएस/आरटीएस संयुक्त प्रतियोगी परीक्षा",
+        stages: [
+          { slug: "prelims", name: "Prelims", nameHi: "प्रारंभिक" },
+          { slug: "mains", name: "Mains", nameHi: "मुख्य" },
+        ],
+      },
+    ],
+  },
   // National defence entries that many Himachal aspirants sit; not Himachal recruitments.
   {
     slug: "upsc",
