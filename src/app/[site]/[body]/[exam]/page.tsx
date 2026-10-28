@@ -9,6 +9,7 @@ import { JsonLd } from "@/components/json-ld";
 import { Markdown } from "@/components/markdown";
 import { Mountains } from "@/components/mountains";
 import { PostCard } from "@/components/post-card";
+import { SampleQuestions } from "@/components/sample-questions";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { TestCard } from "@/components/test-card";
@@ -22,6 +23,7 @@ import { canonicalSiteCode } from "@/modules/catalog/visibility";
 import { bodyShortName, examLabel, examShortName, getAllExamParams, getCatalog, getExamPage, syllabusOutline, type PublicTest } from "@/modules/catalog/queries";
 import { formatDate } from "@/components/post-card";
 import { faqPageJsonLd } from "@/modules/content/exam-content";
+import { getSampleQuestions } from "@/modules/catalog/free-mocks";
 
 export const revalidate = 3600;
 
@@ -73,6 +75,10 @@ export default async function ExamPage({ params }: PageProps<"/[site]/[body]/[ex
   const own = data.tests.filter((t) => t.examName !== null);
   const free = data.tests.filter((t) => t.isFree);
   const questions = own.reduce((n, t) => n + t.questionCount, 0);
+  // Questions of the exam's own free test (a full mock first) as text on the page: it answers "mock test with answers"
+  // searches with real content the single test pages don't have, so this page, not a test page, ranks for them.
+  const sampleTest = own.find((t) => t.isFree && t.type === "MOCK") ?? own.find((t) => t.isFree) ?? own.find((t) => t.hasDemo && t.type === "MOCK");
+  const samples = sampleTest ? await getSampleQuestions(sampleTest.slug, 5) : [];
   // Tests with a free demo come first: they are the paid product's shop window.
   const demoFirst = (tests: PublicTest[]) => [...tests].sort((a, b) => Number(b.hasDemo) - Number(a.hasDemo));
   const groups = [
@@ -328,6 +334,14 @@ export default async function ExamPage({ params }: PageProps<"/[site]/[body]/[ex
                 </p>
               )}
             </section>
+
+            {sampleTest && (
+              <SampleQuestions
+                title={`${name} mock test questions with answers`}
+                samples={samples}
+                test={{ slug: sampleTest.slug, title: sampleTest.title, count: sampleTest.questionCount }}
+              />
+            )}
 
             <section className="space-y-5">
               <h2 className="text-2xl font-bold tracking-tight">

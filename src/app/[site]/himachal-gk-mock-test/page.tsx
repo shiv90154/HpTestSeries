@@ -1,4 +1,4 @@
-import { CheckCircle2, Clock, ListChecks, Users } from "lucide-react";
+import { Clock, ListChecks, Users } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -8,7 +8,8 @@ import { JsonLd } from "@/components/json-ld";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { btn, card } from "@/components/ui";
-import { getGkFreeMocks, getGkSampleQuestions } from "@/modules/catalog/gk-mocks";
+import { SampleQuestions } from "@/components/sample-questions";
+import { getGkFreeMocks, getSampleQuestions } from "@/modules/catalog/free-mocks";
 import { faqPageJsonLd } from "@/modules/content/exam-content";
 import { currentSite } from "@/sites/current";
 
@@ -22,8 +23,6 @@ export const metadata: Metadata = {
     "Free Himachal GK mock tests for HPRCA, HP Police, Patwari, High Court and HPAS: 25 questions each, no login, Hindi and English, with answers, explanations and your rank.",
   alternates: { canonical: "/himachal-gk-mock-test" },
 };
-
-const LETTERS = ["A", "B", "C", "D"];
 
 const TOPICS: [string, string][] = [
   ["History", "Princely states, Kangra fort, Gorkha war, statehood (25 January 1971), Shimla as summer capital"],
@@ -75,7 +74,7 @@ export default async function HimachalGkMockTestPage() {
   const site = await currentSite();
   if (site.code !== "hp") notFound();
   const mocks = await getGkFreeMocks();
-  const samples = mocks[0] ? await getGkSampleQuestions(mocks[0].slug) : [];
+  const samples = mocks[0] ? await getSampleQuestions(mocks[0].slug, 5, "hp-gk") : [];
 
   return (
     <>
@@ -143,39 +142,12 @@ export default async function HimachalGkMockTestPage() {
           </ul>
         </section>
 
-        {samples.length > 0 && (
-          <section aria-labelledby="samples" className="space-y-4">
-            <h2 id="samples" className="text-xl font-bold sm:text-2xl">
-              Sample Himachal GK questions with answers
-            </h2>
-            <ol className="space-y-3">
-              {samples.map((s, i) => (
-                <li key={s.stem} className={`${card} space-y-2 p-5`}>
-                  <p className="font-medium">
-                    Q{i + 1}. {s.stem}
-                  </p>
-                  <p lang="hi" className="text-sm text-muted">
-                    {s.stemHi}
-                  </p>
-                  <ul className="grid gap-1 text-sm sm:grid-cols-2">
-                    {s.options.map((o, k) => (
-                      <li key={k} className={k === s.answer ? "font-semibold text-success" : ""}>
-                        {LETTERS[k]}. {o}
-                        {s.optionsHi[k] && s.optionsHi[k] !== o ? <span className="text-muted"> / {s.optionsHi[k]}</span> : null}
-                        {k === s.answer && <CheckCircle2 className="ml-1 inline size-4" aria-label="correct answer" />}
-                      </li>
-                    ))}
-                  </ul>
-                  {s.explanation && <p className="text-sm text-muted">{s.explanation}</p>}
-                </li>
-              ))}
-            </ol>
-            {mocks[0] && (
-              <Link href={`/tests/${mocks[0].slug}`} className={btn("outline", "sm")}>
-                Try all 25 questions of {mocks[0].title}
-              </Link>
-            )}
-          </section>
+        {mocks[0] && (
+          <SampleQuestions
+            title="Sample Himachal GK questions with answers"
+            samples={samples}
+            test={{ slug: mocks[0].slug, title: mocks[0].title, count: mocks[0].questionCount }}
+          />
         )}
 
         <section aria-labelledby="topics" className="space-y-4">

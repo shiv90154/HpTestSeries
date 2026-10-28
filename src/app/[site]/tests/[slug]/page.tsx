@@ -52,6 +52,13 @@ export default async function TestDetailPage({ params }: PageProps<"/[site]/test
   const buy = t.isFree ? null : await getBuyOptionForSeries(site.code, t.series.map((s) => s.seriesId));
   const more = t.exam ? (await getPublishedTests(site.code, { examId: t.exam.id })).filter((x) => x.slug !== slug && x.examName).slice(0, 6) : [];
   const intro = testIntro(t);
+  // The test's hub, named the way students search for it ("HP Patwari Mock Test"): the breadcrumb tells Google the hub
+  // is the page for that search, so it stops ranking the single tests against it. A state GK mock's hub is the GK one.
+  const hub = t.exam
+    ? { href: t.exam.href, label: `${t.exam.name} Mock Test` }
+    : site.gkMockHub
+      ? { href: site.gkMockHub, label: `${site.statePage.title} Mock Test` }
+      : null;
 
   return (
     <>
@@ -63,7 +70,8 @@ export default async function TestDetailPage({ params }: PageProps<"/[site]/test
             itemListElement: [
               { "@type": "ListItem", position: 1, name: "Home", item: site.url },
               { "@type": "ListItem", position: 2, name: "Mock Tests", item: `${site.url}/tests` },
-              { "@type": "ListItem", position: 3, name: t.title, item: `${site.url}/tests/${slug}` },
+              ...(hub ? [{ "@type": "ListItem", position: 3, name: hub.label, item: `${site.url}${hub.href}` }] : []),
+              { "@type": "ListItem", position: hub ? 4 : 3, name: t.title, item: `${site.url}/tests/${slug}` },
             ],
           },
           {
@@ -86,6 +94,7 @@ export default async function TestDetailPage({ params }: PageProps<"/[site]/test
           links={[
             { href: "/", label: "Home" },
             { href: "/tests", label: "Mock Tests" },
+            ...(hub ? [hub] : []),
           ]}
           current={t.title}
         />
@@ -105,10 +114,16 @@ export default async function TestDetailPage({ params }: PageProps<"/[site]/test
             </p>
           )}
           {t.instructions && <p className="max-w-2xl text-foreground/85">{t.instructions}</p>}
-          {t.exam && (
+          {t.exam ? (
             <Link href={t.exam.href} className="inline-flex items-center gap-1 text-sm font-medium text-primary hover:underline">
-              <T en={`${t.exam.name} exam — pattern, syllabus & all tests`} pa={`${t.exam.name} ਪ੍ਰੀਖਿਆ — ਪੈਟਰਨ, ਸਿਲੇਬਸ ਅਤੇ ਸਾਰੇ ਟੈਸਟ`} /> <ChevronRight className="size-4" />
+              <T en={`All ${t.exam.name} mock tests — pattern & syllabus`} pa={`${t.exam.name} ਦੇ ਸਾਰੇ ਮੌਕ ਟੈਸਟ — ਪੈਟਰਨ ਅਤੇ ਸਿਲੇਬਸ`} /> <ChevronRight className="size-4" />
             </Link>
+          ) : (
+            hub && (
+              <Link href={hub.href} className="inline-flex items-center gap-1 text-sm font-medium text-primary hover:underline">
+                All free {hub.label}s <ChevronRight className="size-4" />
+              </Link>
+            )
           )}
         </header>
 

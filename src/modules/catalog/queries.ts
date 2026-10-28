@@ -5,6 +5,7 @@ import type { PostCategory } from "@/generated/prisma/enums";
 import { planDemo } from "@/modules/assessment/demo";
 import { getPackForExam, type PackOffer } from "@/modules/commerce/product-service";
 import { parseFaqs, parsePattern, parseSeo } from "@/modules/content/exam-content";
+import { getSite } from "@/sites";
 import { examLabel } from "./labels";
 import { bodyOnSite, examOnSite, liveTestWhere, testOnSite } from "./visibility";
 
@@ -90,7 +91,13 @@ export type PublicTest = {
 export async function getPublishedTests(site: string, filter: { examId?: string | null } = {}): Promise<PublicTest[]> {
   const tests = await db.test.findMany({
     where: {
-      AND: [liveTestWhere(), testOnSite(site), ...(filter.examId !== undefined ? [{ OR: [{ examId: filter.examId }, { examId: null }] }] : [])],
+      // With an exam: its tests plus the site's one free state GK mock, not every no-exam test (the GK mocks 2-5 live on
+      // their own hub page and would otherwise crowd the top of every exam's free list).
+      AND: [
+        liveTestWhere(),
+        testOnSite(site),
+        ...(filter.examId !== undefined ? [{ OR: [{ examId: filter.examId }, { examId: null, slug: getSite(site).freeMockSlug }] }] : []),
+      ],
     },
     orderBy: [{ isFree: "desc" }, { publishedAt: "desc" }],
     select: {
