@@ -2,8 +2,8 @@
 //
 // The HPAS series had three General Studies mocks and nothing for Paper II, the aptitude paper (CSAT) every candidate
 // must clear with 33%. These tests are drawn from questions already in the bank (see bank-picker.ts): GS mocks follow
-// the section split of HPAS mocks 1-3, harder questions first, never repeating a question or fact from the HPAS tests
-// before them; CSAT mocks take reasoning, maths and passage questions. CSAT Mock 1 is free, the rest join the paid
+// the section split of HPAS mocks 1-3, harder questions first, never repeating a question from the HPAS tests before them and,
+// where the bank allows, no fact either; CSAT mocks take reasoning, maths and passage questions. CSAT Mock 1 is free, the rest join the paid
 // HPAS series. Idempotent: an existing test (matched by slug) is left alone.
 
 import type { PrismaClient } from "../src/generated/prisma/client";
@@ -70,10 +70,15 @@ export async function seedHpasBank(db: PrismaClient) {
   };
 
   if (!gsSlugs.every((s) => have.has(s))) {
-    const gs = await createBankPicker(db, { subjects: ["hp-gk", "general-studies"], difficulties: ["HARD", "MEDIUM"], avoidTests: hpasTests });
+    const gs = await createBankPicker(db, { subjects: ["hp-gk", "general-studies"], difficulties: ["HARD", "MEDIUM", "EASY"], avoidTests: hpasTests });
+    // Strict first (no fact asked twice); a section the strict pass leaves short is topped up with unused questions.
+    const fill = (slot: Slot) => {
+      const ids = gs.take(slot);
+      return ids.length < slot.count ? [...ids, ...gs.take({ ...slot, count: slot.count - ids.length }, { relaxed: true })] : ids;
+    };
     for (const [i, n] of GS_MOCKS.entries()) {
       if (have.has(gsSlugs[i])) continue;
-      const sections = HPAS_SECTIONS.map((sec, s) => ({ ...sec, questionIds: GS_SLOTS.filter((x) => x.section === s).flatMap((x) => gs.take(x)) }));
+      const sections = HPAS_SECTIONS.map((sec, s) => ({ ...sec, questionIds: GS_SLOTS.filter((x) => x.section === s).flatMap(fill) }));
       const total = sections.reduce((t, s) => t + s.questionIds.length, 0);
       if (total < 100) throw new Error(`Not enough General Studies questions for ${gsSlugs[i]}: ${total} of 100`);
       await attach(

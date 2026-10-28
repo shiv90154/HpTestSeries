@@ -103,8 +103,12 @@ export async function createBankPicker(
     candidates.push({ id: q.id, subject: t.subject.slug, topic: t.slug, keys: factKeys(q), words: contentWords(stem) });
   }
 
-  /** Takes up to `slot.count` fresh questions for the slot, spread over its topics in turn. */
-  function take(slot: Slot): string[] {
+  /**
+   * Takes up to `slot.count` fresh questions for the slot, spread over its topics in turn. With `relaxed`, the fact
+   * check is skipped (a question itself still never repeats): for topping up a section the strict pass left short.
+   */
+  function take(slot: Slot, { relaxed = false }: { relaxed?: boolean } = {}): string[] {
+    const fresh = (c: Candidate) => relaxed || isFresh(c);
     const fits = (c: Candidate, topic?: string) => c.subject === slot.subject && (topic ? c.topic === topic : !slot.topics || slot.topics.includes(c.topic));
     const topics = slot.topics ?? [...new Set(candidates.filter((c) => fits(c)).map((c) => c.topic))];
     const ids: string[] = [];
@@ -128,7 +132,7 @@ export async function createBankPicker(
     return ids;
   }
 
-  function fresh(c: Candidate): boolean {
+  function isFresh(c: Candidate): boolean {
     return !c.keys.some((key) => askedFacts.has(key)) && !askedStems.some((w) => overlap(w, c.words) >= 0.5);
   }
 
