@@ -12,6 +12,7 @@ export type OrderListItem = {
   razorpayOrderId: string | null;
   paymentId: string | null;
   site: string; // domain the order was placed on
+  reminderSentAt: Date | null; // when the one "finish your payment" email was attempted for this unpaid checkout
   createdAt: Date;
 };
 
@@ -28,6 +29,7 @@ export async function listOrders(site: string | null = null, limit = 200): Promi
       razorpayOrderId: true,
       payerEmail: true,
       site: true,
+      reminderSentAt: true,
       createdAt: true,
       user: { select: { name: true, email: true } },
       product: { select: { title: true } },
@@ -45,6 +47,7 @@ export async function listOrders(site: string | null = null, limit = 200): Promi
     razorpayOrderId: o.razorpayOrderId,
     paymentId: o.payments[0]?.razorpayPaymentId ?? null,
     site: o.site,
+    reminderSentAt: o.reminderSentAt,
     createdAt: o.createdAt,
   }));
 }

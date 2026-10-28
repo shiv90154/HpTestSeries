@@ -46,7 +46,17 @@ export async function OrdersTableData({ site }: { site: SiteCode | null }) {
             render: (o) => `₹${(o.amountPaise / 100).toLocaleString("en-IN")}`,
             cellClassName: "tabular-nums",
           },
-          { header: "Status", render: (o) => <StatusBadge status={o.status} /> },
+          {
+            header: "Status",
+            render: (o) => (
+              <>
+                <StatusBadge status={o.status} />
+                {o.status === "CREATED" && o.reminderSentAt && (
+                  <div className="mt-1 whitespace-nowrap text-xs text-muted">Reminder {o.reminderSentAt.toLocaleDateString("en-IN")}</div>
+                )}
+              </>
+            ),
+          },
           {
             header: "Razorpay",
             render: (o) => o.paymentId ?? o.razorpayOrderId ?? "—",
