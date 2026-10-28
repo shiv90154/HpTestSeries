@@ -27,8 +27,8 @@ export const y2019: PoliceQuestion[] = [
     ["What is the name of the Himachal Government's health scheme giving treatment cover of up to ₹5 lakh?", ["Ayushman Bharat", "Ayushman Himachal", "HimCare Yojana", "Him Suraksha Yojana"], "HimCare is the Himachal Government's health insurance scheme (launched 2018) for cashless treatment of up to ₹5 lakh per family per year."],
     ["हिमाचल सरकार की 5 लाख तक की चिकित्सा सुविधा प्रदान करने वाली योजना का क्या नाम है?", ["आयुष्मान भारत", "आयुष्मान हिमाचल", "हिम केयर योजना", "हिम सुरक्षा योजना"], "हिमकेयर हिमाचल सरकार की स्वास्थ्य बीमा योजना (2018 से) है, जिसमें प्रति परिवार प्रति वर्ष 5 लाख रुपये तक का कैशलेस इलाज मिलता है।"]),
   q(0, "hp-gk", "geography", "M", 3,
-    ["How many states share a border with Himachal Pradesh?", ["7", "6", "4", "None of these"], "Himachal borders Punjab, Haryana, Uttarakhand, Uttar Pradesh and Jammu & Kashmir — five states — so none of the numbers given is right."],
-    ["हिमाचल प्रदेश से कितने राज्यों की सीमा जुड़ी हुई है?", ["7", "6", "4", "इनमें से कोई नहीं"], "हिमाचल की सीमा पंजाब, हरियाणा, उत्तराखंड, उत्तर प्रदेश और जम्मू-कश्मीर — पाँच राज्यों से लगती है, इसलिए दिए गए विकल्पों में से कोई सही नहीं।"]),
+    ["How many states share a border with Himachal Pradesh?", ["7", "6", "4", "None of these"], "At the time of this 2019 paper Himachal bordered five states: Punjab, Haryana, Uttarakhand, Uttar Pradesh and Jammu & Kashmir, so none of the numbers given was right. Since J&K and Ladakh became Union Territories in October 2019, Himachal borders 4 states and 2 Union Territories."],
+    ["हिमाचल प्रदेश से कितने राज्यों की सीमा जुड़ी हुई है?", ["7", "6", "4", "इनमें से कोई नहीं"], "2019 के इस पेपर के समय हिमाचल की सीमा पाँच राज्यों से लगती थी: पंजाब, हरियाणा, उत्तराखंड, उत्तर प्रदेश और जम्मू-कश्मीर, इसलिए दिए गए विकल्पों में से कोई सही नहीं था। अक्टूबर 2019 में जम्मू-कश्मीर और लद्दाख के केंद्र शासित प्रदेश बनने के बाद हिमाचल की सीमा 4 राज्यों और 2 केंद्र शासित प्रदेशों से लगती है।"]),
 
   // ───────── Section 1: General Knowledge ─────────
   q(1, "general-studies", "general-science", "E", 0,
