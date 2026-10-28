@@ -38,4 +38,21 @@ describe("matchesSearch", () => {
     expect(matchesSearch("  ", ["anything"])).toBe(true);
     expect(matchesSearch("पटवारी", ["HP Patwari", "एचपी पटवारी"])).toBe(true);
   });
+
+  it("forgives a typo or two", () => {
+    expect(matchesSearch("patwri", ["HP Patwari"])).toBe(true); // missing letter
+    expect(matchesSearch("proces servr", ["HP High Court Process Server"])).toBe(true);
+    expect(matchesSearch("constabel", ["HP Police Constable"])).toBe(true); // swapped letters
+    expect(matchesSearch("stenografer", ["HP High Court Stenographer"])).toBe(true);
+    expect(matchesSearch("nursng", ["PGIMER Nursing Officer"])).toBe(true);
+    expect(matchesSearch("patw", ["HP Patwari"])).toBe(true); // still typing
+    expect(matchesSearch("pharmasist", ["HPRCA Pharmacist"])).toBe(true);
+  });
+
+  it("keeps short words exact and does not match unrelated exams", () => {
+    expect(matchesSearch("tgt", ["HPRCA PGT"])).toBe(false);
+    expect(matchesSearch("clerk", ["HP Police Constable"])).toBe(false);
+    expect(matchesSearch("patwari", ["HP Police Constable"])).toBe(false);
+    expect(matchesSearch("nurse", ["HP High Court Clerk", "hc"])).toBe(false);
+  });
 });
