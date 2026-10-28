@@ -32,8 +32,9 @@ const mocks: TestDef[] = [mock1, mock2, mock3, mock4, mock5, mock6, mock7].map((
   titleHi: `एचपी पटवारी फुल मॉक टेस्ट ${i + 1}`,
   type: "MOCK",
   durationSec: 90 * 60,
-  // Only the first mock is a free taste of the series; everything else must be bought.
-  demoPercent: i === 0 ? 50 : 0,
+  // The first mock is free in full, like the High Court ones: "free mock test" is what students search for. The rest
+  // must be bought.
+  isFree: i === 0,
   instructions: MOCK_INSTRUCTIONS,
   sections: SECTIONS.map((s) => ({ name: s.name, nameHi: s.nameHi })),
   questions,
