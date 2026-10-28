@@ -187,7 +187,12 @@ export async function SiteFooter() {
           <T
             en={`An independent practice platform — not affiliated with ${site.disclaimerBodies} or any government body.`}
             pa={`ਇੱਕ ਸੁਤੰਤਰ ਅਭਿਆਸ ਪਲੇਟਫਾਰਮ — ${site.disclaimerBodies} ਜਾਂ ਕਿਸੇ ਵੀ ਸਰਕਾਰੀ ਸੰਸਥਾ ਨਾਲ ਸੰਬੰਧਿਤ ਨਹੀਂ।`}
-          />
+          />{" "}
+          <T en="Built and run by" pa="ਨਿਰਮਾਤਾ:" />{" "}
+          <a href="https://shivapphub.in/" className="text-slate-300 underline-offset-2 hover:text-white hover:underline">
+            ShivAppHub
+          </a>
+          .
         </p>
       </div>
       <PublicBottomNav />
