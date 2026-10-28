@@ -73,28 +73,43 @@ export const listActiveProducts = cache(async (site: string): Promise<PublicProd
 });
 
 /**
- * Plans to show under the result of a free test that belongs to no exam (the Himachal GK mocks): its takers have
- * not picked an exam yet, so offer the best-selling exam series and the all-access pass. Null for any other test.
+ * Plans to show under the result of a free test. A test of one exam (the Process Server or PGIMER free mock) offers
+ * that exam's series: its takers have picked their exam. A test of no exam (the Himachal GK mocks) offers the
+ * best-selling exam series instead. Both add the all-access pass. Null for a paid test or when nothing is on sale.
  */
 export async function getResultUpsell(site: string, testSlug: string): Promise<ResultUpsell | null> {
-  const test = await db.test.findUnique({ where: { slug: testSlug }, select: { isFree: true, examId: true } });
-  if (!test?.isFree || test.examId) return null;
-  const [products, sold] = await Promise.all([
-    listActiveProducts(site),
-    db.order.groupBy({ by: ["productId"], where: { status: "PAID" }, _count: { _all: true } }),
-  ]);
-  const ids = await db.product.findMany({ where: { slug: { in: products.map((p) => p.slug) } }, select: { id: true, slug: true } });
-  const soldBySlug = new Map(ids.map((p) => [p.slug, sold.find((s) => s.productId === p.id)?._count._all ?? 0]));
+  const test = await db.test.findUnique({ where: { slug: testSlug }, select: { isFree: true, examId: true, exam: { select: { name: true } } } });
+  if (!test?.isFree) return null;
+  const products = await listActiveProducts(site);
   const plan = (p: PublicProduct): UpsellPlan => ({ slug: p.slug, title: p.title, priceInPaise: p.priceInPaise, testCount: p.testCount });
-  const series = products
-    .filter((p) => p.kind === "SERIES" && p.testCount > 0)
-    // Best sellers first, then the cheaper one (products arrive sorted by price).
-    .sort((a, b) => (soldBySlug.get(b.slug) ?? 0) - (soldBySlug.get(a.slug) ?? 0))
-    .slice(0, 3)
-    .map(plan);
   const pass = products.find((p) => p.kind === "PASS");
+  let series: UpsellPlan[];
+  if (test.examId) {
+    const ofExam = new Set(
+      (
+        await db.product.findMany({
+          where: { isActive: true, kind: "SERIES", items: { some: { series: { examId: test.examId } } } },
+          select: { slug: true },
+        })
+      ).map((p) => p.slug),
+    );
+    // Cheapest first (products arrive sorted by price).
+    series = products.filter((p) => ofExam.has(p.slug) && p.testCount > 0).slice(0, 2).map(plan);
+  } else {
+    const [sold, ids] = await Promise.all([
+      db.order.groupBy({ by: ["productId"], where: { status: "PAID" }, _count: { _all: true } }),
+      db.product.findMany({ where: { slug: { in: products.map((p) => p.slug) } }, select: { id: true, slug: true } }),
+    ]);
+    const soldBySlug = new Map(ids.map((p) => [p.slug, sold.find((s) => s.productId === p.id)?._count._all ?? 0]));
+    series = products
+      .filter((p) => p.kind === "SERIES" && p.testCount > 0)
+      // Best sellers first, then the cheaper one.
+      .sort((a, b) => (soldBySlug.get(b.slug) ?? 0) - (soldBySlug.get(a.slug) ?? 0))
+      .slice(0, 3)
+      .map(plan);
+  }
   if (!series.length && !pass) return null;
-  return { series, pass: pass ? plan(pass) : null };
+  return { examName: test.examId ? (test.exam?.name ?? null) : null, series, pass: pass ? plan(pass) : null };
 }
 
 export type PackOffer = { slug: string; title: string; priceInPaise: number; seriesCount: number; separatePaise: number };

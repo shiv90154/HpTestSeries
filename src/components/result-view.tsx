@@ -60,7 +60,7 @@ export function ResultView({
   loggedIn?: boolean;
   defaultLang?: Lang;
   askName?: boolean;
-  /** Paid plans to offer under a free no-exam test (e.g. Himachal GK); null hides the card. */
+  /** Paid plans to offer under a free test's result; null hides the card. */
   upsell?: ResultUpsell | null;
 }) {
   const [lang, setLangState] = useState<Lang>(defaultLang);
@@ -628,8 +628,17 @@ function UpsellCard({ upsell }: { upsell: ResultUpsell }) {
     <section className={`${card} space-y-4 border-primary/30 bg-primary-soft/40 p-5`}>
       <div>
         <p className="text-xs font-medium uppercase tracking-wider text-primary">Next step</p>
-        <h2 className="text-lg font-semibold">{site.statePage.title} har {site.logo.initials} exam mein aata hai</h2>
-        <p className="text-sm text-muted">Ab apne exam ki full mock series se practice karo, isi CBT screen mein, solutions aur rank ke saath.</p>
+        {upsell.examName ? (
+          <>
+            <h2 className="text-lg font-semibold">{upsell.examName} ki full mock series</h2>
+            <p className="text-sm text-muted">Ye free mock tha. Exam se pehle saare full mocks isi CBT screen mein do, solutions aur rank ke saath.</p>
+          </>
+        ) : (
+          <>
+            <h2 className="text-lg font-semibold">{site.statePage.title} har {site.logo.initials} exam mein aata hai</h2>
+            <p className="text-sm text-muted">Ab apne exam ki full mock series se practice karo, isi CBT screen mein, solutions aur rank ke saath.</p>
+          </>
+        )}
       </div>
       {upsell.series.length > 0 && (
         <ul className="divide-y divide-border overflow-hidden rounded-xl border border-border bg-surface">

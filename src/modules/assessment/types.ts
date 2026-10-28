@@ -107,8 +107,10 @@ export type ResultData = {
   nextTest?: { slug: string; title: string; isFree: boolean } | null;
 };
 
-/** Paid plans offered under the result of a free test that belongs to no exam (e.g. the Himachal GK mock). */
+/** Paid plans offered under the result of a free test (see commerce/product-service.ts getResultUpsell). */
 export type ResultUpsell = {
+  /** The test's exam, whose series are offered; null for a test of no exam (e.g. the Himachal GK mock). */
+  examName: string | null;
   series: UpsellPlan[];
   pass: UpsellPlan | null;
 };
