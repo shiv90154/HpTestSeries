@@ -118,8 +118,8 @@ export default async function KnowYourHimachalPage() {
         </section>
 
         <div className="flex flex-wrap gap-3">
-          <Link href={freeMockHref(site)} className={btn("primary")}>
-            Test yourself — free HP GK mock
+          <Link href={site.gkMockHub ?? freeMockHref(site)} className={btn("primary")}>
+            Test yourself — free Himachal GK mock tests
           </Link>
           <Link href="/blog" className={btn("outline")}>
             Exam updates

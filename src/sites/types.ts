@@ -58,6 +58,8 @@ export type SiteConfig = {
   freeMockSlug: string;
   /** The state GK page: /himachal on hp, /punjab on pb, /rajasthan on rj. */
   statePage: { slug: string; title: string };
+  /** Hub page listing every free state GK mock, when the site has one; footer and sitemap link it. */
+  gkMockHub?: string;
   districts: readonly string[];
   /** Open WhatsApp group for exam news; omitted until the site has one. */
   whatsappGroupUrl?: string;

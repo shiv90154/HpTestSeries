@@ -60,6 +60,7 @@ async function sitemap(site: SiteConfig): Promise<MetadataRoute.Sitemap> {
     ),
     ...withTests.map((e) => ({ url: `${site.url}/${e.body}/${e.exam}/tests`, lastModified: e.updatedAt, changeFrequency: "weekly" as const, priority: 0.8 })),
     { url: `${site.url}/${site.statePage.slug}`, changeFrequency: "monthly" as const, priority: 0.6 },
+    ...(site.gkMockHub ? [{ url: `${site.url}${site.gkMockHub}`, changeFrequency: "weekly" as const, priority: 0.8 }] : []),
     { url: `${site.url}/blog`, lastModified: latestPost, changeFrequency: "daily" as const, priority: 0.8 },
     ...categories.map((c) => ({ url: `${site.url}/blog/category/${CATEGORY_META[c].slug}`, changeFrequency: "weekly" as const, priority: 0.5 })),
     ...posts.map((p) => ({ url: `${site.url}/blog/${p.slug}`, lastModified: p.updatedAt, changeFrequency: "weekly" as const, priority: 0.7 })),

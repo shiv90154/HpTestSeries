@@ -13,6 +13,7 @@ import { COMMON_FREE_QUESTIONS, DEMO_TEST_SLUG, seedDemoTest, seedFreeMock } fro
 import { punjabFreeMock } from "./punjab/free-mock";
 import { rajasthanFreeMock } from "./rajasthan/free-mock";
 import { seedHpasFree } from "./seed-hpas";
+import { seedHpGkFreeMocks } from "./seed-hp-gk-mocks";
 import { seedJoaIt } from "./seed-joa-it";
 import { seedJoaItPyq } from "./seed-joa-it-pyq";
 import { seedPanchayatSecretary } from "./seed-panchayat-secretary";
@@ -112,15 +113,16 @@ async function main() {
   const examSeries = await seedExamSeries(db);
   const hpas = await seedHpasFree(db);
   const upcoming = await seedUpcomingFree(db);
+  const hpGkMocks = await seedHpGkFreeMocks(db);
   const pyq = [await seedPatwariPyq(db), await seedPoliceStandalonePyq(db), await seedJoaItPyq(db)];
   await seedPremiumPass(db);
   const content = await seedContent(db);
   console.log(
     `Seeded ${catalogue.length} bodies, ${taxonomy.length} subjects, the demo test "${DEMO_TEST_SLUG}", ` +
       `${patwari.createdTests} new Patwari tests, ${police.createdTests} new Police Constable tests, ${pbCourtClerk.createdTests} new Punjab Court Clerk tests, ` +
-      `${joaIt.createdTests} new JOA IT tests, ${panchayat.createdTests} new Panchayat Secretary tests, ${examSeries.createdTests} new tests in other exam series, ${hpas.createdTests} new free HPAS tests, ${upcoming.createdTests} new free upcoming-exam mocks, ` +
+      `${joaIt.createdTests} new JOA IT tests, ${panchayat.createdTests} new Panchayat Secretary tests, ${examSeries.createdTests} new tests in other exam series, ${hpas.createdTests} new free HPAS tests, ${upcoming.createdTests} new free upcoming-exam mocks, ${hpGkMocks.created} new free Himachal GK mocks, ` +
       `${pyq.reduce((n, r) => n + r.created, 0)} new previous-year papers, ` +
-      `content for ${content.filled} exams and ${content.created} new draft posts.`,
+      `content for ${content.filled} exams and ${content.created} new posts.`,
   );
 }
 

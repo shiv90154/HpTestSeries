@@ -92,8 +92,8 @@ export async function SiteFooter() {
           </h2>
           <ul className="text-sm">
             <li>
-              <Link href={freeMockHref(site)} className={link}>
-                <T en={`Free ${site.statePage.title} Mock Test`} pa={`ਮੁਫ਼ਤ ${site.statePage.title} ਮੌਕ ਟੈਸਟ`} />
+              <Link href={site.gkMockHub ?? freeMockHref(site)} className={link}>
+                <T en={`Free ${site.statePage.title} Mock Tests`} pa={`ਮੁਫ਼ਤ ${site.statePage.title} ਮੌਕ ਟੈਸਟ`} />
               </Link>
             </li>
             <li>

@@ -632,15 +632,16 @@ async function topAttempts(testId: string, userId: string): Promise<LeaderboardR
   }));
 }
 
-/** A published test in the same exam the student hasn't attempted yet (free ones first), else any such test. */
+/**
+ * A published test the student hasn't attempted yet (free ones first): from the same exam, or for a test of no exam
+ * (the state GK mocks) another one of those on its site, so Himachal GK Mock 1 leads to Mock 2. Else any such test.
+ */
 async function nextTestFor(userId: string, t: FullTest): Promise<ResultData["nextTest"]> {
   const base = { ...liveTestWhere(), id: { not: t.id }, liveStartsAt: null, attempts: { none: { userId } } };
   const select = { slug: true, title: true, isFree: true } as const;
   const orderBy = [{ isFree: "desc" as const }, { publishedAt: "asc" as const }];
-  return (
-    (t.examId ? await db.test.findFirst({ where: { ...base, examId: t.examId }, orderBy, select }) : null) ??
-    (await db.test.findFirst({ where: base, orderBy, select }))
-  );
+  const same = t.examId ? { examId: t.examId } : { examId: null, site: t.site };
+  return (await db.test.findFirst({ where: { ...base, ...same }, orderBy, select })) ?? (await db.test.findFirst({ where: base, orderBy, select }));
 }
 
 export type LastAttempt = {

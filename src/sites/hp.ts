@@ -36,6 +36,7 @@ export const hp: SiteConfig = {
   og: { gradient: ["#0b1f5c", "#133a9e", "#1e4fd8"], exams: "HPRCA · HPPSC · HP Police · HP TET · Patwari — Hindi & English" },
   freeMockSlug: "hp-gk-free-mock-1",
   statePage: { slug: "himachal", title: "Himachal GK" },
+  gkMockHub: "/himachal-gk-mock-test",
   districts: ["Bilaspur", "Chamba", "Hamirpur", "Kangra", "Kinnaur", "Kullu", "Lahaul & Spiti", "Mandi", "Shimla", "Sirmaur", "Solan", "Una"],
   whatsappGroupUrl: "https://chat.whatsapp.com/EZxeaAz5iUo94axPkpiej1",
   social: {
