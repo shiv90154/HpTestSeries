@@ -1540,4 +1540,138 @@ Hamare TGT mock tests isi official section-wise pattern par bane hain, aur har s
       { q: "Kya HP TET TGT me Hindi ka section hai?", a: "Nahi. TGT Arts, Non-Medical aur Medical paper me alag Hindi language section nahi hai. Question booklet English aur Hindi dono bhasha me hoti hai." },
     ],
   },
+
+  // Students search "hp high court process server exam date" (~650 impressions a month in GSC, Oct 2026) with no page
+  // answering it. As of 28 October 2026 no date is announced; update the table the day the High Court publishes one.
+  {
+    slug: "hp-high-court-process-server-exam-date-2026",
+    seoTitle: "HP High Court Process Server Exam Date 2026: Kab Hoga Exam?",
+    seoDescription: "HP High Court Process Server exam date 2026 ka latest status, admit card kaise milega, 65 posts ki details aur exam se pehle free mock test.",
+    title: "HP High Court Process Server Exam Date 2026: Latest Update, Admit Card & Taiyari",
+    titleHi: "एचपी हाई कोर्ट प्रोसेस सर्वर परीक्षा तिथि 2026",
+    excerpt: "HP High Court Process Server exam kab hoga? 2026 bharti ka latest status, admit card kaise aayega, 65 posts ki details aur exam se pehle ki taiyari.",
+    category: "EXAM_DATE",
+    exams: ["hp-high-court/process-server", "hp-high-court/clerk", "hp-high-court/stenographer"],
+    content: `**HP High Court Process Server exam kab hoga?** Ye sawal abhi har Process Server candidate ke mann me hai. Is post me latest status hai, aur date aate hi hum ise update karenge.
+
+## Latest update (28 October 2026)
+
+**High Court of Himachal Pradesh ne abhi Process Server exam ki date announce nahi ki hai.** Hamne official recruitment portal (hphcrecruitment.in) check kiya hai, wahan abhi tak is bharti ka exam schedule ya admit card notice nahi hai. Koi website exact date bata rahi hai to use official notice se zaroor milaao.
+
+| Detail | Status |
+|---|---|
+| Notification | August 2026 (388 posts) |
+| Process Server posts | 65 |
+| Online application | 10 August to 10 September 2026 (band ho chuki hai) |
+| Exam date | **Abhi announce nahi hui** |
+| Admit card | Exam date ke saath aayega |
+| Official portal | hphcrecruitment.in |
+
+Clerk (141 posts) aur Stenographer Grade-III (79 posts) isi bharti ka hissa hain, aur unki exam date bhi abhi nahi aayi hai.
+
+## Exam date aur admit card kaise pata chalega?
+
+- High Court ki recruitment notices me likha hota hai ki exam schedule ki jaankari candidates ko **SMS aur email** par di jaati hai, usi mobile number aur email par jo form me bhara tha. Isliye wo number aur email chalu rakho.
+- Admit card portal ke **Admit Card** section se download hota hai, apne registration details se.
+- Hafte me ek-do baar hphcrecruitment.in ka home page aur Latest News dekhte raho.
+
+## Ab tak ki taiyari ka sahi tareeka
+
+Date na aayi ho to bhi ye time sabse keemti hai, kyunki notice aane ke baad aksar 2-3 hafte hi milte hain.
+
+1. **Syllabus pakka karo:** Himachal GK, general knowledge, basic reasoning, basic maths, aur Hindi-English. Poora topic-wise syllabus: [HP High Court Process Server syllabus](/hp-high-court/process-server/syllabus).
+2. **Himachal GK roz:** districts, rivers, history, fairs-festivals aur HP current affairs ke short notes banao.
+3. **Har hafte ek full mock:** timer ke saath, exam jaisi CBT screen par. Galat questions ki alag list banao aur agle mock se pehle revise karo.
+
+Shuruaat [HP High Court Process Server free mock test](/tests/hp-high-court-process-server-full-mock-1) se karo. Poori practice series aur sectional tests [Process Server page](/hp-high-court/process-server) par hain. Clerk ke liye [HP High Court Clerk](/hp-high-court/clerk) aur Steno ke liye [Stenographer](/hp-high-court/stenographer) page dekho.`,
+    faqs: [
+      { q: "HP High Court Process Server exam kab hoga?", a: "28 October 2026 tak High Court ne exam date announce nahi ki hai. Date aate hi ye post update hogi; official jaankari hphcrecruitment.in par aati hai." },
+      { q: "HP High Court Process Server ka admit card kab aayega?", a: "Admit card exam date ke saath hphcrecruitment.in ke Admit Card section me aayega. Exam schedule ki soochna SMS aur email par bhi aati hai." },
+      { q: "HP High Court me Process Server ki kitni posts hain?", a: "August 2026 ki 388 posts wali bharti me Process Server ki 65 posts hain." },
+      { q: "Kya Process Server ka form abhi bhar sakte hain?", a: "Nahi. Online application 10 August se 10 September 2026 tak thi aur band ho chuki hai." },
+      { q: "Process Server exam ki taiyari kaise karein?", a: "Himachal GK, GK, basic reasoning, maths aur Hindi-English padho aur har hafte ek full mock test do. Pehla mock free hai." },
+    ],
+  },
+
+  // From the official advertisement PDF (hphcrecruitment.in/static/dist/pdf/69.pdf), read on 28 October 2026.
+  {
+    slug: "hp-high-court-stenographer-recruitment-2026-advt-4",
+    seoTitle: "HP High Court Stenographer Recruitment 2026: 3 Posts, Apply by 7 Nov",
+    seoDescription: "HP High Court Stenographer recruitment 2026, Advt. 2026 (4): 3 posts, pay level 11, graduation + 3 years experience, 100 wpm shorthand. Apply by 7 November.",
+    title: "HP High Court Stenographer Recruitment 2026 (Advt. 2026(4)): 3 Posts, Eligibility, Fee & Last Date",
+    titleHi: "एचपी हाई कोर्ट स्टेनोग्राफर भर्ती 2026: 3 पद, अंतिम तिथि 7 नवंबर",
+    excerpt: "High Court of Himachal Pradesh ne Stenographer (Group-C) ki 3 regular posts nikali hain. Eligibility, 100 wpm shorthand, fee, age limit aur last date 7 November 2026.",
+    category: "NOTIFICATION",
+    exams: ["hp-high-court/stenographer"],
+    content: `**High Court of Himachal Pradesh, Shimla** ne 6 October 2026 ko **Stenographer (Group-C)** ki nayi bharti nikali hai (Advertisement Notice No. **HC-Advt./2026 (4)**). Ye post High Court ki apni establishment ke liye hai, aur August wali 388 posts ki bharti (Stenographer Grade-III) se alag hai.
+
+## Important dates
+
+| Event | Date |
+|---|---|
+| Notice date | 6 October 2026 |
+| Online application shuru | 7 October 2026 |
+| **Last date (form + fee)** | **7 November 2026, 11:59 PM** |
+| NOC (sarkari employees) | Last date ke 15 din ke andar |
+
+Apply: hphcrecruitment.in (login karke), ya High Court website highcourt.hp.gov.in ke link se.
+
+## Vacancy aur pay
+
+| Post | Posts | Pay |
+|---|---|---|
+| Stenographer (Group-C), Regular | 3 (2 UR, 1 EWS) | Pay Level 11: ₹38,500 to ₹1,22,700 |
+
+EWS candidate na mile to wo post Unreserved me chali jaati hai. Notice ke mutabiq vacancies aage badh ya ghat sakti hain.
+
+## Eligibility
+
+- **Graduation** aur **3 saal ka experience** Steno-typist, Judgment Writer ya Stenographer ke roop me, kisi sarkari office ya reputed organisation me
+- **English shorthand 100 wpm**, aur dictation ka transcription dictation time ke 5 guna samay me
+- **English typing 50 wpm** computer par, iska alag test hoga
+- Transcription aur typing me **10% se zyada galti** par candidate unqualified
+
+## Age limit (1 January 2026 ko)
+
+| Category | Age |
+|---|---|
+| Unreserved aur EWS | 18 to 45 saal |
+| HP govt employees | 18 to 50 saal |
+
+Himachal ke reserved categories (EWS ko chhodkar) aur PwD ko upper age me 5 saal ki chhoot, agar post us category ke liye reserved ho.
+
+## Application fee
+
+| Category | Fee |
+|---|---|
+| Unreserved | ₹450 (GST sahit) |
+| HP reserved (SC, ST, OBC, EWS, PH) | ₹300 (GST sahit) |
+
+Fee sirf online, aur wapas nahi hoti.
+
+## Selection
+
+Selection **competitive examination** se hoga, R&P Rules 2015 ki Schedule-IV (Part-H) ke hisaab se, aur shorthand-typing ka alag test hoga. Exam ya test ka schedule **SMS aur email** par aayega, alag se call letter nahi aata. Test Shimla me bhi ho sakta hai.
+
+Ye appointments High Court me chal rahi do writ petitions (CWP No. 6948 of 2025 aur CWP No. 7805 of 2025) ke faisle ke adheen hain.
+
+## Form bharne se pehle taiyar rakho
+
+- Photo 20 to 50 KB, signature 10 to 20 KB (JPG/PNG, safed background)
+- Matric certificate (age proof) aur ID proof, 100 to 500 KB
+- Baaki certificates (experience etc.) PDF me, 100 KB to 2 MB
+
+Sawal ho to High Court Recruitment Section ko arrecruitment-hc@hp.gov.in par email karo.
+
+## Taiyari
+
+Written exam me English, Hindi, Himachal GK, reasoning aur computer ke sawal aa sakte hain. Topic-wise list: [HP High Court Stenographer syllabus](/hp-high-court/stenographer/syllabus). Practice ke liye [Stenographer mock tests](/hp-high-court/stenographer) do, aur shorthand-typing roz practice karo.`,
+    faqs: [
+      { q: "HP High Court Stenographer 2026 ki last date kya hai?", a: "Advt. HC-Advt./2026 (4) ke liye online form aur fee ki last date 7 November 2026, raat 11:59 baje hai." },
+      { q: "Is bharti me kitni posts hain?", a: "Stenographer (Group-C) ki 3 regular posts: 2 Unreserved aur 1 EWS." },
+      { q: "HP High Court Stenographer ki salary kitni hai?", a: "Pay Level 11, yani ₹38,500 se ₹1,22,700 ka pay matrix." },
+      { q: "Kya fresher apply kar sakta hai?", a: "Nahi. Graduation ke saath Steno-typist, Judgment Writer ya Stenographer ka 3 saal ka experience zaroori hai." },
+      { q: "Shorthand aur typing speed kitni chahiye?", a: "English shorthand 100 wpm aur English typing 50 wpm computer par. 10% se zyada galti par candidate unqualified hota hai." },
+    ],
+  },
 ];
