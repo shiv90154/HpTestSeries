@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { examLabel, getCatalog, getPublishedPosts } from "@/modules/catalog/queries";
-import { freeMockHref } from "@/sites";
+import { SITES, freeMockHref } from "@/sites";
 import { currentSite } from "@/sites/current";
 import { LEGAL_LINKS } from "@/lib/business";
 import { AuthFooterLink } from "./auth-cta";
@@ -169,6 +169,19 @@ export async function SiteFooter() {
         )}
       </div>
       <div className="border-t border-white/10">
+        {/* The sister sites, linked from every page of each other so a new one is found and crawled. */}
+        <nav aria-label="Other states" className="mx-auto flex w-full max-w-6xl flex-wrap items-center gap-x-5 px-4 pt-5 text-sm">
+          <span className="font-semibold text-white">
+            <T en="Other states:" pa="ਹੋਰ ਰਾਜ:" />
+          </span>
+          {Object.values(SITES)
+            .filter((s) => s.code !== site.code)
+            .map((s) => (
+              <a key={s.code} href={s.url} className={link}>
+                {s.stateName} Mock Tests ({s.name})
+              </a>
+            ))}
+        </nav>
         <p className="mx-auto w-full max-w-6xl px-4 py-5 text-xs text-slate-400">
           © {new Date().getFullYear()} {site.name}.{" "}
           <T

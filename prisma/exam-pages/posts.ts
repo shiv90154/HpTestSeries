@@ -1545,6 +1545,7 @@ Hamare TGT mock tests isi official section-wise pattern par bane hain, aur har s
   // answering it. As of 28 October 2026 no date is announced; update the table the day the High Court publishes one.
   {
     slug: "hp-high-court-process-server-exam-date-2026",
+    publish: true,
     seoTitle: "HP High Court Process Server Exam Date 2026: Kab Hoga Exam?",
     seoDescription: "HP High Court Process Server exam date 2026 ka latest status, admit card kaise milega, 65 posts ki details aur exam se pehle free mock test.",
     title: "HP High Court Process Server Exam Date 2026: Latest Update, Admit Card & Taiyari",
@@ -1596,6 +1597,7 @@ Shuruaat [HP High Court Process Server free mock test](/tests/hp-high-court-proc
   // From the official advertisement PDF (hphcrecruitment.in/static/dist/pdf/69.pdf), read on 28 October 2026.
   {
     slug: "hp-high-court-stenographer-recruitment-2026-advt-4",
+    publish: true,
     seoTitle: "HP High Court Stenographer Recruitment 2026: 3 Posts, Apply by 7 Nov",
     seoDescription: "HP High Court Stenographer recruitment 2026, Advt. 2026 (4): 3 posts, pay level 11, graduation + 3 years experience, 100 wpm shorthand. Apply by 7 November.",
     title: "HP High Court Stenographer Recruitment 2026 (Advt. 2026(4)): 3 Posts, Eligibility, Fee & Last Date",

@@ -38,4 +38,6 @@ export type PostSeed = {
   seoTitle?: string;
   /** Search-result description (max 170 characters). */
   seoDescription?: string;
+  /** Seed it published (its facts were checked against the official notice), not as a draft. */
+  publish?: boolean;
 };
