@@ -665,6 +665,7 @@ export async function seedContent(db: PrismaClient) {
   const replacedSeo: Record<string, string> = {
     "hpbose/hp-tet": "HP TET Mock Test {year} — Free HPBOSE TET Series (JBT, TGT)",
     "hppsc/food-safety-officer": "HPPSC Food Safety Officer Mock Test {year} — Free FSO Series",
+    "hppsc/hpas": "HPAS Mock Test {year} — Free HPPSC Prelims Test Series",
   };
   // The six hand-written pages above win for description, syllabus and FAQs; prisma/exam-pages adds the SEO title and
   // description for every exam, the exam pattern where it is known, and full copy for all the other exams.

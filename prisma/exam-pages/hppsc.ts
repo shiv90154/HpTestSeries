@@ -9,8 +9,18 @@ const free = (slug: string) => `/tests/${slug}`;
 export const HPPSC_PAGES: ExamPages = {
   "hppsc/hpas": {
     seo: {
-      title: "HPAS Mock Test {year} — Free HPPSC Prelims Test Series",
-      description: "Free HPAS prelims mock tests: General Studies and Himachal GK in a real CBT format. Hindi & English solutions and your rank among HP aspirants. No login to start.",
+      title: "HPAS Mock Test {year} — Free Prelims GS & CSAT Test Series",
+      description: "Free HPAS prelims mock tests for Paper I (General Studies, Himachal GK) and Paper II (CSAT) in real CBT format, with Hindi & English solutions and your rank.",
+    },
+    // Reported for the 2026 prelims (Advt. 59/8-2026); the note asks students to confirm against the advertisement.
+    pattern: {
+      sections: [
+        { name: "Paper I: General Studies (incl. Himachal GK)", questions: 100, marks: 200 },
+        { name: "Paper II: CSAT / Aptitude Test (qualifying, 33%)", questions: 100, marks: 200 },
+      ],
+      durationMin: 120,
+      negativeMarking: "Yes, reported as one-third of a question's marks; confirm in the advertisement",
+      note: "Two objective papers on the same day, 2 hours each. Paper II (CSAT) is qualifying: you need 33% in it, and only Paper I marks decide who goes to the Mains. Prelims marks are not added to the final merit. Pattern as reported for the 2026 prelims; confirm it in the HPPSC advertisement.",
     },
   },
 

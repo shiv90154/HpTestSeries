@@ -1676,4 +1676,184 @@ Written exam me English, Hindi, Himachal GK, reasoning aur computer ke sawal aa 
       { q: "Shorthand aur typing speed kitni chahiye?", a: "English shorthand 100 wpm aur English typing 50 wpm computer par. 10% se zyada galti par candidate unqualified hota hai." },
     ],
   },
+
+  // HPAS Prelims, 13 December 2026. Date and sessions are from the HPPSC press note of 24 September 2026 as reported by
+  // several exam sites (the HPPSC schedule page did not load on 28 October); the posts say where to confirm.
+  {
+    slug: "hpas-prelims-exam-date-2026-admit-card",
+    publish: true,
+    seoTitle: "HPAS Prelims Exam Date 2026: 13 December, Admit Card & Timing",
+    seoDescription: "HPAS Prelims 2026 is on 13 December in two sessions. Exam timing, admit card, both papers, what to carry and a last-weeks plan with free mock tests.",
+    title: "HPAS Prelims Exam Date 2026: 13 December — Admit Card, Timing, Papers & Exam-Day Guide",
+    titleHi: "एचपीएएस प्रारंभिक परीक्षा तिथि 2026: 13 दिसंबर",
+    excerpt: "HPAS Prelims 2026 kab hai? 13 December 2026, do sessions me. Timing, admit card kaise milega, Paper I aur Paper II (CSAT), aur exam se pehle ki taiyari.",
+    category: "EXAM_DATE",
+    exams: ["hppsc/hpas"],
+    content: `**HPPSC ne HPAS Combined Competitive (Preliminary) Examination 2026 ki date 13 December 2026 rakhi hai.** Ye date HPPSC ke 24 September 2026 ke press note me aayi, jaisa kai exam websites ne report kiya hai. Exam ek hi din do sessions me hoga.
+
+## HPAS Prelims 2026: key details
+
+| Detail | Information |
+|---|---|
+| Exam | HPAS Combined Competitive (Preliminary) Examination 2026 |
+| Conducting body | Himachal Pradesh Public Service Commission (HPPSC), Shimla |
+| Advertisement | 59/8-2026 |
+| **Prelims date** | **13 December 2026 (Sunday)** |
+| Session 1 | 10:00 AM to 12:00 noon |
+| Session 2 | 2:00 PM to 4:00 PM |
+| Application | Band ho chuki hai (last date 22 September 2026) |
+| Admit card | HPPSC ke online portal par, exam se pehle |
+
+Final date aur centre apne admit card aur hppsc.hp.gov.in par zaroor check karein.
+
+## Do sessions, do papers
+
+Reports ke mutabiq prelims me do objective papers hain:
+
+| Paper | Questions | Marks | Time | Role |
+|---|---|---|---|---|
+| Paper I: General Studies (Himachal GK ke saath) | 100 | 200 | 2 ghante | Isi ke marks se Mains ke liye merit banti hai |
+| Paper II: CSAT / Aptitude Test | 100 | 200 | 2 ghante | Qualifying: kam se kam 33% chahiye |
+
+Paper II me 33% nahi aaye to Paper I check hi nahi hota, isliye CSAT ko halke me mat lo. Prelims ke marks final merit me nahi jodte, ye sirf Mains ke liye screening hai. Poora pattern: [HPAS exam pattern](/hppsc/hpas/exam-pattern) aur [HPAS syllabus](/hppsc/hpas/syllabus).
+
+## Admit card kaise milega
+
+- HPPSC admit card (e-admit card) apne online application portal par daalta hai, apne registration se login karke download hota hai.
+- Admit card par centre, reporting time aur instructions hote hain. Do print nikaal kar rakho.
+- Naam, photo ya category me galti ho to turant HPPSC se contact karo.
+
+## Exam ke din saath le jao
+
+- Admit card (print)
+- Ek original photo ID (Aadhaar, voter card, driving licence ya passport)
+- Admit card par likhe instructions ke hisaab se photo aur pen
+
+Mobile, smart watch aur calculator centre ke andar nahi chalte.
+
+## Ab se 13 December tak
+
+Lagbhag 6 hafte bache hain. Har hafte **ek GS full mock aur ek CSAT mock** do, galtiyon ki list banao aur Himachal GK roz padho. Hafte-wise plan: [HPAS 6-week revision plan](/blog/hpas-prelims-2026-6-week-revision-plan).
+
+- [HPAS free mock tests](/hppsc/hpas): GS ke free mocks, bina login
+- [HPAS CSAT free mock](/tests/hpas-csat-mock-1): Paper II ka poora 100-question mock, free
+- [Himachal GK free mock tests](/himachal-gk-mock-test): Paper I ka sabse scoring hissa`,
+    faqs: [
+      { q: "HPAS Prelims 2026 kab hai?", a: "13 December 2026 ko, do sessions me: subah 10 se 12 baje aur dopahar 2 se 4 baje. Ye HPPSC ke 24 September 2026 ke press note me aayi date hai; admit card par confirm karein." },
+      { q: "HPAS Prelims me kitne paper hote hain?", a: "Do: Paper I General Studies (100 questions, 200 marks) aur Paper II CSAT/Aptitude (100 questions, 200 marks). Dono 2-2 ghante ke hain." },
+      { q: "Is HPAS CSAT qualifying?", a: "Yes. As reported for 2026, Paper II needs at least 33%, and only Paper I marks decide who qualifies for the Mains." },
+      { q: "HPAS admit card kahan milega?", a: "HPPSC ke online application portal par, apne registration se login karke. Exam se pehle HPPSC ki website par notice bhi aata hai." },
+      { q: "Kya HPAS Prelims ke marks final merit me jodte hain?", a: "Nahi. Prelims sirf screening hai. Final merit Mains aur Personality Test se banti hai." },
+    ],
+  },
+
+  {
+    slug: "hpas-csat-paper-2-syllabus-qualifying-marks",
+    publish: true,
+    seoTitle: "HPAS CSAT 2026: Paper II Syllabus, 33% Qualifying & Free Mock",
+    seoDescription: "HPAS Prelims Paper II (CSAT) 2026: syllabus, the 33% qualifying rule, topic-wise weight and how to clear it, with a free 100-question HPAS CSAT mock test.",
+    title: "HPAS CSAT (Paper II) 2026: Syllabus, 33% Qualifying Marks & How to Clear It",
+    titleHi: "एचपीएएस सीसैट (पेपर II) 2026: सिलेबस और क्वालिफाइंग मार्क्स",
+    excerpt: "HPAS Prelims ka Paper II (CSAT) qualifying hai, par 33% na aaye to Paper I check nahi hota. Syllabus, kya padhein, aur free 100-question CSAT mock.",
+    category: "SYLLABUS",
+    exams: ["hppsc/hpas"],
+    content: `HPAS Prelims me do paper hote hain, aur **Paper II (CSAT / Aptitude Test) qualifying hai**. Reports ke mutabiq isme **kam se kam 33%** chahiye. Paper II me 33% se kam aaye to Paper I (General Studies) ki copy check hi nahi hoti, chahe GS me kitne bhi achhe marks hon. Har saal kuch achhe GS wale candidates isi wajah se bahar ho jaate hain.
+
+## HPAS CSAT pattern 2026
+
+| Detail | Paper II (CSAT) |
+|---|---|
+| Questions | 100 (objective) |
+| Marks | 200 |
+| Time | 2 ghante |
+| Qualifying | 33% (yani 200 me se 66) |
+| Negative marking | Reported; advertisement me confirm karein |
+
+## HPAS CSAT syllabus
+
+HPPSC ka Paper II UPSC ke CSAT jaisa hi hai:
+
+- **Comprehension**: passage padh kar sawal
+- **Interpersonal skills**, including communication skills
+- **Logical reasoning and analytical ability**: series, coding-decoding, blood relations, syllogism, direction, ranking, puzzles
+- **Decision making and problem solving**
+- **General mental ability**
+- **Basic numeracy (Class X level)**: percentage, ratio, average, profit-loss, time-work, speed-distance, interest, mensuration
+- **Data interpretation (Class X level)**: tables, graphs, charts
+
+Detailed topic list: [HPAS syllabus](/hppsc/hpas/syllabus).
+
+## 33% kaise pakka karein
+
+1. **Pehle ek CSAT mock do**, bina taiyari ke. Score 66 se kaafi upar hai to har hafte bas ek mock kaafi hai. Neeche hai to roz 45 minute CSAT ko do.
+2. **Maths ke basic chapters pakke karo**: percentage, ratio, average, profit-loss, time-work aur speed-distance. Inse sabse zyada sawal aate hain aur ye jaldi seekhe jaate hain.
+3. **Reasoning me apne strong topics pehchano**: series, coding, direction aur blood relations aksar sabse jaldi hal hote hain.
+4. **Comprehension sabse aakhir me mat chhodo**: passage wale sawal kam samay me pakke marks dete hain.
+5. **Negative marking dhyan me rakho**: andaze se bahut saare sawal mat lagao. 33% ke liye sahi jawab chahiye, sirf attempt nahi.
+
+## Free HPAS CSAT mock test
+
+Hamara [HPAS CSAT (Paper II) Mock Test 1](/tests/hpas-csat-mock-1) bilkul free hai: 100 questions, 2 ghante, Hindi aur English, har sawal ka solution aur Himachal ke aspirants me tumhari rank. Aage ke CSAT aur GS full mocks [HPAS Prelims mock test series](/hppsc/hpas) me hain.
+
+Exam date aur admit card: [HPAS Prelims exam date 2026](/blog/hpas-prelims-exam-date-2026-admit-card).`,
+    faqs: [
+      { q: "Is HPAS CSAT qualifying?", a: "Yes. Paper II (CSAT) is reported to need at least 33% (66 of 200). Below that, Paper I is not evaluated." },
+      { q: "HPAS CSAT me kitne questions aate hain?", a: "100 objective questions, 200 marks, 2 ghante." },
+      { q: "HPAS CSAT ka syllabus kya hai?", a: "Comprehension, interpersonal aur communication skills, logical reasoning, decision making, general mental ability, aur Class X level ki basic numeracy aur data interpretation." },
+      { q: "Kya HPAS CSAT ka free mock test hai?", a: "Haan. HPAS CSAT (Paper II) Mock Test 1 free hai: 100 questions, Hindi aur English, solutions aur rank ke saath." },
+    ],
+  },
+
+  {
+    slug: "hpas-prelims-2026-6-week-revision-plan",
+    publish: true,
+    seoTitle: "HPAS Prelims 2026: 6-Week Revision Plan Till 13 December",
+    seoDescription: "A week-by-week HPAS Prelims 2026 revision plan for the last six weeks: General Studies, Himachal GK, CSAT and one full mock a week, with free tests.",
+    title: "HPAS Prelims 2026: 6-Week Revision Plan Till 13 December (GS, Himachal GK & CSAT)",
+    titleHi: "एचपीएएस प्रारंभिक 2026: 13 दिसंबर तक 6 हफ्ते का रिवीजन प्लान",
+    excerpt: "13 December se pehle ke 6 hafte: GS ke har subject ka revision, roz Himachal GK, CSAT ka 33% pakka, aur har hafte ek full mock. Hafte-wise plan.",
+    category: "STRATEGY",
+    exams: ["hppsc/hpas"],
+    content: `HPAS Prelims **13 December 2026** ko hai ([exam date aur admit card](/blog/hpas-prelims-exam-date-2026-admit-card)). Ab naya padhne ka samay kam hai. Agle 6 hafte **revision, mock tests aur galtiyon ko theek karne** ke hain. Ye plan isi ke liye hai.
+
+## Har din ka basic routine
+
+- **Himachal GK: 45 minute roz.** Paper I me Himachal ka hissa sabse scoring hai. Districts, rivers, history, culture aur economy ke short notes dohrao.
+- **CSAT: 30 se 45 minute roz.** Maths aur reasoning ke 20 se 25 sawal. Agar pehle CSAT mock me 66 se kaafi upar ho, to ise kam kar sakte ho.
+- **Current affairs: 30 minute.** Himachal aur desh ki pichle ek saal ki khaas khabrein.
+- **Har hafte: ek GS full mock aur ek CSAT mock**, exam ke time par (10 se 12 aur 2 se 4).
+
+## Hafte-wise plan
+
+| Hafta | General Studies | Mock |
+|---|---|---|
+| 1 | Polity aur governance (sabse zyada weight) | GS mock + CSAT mock 1 (free) |
+| 2 | Indian history aur culture | GS mock + CSAT mock |
+| 3 | Geography aur environment | GS mock + CSAT mock |
+| 4 | Indian economy, budget aur schemes | GS mock + CSAT mock |
+| 5 | Science and technology, aur Himachal GK ka poora round | Do GS mock |
+| 6 | Sirf revision: galtiyon ki list, short notes, Himachal GK | Ek GS mock + ek CSAT mock, 13 Dec wale time par |
+
+## Mock ke baad kya karein
+
+Mock dena aadha kaam hai. Har mock ke baad:
+
+1. Har galat aur skip kiye sawal ka solution padho.
+2. Ek "galti diary" banao: topic, kya galat samjha, sahi fact.
+3. Dekho ki kis section me negative marking ne sabse zyada marks kaate. Wahan andaze kam karo.
+4. Agle hafte us topic ko 1 ghanta extra do.
+
+## Free mocks se shuru karo
+
+- [HPAS free mock tests](/hppsc/hpas): GS ke free mocks, bina login
+- [HPAS CSAT Mock Test 1](/tests/hpas-csat-mock-1): Paper II ka poora mock, free
+- [Himachal GK free mock tests](/himachal-gk-mock-test): roz ka GK abhyaas
+
+Poori series me 9 GS full mocks aur 4 CSAT mocks hain, Hindi aur English me, har sawal ke solution aur Himachal ke aspirants me rank ke saath: [HPAS Prelims mock test series](/hppsc/hpas). CSAT ki taiyari ke tips: [HPAS CSAT syllabus aur 33%](/blog/hpas-csat-paper-2-syllabus-qualifying-marks).`,
+    faqs: [
+      { q: "HPAS Prelims ki last 6 hafte me kaise taiyari karein?", a: "Naya kam padho, revision zyada karo. Roz Himachal GK aur CSAT, har hafte ek GS subject ka revision, aur har hafte ek GS aur ek CSAT full mock exam ke time par." },
+      { q: "HPAS Prelims ke liye kitne mock tests dene chahiye?", a: "Last 6 hafte me kam se kam 6 GS full mocks aur 4 CSAT mocks, aur har mock ke baad galtiyon ka analysis." },
+      { q: "Is Himachal GK important for HPAS Prelims?", a: "Yes. Paper I includes a good share of Himachal history, geography, economy, culture and current affairs, and it is one of the most scoring parts." },
+    ],
+  },
 ];

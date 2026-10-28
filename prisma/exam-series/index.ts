@@ -373,8 +373,9 @@ const EXAMS: ExamDef[] = [
     minutes: 120,
     price: 99,
     description:
-      "Full-length HPAS prelims mock tests in the 100-question General Studies format: Himachal GK, Indian history and culture, " +
-      "polity and governance, geography and environment, economy, and science and technology.",
+      "Full-length HPAS prelims mock tests for both papers: Paper I General Studies (Himachal GK, Indian history and culture, " +
+      "polity and governance, geography and environment, economy, and science and technology) and Paper II CSAT (reasoning, " +
+      "basic numeracy and comprehension).",
     sections: HPAS_SECTIONS.map((sec, i) => S(sec.name, sec.nameHi, HPAS_MOCKS.slice(0, 2).map((m) => m.filter((x) => x.s === i)))),
     extraMocks: HPAS_MOCKS.slice(2),
   },

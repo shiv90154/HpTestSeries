@@ -5,6 +5,8 @@ import { EXAM_SERIES } from "../../../prisma/exam-series";
 import { PATWARI_TESTS } from "../../../prisma/patwari";
 import { COURT_CLERK_TESTS } from "../../../prisma/pb-court-clerk";
 import { examContent, posts } from "../../../prisma/seed-content";
+import { HP_GK_FREE_MOCK_SLUGS } from "../../../prisma/seed-hp-gk-mocks";
+import { HPAS_BANK_TEST_SLUGS } from "../../../prisma/seed-hpas-bank";
 import { UPCOMING_FREE_TESTS } from "../../../prisma/upcoming-free";
 import { hp } from "@/sites/hp";
 import { pb } from "@/sites/pb";
@@ -24,6 +26,8 @@ const testSlugs = new Set([
   rj.freeMockSlug,
   "hpas-free-mock-1",
   "hpas-free-mock-2",
+  ...HP_GK_FREE_MOCK_SLUGS,
+  ...HPAS_BANK_TEST_SLUGS,
 ]);
 
 /** The state GK pages (/himachal on hp, /punjab on pb, /rajasthan on rj), which exam pages may link to. */
@@ -109,6 +113,7 @@ describe("exam page copy", () => {
       "hp-revenue/patwari",
       "hpbose/hp-tet",
       "hppsc/assistant-professor",
+      "hppsc/hpas",
       "hprca/clerk",
       "hprca/staff-nurse",
       "hpscb/clerk",
@@ -126,7 +131,7 @@ const PYQ_EXAMS = new Set(["hp-revenue/patwari", "hp-police/constable", "hprca/j
 /** Whether an internal link in a draft post points at a page that exists (or will, once the page's own content is seeded). */
 function linkExists(href: string): boolean {
   const path = href.split(/[?#]/)[0];
-  if (["/exams", "/tests", "/previous-year-papers", "/himachal", "/punjab", "/rajasthan"].includes(path)) return true;
+  if (["/exams", "/tests", "/previous-year-papers", "/himachal", "/punjab", "/rajasthan", hp.gkMockHub].includes(path)) return true;
   const test = path.match(/^\/tests\/([^/]+)$/);
   if (test) return testSlugs.has(test[1]);
   const blog = path.match(/^\/blog\/([^/]+)$/);
