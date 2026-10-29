@@ -618,4 +618,22 @@ export const EXAM_PACKS: { slug: string; title: string; titleHi: string; priceIn
     validityDays: 180,
     seriesSlugs: ["hp-high-court-process-server", "hp-high-court-stenographer", "hp-high-court-clerk"].map((s) => `${s}-mock-test-series`),
   },
+  // Each PGT subject and each TET paper is a 2–3 test series at ₹99, which is dear per test. These two packs give one
+  // clear buy per teacher exam; the pricing page shows the saving against buying the series one by one.
+  {
+    slug: "hp-pgt-all-subjects-pack",
+    title: "HP PGT All Subjects Pack (every PGT subject)",
+    titleHi: "एचपी पीजीटी सभी विषय पैक (सभी पीजीटी विषय)",
+    priceInPaise: 199_00,
+    validityDays: 180,
+    seriesSlugs: PGT_SUBJECTS.map((p) => `hp-pgt-${p.slug}-mock-test-series`),
+  },
+  {
+    slug: "hp-tet-pack",
+    title: "HP TET Pack (JBT, TGT Arts, Non-Medical, Medical, Language Teacher, Shastri)",
+    titleHi: "एचपी टेट पैक (जेबीटी, टीजीटी आर्ट्स, नॉन-मेडिकल, मेडिकल, भाषा अध्यापक, शास्त्री)",
+    priceInPaise: 249_00,
+    validityDays: 180,
+    seriesSlugs: ["hp-tet-jbt", "hp-tet-tgt-arts", "hp-tet-tgt-non-medical", "hp-tet-tgt-medical", "hp-tet-language-teacher", "hp-tet-shastri"].map((s) => `${s}-mock-test-series`),
+  },
 ];
