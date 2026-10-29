@@ -45,6 +45,14 @@ async function separatePaise(kind: string, pricePaise: number, seriesIds: string
 }
 
 /** Active products a site sells, for its public pricing section — no auth required. */
+/** Paid orders per product slug, used to pick which plans lead the pricing page. */
+export const paidSalesBySlug = cache(async (): Promise<Map<string, number>> => {
+  const sold = await db.order.groupBy({ by: ["productId"], where: { status: "PAID" }, _count: { _all: true } });
+  const products = await db.product.findMany({ where: { id: { in: sold.map((s) => s.productId) } }, select: { id: true, slug: true } });
+  const slugById = new Map(products.map((p) => [p.id, p.slug]));
+  return new Map(sold.flatMap((s) => (slugById.has(s.productId) ? [[slugById.get(s.productId)!, s._count._all] as const] : [])));
+});
+
 export const listActiveProducts = cache(async (site: string): Promise<PublicProduct[]> => {
   const [products, paidTestCount] = await Promise.all([
     db.product.findMany({

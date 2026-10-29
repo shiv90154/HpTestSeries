@@ -13,7 +13,7 @@ import { freeMockHref } from "@/sites";
 import { currentSite } from "@/sites/current";
 import { T } from "@/components/ui-lang";
 import { faqPageJsonLd } from "@/modules/content/exam-content";
-import { listActiveProducts } from "@/modules/commerce/product-service";
+import { listActiveProducts, paidSalesBySlug } from "@/modules/commerce/product-service";
 
 export const revalidate = 3600;
 
@@ -46,7 +46,13 @@ export default async function PricingPage() {
   const products = await listActiveProducts(site.code);
   const pass = products.find((p) => p.kind === "PASS");
   // Dearest first, Free last, so each plan reads cheap next to the one above it.
-  const series = products.filter((p) => p.kind !== "PASS").sort((a, b) => b.priceInPaise - a.priceInPaise);
+  const all = products.filter((p) => p.kind !== "PASS");
+  // Lead with the best sellers (dearest first on a tie); the rest sit under "See all exams" so the page is not a wall of cards.
+  const sales = await paidSalesBySlug();
+  const ranked = [...all].sort((a, b) => (sales.get(b.slug) ?? 0) - (sales.get(a.slug) ?? 0) || b.priceInPaise - a.priceInPaise);
+  const FEATURED = 3;
+  const series = all.length > FEATURED + 1 ? ranked.slice(0, FEATURED).sort((a, b) => b.priceInPaise - a.priceInPaise) : ranked.sort((a, b) => b.priceInPaise - a.priceInPaise);
+  const more = all.length > FEATURED + 1 ? ranked.slice(FEATURED).sort((a, b) => b.priceInPaise - a.priceInPaise) : [];
   const planCount = products.length === 0 ? 3 : 1 + series.length + (pass ? 1 : 0);
   const cheapest = products[0];
 
@@ -97,6 +103,19 @@ export default async function PricingPage() {
               </>
             )}
           </section>
+
+          {more.length > 0 && (
+            <details className="group -mt-6">
+              <summary className={`${btn("outline", "lg", "mx-auto w-fit cursor-pointer list-none")}`}>
+                <T en={`See all exams (${more.length} more)`} pa={`ਸਾਰੀਆਂ ਪ੍ਰੀਖਿਆਵਾਂ ਵੇਖੋ (${more.length} ਹੋਰ)`} />
+              </summary>
+              <div className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+                {more.map((p) => (
+                  <Plan key={p.slug} {...productPlan(p, site.stateAdj)} />
+                ))}
+              </div>
+            </details>
+          )}
 
           <section aria-labelledby="how-h" className="space-y-5">
             <h2 id="how-h" className="text-2xl font-bold tracking-tight">
