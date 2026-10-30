@@ -18,6 +18,7 @@ export const COURT_CLERK_POSTS: PostSeed[] = [
     titleHi: "पंजाब जिला न्यायालय क्लर्क सिलेबस और परीक्षा पैटर्न 2026: 1,270 पद, 100 अंक, टाइप किया जाने वाला अंग्रेज़ी भाग",
     excerpt:
       "The written exam for Punjab District Court Clerk (Advt. 37C/SSSC/PB/2026) has 50 GK and 20 English objective questions plus 30 marks of typed English. Topic-wise syllabus, marks, cut-offs and a study plan.",
+    publish: true,
     category: "SYLLABUS",
     exams: ["punjab-courts/clerk"],
     content: `The **Society for Centralized Recruitment of Staff in Subordinate Courts (SSSC)** is filling **1,270 Clerk posts** in the district courts of Punjab under **Advertisement No. 37C/SSSC/PB/2026**. Online applications on **sssc.gov.in** close on **4 November 2026**. An exam date had not been announced when this was written, so the weeks between the form and the paper are your preparation window.
@@ -122,6 +123,7 @@ Start with the [free Punjab Court Clerk mock test](${FREE_MOCK}), then read the 
     titleHi: "पंजाब कोर्ट क्लर्क निबंध, पत्र, सार-लेखन और पंजाबी-अंग्रेज़ी अनुवाद: प्रारूप और आदर्श उत्तर",
     excerpt:
       "Thirty of the 100 marks in the Punjab District Court Clerk exam are for typed English: essay (10), letter (5), précis (5) and Punjabi to English translation (10). Formats, a model answer for each and the mistakes that cost marks.",
+    publish: true,
     category: "STRATEGY",
     exams: ["punjab-courts/clerk"],
     content: `In the Punjab District Court Clerk written exam, **30 of the 100 marks** are for English that you **type on screen**: an **essay (10), a letter (5), a précis (5) and a translation from Punjabi into English (10)**. Most candidates ignore this part until the last week. It is also where an average GK score becomes a selection, because the answers are marked by people and rewarded for clean, simple English.
@@ -239,6 +241,7 @@ Next, try a [sectional test on English grammar](/punjab-courts/clerk) and the [f
     titleHi: "पंजाब कोर्ट क्लर्क कंप्यूटर प्रवीणता टेस्ट: स्प्रेडशीट (10 अंक) और 30 शब्द प्रति मिनट टाइपिंग",
     excerpt:
       "After the written exam, Punjab District Court Clerk candidates take a qualifying Computer Proficiency Test: a 10-minute spreadsheet task of 10 marks (4 to pass) and English typing at 30 words per minute. What to practise and how.",
+    publish: true,
     category: "EXAM_PATTERN",
     exams: ["punjab-courts/clerk"],
     content: `Passing the written exam is not the end of the Punjab District Court Clerk selection. Candidates shortlisted on the written marks must pass a **qualifying Computer Proficiency Test**. It is only a pass or fail step, since the final merit list follows the written exam marks, but a candidate who fails it is out. The test has two parts, as reported from the 2026 notice (**Advt. No. 37C/SSSC/PB/2026**; confirm on **sssc.gov.in**).
