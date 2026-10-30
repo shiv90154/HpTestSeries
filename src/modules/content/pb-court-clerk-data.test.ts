@@ -6,6 +6,7 @@ import { PANCHAYAT_SECRETARY_TESTS } from "../../../prisma/panchayat-secretary";
 import { PATWARI_TESTS } from "../../../prisma/patwari";
 import { balanceAnswers } from "../../../prisma/patwari/types";
 import { COURT_CLERK_FREE_MOCK_SLUG, COURT_CLERK_TESTS, SECTIONS } from "../../../prisma/pb-court-clerk";
+import { POLICE_FREE_TEST } from "../../../prisma/pb-police";
 import { POLICE_TESTS } from "../../../prisma/police";
 import { punjabFreeMock } from "../../../prisma/punjab/free-mock";
 import { rajasthanFreeMock } from "../../../prisma/rajasthan/free-mock";
@@ -18,7 +19,7 @@ const topics = new Set(taxonomy.flatMap((s) => s.topics.map(([slug]) => `${s.slu
 
 // Every other code-defined question: the seed dedupes by English-stem hash, so a repeat would silently reuse it.
 const otherStems = new Set([
-  ...[...EXAM_SERIES.flatMap((s) => s.tests), ...PATWARI_TESTS, ...POLICE_TESTS, ...JOA_IT_TESTS, ...PANCHAYAT_SECRETARY_TESTS, ...UPCOMING_FREE_TESTS, ...HPAS_FREE_TESTS]
+  ...[...EXAM_SERIES.flatMap((s) => s.tests), ...PATWARI_TESTS, ...POLICE_TESTS, ...JOA_IT_TESTS, ...PANCHAYAT_SECRETARY_TESTS, ...UPCOMING_FREE_TESTS, ...HPAS_FREE_TESTS, POLICE_FREE_TEST]
     .flatMap((t) => t.questions.map((x) => questionTextHash(x.en[0]))),
   ...[punjabFreeMock(COMMON_FREE_QUESTIONS), rajasthanFreeMock(COMMON_FREE_QUESTIONS)].flatMap((m) => m.questions.map((x) => questionTextHash(x.en.q))),
 ]);

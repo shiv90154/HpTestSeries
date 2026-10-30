@@ -165,6 +165,20 @@ export const taxonomy: SubjectSeed[] = [
     ],
   },
   {
+    slug: "punjabi",
+    name: "Punjabi",
+    nameHi: "पंजाबी",
+    topics: [
+      ["alphabet", "Gurmukhi Alphabet"],
+      ["grammar", "Grammar (ਵਿਆਕਰਨ)"],
+      ["synonyms-antonyms", "Synonyms & Antonyms"],
+      ["idioms-proverbs", "Idioms & Proverbs"],
+      ["literature", "Literature & Writers"],
+      ["culture", "Culture"],
+      ["general", "General Punjabi"],
+    ],
+  },
+  {
     slug: "pedagogy",
     name: "Child Development & Pedagogy",
     nameHi: "बाल विकास एवं शिक्षाशास्त्र",

@@ -158,5 +158,6 @@ valid topics and answer spread; questions use markdown + KaTeX rules (wrap `$` a
 | Court Clerk sectionals (4 GK + 2 English) | ✅ pushed and deployed |
 | Court Clerk posts (syllabus, subjective, CPT) | ✅ seeded as drafts, publish from admin |
 | Launch checklist | owner's tasks open |
-| Police Constable series | not started |
+| Police Constable free Paper I mock (100 q) | ✅ pushed and deployed; Punjabi section needs a Punjabi speaker to check |
+| Police Constable paid mocks, Paper 2 mocks, sectionals | not started |
 | Punjabi bank | not started |
