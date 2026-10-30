@@ -155,7 +155,7 @@ valid topics and answer spread; questions use markdown + KaTeX rules (wrap `$` a
 | Court Clerk free mock | ✅ pushed, needs deploy |
 | Court Clerk mocks 1–2 | ✅ pushed, needs deploy |
 | Court Clerk mocks 3–6 | ✅ pushed and deployed |
-| Court Clerk sectionals | not started |
+| Court Clerk sectionals (4 GK + 2 English) | ✅ pushed and deployed |
 | Court Clerk posts (syllabus, subjective, CPT) | not started |
 | Launch checklist | owner's tasks open |
 | Police Constable series | not started |

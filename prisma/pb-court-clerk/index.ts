@@ -12,6 +12,8 @@ import { courtClerkMock3 } from "./mock3";
 import { courtClerkMock4 } from "./mock4";
 import { courtClerkMock5 } from "./mock5";
 import { courtClerkMock6 } from "./mock6";
+import { courtClerkEnglishGrammar, courtClerkEnglishVocabulary } from "./sectionals-english";
+import { courtClerkEconomyStatic, courtClerkGeoScience, courtClerkHistoryPolity, courtClerkPunjabGk } from "./sectionals-gk";
 
 export const SECTIONS = [
   { name: "General Knowledge", nameHi: "सामान्य ज्ञान", count: 50 },
@@ -41,9 +43,34 @@ const mock = (slug: string, title: string, titleHi: string, questions: PatwariQu
 
 const PAID_MOCKS: PatwariQuestion[][] = [courtClerkMock1, courtClerkMock2, courtClerkMock3, courtClerkMock4, courtClerkMock5, courtClerkMock6];
 
+const SECTIONAL_INSTRUCTIONS = (subject: string) =>
+  `${subject} sectional for the Punjab District Court Clerk written exam: 25 questions, 25 marks, 20 minutes. ` +
+  "Each correct answer gives 1 mark and each wrong answer deducts 0.25 marks. You can switch between English and Hindi at any time.";
+
+const sectional = (slug: string, title: string, titleHi: string, section: { name: string; nameHi: string }, questions: PatwariQuestion[]): TestDef => ({
+  slug,
+  title,
+  titleHi,
+  type: "SECTIONAL",
+  durationSec: 20 * 60,
+  instructions: SECTIONAL_INSTRUCTIONS(section.name),
+  sections: [section],
+  questions,
+});
+
+export const COURT_CLERK_SECTIONALS: TestDef[] = [
+  sectional("punjab-court-clerk-punjab-gk-1", "Punjab Court Clerk Punjab GK Sectional Test 1", "पंजाब कोर्ट क्लर्क पंजाब GK सेक्शनल टेस्ट 1", { name: "Punjab GK", nameHi: "पंजाब सामान्य ज्ञान" }, courtClerkPunjabGk),
+  sectional("punjab-court-clerk-history-polity-1", "Punjab Court Clerk History & Polity Sectional Test 1", "पंजाब कोर्ट क्लर्क इतिहास एवं राजव्यवस्था सेक्शनल टेस्ट 1", { name: "Indian History & Polity", nameHi: "भारतीय इतिहास एवं राजव्यवस्था" }, courtClerkHistoryPolity),
+  sectional("punjab-court-clerk-geography-science-1", "Punjab Court Clerk Geography & Science Sectional Test 1", "पंजाब कोर्ट क्लर्क भूगोल एवं विज्ञान सेक्शनल टेस्ट 1", { name: "Geography & General Science", nameHi: "भूगोल एवं सामान्य विज्ञान" }, courtClerkGeoScience),
+  sectional("punjab-court-clerk-economy-current-affairs-1", "Punjab Court Clerk Economy, Current Affairs & Static GK Sectional Test 1", "पंजाब कोर्ट क्लर्क अर्थव्यवस्था, समसामयिकी एवं स्टैटिक GK सेक्शनल टेस्ट 1", { name: "Economy, Current Affairs & Static GK", nameHi: "अर्थव्यवस्था, समसामयिकी एवं स्टैटिक GK" }, courtClerkEconomyStatic),
+  sectional("punjab-court-clerk-english-grammar-1", "Punjab Court Clerk English Grammar Sectional Test 1", "पंजाब कोर्ट क्लर्क अंग्रेज़ी व्याकरण सेक्शनल टेस्ट 1", { name: "English Grammar", nameHi: "अंग्रेज़ी व्याकरण" }, courtClerkEnglishGrammar),
+  sectional("punjab-court-clerk-english-vocabulary-1", "Punjab Court Clerk English Vocabulary Sectional Test 1", "पंजाब कोर्ट क्लर्क अंग्रेज़ी शब्दावली सेक्शनल टेस्ट 1", { name: "English Vocabulary", nameHi: "अंग्रेज़ी शब्दावली" }, courtClerkEnglishVocabulary),
+];
+
 export const COURT_CLERK_TESTS: TestDef[] = [
   mock(COURT_CLERK_FREE_MOCK_SLUG, "Punjab Court Clerk Free Mock Test 1", "पंजाब कोर्ट क्लर्क फ़्री मॉक टेस्ट 1", courtClerkFreeMock, true),
   ...PAID_MOCKS.map((questions, i) =>
     mock(`punjab-court-clerk-mock-${i + 1}`, `Punjab Court Clerk Full Mock ${i + 1}`, `पंजाब कोर्ट क्लर्क फ़ुल मॉक ${i + 1}`, questions),
   ),
+  ...COURT_CLERK_SECTIONALS,
 ];

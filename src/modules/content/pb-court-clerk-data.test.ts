@@ -51,7 +51,7 @@ describe("Punjab District Court Clerk series", () => {
   });
 });
 
-describe.each(COURT_CLERK_TESTS.map((t) => [t.slug, t] as const))("%s", (_slug, def) => {
+describe.each(COURT_CLERK_TESTS.filter((t) => t.type === "MOCK").map((t) => [t.slug, t] as const))("%s", (_slug, def) => {
   const qs = balanceAnswers(def.questions);
 
   it("follows the exam pattern: GK 50 then English 20, in section order", () => {
@@ -88,5 +88,51 @@ describe.each(COURT_CLERK_TESTS.map((t) => [t.slug, t] as const))("%s", (_slug, 
   it("is exam-level: enough hard questions and not too many easy ones", () => {
     expect(qs.filter((x) => x.d === "H").length).toBeGreaterThanOrEqual(qs.length * 0.25);
     expect(qs.filter((x) => x.d === "E").length).toBeLessThanOrEqual(qs.length * 0.2);
+  });
+});
+
+describe("Punjab District Court Clerk sectionals", () => {
+  const sectionals = COURT_CLERK_TESTS.filter((t) => t.type === "SECTIONAL");
+
+  it("has four GK and two English sectionals", () => {
+    expect(sectionals).toHaveLength(6);
+    expect(sectionals.filter((t) => t.questions.every((x) => x.subject === "english"))).toHaveLength(2);
+  });
+
+  describe.each(sectionals.map((t) => [t.slug, t] as const))("%s", (_slug, def) => {
+    const qs = balanceAnswers(def.questions);
+
+    it("is one section of 25 questions in 20 minutes", () => {
+      expect(def.sections).toHaveLength(1);
+      expect(qs).toHaveLength(25);
+      expect(qs.every((x) => x.s === 0)).toBe(true);
+      expect(def.durationSec).toBe(20 * 60);
+      expect(def.isFree).toBeFalsy();
+    });
+
+    it("has 4 distinct options per language and a valid answer", () => {
+      qs.forEach((x, i) => {
+        const where = `#${i + 1} ${x.en[0].slice(0, 50)}`;
+        for (const lang of [x.en, x.hi]) {
+          expect(lang[0].trim().length, where).toBeGreaterThan(5);
+          expect(lang[2].trim().length, where).toBeGreaterThan(5);
+          expect(lang[1], where).toHaveLength(4);
+          expect(new Set(lang[1].map((o) => o.trim())).size, `${where} duplicate options`).toBe(4);
+        }
+        expect([0, 1, 2, 3]).toContain(x.a);
+      });
+    });
+
+    it("spreads the correct answer over A–D", () => {
+      [0, 1, 2, 3].map((p) => qs.filter((x) => x.a === p).length).forEach((c) => {
+        expect(c).toBeGreaterThanOrEqual(3);
+        expect(c).toBeLessThanOrEqual(10);
+      });
+    });
+
+    it("is exam-level: enough hard questions and not too many easy ones", () => {
+      expect(qs.filter((x) => x.d === "H").length).toBeGreaterThanOrEqual(qs.length * 0.2);
+      expect(qs.filter((x) => x.d === "E").length).toBeLessThanOrEqual(qs.length * 0.2);
+    });
   });
 });
