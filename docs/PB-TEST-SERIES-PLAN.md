@@ -154,8 +154,8 @@ valid topics and answer spread; questions use markdown + KaTeX rules (wrap `$` a
 | Court Clerk exam body + page | ✅ pushed (7ff819c), needs deploy |
 | Court Clerk free mock | ✅ pushed, needs deploy |
 | Court Clerk mocks 1–2 | ✅ pushed, needs deploy |
-| Court Clerk mocks 3–4 | ✅ written, tests pass, needs push + deploy |
-| Court Clerk mocks 5–6, sectionals | not started |
+| Court Clerk mocks 3–6 | ✅ pushed and deployed |
+| Court Clerk sectionals | not started |
 | Court Clerk posts (syllabus, subjective, CPT) | not started |
 | Launch checklist | owner's tasks open |
 | Police Constable series | not started |

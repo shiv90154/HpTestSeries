@@ -10,6 +10,8 @@ import { courtClerkMock1 } from "./mock1";
 import { courtClerkMock2 } from "./mock2";
 import { courtClerkMock3 } from "./mock3";
 import { courtClerkMock4 } from "./mock4";
+import { courtClerkMock5 } from "./mock5";
+import { courtClerkMock6 } from "./mock6";
 
 export const SECTIONS = [
   { name: "General Knowledge", nameHi: "सामान्य ज्ञान", count: 50 },
@@ -37,7 +39,7 @@ const mock = (slug: string, title: string, titleHi: string, questions: PatwariQu
   questions,
 });
 
-const PAID_MOCKS: PatwariQuestion[][] = [courtClerkMock1, courtClerkMock2, courtClerkMock3, courtClerkMock4];
+const PAID_MOCKS: PatwariQuestion[][] = [courtClerkMock1, courtClerkMock2, courtClerkMock3, courtClerkMock4, courtClerkMock5, courtClerkMock6];
 
 export const COURT_CLERK_TESTS: TestDef[] = [
   mock(COURT_CLERK_FREE_MOCK_SLUG, "Punjab Court Clerk Free Mock Test 1", "पंजाब कोर्ट क्लर्क फ़्री मॉक टेस्ट 1", courtClerkFreeMock, true),
