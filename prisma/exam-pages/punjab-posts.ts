@@ -1,5 +1,6 @@
 import { pb } from "../../src/sites/pb";
 import type { PostSeed } from "./types";
+import { COURT_CLERK_POSTS } from "./punjab-court-clerk-posts";
 
 const FREE_MOCK = `/tests/${pb.freeMockSlug}`;
 
@@ -8,6 +9,7 @@ const FREE_MOCK = `/tests/${pb.freeMockSlug}`;
 // on 23 October 2026; where only news reports had a date, the post says so and points to the official site.
 
 export const PUNJAB_POSTS: PostSeed[] = [
+  ...COURT_CLERK_POSTS,
   {
     slug: "psssb-group-d-exam-date-2026-admit-card",
     site: "pb",
