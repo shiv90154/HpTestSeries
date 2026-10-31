@@ -146,6 +146,14 @@ Selection has three steps. The **written exam** is an online CBT of 100 marks in
         a: "No. The Computer Proficiency Test (spreadsheet and 30 wpm English typing) is qualifying. The final merit list follows the written exam marks.",
       },
       {
+        q: "What is the application fee for the Punjab District Court Clerk exam?",
+        a: "As per the 2026 notice, the total fee is ₹710 for SC, BC, OBC, ex-servicemen and EWS candidates of Punjab, ₹875 for persons with benchmark disabilities of Punjab, and ₹1,200 for all other categories. It is paid online and is not refundable. Confirm in the official notice on sssc.gov.in.",
+      },
+      {
+        q: "When is the Punjab Court Clerk exam and is there a demo test?",
+        a: "The notice says the exam can be held anywhere in Northern India and the dates will be published only on sssc.gov.in. A demo (mock) test link of the online exam is put on the same website 15 days before the exam. Check the site and your email, including the spam folder, regularly.",
+      },
+      {
         q: "Do the mock tests include the subjective English part?",
         a: "Our mocks cover the 70 objective marks with negative marking, in the exam's online format. The essay, letter, précis and translation have to be practised separately, since an online test cannot mark them.",
       },
