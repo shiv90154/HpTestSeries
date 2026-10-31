@@ -38,7 +38,7 @@ const fullTestInclude = {
   },
   series: { select: { seriesId: true } },
   prizes: { orderBy: { rank: "asc" }, select: { rank: true, title: true, awardedAt: true, winner: { select: { name: true } } } },
-  exam: { select: { id: true, slug: true, name: true, isActive: true, syllabus: true, body: { select: { slug: true, sites: true } } } },
+  exam: { select: { id: true, slug: true, name: true, isActive: true, syllabus: true, body: { select: { slug: true, sites: true, passExcluded: true } } } },
 } satisfies Prisma.TestInclude;
 
 type FullTest = Prisma.TestGetPayload<{ include: typeof fullTestInclude }>;
@@ -69,7 +69,7 @@ function bilingual(rows: { lang: string; text?: string; stem?: string; explanati
 
 // ─────────────── Access ───────────────
 
-export async function canUserAccessTest(userId: string | null, test: { isFree: boolean; series: { seriesId: string }[]; sites: readonly string[] }) {
+export async function canUserAccessTest(userId: string | null, test: { isFree: boolean; series: { seriesId: string }[]; sites: readonly string[]; passExcluded?: boolean }) {
   if (test.isFree) return true;
   if (!userId) return false;
   const entitlements = await db.entitlement.findMany({
@@ -82,7 +82,7 @@ export async function canUserAccessTest(userId: string | null, test: { isFree: b
     },
   });
   return canAccessTest(
-    { isFree: test.isFree, seriesIds: test.series.map((s) => s.seriesId), sites: test.sites },
+    { isFree: test.isFree, seriesIds: test.series.map((s) => s.seriesId), sites: test.sites, passExcluded: test.passExcluded },
     entitlements.map((e) => ({ ...e, product: { kind: e.product.kind, site: e.product.site, seriesIds: e.product.items.map((i) => i.seriesId) } })),
   );
 }
@@ -120,6 +120,7 @@ export async function getTestMeta(slug: string, site?: string) {
     })),
     series: t.series,
     sites,
+    passExcluded: t.exam?.body.passExcluded ?? false,
     live: isLiveTest(t) ? { startsAt: t.liveStartsAt!.toISOString(), endsAt: t.liveEndsAt!.toISOString() } : null,
     // Winners' names appear only once an admin has confirmed them.
     prizes: t.prizes.map((p) => ({ rank: p.rank, title: p.title, winner: p.awardedAt && p.winner ? publicName(p.winner.name) : null })),
@@ -422,7 +423,7 @@ export async function liveGate(userId: string | null, t: { id: string; liveStart
 export async function startAttempt(userId: string, slug: string): Promise<StartedAttempt | { error: string }> {
   const t = await loadFullTest(slug);
   if (!t) return { error: "Test not found." };
-  if (!(await canUserAccessTest(userId, { ...t, sites: testSites(t) }))) return { error: "This test is part of a paid series." };
+  if (!(await canUserAccessTest(userId, { ...t, sites: testSites(t), passExcluded: t.exam?.body.passExcluded }))) return { error: "This test is part of a paid series." };
 
   const live = isLiveTest(t);
   if (live) {

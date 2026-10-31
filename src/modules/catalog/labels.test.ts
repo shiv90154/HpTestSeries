@@ -13,6 +13,7 @@ describe("examLabel", () => {
     expect(examLabel("upsc", "NDA & NA")).toBe("UPSC NDA & NA");
     expect(examLabel("iaf", "AFCAT")).toBe("AFCAT");
     expect(examLabel("delhi-police", "Constable (Executive)")).toBe("Delhi Police Constable (Executive)");
+    expect(examLabel("ssc", "GD Constable")).toBe("SSC GD Constable");
     expect(examLabel("psssb", "PSSSB Clerk")).toBe("PSSSB Clerk");
     expect(examLabel("punjab-police", "Constable")).toBe("Punjab Police Constable");
     expect(examLabel("ppsc", "PCS Combined Competitive Exam")).toBe("PPSC PCS Combined Competitive Exam");

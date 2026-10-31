@@ -83,6 +83,24 @@ Technical subject knowledge is the core of these papers, with a smaller general 
     ],
   },
 
+  ssc: {
+    about: `The **Staff Selection Commission (SSC)** is the central body that recruits for non-gazetted posts in Government of India ministries, departments and the Central Armed Police Forces: GD Constable, CHSL, CGL, MTS and Havaldar, CPO Sub-Inspector, Stenographer, Junior Engineer and Selection Post. It is one national recruitment, so the same exams are open to candidates from every state.
+
+Most SSC exams are a **computer-based test (CBT)** with negative marking, followed by a physical test, skill test, medical or document verification as the post requires. Each notice on ssc.gov.in gives the exact pattern, dates and vacancies, and SSC revises its calendar often, so always check the notice before you plan.
+
+We are a private practice platform and are not affiliated with the Staff Selection Commission.`,
+    faqs: [
+      {
+        q: "Is this the official SSC website?",
+        a: "No. This is a private test-practice platform and is not affiliated with the Staff Selection Commission. Apply and download admit cards only on ssc.gov.in.",
+      },
+      {
+        q: "Do SSC exams have negative marking?",
+        a: "Yes, in most of them. The deduction differs by exam (for example 0.25 or 0.50 per wrong answer), so check the notice for the exam you are preparing.",
+      },
+    ],
+  },
+
   psssb: {
     about: `The **Subordinate Services Selection Board, Punjab (PSSSB)**, Van Bhawan, Sector-68, SAS Nagar (Mohali), recruits Group B, Group C and Group D staff for Punjab government departments: [Clerks](/psssb/clerk), [Group D posts](/psssb/group-d) such as Sewadar and Chowkidar, [Junior Engineers](/psssb/junior-engineer), Patwaris, Excise and Taxation Inspectors, Stenotypists and many more. Each advertisement has a number such as "Advt. No. 02 of 2026" and is published on sssb.punjab.gov.in.
 

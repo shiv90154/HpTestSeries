@@ -4,9 +4,10 @@
 // recruiting bodies for some posts have changed (e.g. HPSSC → HPRCA).
 
 export type StageSeed = { slug: string; name: string; nameHi?: string };
-export type ExamSeed = { slug: string; name: string; nameHi?: string; stages?: StageSeed[] };
-/** `sites`: site codes that show the body (src/sites); "*" = national, every site. Default ["hp"]. */
-export type BodySeed = { slug: string; name: string; nameHi: string; sites?: string[]; exams: ExamSeed[] };
+/** `isActive: false` seeds the exam hidden on every site until its pattern and first mocks exist (publish it in /admin/exams). */
+export type ExamSeed = { slug: string; name: string; nameHi?: string; isActive?: boolean; stages?: StageSeed[] };
+/** `sites`: site codes that show the body (src/sites); "*" = national, every site. Default ["hp"]. `passExcluded`: state Passes don't open its tests. */
+export type BodySeed = { slug: string; name: string; nameHi: string; sites?: string[]; passExcluded?: boolean; exams: ExamSeed[] };
 
 export const catalogue: BodySeed[] = [
   {
@@ -238,5 +239,24 @@ export const catalogue: BodySeed[] = [
     nameHi: "दिल्ली पुलिस",
     sites: ["*"],
     exams: [{ slug: "constable", name: "Constable (Executive)", nameHi: "कांस्टेबल (एग्ज़ीक्यूटिव)" }],
+  },
+  // SSC is national like UPSC (docs/SSC-TEST-SERIES-PLAN.md): every site shows it, the canonical is on hp, and state Passes
+  // don't cover it (it has its own SSC Pass). Every exam is seeded hidden and published in its phase.
+  {
+    slug: "ssc",
+    name: "Staff Selection Commission (SSC)",
+    nameHi: "कर्मचारी चयन आयोग (SSC)",
+    sites: ["*"],
+    passExcluded: true,
+    exams: [
+      { slug: "gd-constable", name: "GD Constable", nameHi: "जीडी कांस्टेबल", isActive: false },
+      { slug: "chsl", name: "CHSL (10+2)", nameHi: "सीएचएसएल" },
+      { slug: "cpo", name: "CPO (SI in Delhi Police & CAPF)", nameHi: "सीपीओ (दिल्ली पुलिस एवं CAPF में SI)", isActive: false },
+      { slug: "cgl", name: "CGL", nameHi: "सीजीएल", isActive: false },
+      { slug: "mts", name: "MTS & Havaldar", nameHi: "एमटीएस एवं हवलदार", isActive: false },
+      { slug: "selection-post", name: "Selection Post", nameHi: "सिलेक्शन पोस्ट", isActive: false },
+      { slug: "stenographer", name: "Stenographer Grade C & D", nameHi: "स्टेनोग्राफर ग्रेड C एवं D", isActive: false },
+      { slug: "je", name: "Junior Engineer (Civil, Electrical, Mechanical)", nameHi: "जूनियर इंजीनियर", isActive: false },
+    ],
   },
 ];

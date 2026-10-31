@@ -29,7 +29,7 @@ export async function getDashboard(site: string, userId: string) {
     // What getPublishedTests does not carry: each test's exam, series and live window.
     db.test.findMany({
       where: liveTestWhere(),
-      select: { slug: true, examId: true, site: true, exam: { select: { body: { select: { sites: true } } } }, liveStartsAt: true, series: { select: { seriesId: true } } },
+      select: { slug: true, examId: true, site: true, exam: { select: { body: { select: { sites: true, passExcluded: true } } } }, liveStartsAt: true, series: { select: { seriesId: true } } },
     }),
     liveEntitlements(userId),
     // The next live test that has not closed yet (only one the student has not already taken).
@@ -82,7 +82,7 @@ export async function getDashboard(site: string, userId: string) {
     const m = meta.get(t.slug);
     const seriesIds = m?.series.map((s) => s.seriesId) ?? [];
     const sites = m ? (m.exam ? m.exam.body.sites : [m.site]) : [];
-    return { ...t, examId: m?.examId ?? null, isLive: !!m?.liveStartsAt, open: canAccessTest({ isFree: t.isFree, seriesIds, sites }, entitlements, now) };
+    return { ...t, examId: m?.examId ?? null, isLive: !!m?.liveStartsAt, open: canAccessTest({ isFree: t.isFree, seriesIds, sites, passExcluded: m?.exam?.body.passExcluded }, entitlements, now) };
   });
   const preferred = preferredExams([...rows.map((r) => meta.get(r.slug)?.examId ?? null), ...candidates.filter((t) => t.open && !t.isFree).map((t) => t.examId)]);
   const ranked_ = rankSuggestions(candidates, attemptedSlugs, preferred);

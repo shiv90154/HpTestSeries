@@ -15,7 +15,7 @@ export type SeriesSeed = {
   stageSlug?: string;
   tests: TestDef[];
   series: { slug: string; title: string; titleHi: string; description: string };
-  product: { slug: string; title: string; titleHi: string; priceInPaise: number; validityDays: number };
+  product: { slug: string; title: string; titleHi: string; priceInPaise: number; validityDays: number; /** false = created hidden; switch it on in /admin/products when the series is ready to sell. Default true. */ isActive?: boolean };
 };
 
 const DIFFICULTY: Record<Diff, "EASY" | "MEDIUM" | "HARD"> = { E: "EASY", M: "MEDIUM", H: "HARD" };
@@ -131,7 +131,7 @@ export async function seedSeries(db: PrismaClient, cfg: SeriesSeed) {
   const product = await db.product.upsert({
     where: { slug: cfg.product.slug },
     update: { title: cfg.product.title, titleHi: cfg.product.titleHi },
-    create: { ...cfg.product, kind: "SERIES", isActive: true },
+    create: { ...cfg.product, kind: "SERIES", isActive: cfg.product.isActive ?? true },
     select: { id: true },
   });
   await db.productItem.createMany({ data: [{ productId: product.id, seriesId: series.id }], skipDuplicates: true });

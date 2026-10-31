@@ -39,6 +39,13 @@ describe("canAccessTest", () => {
     expect(canAccessTest({ isFree: false, seriesIds: [], sites: ["hp", "pb"] }, [pass], now)).toBe(true);
   });
 
+  it("keeps a passExcluded body (SSC) out of a state pass, but a series that holds the test still opens it", () => {
+    const pass = ent({ product: { kind: "PASS", seriesIds: [], site: "hp" } });
+    const ssc = { isFree: false, seriesIds: ["ssc-gd"], sites: ["*"], passExcluded: true };
+    expect(canAccessTest(ssc, [pass], now)).toBe(false);
+    expect(canAccessTest(ssc, [ent({ product: { kind: "SERIES", seriesIds: ["ssc-gd"], site: "hp" } })], now)).toBe(true);
+  });
+
   it("denies another state's pass", () => {
     const pbPass = ent({ product: { kind: "PASS", seriesIds: [], site: "pb" } });
     expect(canAccessTest(paidTest, [pbPass], now)).toBe(false);

@@ -145,6 +145,7 @@ model ExamBody {
   name   String
   nameHi String?
   sites  String[] @default(["hp"]) // site codes that show this body (src/sites); "*" = national, shown on every site
+  passExcluded Boolean @default(false) // true = a state PASS does not open this body's tests (SSC has its own Pass)
   order  Int    @default(0)
   exams  Exam[]
 }

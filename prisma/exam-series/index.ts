@@ -29,6 +29,7 @@ import { HPRCA_CLERK_MOCKS, HPRCA_CLERK_SECTIONS } from "../hprca-clerk";
 import { PGIMER_MOCKS, PGIMER_SECTIONS } from "../pgimer";
 import { DEFENCE_SERIES } from "../defence";
 import { DELHI_POLICE_SERIES } from "../delhi-police";
+import { CHSL_SERIES } from "../ssc/chsl";
 
 /** Bank picks, fresh questions per mock, or one set shared by several exams' mock N (picked once, on first use). */
 type Part = { n: number; pick: Pick } | PatwariQuestion[][] | { shared: (mock: number) => PatwariQuestion[] };
@@ -606,7 +607,7 @@ const BANK_SERIES: ExamSeriesSeed[] = EXAMS.map((e, k) => {
 
 // NDA, CDS and AFCAT have their own paper-wise marking and instructions, so they are built in prisma/defence;
 // Delhi Police Constable is written fresh to the SSC pattern in prisma/delhi-police.
-export const EXAM_SERIES: ExamSeriesSeed[] = [...BANK_SERIES, ...DEFENCE_SERIES, ...DELHI_POLICE_SERIES];
+export const EXAM_SERIES: ExamSeriesSeed[] = [...BANK_SERIES, ...DEFENCE_SERIES, ...DELHI_POLICE_SERIES, ...CHSL_SERIES];
 
 /** Products that bundle several of the series above. */
 export const EXAM_PACKS: { slug: string; title: string; titleHi: string; priceInPaise: number; validityDays: number; seriesSlugs: string[] }[] = [

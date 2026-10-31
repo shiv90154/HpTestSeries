@@ -7,6 +7,8 @@ export type AccessTest = {
   seriesIds: string[];
   /** sites that show the test: its exam body's sites ("*" = all), or the test's own site when it has no exam */
   sites: readonly string[];
+  /** the body is outside state Passes (SSC): only a series that contains the test opens it */
+  passExcluded?: boolean;
 };
 
 export type AccessEntitlement = {
@@ -42,6 +44,6 @@ export function canAccessTest(
   return entitlements.some(
     (e) =>
       isEntitlementActive(e, now) &&
-      (e.product.kind === "PASS" ? passCovers(e.product.site, test.sites) : e.product.seriesIds.some((id) => testSeries.has(id))),
+      (e.product.kind === "PASS" ? !test.passExcluded && passCovers(e.product.site, test.sites) : e.product.seriesIds.some((id) => testSeries.has(id))),
   );
 }
