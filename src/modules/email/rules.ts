@@ -126,8 +126,7 @@ export function renderEmail(m: {
     m.heading,
     "",
     ...(greeting ? [greeting, ""] : []),
-    ...m.paragraphs.flatMap((p) => [p, ""]),
-    ...(m.stats?.length ? [m.stats.map((s) => `${s.label}: ${s.value}`).join("  |  "), ""] : []),
+    ...m.paragraphs.flatMap((p, i) => [p, "", ...(i === 0 && m.stats?.length ? [m.stats.map((s) => `${s.label}: ${s.value}`).join("  |  "), ""] : [])]),
     ...(m.points?.length ? [...(m.pointsTitle ? [m.pointsTitle] : []), ...m.points.map((p) => `✓ ${p}`), ""] : []),
     `${m.cta.label}: ${m.cta.url}`,
     ...(m.after ? ["", m.after] : []),
@@ -139,21 +138,22 @@ export function renderEmail(m: {
     "—",
     m.why,
     ...(m.unsubscribeUrl ? [`Unsubscribe: ${m.unsubscribeUrl}`] : []),
-  ].join("
-");
+  ].join("\n");
   const rows = [
     ...(m.eyebrow ? [eyebrowRow(m.eyebrow)] : []),
     headingRow(m.heading),
     ...(greeting ? [paragraphRow(greeting, { top: 18 })] : []),
-    ...m.paragraphs.map((p, i) => paragraphRow(p, { top: i === 0 && !greeting ? 12 : 14 })),
-    ...(m.stats?.length ? [statsRow(m.stats)] : []),
+    // The stats box follows the first paragraph, which introduces it ("Here is your score:").
+    ...m.paragraphs.flatMap((p, i) => [
+      paragraphRow(p, { top: i === 0 && !greeting ? 12 : i === 1 && m.stats?.length ? 20 : 14 }),
+      ...(i === 0 && m.stats?.length ? [statsRow(m.stats)] : []),
+    ]),
     ...(m.points?.length ? [pointsRow(m.points, m.pointsTitle)] : []),
     buttonRow(m.cta.label, m.cta.url),
     ...(m.after ? [noteRow(m.after)] : []),
     ...(m.hindi ? [paragraphRow(m.hindi, { muted: true, top: 18 })] : []),
     signOffRow(siteName),
-  ].join("
-");
+  ].join("\n");
   const html = emailShell({
     preview: m.preview ?? m.paragraphs[0] ?? m.heading,
     siteUrl: m.site?.url ?? process.env.NEXT_PUBLIC_SITE_URL ?? "https://hptestseries.in",

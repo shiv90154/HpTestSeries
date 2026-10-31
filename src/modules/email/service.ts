@@ -125,17 +125,20 @@ async function expiryEmail(user: Recipient, entitlementId: string, now: Date): P
   const date = istDate(e.expiresAt);
   const name = firstName(user.name);
   return renderEmail({
-    subject: `${title} ka access ${date} ko khatam ho raha hai`,
-    heading: `${name ? `${name}, aapka` : "Aapka"} access jaldi khatam hoga`,
-    preview: `Renew karo, ek bhi din bekaar nahi jaayega.`,
+    subject: `Your ${title} access ends on ${date}`,
+    eyebrow: "Subscription reminder",
+    heading: "Your access is ending soon",
+    greeting: name,
+    preview: "Renew now and keep practising without a break.",
     paragraphs: [
-      `${title} ka aapka access ${date} ko khatam ho jaayega.`,
-      "Abhi renew karoge toh naya period purane ke khatam hone ke baad hi shuru hoga, yaani ek bhi din bekaar nahi jaayega.",
+      `Your access to ${title} ends on ${date}.`,
+      "If you renew now, the new period starts only after your current one ends, so you will not lose a single day.",
     ],
-    points: ["Saare mock tests aur unke solutions khule rahenge", "Exam se pehle practice ka flow nahi tootega"],
-    cta: { label: "Abhi renew karo", url: withUtm(e.product.isActive ? `/buy/${e.product.slug}` : "/pricing", site.url, "expiry") },
-    after: `आपका एक्सेस ${date} को समाप्त हो रहा है। अभी रिन्यू करें, कोई दिन बेकार नहीं जाएगा।`,
-    why: `Ye reminder isliye aaya kyunki aapne ${site.name} pe ye series kharidi hai. Reminders band karne hain?`,
+    pointsTitle: "When you renew",
+    points: ["All mock tests and their solutions stay open", "Your scores, ranks and progress are kept", "No break in your practice before the exam"],
+    cta: { label: "Renew access", url: withUtm(e.product.isActive ? `/buy/${e.product.slug}` : "/pricing", site.url, "expiry") },
+    hindi: `आपका एक्सेस ${date} को समाप्त हो रहा है। अभी रिन्यू करें, कोई दिन बेकार नहीं जाएगा।`,
+    why: `You are receiving this reminder because you purchased this series on ${site.name}.`,
     unsubscribeUrl: unsubscribeLinks(site, user.id, "reminders").page,
     site,
   });
@@ -143,13 +146,13 @@ async function expiryEmail(user: Recipient, entitlementId: string, now: Date): P
 
 /** What a paid series gives, in the student's words; shown in offer mails next to the price. */
 const SERIES_POINTS = [
-  "Asli exam jaise full-length mock tests, wahi pattern aur timer",
-  "Har sawaal ka solution Hindi aur English dono mein",
-  "All-India rank aur aapke weak topics ki report",
-  "Mobile pe kabhi bhi, kahin bhi practice",
+  "Full-length mock tests on the real exam pattern and timer",
+  "Detailed solution for every question, in Hindi and English",
+  "All-India rank and a report of your weak topics",
+  "Practise anytime on your phone or computer",
 ];
 
-const offersWhy = (site: SiteConfig) => `Ye mail aapko isliye mila kyunki aapka ${site.name} pe account hai. Aage nahi chahiye?`;
+const offersWhy = (site: SiteConfig) => `You are receiving this email because you have an account on ${site.name}.`;
 
 /** Correct / wrong / skipped and accuracy of an attempt, for the stats box. */
 function scoreStats(a: { correct: number | null; wrong: number | null; skipped: number | null }) {
@@ -157,9 +160,9 @@ function scoreStats(a: { correct: number | null; wrong: number | null; skipped: 
   if (!correct && !wrong && !skipped) return undefined;
   const accuracy = correct + wrong ? Math.round((correct / (correct + wrong)) * 100) : 0;
   return [
-    { label: "Sahi", value: String(correct) },
-    { label: "Galat", value: String(wrong) },
-    { label: "Chhode", value: String(skipped) },
+    { label: "Correct", value: String(correct) },
+    { label: "Wrong", value: String(wrong) },
+    { label: "Skipped", value: String(skipped) },
     { label: "Accuracy", value: `${accuracy}%` },
   ];
 }
@@ -179,21 +182,24 @@ async function followUpEmail(user: Recipient, refKey: string, now: Date): Promis
   const resultUrl = withUtm(`/results/${attempt.id}`, site.url, "free-followup");
   const [offerTitle] = offer ? offer.title.split(/\s+[—–]\s+/) : [""];
   return renderEmail({
-    subject: `${name ? `${name}, aapka` : "Aapka"} ${attempt.test.title} result aa gaya. Ab aage kya?`,
-    heading: "Aapka free test result",
-    preview: "Score, accuracy aur aage ki taiyari ka plan.",
+    subject: `Your ${attempt.test.title} result, and what to do next`,
+    eyebrow: "Your test result",
+    heading: "Here is how you did",
+    greeting: name,
+    preview: "Your score, accuracy and a plan for your next step.",
     paragraphs: [
-      `${attempt.test.title} dene ke liye shabaash! Ye raha aapka score:`,
+      `Well done on completing ${attempt.test.title}. Here is your score:`,
       offer
-        ? `Ek mock se shuruaat hoti hai, selection baar-baar practice se hota hai. ${offerTitle} mein aisi hi poori taiyari milti hai, sirf ${rupees(offer.priceInPaise)} mein:`
-        : "Ek mock se shuruaat hoti hai, selection baar-baar practice se hota hai. Agla free test do aur dekho score kitna badhta hai.",
+        ? `One mock is a good start, but regular practice is what gets you selected. ${offerTitle} gives you complete preparation for ${rupees(offer.priceInPaise)}.`
+        : "One mock is a good start, but regular practice is what gets you selected. Take the next free test and see how much your score improves.",
     ],
     stats: scoreStats(attempt),
     points: offer ? SERIES_POINTS : undefined,
+    pointsTitle: offer ? `What you get with ${offerTitle}` : undefined,
     cta: offer
-      ? { label: `${offerTitle} lo, ${rupees(offer.priceInPaise)}`, url: withUtm(offer.href, site.url, "free-followup") }
-      : { label: "Agla free test do", url: withUtm("/tests", site.url, "free-followup") },
-    after: `Har sawaal ka solution aur aapke weak topics yahan dekho: ${resultUrl}`,
+      ? { label: `Get ${offerTitle} for ${rupees(offer.priceInPaise)}`, url: withUtm(offer.href, site.url, "free-followup") }
+      : { label: "Take the next free test", url: withUtm("/tests", site.url, "free-followup") },
+    after: `See the solution to every question and your weak topics here: ${resultUrl}`,
     why: offersWhy(site),
     unsubscribeUrl: unsubscribeLinks(site, user.id, "offers").page,
     site,
@@ -213,16 +219,19 @@ async function nudgeEmail(user: Recipient): Promise<EmailContent | null> {
 
   if (!attempt) {
     return renderEmail({
-      subject: `${name ? `${name}, aapka` : "Aapka"} free mock test intezaar kar raha hai`,
-      heading: "Ek free mock se shuruaat karo",
-      preview: "15 minute nikaalo, pata chalega aap exam mein kahan khade ho.",
+      subject: `${name ? `${name}, your` : "Your"} free mock test is ready`,
+      eyebrow: "Get started",
+      heading: "Start with a free mock test",
+      greeting: name,
+      preview: "Take one free mock and find out exactly where you stand.",
       paragraphs: [
-        `${name ? `Namaste ${name}! Aapne` : "Namaste! Aapne"} ${site.name} pe account toh bana liya, par abhi tak koi test nahi diya.`,
-        "Sirf ek free mock dene se pata chal jaata hai ki aap exam mein kahan khade ho: kaunse topic strong hain aur kahan mehnat chahiye.",
+        `Thank you for joining ${site.name}. You have not taken a test yet, and your first one is free.`,
+        "A single mock shows you where you stand: which topics are strong and where you need more work.",
       ],
-      points: ["Bilkul free, koi payment nahi", "Asli exam jaisa CBT screen aur timer", "Turant result, rank aur har sawaal ka solution", "Hindi aur English dono mein"],
-      cta: { label: "Free mock test shuru karo", url: withUtm("/tests", site.url, "nudge") },
-      after: "Shuruaat hi sabse mushkil step hota hai. Aaj ek test do, kal se raasta saaf dikhega. 💪",
+      pointsTitle: "What you get",
+      points: ["Completely free, no payment needed", "The same CBT screen and timer as the real exam", "Instant result, rank and a solution for every question", "Available in Hindi and English"],
+      cta: { label: "Start free mock test", url: withUtm("/tests", site.url, "nudge") },
+      after: "Getting started is the hardest step. Take one test today and plan the rest of your preparation from there.",
       why: offersWhy(site),
       unsubscribeUrl: unsubscribeLinks(site, user.id, "offers").page,
       site,
@@ -233,21 +242,24 @@ async function nudgeEmail(user: Recipient): Promise<EmailContent | null> {
   const exam = attempt.test.exam?.name;
   const [offerTitle] = offer ? offer.title.split(/\s+[—–]\s+/) : [""];
   return renderEmail({
-    subject: `${name ? `${name}, ` : ""}${exam ? `${exam} ki` : "aapki"} taiyari kahan tak pahunchi?`,
-    heading: "Aapki taiyari ka agla step",
-    preview: offer ? `${offerTitle}: poori taiyari ${rupees(offer.priceInPaise)} mein.` : "Agla free mock aapka intezaar kar raha hai.",
+    subject: `${name ? `${name}, how` : "How"} is your ${exam ? `${exam} ` : ""}preparation going?`,
+    eyebrow: "Your preparation",
+    heading: "Your next step",
+    greeting: name,
+    preview: offer ? `${offerTitle}: complete preparation for ${rupees(offer.priceInPaise)}.` : "Your next free mock test is ready.",
     paragraphs: [
-      `${name ? `Namaste ${name}! Aapne` : "Namaste! Aapne"} ${attempt.test.title} diya tha. Achchi shuruaat thi:`,
+      `You took ${attempt.test.title}, which was a good start. Here is how you did:`,
       offer
-        ? `Exam mein wahi aage nikalta hai jo exam jaise mahaul mein baar-baar practice karta hai aur har galti se seekhta hai. ${offerTitle} isi ke liye bana hai, sirf ${rupees(offer.priceInPaise)} mein:`
-        : "Exam mein wahi aage nikalta hai jo exam jaise mahaul mein baar-baar practice karta hai. Agla free mock do aur apna score badhte dekho.",
+        ? `The candidates who succeed are the ones who practise in real exam conditions and learn from every mistake. ${offerTitle} is built for exactly that, for ${rupees(offer.priceInPaise)}.`
+        : "The candidates who succeed are the ones who practise in real exam conditions again and again. Take the next free mock and watch your score improve.",
     ],
     stats: scoreStats(attempt),
     points: offer ? SERIES_POINTS : undefined,
+    pointsTitle: offer ? `What you get with ${offerTitle}` : undefined,
     cta: offer
-      ? { label: `${offerTitle} dekho, ${rupees(offer.priceInPaise)}`, url: withUtm(offer.href, site.url, "nudge") }
-      : { label: "Agla free test do", url: withUtm("/tests", site.url, "nudge") },
-    after: "Tip: roz ek test aur uska analysis. Bas yahi formula hai.",
+      ? { label: `View ${offerTitle}`, url: withUtm(offer.href, site.url, "nudge") }
+      : { label: "Take the next free test", url: withUtm("/tests", site.url, "nudge") },
+    after: "Tip: take one test a day and go through its analysis. Consistency matters more than anything else.",
     why: offersWhy(site),
     unsubscribeUrl: unsubscribeLinks(site, user.id, "offers").page,
     site,
@@ -274,20 +286,23 @@ async function referralInviteEmail(site: SiteConfig, u: { id: string; name: stri
   const link = referralLink(site.url, await getOrCreateReferralCode(u.id));
   const name = firstName(u.name);
   return renderEmail({
-    subject: `Dosto ko ${site.name} bhejo, har dost par ${rupees(REWARD_PAISE)} kamao`,
-    heading: `${name ? `${name}, ` : ""}taiyari saath karo, paise bhi kamao`,
-    preview: `Dost ko ${rupees(FRIEND_DISCOUNT_PAISE)} ki chhoot, aapko ${rupees(REWARD_PAISE)} wallet mein.`,
+    subject: `Invite your friends to ${site.name} and earn ${rupees(REWARD_PAISE)} for each`,
+    eyebrow: "Refer and earn",
+    heading: "Prepare together and earn rewards",
+    greeting: name,
+    preview: `Your friend gets ${rupees(FRIEND_DISCOUNT_PAISE)} off and you get ${rupees(REWARD_PAISE)} in your wallet.`,
     paragraphs: [
-      `Aapke dost bhi ${site.stateAdj} ke exams ki taiyari kar rahe hain? Unhe apna link bhejo.`,
-      `Aapka link: ${link}`,
+      `Are your friends also preparing for ${site.stateAdj} exams? Share your personal link with them.`,
+      `Your referral link: ${link}`,
     ],
+    pointsTitle: "How it works",
     points: [
-      `Dost ko ${rupees(MIN_REFERRAL_PRICE_PAISE)} se upar ke plan par ${rupees(FRIEND_DISCOUNT_PAISE)} ki seedhi chhoot`,
-      `Har dost ki kharid par aapke ${site.logo.initials} wallet mein ${rupees(REWARD_PAISE)}`,
-      "Wallet ke paise agli series ya Pass kharidne mein lag jaate hain",
+      `Your friend gets ${rupees(FRIEND_DISCOUNT_PAISE)} off any plan above ${rupees(MIN_REFERRAL_PRICE_PAISE)}`,
+      `You get ${rupees(REWARD_PAISE)} in your ${site.logo.initials} wallet for every friend who buys`,
+      "Use your wallet balance on your next series or Pass",
     ],
-    cta: { label: "Mera referral page kholo", url: withUtm("/refer", site.url, tag) },
-    after: "Link apne WhatsApp ya Telegram group mein share karo, jahan aapke dost exam ki baat karte hain.",
+    cta: { label: "Open my referral page", url: withUtm("/refer", site.url, tag) },
+    after: "Share the link in your WhatsApp or Telegram study groups, where your friends discuss the exam.",
     why: offersWhy(site),
     unsubscribeUrl: unsubscribeLinks(site, u.id, "offers").page,
     site,
@@ -463,16 +478,19 @@ export async function remindUnpaidCheckouts(now = new Date()): Promise<{ sent: n
     const name = o.user ? firstName(o.user.name) : "";
     const site = getSite(o.site);
     const content = renderEmail({
-      subject: `Aapka ${o.product.title} order adhoora reh gaya`,
-      heading: `${name ? `${name}, ` : ""}aapka payment poora nahi hua`,
-      preview: "Ek click mein dobara try karo, aapka plan wahi hai.",
+      subject: `Complete your ${o.product.title} order`,
+      eyebrow: "Payment pending",
+      heading: "Your payment was not completed",
+      greeting: name,
+      preview: "Your plan is saved. Complete the payment in one click.",
       paragraphs: [
-        `Aapne ${o.product.title} ka checkout shuru kiya tha, par payment poora nahi hua. UPI fail hona ya network chala jaana aam baat hai, aap ek click mein dobara try kar sakte ho.`,
+        `You started checking out ${o.product.title}, but the payment did not go through. This often happens when a UPI request times out or the network drops. Your plan is saved, and you can try again in one click.`,
       ],
-      points: ["UPI, card, net banking, sab chalta hai", "Payment hote hi turant access", ...SERIES_POINTS.slice(0, 2)],
-      cta: { label: "Payment poora karo", url: withUtm(`/buy/${o.product.slug}`, site.url, "checkout-reminder") },
-      after: "Paise kat gaye par access nahi mila? Dobara pay mat karo. Aksar payment kuch minute mein apne aap jud jaata hai; na jude toh is email ka reply karo.",
-      why: `Ye mail isliye aaya kyunki aapne ${site.name} pe payment shuru kiya tha. Ye sirf ek baar aata hai.`,
+      pointsTitle: "Your order",
+      points: ["Pay with UPI, card or net banking", "Access starts the moment the payment succeeds", ...SERIES_POINTS.slice(0, 2)],
+      cta: { label: "Complete payment", url: withUtm(`/buy/${o.product.slug}`, site.url, "checkout-reminder") },
+      after: "Money deducted but no access? Please do not pay again. The payment usually updates on its own within a few minutes. If it does not, reply to this email and we will sort it out.",
+      why: `You are receiving this email because you started a payment on ${site.name}. We send this reminder only once.`,
       unsubscribeUrl: o.user ? unsubscribeLinks(site, o.user.id, "offers").page : undefined,
       site,
     });

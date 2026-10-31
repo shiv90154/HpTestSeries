@@ -1,5 +1,5 @@
 import "server-only";
-import { buttonRow, emailBrand, emailColors, emailShell, esc, otpRows, paragraphRow } from "@/modules/email/layout";
+import { buttonRow, emailBrand, emailShell, esc, eyebrowRow, headingRow, noteRow, otpRows, paragraphRow, signOffRow } from "@/modules/email/layout";
 import { istDayStart } from "@/modules/email/rules";
 import { PRIMARY_SITE } from "@/sites";
 import type { SiteConfig } from "@/sites/types";
@@ -11,7 +11,7 @@ const RESEND_URL = "https://api.resend.com/emails";
 
 type Content = { subject: string; text: string; html: string };
 
-const securityFooter = (site: SiteConfig) => `You get this because of an action on your ${site.name} account. If it was not you, ignore this email.`;
+const securityFooter = (site: SiteConfig) => `You are receiving this email because of activity on your ${site.name} account. If this was not you, you can safely ignore it.`;
 
 export function otpEmail(code: string, site: SiteConfig = PRIMARY_SITE): Content {
   const subject = `${code} is your ${site.name} login code`;
@@ -46,9 +46,11 @@ function resultReadyEmail(testTitle: string, attemptId: string, site: SiteConfig
   const subject = `Your result for "${testTitle}" is ready`;
   const text = [`Your result for "${testTitle}" is ready.`, "", `View it here: ${url}`].join("\n");
   const rows = [
-    `<tr><td style="font-size:24px;line-height:1.3;font-weight:800;color:${emailColors.ink}">Your result is ready</td></tr>`,
-    paragraphRow(`${testTitle} has been checked. See your score, rank, every solution and your weak topics.`, { top: 12 }),
+    eyebrowRow("Test result"),
+    headingRow("Your result is ready"),
+    paragraphRow(`${testTitle} has been evaluated. You can now see your score, rank, the solution to every question and your weak topics.`, { top: 12 }),
     buttonRow("View result", url),
+    signOffRow(site.name),
   ].join("\n");
   const html = emailShell({ preview: `${testTitle}: your score and rank are ready.`, siteUrl: site.url, rows, footer: esc(securityFooter(site)), brand: emailBrand(site) });
   return { subject, text, html };
@@ -61,7 +63,7 @@ export async function sendResultReadyEmail(email: string, testTitle: string, att
 
 function reportFixedEmail(questionPreview: string, site: SiteConfig): Content {
   const url = `${site.url}/dashboard`;
-  const subject = "The question you reported has been corrected — thank you!";
+  const subject = "The question you reported has been corrected";
   const text = [
     "Thank you for reporting a problem with this question:",
     "",
@@ -74,12 +76,14 @@ function reportFixedEmail(questionPreview: string, site: SiteConfig): Content {
     url,
   ].join("\n");
   const rows = [
-    `<tr><td style="font-size:24px;line-height:1.3;font-weight:800;color:${emailColors.ink}">Thank you, it is fixed</td></tr>`,
+    eyebrowRow("Question report"),
+    headingRow("Thank you, the question is fixed"),
     paragraphRow("You reported a problem with this question:", { top: 12 }),
-    `<tr><td style="padding-top:12px"><table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr><td bgcolor="${emailColors.soft}" style="background:${emailColors.soft};border-left:4px solid ${emailColors.primary};border-radius:8px;padding:12px 14px;font-size:14px;line-height:1.55;color:${emailColors.muted};font-style:italic">&ldquo;${esc(questionPreview)}&rdquo;</td></tr></table></td></tr>`,
-    paragraphRow("Our team has checked and corrected it. Results that include it now use the corrected version.", { top: 14 }),
+    noteRow(`“${questionPreview}”`, { italic: true, top: 12 }),
+    paragraphRow("Our team has reviewed and corrected it. Any results that include this question now use the corrected version.", { top: 16 }),
     paragraphRow("आपकी रिपोर्ट के लिए धन्यवाद — यह प्रश्न ठीक कर दिया गया है।", { muted: true }),
     buttonRow("Open dashboard", url),
+    signOffRow(site.name),
   ].join("\n");
   const html = emailShell({ preview: "Your report helped us correct a question.", siteUrl: site.url, rows, footer: esc(securityFooter(site)), brand: emailBrand(site) });
   return { subject, text, html };
