@@ -8,6 +8,7 @@
 import type { PatwariQuestion, TestDef } from "../../patwari/types";
 import type { SeriesSeed } from "../../seed-series";
 import { mock1 } from "./mock1";
+import { mock2 } from "./mock2";
 
 export const CHSL_SECTIONS = [
   { name: "General Intelligence & Reasoning", nameHi: "सामान्य बुद्धिमत्ता एवं तर्कशक्ति", count: 25 },
@@ -23,7 +24,7 @@ const CHECK = "The exam pattern can change with each notification, so always rea
 const level = (qs: PatwariQuestion[]) => (qs.filter((x) => x.d === "H").length >= qs.length * 0.3 ? "slightly above exam level" : "at exam level");
 const sectionSummary = (qs: PatwariQuestion[]) => CHSL_SECTIONS.map((s, i) => `${s.name} (${qs.filter((x) => x.s === i).length})`).join(", ");
 
-const MOCKS: PatwariQuestion[][] = [mock1];
+const MOCKS: PatwariQuestion[][] = [mock1, mock2];
 
 export const CHSL_TESTS: TestDef[] = MOCKS.map((questions, i) => ({
   slug: `ssc-chsl-tier-1-full-mock-${i + 1}`,

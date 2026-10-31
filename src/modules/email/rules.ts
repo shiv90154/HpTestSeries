@@ -3,7 +3,7 @@
 
 import { createHmac, timingSafeEqual } from "node:crypto";
 import type { SiteConfig } from "@/sites/types";
-import { buttonRow, emailBrand, emailColors, emailShell, esc, paragraphRow, pointsRow, statsRow } from "./layout";
+import { buttonRow, emailBrand, emailColors, emailShell, esc, eyebrowRow, headingRow, noteRow, paragraphRow, pointsRow, signOffRow, statsRow } from "./layout";
 
 export type EmailCategory = "offers" | "reminders";
 export type EmailKind = "expiry" | "free-followup" | "nudge" | "campaign" | "announcement" | "referral-invite";
@@ -89,57 +89,78 @@ export function withUtm(url: string, siteUrl: string, campaign: string): string 
 export type EmailContent = { subject: string; text: string; html: string };
 
 /**
- * One layout for every reminder and offer: heading, short paragraphs, an optional stats box and tick list, one button,
- * a closing line, and a footer saying why the student got it with the unsubscribe link. Every value is escaped;
- * paragraphs are plain text.
+ * One layout for every reminder and offer: a small label, heading, greeting, short paragraphs, an optional stats box
+ * and tick list, one button, an optional note, a sign-off, and a footer saying why the student got it with the
+ * unsubscribe link. Every value is escaped; paragraphs are plain text.
  */
 export function renderEmail(m: {
   subject: string;
+  /** Small upper-case label above the heading, e.g. "Subscription reminder". */
+  eyebrow?: string;
   heading: string;
+  /** First name for the "Hi <name>," line; "Hello," when empty. Left out entirely when undefined. */
+  greeting?: string;
   /** Inbox preview line next to the subject; the first paragraph when left out. */
   preview?: string;
   paragraphs: string[];
-  /** Big numbers in a tinted box, e.g. a test score. */
+  /** Big numbers in a bordered box, e.g. a test score. */
   stats?: { label: string; value: string }[];
   /** Short benefit lines shown with a tick. */
   points?: string[];
+  /** Title over the tick list, e.g. "What you get". */
+  pointsTitle?: string;
   cta: { label: string; url: string };
-  /** Muted line under the button (a tip or sign-off). */
+  /** Highlighted note under the button (a tip or a help line). */
   after?: string;
+  /** The same message in Hindi, shown muted at the end. */
+  hindi?: string;
   why: string;
   /** Left out only for a mail to someone without an account (a guest checkout reminder, sent once). */
   unsubscribeUrl?: string;
   /** The site the mail is about (its name, colours and links); HP when left out. */
   site?: SiteConfig;
 }): EmailContent {
+  const siteName = m.site?.name ?? "HP Test Series";
+  const greeting = m.greeting === undefined ? undefined : m.greeting ? `Hi ${m.greeting},` : "Hello,";
   const text = [
     m.heading,
     "",
+    ...(greeting ? [greeting, ""] : []),
     ...m.paragraphs.flatMap((p) => [p, ""]),
     ...(m.stats?.length ? [m.stats.map((s) => `${s.label}: ${s.value}`).join("  |  "), ""] : []),
-    ...(m.points?.length ? [...m.points.map((p) => `✓ ${p}`), ""] : []),
+    ...(m.points?.length ? [...(m.pointsTitle ? [m.pointsTitle] : []), ...m.points.map((p) => `✓ ${p}`), ""] : []),
     `${m.cta.label}: ${m.cta.url}`,
     ...(m.after ? ["", m.after] : []),
+    ...(m.hindi ? ["", m.hindi] : []),
+    "",
+    "Regards,",
+    `Team ${siteName}`,
     "",
     "—",
     m.why,
     ...(m.unsubscribeUrl ? [`Unsubscribe: ${m.unsubscribeUrl}`] : []),
-  ].join("\n");
+  ].join("
+");
   const rows = [
-    `<tr><td style="font-size:24px;line-height:1.3;font-weight:800;color:${emailColors.ink}">${esc(m.heading)}</td></tr>`,
-    ...m.paragraphs.map((p, i) => paragraphRow(p, { top: i === 0 ? 12 : 14 })),
+    ...(m.eyebrow ? [eyebrowRow(m.eyebrow)] : []),
+    headingRow(m.heading),
+    ...(greeting ? [paragraphRow(greeting, { top: 18 })] : []),
+    ...m.paragraphs.map((p, i) => paragraphRow(p, { top: i === 0 && !greeting ? 12 : 14 })),
     ...(m.stats?.length ? [statsRow(m.stats)] : []),
-    ...(m.points?.length ? [pointsRow(m.points)] : []),
+    ...(m.points?.length ? [pointsRow(m.points, m.pointsTitle)] : []),
     buttonRow(m.cta.label, m.cta.url),
-    ...(m.after ? [paragraphRow(m.after, { muted: true, top: 20 })] : []),
-  ].join("\n");
+    ...(m.after ? [noteRow(m.after)] : []),
+    ...(m.hindi ? [paragraphRow(m.hindi, { muted: true, top: 18 })] : []),
+    signOffRow(siteName),
+  ].join("
+");
   const html = emailShell({
     preview: m.preview ?? m.paragraphs[0] ?? m.heading,
     siteUrl: m.site?.url ?? process.env.NEXT_PUBLIC_SITE_URL ?? "https://hptestseries.in",
     brand: m.site && emailBrand(m.site),
     rows,
     footer: m.unsubscribeUrl
-      ? `${esc(m.why)} <a href="${esc(m.unsubscribeUrl)}" style="color:${emailColors.faint};text-decoration:underline">Unsubscribe</a>`
+      ? `${esc(m.why)}<br><a href="${esc(m.unsubscribeUrl)}" style="color:${emailColors.muted};text-decoration:underline">Unsubscribe</a>`
       : esc(m.why),
   });
   return { subject: m.subject, text, html };
