@@ -4,6 +4,7 @@
 
 import type { PatwariQuestion, TestDef } from "../patwari/types";
 import { policeFreeMock } from "./free-mock";
+import { policeMock1 } from "./mock1";
 
 export const PAPER1_SECTIONS = [
   { name: "General Awareness", nameHi: "सामान्य जागरूकता", count: 35 },
@@ -40,3 +41,11 @@ export const POLICE_FREE_TEST: TestDef = paper1(
   policeFreeMock,
   true,
 );
+
+const PAID_MOCKS: PatwariQuestion[][] = [policeMock1];
+
+export const POLICE_PAID_TESTS: TestDef[] = PAID_MOCKS.map((questions, i) =>
+  paper1(`punjab-police-constable-mock-${i + 1}`, `Punjab Police Constable Full Mock ${i + 1} (Paper I)`, `पंजाब पुलिस कांस्टेबल फ़ुल मॉक ${i + 1} (पेपर I)`, questions),
+);
+
+export const PB_POLICE_TESTS: TestDef[] = [POLICE_FREE_TEST, ...POLICE_PAID_TESTS];

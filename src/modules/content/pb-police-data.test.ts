@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { EXAM_SERIES } from "../../../prisma/exam-series";
 import { COURT_CLERK_TESTS } from "../../../prisma/pb-court-clerk";
-import { PAPER1_SECTIONS, POLICE_FREE_MOCK_SLUG, POLICE_FREE_TEST } from "../../../prisma/pb-police";
+import { PAPER1_SECTIONS, POLICE_FREE_MOCK_SLUG, POLICE_FREE_TEST, POLICE_PAID_TESTS } from "../../../prisma/pb-police";
 import { balanceAnswers } from "../../../prisma/patwari/types";
 import { PATWARI_TESTS } from "../../../prisma/patwari";
 import { POLICE_TESTS } from "../../../prisma/police";
@@ -18,13 +18,11 @@ const otherStems = new Set(
   [...EXAM_SERIES.flatMap((s) => s.tests), ...PATWARI_TESTS, ...POLICE_TESTS, ...COURT_CLERK_TESTS].flatMap((t) => t.questions.map((x) => questionTextHash(x.en[0]))),
 );
 
-describe("Punjab Police Constable free Paper I mock", () => {
-  const def = POLICE_FREE_TEST;
+describe.each([POLICE_FREE_TEST, ...POLICE_PAID_TESTS].map((t) => [t.slug, t] as const))("Punjab Police Constable Paper I: %s", (_slug, def) => {
   const qs = balanceAnswers(def.questions);
 
-  it("is a free mock with no negative marking and the Paper I timing", () => {
-    expect(def.slug).toBe(POLICE_FREE_MOCK_SLUG);
-    expect(def.isFree).toBe(true);
+  it("has no negative marking and the Paper I timing", () => {
+    expect(def.isFree ?? false).toBe(def.slug === POLICE_FREE_MOCK_SLUG);
     expect(def.marksWrong).toBe(0);
     expect(def.durationSec).toBe(120 * 60);
   });
@@ -46,6 +44,9 @@ describe("Punjab Police Constable free Paper I mock", () => {
       expect(seen.has(h) || otherStems.has(h), x.en[0].slice(0, 60)).toBe(false);
       seen.add(h);
     }
+    // each Police mock also differs from every other Police mock
+    for (const other of POLICE_PAID_TESTS.concat(POLICE_FREE_TEST).filter((t) => t.slug !== def.slug))
+      for (const x of other.questions) expect(seen.has(questionTextHash(x.en[0])), x.en[0].slice(0, 60)).toBe(false);
   });
 
   it("only uses subjects and topics that exist in the taxonomy", () => {
