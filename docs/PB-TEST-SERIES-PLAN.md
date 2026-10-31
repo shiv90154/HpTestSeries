@@ -159,6 +159,6 @@ valid topics and answer spread; questions use markdown + KaTeX rules (wrap `$` a
 | Court Clerk posts (syllabus, subjective, CPT) | ✅ seeded as drafts, publish from admin |
 | Launch checklist | owner's tasks open |
 | Police Constable free Paper I mock (100 q) | ✅ pushed and deployed; Punjabi section needs a Punjabi speaker to check |
-| Police Constable paid Paper I mocks 1–2 + series and product (₹199, 365 days, price unconfirmed) | ✅ built; Punjabi section needs a Punjabi speaker to check |
-| Police Constable paid mocks 3–8, Paper 2 mocks, sectionals | not started |
+| Police Constable paid Paper I mocks 1–3 + series and product (₹199, 365 days, price unconfirmed) | ✅ built; Punjabi section needs a Punjabi speaker to check |
+| Police Constable paid mocks 4–8, Paper 2 mocks, sectionals | not started |
 | Punjabi bank | not started |
