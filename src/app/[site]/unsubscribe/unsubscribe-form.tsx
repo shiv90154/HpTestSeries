@@ -11,13 +11,17 @@ export function UnsubscribeForm({ u, c, t, what }: { u: string; c: string; t: st
     return (
       <div role="status" className="space-y-3">
         <p className="font-semibold text-success">Done. You will not get {what} any more.</p>
-        <p className="text-sm text-muted">
-          Changed your mind? Turn them back on from your{" "}
-          <Link href="/profile#email" className="font-medium text-primary hover:underline">
-            profile
-          </Link>
-          .
-        </p>
+        {c === "alerts" ? (
+          <p className="text-sm text-muted">Changed your mind? Sign up again on the exam&apos;s page.</p>
+        ) : (
+          <p className="text-sm text-muted">
+            Changed your mind? Turn them back on from your{" "}
+            <Link href="/profile#email" className="font-medium text-primary hover:underline">
+              profile
+            </Link>
+            .
+          </p>
+        )}
       </div>
     );
   }

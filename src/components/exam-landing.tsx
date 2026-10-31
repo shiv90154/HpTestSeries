@@ -2,6 +2,7 @@ import { CheckCircle2, ChevronRight, Clock, Languages, MonitorCheck, ShieldCheck
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { Breadcrumbs } from "@/components/breadcrumbs";
+import { ExamAlertBox } from "@/components/exam-email-form";
 import { FaqList } from "@/components/faq-list";
 import { JsonLd } from "@/components/json-ld";
 import { formatDate } from "@/components/post-card";
@@ -384,6 +385,7 @@ export async function ExamSubPage({
             <div className="min-w-0 space-y-10">
               <PracticeStrip ctx={ctx} placement={`top-${active}`} />
               {children}
+              <ExamAlertBox examKey={ctx.key} examName={ctx.name} />
               {faqs.length > 0 && (
                 <section className="space-y-4">
                   <h2 className="text-2xl font-bold tracking-tight">

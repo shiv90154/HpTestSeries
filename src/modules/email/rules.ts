@@ -5,7 +5,8 @@ import { createHmac, timingSafeEqual } from "node:crypto";
 import type { SiteConfig } from "@/sites/types";
 import { buttonRow, emailBrand, emailColors, emailShell, esc, eyebrowRow, headingRow, noteRow, paragraphRow, pointsRow, signOffRow, statsRow } from "./layout";
 
-export type EmailCategory = "offers" | "reminders";
+/** "alerts": exam-page sign-ups without an account (./exam-alerts.ts); their unsubscribe links carry the email, not a user id. */
+export type EmailCategory = "offers" | "reminders" | "alerts";
 export type EmailKind = "expiry" | "free-followup" | "nudge" | "campaign" | "announcement" | "referral-invite";
 
 /** Which consent a kind of email needs; the unsubscribe link in it switches off that one. */
@@ -68,7 +69,7 @@ export function unsubscribeToken(secret: string, userId: string, category: Email
 }
 
 export function verifyUnsubscribeToken(secret: string, userId: string, category: string, token: string): category is EmailCategory {
-  if (category !== "offers" && category !== "reminders") return false;
+  if (category !== "offers" && category !== "reminders" && category !== "alerts") return false;
   const a = Buffer.from(mac(secret, userId, category));
   const b = Buffer.from(token);
   return a.length === b.length && timingSafeEqual(a, b);

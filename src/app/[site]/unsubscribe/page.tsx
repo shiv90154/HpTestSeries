@@ -9,6 +9,7 @@ export const metadata: Metadata = { title: "Unsubscribe", robots: { index: false
 const WHAT: Record<string, string> = {
   offers: "offer and update emails (free-test follow-ups and announcements)",
   reminders: "reminder emails about your purchases (for example, when your access is about to end)",
+  alerts: "exam alert emails (exam dates, admit cards and results you signed up for)",
 };
 
 /** Opened from the link in a reminder or offer email. The change happens on the button press, not on page load. */

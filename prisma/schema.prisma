@@ -173,6 +173,7 @@ model Exam {
   series       TestSeries[]
   pyqQuestions Question[]
   posts        Post[]
+  alerts       ExamAlert[]
 
   @@unique([bodyId, slug])
 }
@@ -761,4 +762,40 @@ model EmailCampaign {
   createdBy   User       @relation(fields: [createdById], references: [id])
   createdAt   DateTime   @default(now())
   logs        EmailLog[]
+  alertLogs   ExamAlertLog[]
+}
+
+/**
+ * Someone, usually without an account, who left their email on an exam page (syllabus PDF or exam-date alert box) to
+ * hear about that exam. A campaign sent to the exam reaches them too (ExamAlertLog); unsubscribing stops every exam.
+ */
+model ExamAlert {
+  id             String         @id @default(cuid())
+  email          String // lower-case
+  examId         String
+  exam           Exam           @relation(fields: [examId], references: [id], onDelete: Cascade)
+  source         String // "syllabus-pdf" | "alert"
+  site           String         @default("hp") // site the form was on: the mails carry its name and links
+  unsubscribedAt DateTime?
+  createdAt      DateTime       @default(now())
+  logs           ExamAlertLog[]
+
+  @@unique([email, examId])
+  @@index([examId])
+}
+
+/** One campaign mail to one ExamAlert subscriber; the unique key stops it going twice. */
+model ExamAlertLog {
+  id         String        @id @default(cuid())
+  alertId    String
+  alert      ExamAlert     @relation(fields: [alertId], references: [id], onDelete: Cascade)
+  campaignId String
+  campaign   EmailCampaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  status     EmailStatus   @default(QUEUED)
+  error      String?
+  createdAt  DateTime      @default(now())
+  sentAt     DateTime?
+
+  @@unique([alertId, campaignId])
+  @@index([status, createdAt])
 }

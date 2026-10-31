@@ -3,7 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { buildExamCtx, ExamSubPage } from "@/components/exam-landing";
 import { JsonLd } from "@/components/json-ld";
-import { PrintButton } from "@/components/print-button";
+import { SyllabusPdfButton } from "@/components/exam-email-form";
 import { Markdown } from "@/components/markdown";
 import { TestCard } from "@/components/test-card";
 import { card } from "@/components/ui";
@@ -82,8 +82,8 @@ export default async function SyllabusPage({ params }: PageProps<"/[site]/[body]
         <section className="space-y-3">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <h2 className="text-2xl font-bold tracking-tight">{name} syllabus, topic-wise</h2>
-            <span className="print:hidden">
-              <PrintButton />
+            <span className="contents print:hidden">
+              <SyllabusPdfButton examKey={ctx.key} examName={name} />
             </span>
           </div>
           <Markdown text={data.syllabus} />

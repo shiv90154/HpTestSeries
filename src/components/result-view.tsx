@@ -74,6 +74,10 @@ export function ResultView({
   const attempted = data.correct + data.wrong;
   const accuracy = pct(data.correct, attempted);
   const total = data.questions.length;
+  // A guest's free-test result: score and sections show at once; solutions and topic analysis open after a free login,
+  // which saves this result to the new account (see tests/[slug]/result/guest-result.tsx).
+  const locked = isGuest && !loggedIn && !!data.claim && !data.demo;
+  const loginToSave = `/login?next=${encodeURIComponent(`/tests/${data.test.slug}/result`)}`;
 
   const outcome = (q: ResultData["questions"][number]): Outcome =>
     !q.chosenOptionId ? "skipped" : q.chosenOptionId === q.correctOptionId ? "correct" : "wrong";
@@ -180,7 +184,7 @@ export function ResultView({
                     : `Log in (free) to save results, see your rank among ${site.stateAdj} aspirants and track weak topics.`}
                 </p>
                 {data.claim ? (
-                  <Link href={`/login?next=${encodeURIComponent(`/tests/${data.test.slug}/result`)}`} className={btn("accent", "sm")}>
+                  <Link href={loginToSave} onClick={() => track("result_gate_click", { place: "header", test: data.test.slug })} className={btn("accent", "sm")}>
                     <LogIn className="size-4" /> Log in &amp; save this result
                   </Link>
                 ) : (
@@ -291,6 +295,17 @@ export function ResultView({
         </section>
 
         {/* Topics */}
+        {locked ? (
+          <section className={`${card} flex flex-col justify-center gap-3 p-5`}>
+            <h2 className="flex items-center gap-2 font-semibold">
+              <Lock className="size-4 text-accent-ink" aria-hidden /> Topic accuracy
+            </h2>
+            <p className="text-sm text-muted">See which topics cost you marks, weakest first, so you know what to revise next.</p>
+            <Link href={loginToSave} onClick={() => track("result_gate_click", { place: "topics", test: data.test.slug })} className={btn("outline", "sm", "self-start")}>
+              <LogIn className="size-4" /> Log in free to unlock
+            </Link>
+          </section>
+        ) : (
         <section className={`${card} p-5`}>
           <h2 className="mb-1 font-semibold">Topic accuracy</h2>
           <p className="mb-4 text-xs text-muted">Correct ÷ attempted, weakest first — revise these next.</p>
@@ -322,6 +337,7 @@ export function ResultView({
             })}
           </ul>
         </section>
+        )}
       </div>
 
       {data.leaderboard && data.leaderboard.length > 0 && (
@@ -333,7 +349,34 @@ export function ResultView({
         />
       )}
 
+      {locked && (
+        <section className="space-y-4 rounded-2xl border border-primary bg-primary-soft/50 p-6 text-center">
+          <span className="mx-auto grid size-12 place-items-center rounded-full bg-primary text-white">
+            <Lock className="size-5" aria-hidden />
+          </span>
+          <h2 className="text-xl font-semibold">See the solutions to all {total} questions</h2>
+          <p className="mx-auto max-w-md text-sm text-foreground/85">Log in free with Google or your email. It takes 10 seconds, and this result is saved to your account.</p>
+          <ul className="mx-auto max-w-sm space-y-1.5 text-left text-sm">
+            {[
+              `Correct answer and explanation for every question`,
+              `Your rank among ${site.stateAdj} aspirants`,
+              "Topic-wise weak areas to revise next",
+              "All your results saved in one place",
+            ].map((p) => (
+              <li key={p} className="flex items-start gap-2">
+                <CheckCircle2 className="mt-0.5 size-4 shrink-0 text-success" aria-hidden /> {p}
+              </li>
+            ))}
+          </ul>
+          <Link href={loginToSave} onClick={() => track("result_gate_click", { place: "solutions", test: data.test.slug })} className={btn("primary", "lg")}>
+            <LogIn className="size-5" /> Log in free &amp; see solutions
+          </Link>
+          <p className="text-xs text-muted">Free. No payment needed.</p>
+        </section>
+      )}
+
       {/* Solutions */}
+      {!locked && (
       <section className="space-y-4">
         <div className="flex flex-wrap items-center gap-3">
           <h2 className="mr-auto text-lg font-semibold">Solutions</h2>
@@ -472,6 +515,7 @@ export function ResultView({
           </div>
         )}
       </section>
+      )}
 
       <div className="flex flex-wrap gap-3">
         <Link href={`/tests/${data.test.slug}/${data.demo ? "demo" : "attempt"}`} className={btn("outline")}>

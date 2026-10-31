@@ -4,6 +4,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Breadcrumbs } from "@/components/breadcrumbs";
 import { buildExamCtx, Disclaimer, ExamFinalCta, ExamTabs, HowItWorks, OfferCard } from "@/components/exam-landing";
+import { ExamAlertBox } from "@/components/exam-email-form";
 import { FaqList } from "@/components/faq-list";
 import { JsonLd } from "@/components/json-ld";
 import { Markdown } from "@/components/markdown";
@@ -334,6 +335,8 @@ export default async function ExamPage({ params }: PageProps<"/[site]/[body]/[ex
                 </p>
               )}
             </section>
+
+            <ExamAlertBox examKey={ctx.key} examName={name} />
 
             {sampleTest && (
               <SampleQuestions

@@ -26,6 +26,7 @@ import {
   unsubscribeToken,
   withUtm,
 } from "./rules";
+import { countAlertAudience, queueAlertCampaign, sendQueuedAlerts, unsubscribeAlerts } from "./exam-alerts";
 
 // Reminder and offer emails. A daily cron (POST /api/cron/emails, 7 pm IST) queues the due reminders and sends what is
 // queued; campaigns from /admin/emails are queued the same way. Offers go to every student who has not switched them
@@ -318,7 +319,9 @@ export async function sendQueued(now = new Date()): Promise<SendSummary> {
   // Queued for over a week (e.g. held back by the frequency cap) is too stale to send.
   await db.emailLog.updateMany({ where: { status: "QUEUED", createdAt: { lt: new Date(now.getTime() - 7 * DAY) } }, data: { status: "SKIPPED", error: "stale" } });
 
-  const sentToday = await db.emailLog.count({ where: { status: "SENT", sentAt: { gte: istDayStart(now) } } });
+  const sentToday =
+    (await db.emailLog.count({ where: { status: "SENT", sentAt: { gte: istDayStart(now) } } })) +
+    (await db.examAlertLog.count({ where: { status: "SENT", sentAt: { gte: istDayStart(now) } } }));
   let quota = Math.max(0, dailyLimit() - sentToday);
   let broadcastQuota = Math.max(
     0,
@@ -419,6 +422,13 @@ export async function sendQueued(now = new Date()): Promise<SendSummary> {
       (await sentDates(u.id)).push(now);
     } else summary.failed++;
   }
+
+  // Exam-page subscribers without an account (campaigns sent to their exam) share what is left of the quota.
+  const alerts = await sendQueuedAlerts(quota, now);
+  summary.sent += alerts.sent;
+  summary.failed += alerts.failed;
+  summary.skipped += alerts.skipped;
+  summary.left += alerts.left;
   return summary;
 }
 
@@ -536,22 +546,27 @@ function audienceWhere(examId: string | null) {
   };
 }
 
-/** How many students a campaign to this audience would reach. */
-export function countAudience(examId: string | null) {
-  return db.user.count({ where: audienceWhere(examId) });
+/** How many people a campaign to this audience would reach: students, plus the exam's email subscribers. */
+export async function countAudience(examId: string | null) {
+  if (!examId) return db.user.count({ where: audienceWhere(examId) });
+  const users = await db.user.findMany({ where: audienceWhere(examId), select: { email: true } });
+  return users.length + (await countAlertAudience(examId, users.map((u) => u.email)));
 }
 
 /** Saves a campaign and queues it for everyone in its audience; the next send run delivers it within the quota. */
 export async function queueCampaign(raw: unknown, actorId: string): Promise<{ ok: true; id: string; queued: number } | Fail> {
   const v = campaignSchema.safeParse(raw);
   if (!v.success) return { ok: false, errors: v.error.issues.map((i) => i.message) };
-  const users = await db.user.findMany({ where: audienceWhere(v.data.examId), select: { id: true } });
-  if (!users.length) return { ok: false, errors: ["Nobody in this audience can be emailed."] };
+  const examId = v.data.examId;
+  const users = await db.user.findMany({ where: audienceWhere(examId), select: { id: true, email: true } });
+  const userEmails = users.map((u) => u.email);
+  if (!users.length && !(examId && (await countAlertAudience(examId, userEmails)))) return { ok: false, errors: ["Nobody in this audience can be emailed."] };
   const campaign = await db.emailCampaign.create({ data: { ...v.data, createdById: actorId }, select: { id: true } });
-  const { count } = await db.emailLog.createMany({
+  const { count: userCount } = await db.emailLog.createMany({
     data: users.map((u) => ({ userId: u.id, kind: "campaign", refKey: campaign.id, campaignId: campaign.id })),
     skipDuplicates: true,
   });
+  const count = userCount + (examId ? await queueAlertCampaign(campaign.id, examId, userEmails) : 0);
   await db.auditLog.create({ data: { actorId, entity: "email-campaign", entityId: campaign.id, action: `queue ${count}` } });
   return { ok: true, id: campaign.id, queued: count };
 }
@@ -588,6 +603,7 @@ export async function setEmailPreferences(userId: string, prefs: { offers: boole
 
 /** From an unsubscribe link: switches off one category for that student. */
 export async function unsubscribe(userId: string, category: EmailCategory) {
+  if (category === "alerts") return unsubscribeAlerts(userId); // an alerts link carries the email address
   await db.user.updateMany({ where: { id: userId }, data: category === "offers" ? { emailOffers: false, emailOffersAt: new Date() } : { emailReminders: false } });
 }
 
