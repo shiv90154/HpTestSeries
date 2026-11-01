@@ -190,6 +190,18 @@ export const taxonomy: SubjectSeed[] = [
     ],
   },
   {
+    slug: "special-education",
+    name: "Special Education",
+    nameHi: "विशेष शिक्षा",
+    topics: [
+      ["disabilities", "Types & Characteristics of Disability"],
+      ["laws-policies", "Laws, Policies & Institutions"],
+      ["assessment-iep", "Assessment, IEP & Planning"],
+      ["teaching-strategies", "Teaching Strategies & Inclusion"],
+      ["assistive-aids", "Assistive Devices & Technology"],
+    ],
+  },
+  {
     slug: "teaching-aptitude",
     name: "Teaching & Research Aptitude",
     nameHi: "शिक्षण एवं शोध अभिक्षमता",

@@ -35,7 +35,7 @@ export function examCategory(bodySlug: string, examSlug: string): CategoryKey {
   if (bodySlug === "hp-police" || bodySlug === "delhi-police") return "police";
   if (bodySlug === "upsc" || bodySlug === "iaf") return "defence";
   if (bodySlug === "pgimer" || /nurse|nursing|pharmac|medical|doctor/.test(examSlug)) return "medical";
-  if (/tet|jbt|tgt|teacher|lecturer|professor/.test(examSlug)) return "teaching";
+  if (/tet|jbt|tgt|teacher|lecturer|professor|educator/.test(examSlug)) return "teaching";
   if (bodySlug === "hpsebl" || /engineer|lineman|electric/.test(examSlug)) return "engineering";
   if (/forest|agri|horti|veterinary/.test(examSlug)) return "forest";
   if (bodySlug === "hppsc") return "officer";

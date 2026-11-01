@@ -234,7 +234,7 @@ Expect pb to take weeks to months before meaningful traffic. hp's own curve is t
 - Confirm D1–D6.
 - PGIMER (Chandigarh) on hp, pb and hr?
 - Do HP Police and Punjab Police share a WhatsApp/Telegram group, or does each site get its own?
-- Which domain is primary long term? hptestseries.in has the authority today. A neutral national domain could take national exams later, but not now.
+- ~~Which domain is primary long term?~~ Decided 31 Oct 2026: hptestseries.in stays primary, and there will be no separate national domain. National exams (SSC included) live on every state site with the canonical on hp, and each state site gets automatic state-wise pages from data. See [SSC-TEST-SERIES-PLAN.md](SSC-TEST-SERIES-PLAN.md) §1.
 
 ## What is built (2026-10-20)
 

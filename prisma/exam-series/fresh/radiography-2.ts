@@ -8,6 +8,7 @@ const tech = (d: Diff, a: 0 | 1 | 2 | 3, en: LangBlock, hi: LangBlock) => R("tec
 const phys = (d: Diff, a: 0 | 1 | 2 | 3, en: LangBlock, hi: LangBlock, chk?: string) => R("physics-safety", d, a, en, hi, chk);
 const equip = (d: Diff, a: 0 | 1 | 2 | 3, en: LangBlock, hi: LangBlock, chk?: string) => R("equipment-modalities", d, a, en, hi, chk);
 const anat = (d: Diff, a: 0 | 1 | 2 | 3, en: LangBlock, hi: LangBlock, chk?: string) => R("anatomy", d, a, en, hi, chk);
+const GS = (topic: string, d: Diff, a: 0 | 1 | 2 | 3, en: LangBlock, hi: LangBlock): PatwariQuestion => q(0, "general-studies", topic, d, a, en, hi);
 
 export const radiographyMock2 = {
   techniques: [
@@ -249,7 +250,7 @@ export const radiographyMock2 = {
       ["The sella turcica of the sphenoid bone houses the:", ["Pineal gland", "Thyroid gland", "Optic chiasm only", "Pituitary gland"], "The pituitary sits in the hypophyseal fossa, which is the central part of the sella."],
       ["स्फीनॉइड अस्थि का सेला टर्सिका किसे धारण करता है?", ["पीनियल ग्रंथि", "थायरॉइड ग्रंथि", "केवल ऑप्टिक कायज़्म", "पिट्यूटरी ग्रंथि"], "पिट्यूटरी ग्रंथि हाइपोफिसियल गर्त में स्थित होती है, जो सेला का मध्य भाग है।"]),
     anat("E", 1,
-      ["The largest gland in the human body is the:", ["Pancreas", "Liver", "Thyroid", "Spleen"], "The liver weighs about 1.5 kg and has many metabolic roles besides making bile."],
+      ["Which organ is the largest gland of the human body?", ["Pancreas", "Liver", "Thyroid", "Spleen"], "The liver weighs about 1.5 kg and has many metabolic roles besides making bile."],
       ["मानव शरीर की सबसे बड़ी ग्रंथि है:", ["अग्न्याशय", "यकृत", "थायरॉइड", "प्लीहा"], "यकृत का वज़न लगभग 1.5 किग्रा है और पित्त बनाने के अलावा इसके अनेक चयापचयी कार्य हैं।"]),
     anat("H", 0,
       ["The hilum of the kidney lies at about the level of:", ["L1–L2", "T6", "S1", "L5"], "The kidneys lie from about T12 to L3, and the hilum is at the L1–L2 level, which helps in centring a KUB film."],
@@ -263,5 +264,23 @@ export const radiographyMock2 = {
     anat("H", 3,
       ["The common bile duct and the main pancreatic duct open together at the ampulla into the:", ["Stomach", "Jejunum", "Ileum", "Second part of the duodenum"], "The hepatopancreatic ampulla opens at the major duodenal papilla, controlled by the sphincter of Oddi."],
       ["सामान्य पित्त नलिका और मुख्य अग्न्याशयी नलिका एम्पुला पर एक साथ कहाँ खुलती हैं?", ["आमाशय में", "जेजुनम में", "इलियम में", "ग्रहणी के दूसरे भाग में"], "हेपेटोपैंक्रियाटिक एम्पुला मेजर ड्यूओडेनल पैपिला पर खुलता है, जिसे ओड्डी का स्फिंक्टर नियंत्रित करता है।"]),
+  ],
+  // General awareness: 5 fresh GS, with 5 GS and 5 reasoning from the bank.
+  gs: [
+    GS("indian-polity", "M", 1,
+      ["The Comptroller and Auditor General of India is appointed by:", ["The Prime Minister", "The President", "The Chief Justice of India", "Parliament"], "Under Article 148 the President appoints the CAG, who audits the accounts of the Union and the States."],
+      ["भारत के नियंत्रक एवं महालेखा परीक्षक की नियुक्ति कौन करता है?", ["प्रधानमंत्री", "राष्ट्रपति", "भारत के मुख्य न्यायाधीश", "संसद"], "अनुच्छेद 148 के अंतर्गत राष्ट्रपति CAG की नियुक्ति करते हैं, जो संघ और राज्यों के लेखों की जाँच करता है।"]),
+    GS("indian-history", "M", 0,
+      ["Who was the only Indian to hold the office of Governor-General of India?", ["C. Rajagopalachari", "Lord Mountbatten", "Rajendra Prasad", "Sardar Vallabhbhai Patel"], "C. Rajagopalachari succeeded Lord Mountbatten in June 1948 and held office until the post ended on 26 January 1950."],
+      ["गवर्नर-जनरल ऑफ़ इंडिया का पद सँभालने वाले एकमात्र भारतीय कौन थे?", ["सी. राजगोपालाचारी", "लॉर्ड माउंटबेटन", "राजेंद्र प्रसाद", "सरदार वल्लभभाई पटेल"], "सी. राजगोपालाचारी जून 1948 में लॉर्ड माउंटबेटन के बाद आए और 26 जनवरी 1950 को यह पद समाप्त होने तक रहे।"]),
+    GS("indian-geography", "M", 2,
+      ["Measured along its mainland coast, which Indian state has the longest coastline?", ["Andhra Pradesh", "Tamil Nadu", "Gujarat", "Maharashtra"], "Gujarat's coastline, with the gulfs of Kachchh and Khambhat, is about 1,600 km long, the longest of any state."],
+      ["मुख्य भूमि के तट के अनुसार भारत के किस राज्य की तटरेखा सबसे लंबी है?", ["आंध्र प्रदेश", "तमिलनाडु", "गुजरात", "महाराष्ट्र"], "कच्छ और खंभात की खाड़ियों सहित गुजरात की तटरेखा लगभग 1,600 किमी लंबी है, जो किसी भी राज्य से अधिक है।"]),
+    GS("indian-economy", "H", 1,
+      ["The Union Budget, called the 'Annual Financial Statement' in the Constitution, is laid before Parliament under:", ["Article 110", "Article 112", "Article 266", "Article 280"], "Article 112 requires the annual statement of estimated receipts and expenditure; Article 110 defines a Money Bill and Article 280 sets up the Finance Commission."],
+      ["संविधान में 'वार्षिक वित्तीय विवरण' कहलाने वाला केंद्रीय बजट किस अनुच्छेद के अंतर्गत संसद में रखा जाता है?", ["अनुच्छेद 110", "अनुच्छेद 112", "अनुच्छेद 266", "अनुच्छेद 280"], "अनुच्छेद 112 अनुमानित प्राप्तियों और व्यय का वार्षिक विवरण माँगता है; अनुच्छेद 110 धन विधेयक की परिभाषा देता है और अनुच्छेद 280 वित्त आयोग बनाता है।"]),
+    GS("general-science", "M", 1,
+      ["A bleeding patient needs blood before their group can be tested. Which red-cell group is the safest to give?", ["AB positive", "O negative", "A positive", "B negative"], "O negative red cells carry no A, B or Rh antigens, so they can be given to patients of any group in an emergency."],
+      ["रक्तस्राव वाले रोगी को उसका समूह जाँचने से पहले रक्त चाहिए। कौन-सा लाल कोशिका समूह देना सबसे सुरक्षित है?", ["AB पॉज़िटिव", "O नेगेटिव", "A पॉज़िटिव", "B नेगेटिव"], "O नेगेटिव लाल रक्त कोशिकाओं पर A, B या Rh प्रतिजन नहीं होते, इसलिए आपात स्थिति में इन्हें किसी भी समूह के रोगी को दिया जा सकता है।"]),
   ],
 };

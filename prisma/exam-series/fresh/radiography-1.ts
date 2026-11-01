@@ -8,6 +8,7 @@ const tech = (d: Diff, a: 0 | 1 | 2 | 3, en: LangBlock, hi: LangBlock) => R("tec
 const phys = (d: Diff, a: 0 | 1 | 2 | 3, en: LangBlock, hi: LangBlock, chk?: string) => R("physics-safety", d, a, en, hi, chk);
 const equip = (d: Diff, a: 0 | 1 | 2 | 3, en: LangBlock, hi: LangBlock, chk?: string) => R("equipment-modalities", d, a, en, hi, chk);
 const anat = (d: Diff, a: 0 | 1 | 2 | 3, en: LangBlock, hi: LangBlock, chk?: string) => R("anatomy", d, a, en, hi, chk);
+const GS = (topic: string, d: Diff, a: 0 | 1 | 2 | 3, en: LangBlock, hi: LangBlock): PatwariQuestion => q(0, "general-studies", topic, d, a, en, hi);
 
 export const radiographyMock1 = {
   techniques: [
@@ -269,5 +270,23 @@ export const radiographyMock1 = {
     anat("H", 3,
       ["Surfactant, which keeps the alveoli from collapsing at the end of expiration, is produced by:", ["Alveolar macrophages", "Goblet cells", "Capillary endothelial cells", "Type II pneumocytes"], "Surfactant lowers the surface tension inside the alveoli; premature babies lacking it develop respiratory distress syndrome."],
       ["निःश्वास के अंत में कूपिकाओं (alveoli) को बैठने से रोकने वाला सर्फेक्टेंट किसके द्वारा बनता है?", ["कूपिका मैक्रोफेज", "गॉब्लेट कोशिकाएँ", "केशिका एंडोथीलियल कोशिकाएँ", "टाइप II न्यूमोसाइट"], "सर्फेक्टेंट कूपिकाओं के भीतर पृष्ठ तनाव घटाता है; इसके बिना समय-पूर्व शिशुओं में श्वसन कष्ट सिंड्रोम हो जाता है।"]),
+  ],
+  // General awareness: 5 fresh GS, with 5 GS and 5 reasoning from the bank.
+  gs: [
+    GS("indian-polity", "E", 1,
+      ["Which Article of the Constitution of India abolishes untouchability?", ["Article 14", "Article 17", "Article 21", "Article 32"], "Article 17 abolishes untouchability and makes its practice in any form an offence; Article 14 gives equality before law."],
+      ["भारत के संविधान का कौन-सा अनुच्छेद अस्पृश्यता का अंत करता है?", ["अनुच्छेद 14", "अनुच्छेद 17", "अनुच्छेद 21", "अनुच्छेद 32"], "अनुच्छेद 17 अस्पृश्यता का अंत करता है और किसी भी रूप में इसके आचरण को अपराध बनाता है; अनुच्छेद 14 विधि के समक्ष समता देता है।"]),
+    GS("indian-history", "M", 2,
+      ["Which reformer gave the call to return to the Vedas and set up the Arya Samaj in Bombay?", ["Raja Ram Mohan Roy", "Swami Vivekananda", "Swami Dayanand Saraswati", "Ishwar Chandra Vidyasagar"], "Swami Dayanand Saraswati founded the Arya Samaj in 1875 and wrote Satyarth Prakash."],
+      ["किस समाज सुधारक ने वेदों की ओर लौटने का आह्वान किया और बंबई में आर्य समाज की स्थापना की?", ["राजा राममोहन राय", "स्वामी विवेकानंद", "स्वामी दयानंद सरस्वती", "ईश्वरचंद्र विद्यासागर"], "स्वामी दयानंद सरस्वती ने 1875 में आर्य समाज की स्थापना की और सत्यार्थ प्रकाश लिखा।"]),
+    GS("indian-geography", "M", 1,
+      ["Which lake in Jammu and Kashmir is usually cited as the largest freshwater lake of India?", ["Chilika", "Wular", "Dal", "Loktak"], "Wular Lake, fed by the Jhelum, is the largest freshwater lake; Chilika is larger but brackish."],
+      ["जम्मू-कश्मीर की कौन-सी झील प्रायः भारत की सबसे बड़ी मीठे पानी की झील मानी जाती है?", ["चिल्का", "वुलर", "डल", "लोकटक"], "झेलम से पोषित वुलर झील सबसे बड़ी मीठे पानी की झील है; चिल्का इससे बड़ी है पर खारे पानी की है।"]),
+    GS("indian-economy", "M", 2,
+      ["Ayushman Bharat – Pradhan Mantri Jan Arogya Yojana gives an eligible family hospital cover of up to how much a year?", ["₹1 lakh", "₹2 lakh", "₹5 lakh", "₹10 lakh"], "PM-JAY, launched in 2018, gives cashless cover of up to ₹5 lakh per family per year for secondary and tertiary hospital care."],
+      ["आयुष्मान भारत – प्रधानमंत्री जन आरोग्य योजना पात्र परिवार को प्रति वर्ष अधिकतम कितना अस्पताल बीमा देती है?", ["₹1 लाख", "₹2 लाख", "₹5 लाख", "₹10 लाख"], "2018 में शुरू हुई PM-JAY द्वितीयक और तृतीयक अस्पताल देखभाल के लिए प्रति परिवार प्रति वर्ष ₹5 लाख तक का कैशलेस बीमा देती है।"]),
+    GS("general-science", "E", 1,
+      ["Insulin, which lowers blood sugar, is made by the:", ["Liver", "Pancreas", "Kidney", "Thyroid"], "The beta cells of the islets of Langerhans in the pancreas make insulin; too little of it causes diabetes mellitus."],
+      ["रक्त शर्करा घटाने वाला इंसुलिन किस अंग में बनता है?", ["यकृत", "अग्न्याशय", "वृक्क", "थायरॉयड"], "अग्न्याशय की लैंगरहैंस द्वीपिकाओं की बीटा कोशिकाएँ इंसुलिन बनाती हैं; इसकी कमी से मधुमेह होता है।"]),
   ],
 };

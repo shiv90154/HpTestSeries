@@ -9,6 +9,7 @@ import type { SeriesSeed } from "../seed-series";
 import { fresh, reserve, subject, take, topic, type Pick } from "./bank";
 import { banking } from "./fresh/banking";
 import { forestry } from "./fresh/forestry";
+import { forestGuardGsLate } from "./fresh/forest-guard-gs-late";
 import { forestryLate } from "./fresh/forestry-late";
 import { jbtPedagogy } from "./fresh/jbt-pedagogy";
 import { law } from "./fresh/law";
@@ -19,6 +20,8 @@ import { pharmacyMock2 } from "./fresh/pharmacy-2";
 import { pharmacyMock3 } from "./fresh/pharmacy-3";
 import { radiographyMock1 } from "./fresh/radiography-1";
 import { radiographyMock2 } from "./fresh/radiography-2";
+import { specialEducatorMock1 } from "./fresh/special-educator-1";
+import { specialEducatorMock2 } from "./fresh/special-educator-2";
 import { tetCdp } from "./fresh/tet-cdp";
 import { tgtPedagogy } from "./fresh/tgt-pedagogy";
 import { CLERK_MOCKS, HC_SECTIONALS, PROCESS_SERVER_MOCKS, PROCESS_SERVER_SCREENING_TESTS, STENO_MOCKS } from "../high-court";
@@ -33,7 +36,7 @@ import { DEFENCE_SERIES } from "../defence";
 import { DELHI_POLICE_SERIES } from "../delhi-police";
 import { CHSL_SERIES } from "../ssc/chsl";
 
-/** Bank picks, fresh questions per mock, or one set shared by several exams' mock N (picked once, on first use). */
+/** Bank picks, fresh questions per mock, or questions built per mock number (e.g. one set shared by several exams' mock N). */
 type Part = { n: number; pick: Pick } | PatwariQuestion[][] | { shared: (mock: number) => PatwariQuestion[] };
 type Section = { name: string; nameHi: string; parts: Part[] };
 
@@ -85,6 +88,13 @@ const awarenessSets: PatwariQuestion[][] = [];
 const awarenessGs = topic("general-studies", "indian-history", "indian-polity", "indian-geography", "indian-economy", "general-science");
 const tgtAwareness = (mock: number): PatwariQuestion[] =>
   (awarenessSets[mock] ??= [...take(1, 20, hpGk, `HP TET TGT awareness ${mock + 1} Himachal GK`), ...take(1, 10, awarenessGs, `HP TET TGT awareness ${mock + 1} GS`)]);
+
+// Forest Guard late mocks 3–5 take all 20 GS from the bank; by mocks 6–7 the bank's medium and hard GS are gone, so
+// those two get 10 fresh and 10 from the bank.
+const forestGuardLateGs = (late: number): PatwariQuestion[] =>
+  late < 3
+    ? take(1, 20, gs, `hprca-forest-guard mock ${late + 3} General Studies`)
+    : [...forestGuardGsLate[late - 3], ...take(1, 10, gs, `hprca-forest-guard mock ${late + 3} General Studies`)];
 
 const S = (name: string, nameHi: string, ...parts: Part[]): Section => ({
   name,
@@ -176,7 +186,7 @@ const EXAMS: ExamDef[] = [
     name: "HPRCA Forest Guard",
     nameHi: "एचपीआरसीए वन रक्षक",
     minutes: 120,
-    price: 99,
+    price: 199,
     description: "Full-length HP Forest Guard mock tests: Himachal GK, general studies, forestry & environment, reasoning, maths, Hindi and English.",
     sections: [
       S("Himachal GK", "हिमाचल सामान्य ज्ञान", from(25, hpGk)),
@@ -186,12 +196,12 @@ const EXAMS: ExamDef[] = [
       S("Mathematics", "गणित", from(10, maths)),
       S("Hindi & English", "हिंदी एवं अंग्रेज़ी", from(5, english), from(5, hindi)),
     ],
-    // Mocks 3–5 (October 2026): same split, fresh forestry questions.
+    // Mocks 3–7 (October 2026): same split, fresh forestry questions.
     lateMocks: {
-      count: 3,
+      count: 5,
       sections: [
         S("Himachal GK", "हिमाचल सामान्य ज्ञान", from(25, hpGk)),
-        S("General Studies", "सामान्य अध्ययन", from(20, gs)),
+        S("General Studies", "सामान्य अध्ययन", { shared: forestGuardLateGs }),
         S("Forestry & Environment", "वानिकी एवं पर्यावरण", forestryLate),
         S("Reasoning", "तर्कशक्ति", from(15, reasoning)),
         S("Mathematics", "गणित", from(10, maths)),
@@ -529,7 +539,31 @@ const EXAMS: ExamDef[] = [
       S("General Awareness", "सामान्य जागरूकता", from(10, hpGk), from(5, gs)),
     ],
   },
-  // Radiography sections written fresh in ./fresh/radiography-N; general awareness comes from the bank (GS and reasoning, as Himachal GK is nearly used up).
+  // Everything but reasoning written fresh in ./fresh/special-educator-N: the bank has no Himachal GK or GS to spare
+  // once Forest Guard mocks 6–7 have picked.
+  // Kept after the earlier exams so their bank picks stay as they were.
+  {
+    bodySlug: "hprca",
+    examSlug: "special-educator",
+    slug: "hprca-special-educator",
+    name: "HPRCA Special Educator",
+    nameHi: "एचपीआरसीए विशेष शिक्षक",
+    minutes: 120,
+    price: 99,
+    description:
+      "Full-length HPRCA Special Educator mock tests: special education (types of disability, RPwD Act 2016, assessment and IEP, " +
+      "teaching strategies and assistive devices), child development and inclusive pedagogy, Himachal GK, general studies " +
+      "and reasoning.",
+    sections: [
+      S("Special Education", "विशेष शिक्षा", [specialEducatorMock1, specialEducatorMock2].map((m) => m.specialEducation)),
+      S("Child Development & Inclusive Pedagogy", "बाल विकास एवं समावेशी शिक्षाशास्त्र", [specialEducatorMock1, specialEducatorMock2].map((m) => m.pedagogy)),
+      S("Himachal GK", "हिमाचल सामान्य ज्ञान", [specialEducatorMock1, specialEducatorMock2].map((m) => m.hpGk)),
+      S("General Studies", "सामान्य अध्ययन", [specialEducatorMock1, specialEducatorMock2].map((m) => m.gs)),
+      S("Reasoning", "तर्कशक्ति", from(10, reasoning)),
+    ],
+  },
+  // Radiography sections written fresh in ./fresh/radiography-N; general awareness is 5 fresh GS plus 5 GS and 5 reasoning
+  // from the bank, which cannot spare more GS once Forest Guard mocks 6–7 have picked.
   // Kept after the special educator so the bank picks of every earlier exam stay as they were.
   {
     bodySlug: "hprca",
@@ -547,7 +581,7 @@ const EXAMS: ExamDef[] = [
       S("Radiation Physics & Safety", "विकिरण भौतिकी एवं सुरक्षा", [radiographyMock1, radiographyMock2].map((m) => m.physics)),
       S("Imaging Equipment & Modalities", "इमेजिंग उपकरण एवं माध्यम", [radiographyMock1, radiographyMock2].map((m) => m.equipment)),
       S("Anatomy & Physiology", "शरीर रचना एवं क्रिया विज्ञान", [radiographyMock1, radiographyMock2].map((m) => m.anatomy)),
-      S("General Awareness", "सामान्य जागरूकता", from(10, gs), from(5, reasoning)),
+      S("General Awareness", "सामान्य जागरूकता", [radiographyMock1, radiographyMock2].map((m) => m.gs), from(5, gs), from(5, reasoning)),
     ],
   },
 ];
@@ -581,6 +615,8 @@ export type ExamSeriesSeed = SeriesSeed & { key: string };
 const ALL_MOCKS = EXAMS.map((e) => [...Array.from({ length: e.mocks ?? MOCKS }, (_, i) => mockQuestions(e, i)), ...(e.extraMocks ?? [])]);
 // Fresh questions in earlier mocks can share their text with a bank question; late picks must not repeat them.
 ALL_MOCKS.flat().forEach(reserve);
+// So do the series written outside the bank (SSC, defence, Delhi Police).
+[...DEFENCE_SERIES, ...DELHI_POLICE_SERIES, ...CHSL_SERIES].forEach((x) => x.tests.forEach((t) => reserve(t.questions)));
 EXAMS.forEach((e, k) => {
   if (e.lateMocks) ALL_MOCKS[k].push(...Array.from({ length: e.lateMocks.count }, (_, i) => mockQuestions(e, i, e.lateMocks!.sections)));
 });

@@ -11,6 +11,7 @@ describe("examCategory", () => {
     expect(examCategory("hprca", "staff-nurse")).toBe("medical");
     expect(examCategory("hpbose", "hp-tet")).toBe("teaching");
     expect(examCategory("hprca", "tgt")).toBe("teaching");
+    expect(examCategory("hprca", "special-educator")).toBe("teaching");
     expect(examCategory("hpsebl", "lineman")).toBe("engineering");
     expect(examCategory("hprca", "junior-engineer")).toBe("engineering");
     expect(examCategory("hprca", "forest-guard")).toBe("forest");

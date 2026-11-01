@@ -74,7 +74,7 @@ describe("exam series built from the shared bank", () => {
 
   // The seed dedupes by stem hash, so a fresh question matching any seeded one would silently reuse that question
   it("writes every exam-specific question fresh", () => {
-    const specific = new Set(["pedagogy", "forestry", "law", "nursing", "banking", "library-science", "radiography"]);
+    const specific = new Set(["pedagogy", "forestry", "law", "nursing", "banking", "library-science", "special-education", "radiography"]);
     for (const t of ALL_TESTS) {
       for (const x of t.questions.filter((y) => specific.has(y.subject))) expect(otherSeries.has(hash(x)), `${t.slug}: ${x.en[0].slice(0, 60)}`).toBe(false);
     }
