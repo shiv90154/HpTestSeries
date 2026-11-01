@@ -62,6 +62,8 @@ model User {
   walletTxns     WalletTransaction[]
   emailLogs      EmailLog[]
   emailCampaigns EmailCampaign[]
+  pushSubscriptions PushSubscription[]
+  pushCampaigns     PushCampaign[]
 
   @@map("user")
 }
@@ -799,4 +801,56 @@ model ExamAlertLog {
 
   @@unique([alertId, campaignId])
   @@index([status, createdAt])
+}
+
+// ───────────────────────── Push notifications ─────────────────────────
+
+/** One browser/device that allowed notifications. Tied to a student once they sign in on that device. */
+model PushSubscription {
+  id          String    @id @default(cuid())
+  endpoint    String    @unique // the push service URL; identifies the device
+  p256dh      String
+  auth        String
+  userId      String?
+  user        User?     @relation(fields: [userId], references: [id], onDelete: SetNull)
+  site        String    @default("hp") // origin the device subscribed on: its pushes carry this site's name and links
+  userAgent   String?
+  failures    Int       @default(0) // consecutive send failures; the device is dropped after a few
+  createdAt   DateTime  @default(now())
+  lastSeenAt  DateTime  @default(now())
+
+  logs PushLog[]
+
+  @@index([site])
+  @@index([userId])
+}
+
+/** A message written in /admin/push and sent to every device that matches. */
+model PushCampaign {
+  id          String    @id @default(cuid())
+  title       String
+  body        String
+  url         String // path on the site, e.g. /tests/hp-police-mock-3
+  site        String? // null = every site
+  examId      String? // null = every device; else students who attempted or bought this exam
+  createdById String
+  createdBy   User      @relation(fields: [createdById], references: [id])
+  createdAt   DateTime  @default(now())
+  finishedAt  DateTime?
+  targeted    Int       @default(0)
+  sent        Int       @default(0)
+  failed      Int       @default(0)
+}
+
+/** Records an automatic push (access ending) to one device; the unique key stops the same reminder going twice. */
+model PushLog {
+  id             String           @id @default(cuid())
+  subscriptionId String
+  subscription   PushSubscription @relation(fields: [subscriptionId], references: [id], onDelete: Cascade)
+  kind           String // "expiry"
+  refKey         String // entitlement id
+  createdAt      DateTime         @default(now())
+
+  @@unique([subscriptionId, kind, refKey])
+  @@index([createdAt])
 }

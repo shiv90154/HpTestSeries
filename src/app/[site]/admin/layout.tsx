@@ -28,6 +28,7 @@ export default async function AdminLayout({ children }: LayoutProps<"/[site]/adm
     { href: "/admin/orders", label: "Orders", icon: "orders", show: can(user.role, "commerce:manage") },
     { href: "/admin/coupons", label: "Coupons", icon: "coupons", show: can(user.role, "commerce:manage") },
     { href: "/admin/emails", label: "Emails", icon: "emails", show: can(user.role, "commerce:manage") },
+    { href: "/admin/push", label: "Notifications", icon: "push", show: can(user.role, "commerce:manage") },
     { href: "/admin/users", label: "Users", icon: "users", show: can(user.role, "users:manage") },
     { href: "/admin/attempts", label: "Flagged attempts", icon: "attempts", show: can(user.role, "users:manage") },
     { href: "/admin/audit", label: "Audit log", icon: "audit", show: can(user.role, "audit:view") },

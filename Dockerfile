@@ -18,6 +18,9 @@ ENV NEXT_TELEMETRY_DISABLED=1
 RUN mkdir -p public
 
 FROM tools AS builder
+# Git commit of this deploy (set by deploy.sh); the app compares it with the browser's copy to prompt for an update.
+ARG APP_VERSION=""
+ENV APP_VERSION=$APP_VERSION
 # The env file is mounted only for this step (BuildKit secret), so it never lands in an image layer.
 RUN --mount=type=secret,id=env,target=/app/.env npm run build
 

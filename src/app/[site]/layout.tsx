@@ -7,6 +7,7 @@ import { isSiteCode, siteStaticParams } from "@/sites";
 import { gaIdFor, metaPixelIdFor } from "@/sites/analytics";
 import { currentSite } from "@/sites/current";
 import { SiteProvider } from "@/sites/provider";
+import { PwaManager } from "@/components/pwa/pwa-manager";
 import { UiLangSync } from "@/components/ui-lang";
 import { themeStyle } from "@/sites/theme";
 import "../globals.css";
@@ -84,6 +85,7 @@ export default async function RootLayout({ children, params }: LayoutProps<"/[si
           <UiLangSync />
           {children}
           <Toaster position="top-center" richColors />
+          <PwaManager />
           <Analytics gaId={gaIdFor(site.code)} pixelId={metaPixelIdFor(site.code)} />
         </SiteProvider>
       </body>

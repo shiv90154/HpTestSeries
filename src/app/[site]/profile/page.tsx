@@ -12,6 +12,7 @@ import { getProfileStats } from "@/modules/identity/profile";
 import { initialsOf, profileCompleteness } from "@/modules/identity/profile-rules";
 import { requireUser } from "@/modules/identity/session";
 import { currentSite } from "@/sites/current";
+import { AppSettings } from "@/components/pwa/app-settings";
 import { EmailPrefsForm } from "./email-prefs-form";
 import { ProfileForm } from "./profile-form";
 
@@ -154,6 +155,11 @@ export default async function ProfilePage() {
             <EmailPrefsForm offers={offersAllowed(profile)} reminders={profile.emailReminders} />
           </section>
         )}
+
+        <section id="app" className={`${card} scroll-mt-24 p-5`}>
+          <h2 className="mb-4 font-semibold">App and notifications</h2>
+          <AppSettings />
+        </section>
 
         <section className={`${card} flex items-center justify-between gap-3 p-5`}>
           <div>

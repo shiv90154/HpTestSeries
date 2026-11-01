@@ -3,9 +3,9 @@ import { metadataResponse } from "@/lib/metadata-route";
 import { freeMockHref, getSite, type SiteConfig } from "@/sites";
 import { siteStaticParams } from "@/sites";
 
-// Makes the site installable ("Add to Home screen" / install prompt on Android Chrome). Per the Next.js PWA
-// guide a manifest over HTTPS is enough to install; there is deliberately no offline service worker (a cached
-// shell can pin students to an old build). The CBT keeps answers in localStorage and retries when offline.
+// Makes the site installable ("Add to Home screen" / install prompt on Android Chrome). The service worker (sw.js)
+// adds push notifications and an offline page, but never caches pages (a cached shell can pin students to an old
+// build). The CBT keeps answers in localStorage and retries when offline.
 export const dynamic = "force-static";
 
 // Route handlers do not inherit the layout's site list, so each prerenders every site itself.
@@ -20,6 +20,8 @@ function manifest(site: SiteConfig): MetadataRoute.Manifest {
     start_url: "/?source=pwa",
     scope: "/",
     display: "standalone",
+    display_override: ["standalone", "minimal-ui"],
+    prefer_related_applications: false,
     orientation: "portrait",
     background_color: "#ffffff",
     theme_color: site.themeColor,

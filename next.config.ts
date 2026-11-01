@@ -5,11 +5,15 @@ import { privatePaths, securityHeaders } from "./src/lib/security-headers";
 // static-generation workers don't fight over it. Leave unset with real Postgres.
 const buildWorkers = Number(process.env.BUILD_WORKERS) || undefined;
 const isDev = process.env.NODE_ENV === "development";
+// Identifies this build for the "new version available" prompt (src/components/pwa). deploy.sh passes the git commit; any other build
+// gets a timestamp. Inlined into the client and server bundles, so the browser and /api/version compare the same value.
+const appVersion = process.env.APP_VERSION || `t${Date.now().toString(36)}`;
 
 const nextConfig: NextConfig = {
   // Self-contained server.js + traced node_modules for the Docker image (deploy/).
   output: "standalone",
   poweredByHeader: false,
+  env: { NEXT_PUBLIC_APP_VERSION: appVersion },
   experimental: {
     serverActions: {
       // Bilingual question CSVs: ~1 KB/question (Devanagari is 3 bytes/char), up to 2000 rows per import.
@@ -37,6 +41,9 @@ const nextConfig: NextConfig = {
   async headers() {
     return [
       { source: "/:path*", headers: securityHeaders(isDev) },
+      // The service worker and the version check must never come from a cache, or an update would not be noticed.
+      { source: "/sw.js", headers: [{ key: "Cache-Control", value: "no-cache, no-store, must-revalidate" }, { key: "Service-Worker-Allowed", value: "/" }] },
+      { source: "/api/version", headers: [{ key: "Cache-Control", value: "no-store" }] },
       // Share-preview images: social crawlers still fetch them, but Google should not list them as pages.
       { source: "/:path(.*opengraph-image.*)", headers: [{ key: "X-Robots-Tag", value: "noindex" }] },
       ...privatePaths.map((source) => ({ source, headers: [{ key: "Cache-Control", value: "private, no-store" }] })),

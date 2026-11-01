@@ -6,6 +6,8 @@ cd "$(dirname "$0")"
 export COMPOSE_PROJECT_NAME=hptestseries DOCKER_BUILDKIT=1
 
 git -C .. pull --ff-only
+# Baked into the build so open browsers can tell a newer version is live (see src/components/pwa).
+export APP_VERSION=$(git -C .. rev-parse --short HEAD)
 
 if [ ! -f .env.production ]; then
   db_pw=$(openssl rand -hex 24)
@@ -34,6 +36,12 @@ RAZORPAY_KEY_ID=
 RAZORPAY_KEY_SECRET=
 RAZORPAY_WEBHOOK_SECRET=
 CRON_SECRET=$(openssl rand -hex 24)
+
+# Push notifications: make the pair once with  npx web-push generate-vapid-keys  and never change it (a new pair
+# silently drops every subscribed device). VAPID_SUBJECT is a mailto: or https: contact for the push services.
+# VAPID_PUBLIC_KEY=
+# VAPID_PRIVATE_KEY=
+# VAPID_SUBJECT=mailto:support@hptestseries.in
 
 # Google Analytics 4, one property per site
 # GA_ID_HP=G-XXXXXXXXXX

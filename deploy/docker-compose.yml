@@ -38,6 +38,8 @@ services:
       target: runner
       network: host
       secrets: [env]
+      args:
+        APP_VERSION: ${APP_VERSION:-}
     image: hptestseries-app
     restart: unless-stopped
     network_mode: host

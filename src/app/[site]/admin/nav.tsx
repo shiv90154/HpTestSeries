@@ -2,9 +2,9 @@
 
 import Link from "next/link";
 import { useSitePathname } from "@/sites/provider";
-import { AlertTriangle, ClipboardList, Flag, GraduationCap, HelpCircle, LayoutDashboard, Mail, Newspaper, Package, ScrollText, ShieldAlert, ShieldCheck, ShoppingCart, Ticket, Users, type LucideIcon } from "lucide-react";
+import { AlertTriangle, Bell, ClipboardList, Flag, GraduationCap, HelpCircle, LayoutDashboard, Mail, Newspaper, Package, ScrollText, ShieldAlert, ShieldCheck, ShoppingCart, Ticket, Users, type LucideIcon } from "lucide-react";
 
-export type AdminNavIconKey = "overview" | "questions" | "tests" | "exams" | "blog" | "reports" | "products" | "orders" | "attempts" | "audit" | "errors" | "coupons" | "emails" | "users" | "security";
+export type AdminNavIconKey = "overview" | "questions" | "tests" | "exams" | "blog" | "reports" | "products" | "orders" | "attempts" | "audit" | "errors" | "coupons" | "emails" | "push" | "users" | "security";
 
 const ICONS: Record<AdminNavIconKey, LucideIcon> = {
   overview: LayoutDashboard,
@@ -20,6 +20,7 @@ const ICONS: Record<AdminNavIconKey, LucideIcon> = {
   errors: AlertTriangle,
   coupons: Ticket,
   emails: Mail,
+  push: Bell,
   users: Users,
   security: ShieldCheck,
 };
