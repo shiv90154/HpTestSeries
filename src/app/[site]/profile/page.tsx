@@ -1,4 +1,4 @@
-import { BadgeCheck, Calendar, CheckCircle2, Circle, Crown, Mail, Phone, Receipt, ShieldCheck } from "lucide-react";
+import { BadgeCheck, Calendar, CheckCircle2, Circle, Crown, Mail, Pencil, Phone, Receipt, ShieldCheck } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { AppHeader } from "@/components/app-header";
@@ -67,6 +67,9 @@ export default async function ProfilePage() {
                   <Calendar className="size-3.5 shrink-0" /> Member since {memberSince}
                 </p>
               </div>
+              <a href="#edit" className={btn("outline", "sm", "ml-auto mb-1 shrink-0")}>
+                <Pencil className="size-3.5" /> Edit profile
+              </a>
             </div>
 
             {topPlan && (
@@ -140,7 +143,7 @@ export default async function ProfilePage() {
           </dl>
         </section>
 
-        <section className={`${card} p-5`}>
+        <section id="edit" className={`${card} scroll-mt-24 p-5`}>
           <h2 className="mb-4 font-semibold">Edit details</h2>
           <ProfileForm name={profile.name} district={profile.district} preferredLang={profile.preferredLang} />
         </section>
