@@ -112,6 +112,7 @@ describe("exam page copy", () => {
     expect(Object.entries(EXAM_PAGES).filter(([, p]) => p.pattern).map(([k]) => k).sort()).toEqual([
       "hp-revenue/patwari",
       "hpbose/hp-tet",
+      "hppsc/ado",
       "hppsc/assistant-professor",
       "hppsc/hpas",
       "hprca/clerk",

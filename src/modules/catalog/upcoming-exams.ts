@@ -63,8 +63,8 @@ export const UPCOMING_EXAMS: UpcomingExam[] = [
     examSlug: "ado",
     match: /\bado\b|agriculture/i,
     freeMockSlug: "hppsc-ado-free-mock-1",
-    eligibility: "B.Sc. (Agriculture) or a degree notified in the recruitment rules; age limit and relaxation as per notification.",
-    pattern: "Objective screening test followed by the further stages named in the notification.",
+    eligibility: "2026 advertisement: wards of Himachal ex-servicemen only; B.Sc. (Agriculture) plus second-class M.Sc. (Agriculture); age 18–45 on 1 January 2026.",
+    pattern: "Computer-based Paper I screening test followed by a personality test, as reported; confirm in the advertisement.",
     syllabus: "Agronomy, soil science, horticulture, plant protection, agricultural extension and economics.",
   },
   {

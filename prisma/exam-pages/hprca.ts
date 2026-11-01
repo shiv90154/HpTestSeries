@@ -90,7 +90,7 @@ JBT paper me **primary-level subjects** ka weight sabse zyada hota hai: Hindi, E
     },
     description: `**TGT (Trained Graduate Teacher)** posts are for teaching classes 6 to 10 in Himachal Pradesh government schools. Recruitment is done by the **Himachal Pradesh Rajya Chayan Aayog (HPRCA), Hamirpur**, separately for **TGT (Arts)**, **TGT (Non-Medical)** and **TGT (Medical)**, each with its own post code and subject paper. Candidates need a bachelor's degree in the relevant subjects, a **B.Ed** and a pass in the matching **HP TET (TGT)** category conducted by HPBOSE.
 
-Recent drives select candidates through a **computer-based screening test (CBT)** followed by document verification. The notification states the exact stages, subject weightage and age limit. HPRCA advertised the TGT (Arts), TGT (Non-Medical) and TGT (Medical) posts one after another in the 2025-26 cycle, so keep your TET certificate and degree documents ready before the next notification.
+Recent drives select candidates through a **computer-based screening test (CBT)** followed by document verification. The notification states the exact stages, subject weightage and age limit. HPRCA advertised the TGT (Arts), TGT (Non-Medical) and TGT (Medical) posts one after another in the 2025-26 cycle, and as reported the computer-based tests were held in December 2025 (Medical, Non-Medical) and January 2026 (Arts), with about 425 Arts, 343 Non-Medical and 169 Medical vacancies (937 in all). Answer keys and results for that cycle are already out, so keep your TET certificate and degree documents ready before the next notification.
 
 TGT paper me tumhare **apne subject ka sabse bada hissa** hota hai (Arts me social science aur languages, Non-Medical me Maths, Physics, Chemistry, Medical me Biology, Chemistry). Baaki me pedagogy, Himachal GK, current affairs aur reasoning aate hain. Subject strong ho to hi cutoff safe hota hai.
 
@@ -124,6 +124,10 @@ TGT paper me tumhare **apne subject ka sabse bada hissa** hota hai (Arts me soci
         a: "In recent drives, through a computer-based screening test followed by document verification. Check the notification for any further stage, such as a medical examination for particular posts.",
       },
       {
+        q: "When was the HPRCA TGT exam held and how many posts were there?",
+        a: "As reported, the TGT (Medical) CBT was held in mid-December 2025, TGT (Non-Medical) in late December 2025 and TGT (Arts) in January 2026, for about 169, 343 and 425 posts respectively. Answer keys and results are out. Confirm details on hprca.hp.gov.in.",
+      },
+      {
         q: "HPRCA TGT ki taiyari kaise shuru karein?",
         a: `Pehle apne subject ka graduation-level syllabus khatam karo, phir pedagogy aur Himachal GK. Har hafte ek timed mock do. [HPRCA TGT free mock](${free("hprca-tgt-free-mock-1")}) se shuruaat karo.`,
       },
@@ -135,7 +139,9 @@ TGT paper me tumhare **apne subject ka sabse bada hissa** hota hai (Arts me soci
       title: "HP PGT Mock Test {year} — Lecturer (School New) Series",
       description: "HP PGT / Lecturer (School New) mock tests for 10 subjects, from English and Maths to Physics, History and Commerce, in real CBT format, Hindi & English.",
     },
-    description: `**PGT (Post Graduate Teacher)**, called **Lecturer (School New)** in Himachal Pradesh, teaches classes 11 and 12 in government senior secondary schools. Posts are notified subject-wise (English, Hindi, Mathematics, Physics, Chemistry, Biology, History, Political Science, Economics, Commerce and others), and recruitment in recent cycles has been done through the state recruiting commission, now the **Himachal Pradesh Rajya Chayan Aayog (HPRCA), Hamirpur**. Candidates generally need a master's degree in the subject with the prescribed marks and a **B.Ed**; the notification gives the exact eligibility, age limit and stages.
+    description: `**PGT (Post Graduate Teacher)**, called **Lecturer (School New)** in Himachal Pradesh, teaches classes 11 and 12 in government senior secondary schools. Posts are notified subject-wise (English, Hindi, Mathematics, Physics, Chemistry, Biology, History, Political Science, Economics, Commerce and others), and recruitment in recent cycles has been done through the state recruiting commission, now the **Himachal Pradesh Rajya Chayan Aayog (HPRCA), Hamirpur**. Candidates generally need a master's degree in the subject with the prescribed marks, a **B.Ed** and, as reported for 2026, a pass in the **HP TET**; the notification gives the exact eligibility, age limit and stages.
+
+**2026 drive, as reported:** HPRCA advertised PGT posts in three notifications in April 2026 (Advt. 07/2026 for 390 posts in Biology, Chemistry, Physics and Commerce, Advt. 08/2026 for about 808 and Advt. 09/2026 for about 894), around 2,092 posts in all, with an age of 18 to 45 years on 1 January 2026. Applications for these have closed and the exam date had not been announced when this page was updated, so watch hprca.hp.gov.in.
 
 Selection is usually through a **computer-based screening test** on the subject and general awareness, followed by document verification and any further stage the notification lays down. The official section split is not published, so our mocks use 100 questions in four parts: pedagogy and teaching aptitude, Himachal GK and general studies, and two sections of the subject at post-graduate level.
 
@@ -170,7 +176,15 @@ PGT paper me **subject ka hissa sabse bada** hota hai, aur level master's degree
       },
       {
         q: "What qualification is needed for HP PGT?",
-        a: "Usually a master's degree in the subject with the prescribed percentage and a B.Ed. The exact marks, relaxations and age limit are given in each notification.",
+        a: "Usually a master's degree in the subject with the prescribed percentage, a B.Ed and, as reported for 2026, a pass in the HP TET. The exact marks, relaxations and age limit (18 to 45 years on 1 January 2026 in the 2026 drive) are given in each notification.",
+      },
+      {
+        q: "How many HP PGT posts did HPRCA advertise in 2026?",
+        a: "As reported, about 2,092 posts in three advertisements of April 2026: 07/2026 (390 posts in Biology, Chemistry, Physics and Commerce), 08/2026 (about 808) and 09/2026 (about 894). Sources differ on subject-wise counts, so confirm on hprca.hp.gov.in.",
+      },
+      {
+        q: "What is the HP PGT exam date 2026?",
+        a: "The exam date had not been announced when this page was updated. HPRCA publishes it on hprca.hp.gov.in, so check there before relying on a date from any other site.",
       },
       {
         q: "Which subjects do these PGT mocks cover?",

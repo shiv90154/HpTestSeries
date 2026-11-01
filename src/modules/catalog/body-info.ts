@@ -38,7 +38,7 @@ Selection usually combines an objective screening or prelims test with descripti
     faqs: [
       {
         q: "HPPSC kaun si exams conduct karta hai?",
-        a: "HPAS combined exam, Assistant Professor, Agriculture Development Officer, Assistant Engineer, Medical Officer, Veterinary Officer, Food Safety Officer, Civil Judge aur anya officer-level posts.",
+        a: "HPAS combined exam, Assistant Professor, Agriculture Development Officer, Assistant Engineer, Medical Officer, Veterinary Officer, Civil Judge aur anya officer-level posts.",
       },
       {
         q: "Is Himachal GK asked in HPPSC exams?",

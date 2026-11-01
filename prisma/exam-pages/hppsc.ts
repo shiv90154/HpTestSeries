@@ -26,10 +26,10 @@ export const HPPSC_PAGES: ExamPages = {
 
   "hppsc/assistant-professor": {
     seo: {
-      title: "HPPSC Assistant Professor Mock Test {year} — Free Series",
-      description: "Free HPPSC Assistant Professor mock tests: Paper I screening (Himachal GK, current affairs, Hindi, English) in real CBT format, with Hindi & English solutions.",
+      title: "HPPSC Assistant Professor Mock Test {year} — Syllabus & Pattern",
+      description: "HPPSC Assistant Professor {year}: Paper I screening pattern, syllabus, eligibility and free mock tests on Himachal GK, current affairs, Hindi and English, with solutions.",
     },
-    description: `**Assistant Professor** posts in Himachal Pradesh government colleges are filled by the **Himachal Pradesh Public Service Commission (HPPSC), Shimla**, subject by subject. The 2026 advertisement covered 369 posts across 22 subjects, with a separate online application for each subject on the HPPSC portal.
+    description: `**Assistant Professor** posts in Himachal Pradesh government colleges are filled by the **Himachal Pradesh Public Service Commission (HPPSC), Shimla**, subject by subject. The 2026 advertisement covered about 369 posts across 22 subjects (reports quote anywhere from 369 to 410 as posts were added), with a separate online application for each subject on the HPPSC portal.
 
 The qualification asked was a **Master's degree with at least 55% marks (50% for reserved categories) plus UGC NET / SLET / SET, or a PhD** as per UGC rules; the notification gives the subject-wise conditions and the age limit. Selected candidates join as Job Trainees on a fixed monthly amount before regularisation, as stated in the advertisement.
 
@@ -52,13 +52,31 @@ Paper I me **Himachal GK, national and international affairs, Hindi aur English*
 
 ### Personality test
 - Subject knowledge, communication, teaching aptitude and awareness of higher education`,
+    // Paper I split and the 0.25 negative marking are from one secondary source; the note asks the reader to confirm them.
     pattern: {
-      sections: [],
+      sections: [
+        { name: "Paper I: General knowledge of Himachal Pradesh", questions: 30, marks: 30 },
+        { name: "Paper I: National and international affairs", questions: 30, marks: 30 },
+        { name: "Paper I: Hindi language", questions: 20, marks: 20 },
+        { name: "Paper I: English language", questions: 20, marks: 20 },
+      ],
       durationMin: null,
-      negativeMarking: "",
-      note: "2026 scheme: Paper I screening test (100 marks, qualifying only; Himachal GK, national and international affairs, Hindi, English), Paper II subject aptitude test (120 marks) and a personality test (30 marks). Final merit is from Paper II plus the personality test. Confirm the current scheme in the HPPSC advertisement.",
+      negativeMarking: "0.25 per wrong answer in Paper I, as reported; confirm in the advertisement",
+      note: "2026 scheme as reported: Paper I screening test (100 marks, qualifying only), Paper II subject aptitude test (120 marks, descriptive, 3 hours) and a personality test (30 marks). Final merit is from Paper II plus the personality test. The section split above comes from reports, so confirm the current scheme in the HPPSC advertisement.",
     },
     faqs: [
+      {
+        q: "What is the HPPSC Assistant Professor exam date 2026?",
+        a: "Reports disagree on the screening test dates, and HPPSC announces them through press notes. Check the Press Note section of hppsc.hp.gov.in for the schedule of your subject before relying on any date you see elsewhere.",
+      },
+      {
+        q: "What is the HPPSC Assistant Professor cut-off?",
+        a: "HPPSC has not published a single cut-off we could verify. Paper I is qualifying only, and final merit is from Paper II plus the personality test, so subject-wise results and merit lists are what decide selection.",
+      },
+      {
+        q: "Are Medical Education (DMER) Assistant Professor posts the same exam?",
+        a: "No. Assistant Professor posts in the Department of Medical Education & Research (medical colleges) are advertised separately by HPPSC with their own personality-test schedules. This page is about the College Cadre posts.",
+      },
       {
         q: "Assistant Professor ke liye qualification kya hai?",
         a: "Subject me Master's degree (kam se kam 55% marks, reserved categories ke liye 50%) aur UGC NET/SLET/SET, ya PhD as per UGC rules. Subject-wise conditions HPPSC ke advertisement me hoti hain.",
@@ -69,7 +87,7 @@ Paper I me **Himachal GK, national and international affairs, Hindi aur English*
       },
       {
         q: "How many Assistant Professor posts did HPPSC advertise in 2026?",
-        a: "The 2026 advertisement covered 369 posts in 22 subjects, each with its own application. Subject-wise dates and new notifications are posted on hppsc.hp.gov.in.",
+        a: "The 2026 advertisement covered about 369 posts in 22 subjects, each with its own application; reports quote between 369 and 410 as posts were added. Confirm the figure for your subject on hppsc.hp.gov.in.",
       },
       {
         q: "Is Himachal GK needed for Assistant Professor?",
@@ -80,12 +98,14 @@ Paper I me **Himachal GK, national and international affairs, Hindi aur English*
 
   "hppsc/ado": {
     seo: {
-      title: "HPPSC ADO Mock Test {year} — Agriculture Development Officer",
-      description: "Free HPPSC ADO (Agriculture Development Officer) mock tests: agronomy, soil, horticulture, plant protection and Himachal GK in real CBT format, with solutions.",
+      title: "HPPSC ADO Mock Test {year} — Eligibility, Syllabus & Free Test",
+      description: "HPPSC ADO (Agriculture Development Officer) 2026: eligibility, selection stages, syllabus and a free mock test on agronomy, soil, horticulture and Himachal GK.",
     },
-    description: `**Agriculture Development Officer (ADO)** is the officer who guides farmers in a development block on crops, soil health, inputs, pest management and government schemes, working under the Department of Agriculture, Himachal Pradesh. The post is filled by the **Himachal Pradesh Public Service Commission (HPPSC), Shimla**. In September 2026 HPPSC advertised 23 ADO posts with the last date of application on 22 October 2026.
+    description: `**Agriculture Development Officer (ADO)** is the officer who guides farmers in a development block on crops, soil health, inputs, pest management and government schemes, working under the Department of Agriculture, Himachal Pradesh. The post is filled by the **Himachal Pradesh Public Service Commission (HPPSC), Shimla**.
 
-The usual qualification is a **B.Sc. (Agriculture)** or the degree named in the recruitment rules; the advertisement states the exact subjects, percentage, age limit and selection stages, so read it before applying. Selection is by HPPSC in the stages mentioned in that advertisement.
+**Who could apply in 2026:** in September 2026 HPPSC advertised **23 ADO posts (Advt. No. 63/9-2026)**, and as reported these were all **backlog posts reserved for wards of Himachal ex-servicemen** (dependent sons, daughters and wives), not for general candidates. The reported split is 19 UR-ExSM, 3 SC-ExSM and 1 OBC-ExSM. Online applications closed on **22 October 2026**. If you are not a ward of an ex-serviceman, this particular advertisement was not open to you, so wait for a general ADO notification.
+
+**Qualification as reported:** a four-year **B.Sc. (Agriculture)** plus a second-class **M.Sc. (Agriculture)**, with first class a desirable qualification, and an age of **18 to 45 years on 1 January 2026**. The selection was reported as a computer-based **Paper I screening test followed by a personality test**. These details come from news reports, so read the HPPSC advertisement for the exact conditions, documents and marking scheme.
 
 ADO paper me **agronomy, soil science, horticulture, plant protection aur agricultural extension** ka technical hissa sabse zyada weight rakhta hai. Himachal ke liye khaas topics, jaise apple aur sabzi ki kheti, seed potato, natural farming aur horticulture schemes, ke seedhe questions aate hain. Saath me Himachal GK aur current affairs ke aasaan marks bhi hote hain.
 
@@ -108,14 +128,29 @@ ADO paper me **agronomy, soil science, horticulture, plant protection aur agricu
 ### General awareness
 - Himachal Pradesh GK and current affairs
 - General knowledge and English`,
+    // Marks and duration of the screening test were not in any source found, so the pattern carries only the stages.
+    pattern: {
+      sections: [],
+      durationMin: null,
+      negativeMarking: "",
+      note: "2026 advertisement (63/9-2026), as reported: a computer-based Paper I screening test followed by a personality test; negative marking was mentioned in one report. Marks and duration are in the HPPSC advertisement, so confirm them there.",
+    },
     faqs: [
       {
+        q: "Can general candidates apply for HPPSC ADO?",
+        a: "Not in the 2026 advertisement. As reported, all 23 posts (Advt. 63/9-2026) were backlog posts for wards of Himachal ex-servicemen. Watch hppsc.hp.gov.in for a general ADO notification.",
+      },
+      {
         q: "ADO ke liye qualification kya hai?",
-        a: "Aam taur par B.Sc. (Agriculture) ya recruitment rules me bataya gaya degree. Percentage aur age limit HPPSC ke advertisement me hoti hai.",
+        a: "2026 ke advertisement ke mutabiq 4-year B.Sc. (Agriculture) aur second-class M.Sc. (Agriculture), age 18 se 45 saal (1 January 2026 ko). Exact conditions HPPSC ke advertisement me dekho.",
       },
       {
         q: "How many ADO posts did HPPSC advertise in 2026?",
-        a: "HPPSC advertised 23 Agriculture Development Officer posts in September 2026, with the last date of application on 22 October 2026. Always confirm on hppsc.hp.gov.in.",
+        a: "HPPSC advertised 23 Agriculture Development Officer posts in September 2026 (Advt. 63/9-2026) and applications closed on 22 October 2026. Always confirm on hppsc.hp.gov.in.",
+      },
+      {
+        q: "What is the ADO selection process?",
+        a: "Reports describe a computer-based Paper I screening test followed by a personality test. The HPPSC advertisement gives the marks and the exact stages.",
       },
       {
         q: "Does the ADO exam include Himachal-specific agriculture?",
@@ -267,10 +302,12 @@ VO paper me **veterinary medicine, surgery, gynaecology and obstetrics, patholog
 
   "hppsc/food-safety-officer": {
     seo: {
-      title: "HPPSC Food Safety Officer Mock Test {year} — Free FSO Test & Syllabus",
-      description: "Free HPPSC FSO mock test {year}: FSS Act 2006, food chemistry, microbiology, adulteration and Himachal GK in real CBT format, with topic-wise syllabus and solutions.",
+      title: "Food Safety Officer (FSO) Mock Test {year} — FSS Act, Free Test",
+      description: "Free Food Safety Officer (FSO) mock test {year}: FSS Act 2006, food chemistry, microbiology, adulteration and Himachal GK, with topic-wise syllabus and solutions.",
     },
-    description: `**Food Safety Officer (FSO)** enforces the **Food Safety and Standards Act, 2006** at district level: inspecting food businesses, drawing samples, sending them to labs and starting action against adulteration. In Himachal Pradesh the post sits in the Health and Family Welfare Department and is filled through **HPPSC, Shimla** advertisements.
+    description: `**Food Safety Officer (FSO)** enforces the **Food Safety and Standards Act, 2006** at district level: inspecting food businesses, drawing samples, sending them to labs and starting action against adulteration. In Himachal Pradesh the post sits in the Health and Family Welfare Department.
+
+**Current status:** we could not find a Himachal Pradesh FSO notification from HPPSC or HPRCA at the time of writing (November 2026). Do not confuse it with the **Haryana** FSO recruitment of September 2026 (45 posts, Advt. 25/2026), which is run by the *Haryana* Public Service Commission (HPSC) and is a different exam. Watch hppsc.hp.gov.in and hprca.hp.gov.in for a Himachal advertisement. The FSS Act syllabus below is common to FSO exams in every state, so this preparation stays useful.
 
 The qualification set by the Food Safety and Standards rules is a **degree in Food Technology, Dairy Technology, Biotechnology, Oil Technology, Agricultural Science, Veterinary Science, Biochemistry or Microbiology, a master's degree in Chemistry, or a medical degree** (the advertisement lists the exact eligible degrees), plus the age limit and selection stages given in it.
 
@@ -303,8 +340,12 @@ FSO paper me **FSS Act aur uske Rules, Regulations** ke seedhe questions sabse z
         a: "Yes. Direct questions on the Food Safety and Standards Act, 2006, its rules and regulations, licensing and penalties form a large part of the paper.",
       },
       {
-        q: "Who recruits Food Safety Officers in Himachal?",
-        a: "FSO posts in the Health and Family Welfare Department have been advertised through HPPSC. Watch hppsc.hp.gov.in for notifications and read the advertisement for the recruiting agency.",
+        q: "Is there a Himachal Pradesh FSO recruitment in 2026?",
+        a: "We could not find a Himachal FSO notification from HPPSC or HPRCA as of November 2026. The 45-post FSO recruitment in the news (Advt. 25/2026) is by the Haryana Public Service Commission, not Himachal. Check hppsc.hp.gov.in for updates.",
+      },
+      {
+        q: "HPSC aur HPPSC FSO me kya fark hai?",
+        a: "HPSC Haryana Public Service Commission hai, aur HPPSC Himachal Pradesh Public Service Commission. Dono alag aayog hain aur alag advertisement nikalte hain. Syllabus (FSS Act, food chemistry) dono me kaafi milta-julta hota hai.",
       },
     ],
   },
