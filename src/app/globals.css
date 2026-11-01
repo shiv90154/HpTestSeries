@@ -193,6 +193,34 @@ body {
   40%, 80% { transform: translateX(6px); }
 }
 
+/* Dashboard charts: bars grow in once on load. */
+@keyframes bar-grow {
+  from { transform: scaleY(0); }
+  to { transform: scaleY(1); }
+}
+
+@keyframes bar-fill {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+
+.anim-bar-y {
+  transform-origin: bottom;
+  animation: bar-grow 0.6s ease-out both;
+}
+
+.anim-bar-x {
+  transform-origin: left;
+  animation: bar-fill 0.7s ease-out both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .anim-bar-y,
+  .anim-bar-x {
+    animation: none;
+  }
+}
+
 @keyframes step-in {
   from {
     opacity: 0;

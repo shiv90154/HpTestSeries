@@ -8,7 +8,7 @@ import { getMyPlans } from "@/modules/commerce/purchases";
 import { getWalletBalance } from "@/modules/commerce/wallet";
 import { getMyReports } from "@/modules/content/report-service";
 import type { requireUser } from "@/modules/identity/session";
-import { FirstTestGuide, Hero, InProgressCard, LiveCard, MyPlans, MyReports, Performance, QuickActions, RecentTests } from "./dashboard-sections";
+import { FirstTestGuide, Hero, InProgressCard, LiveCard, MyPlans, MyReports, Performance, PlanExpiryBanner, QuickActions, RecentTests } from "./dashboard-sections";
 import { ProfileCard } from "./profile-card";
 
 export async function DashboardData({ user, purchaseNotice }: { user: Awaited<ReturnType<typeof requireUser>>; purchaseNotice: "unlocked" | "pending" | null }) {
@@ -34,6 +34,7 @@ export async function DashboardData({ user, purchaseNotice }: { user: Awaited<Re
         {/* Right after paying is when a student is keenest to join; otherwise the invite sits lower down. */}
         {purchaseNotice && <WhatsAppGroupCard place="after_purchase" />}
 
+        <PlanExpiryBanner plans={plans} />
         <Hero firstName={firstName} d={d} />
 
         {needsProfile && <ProfileCard name={d.profile.name} district={d.profile.district} />}
@@ -41,14 +42,22 @@ export async function DashboardData({ user, purchaseNotice }: { user: Awaited<Re
         {d.liveNext && <LiveCard live={d.liveNext} />}
 
         <QuickActions plans={plans} walletPaise={walletPaise} />
-        <MyPlans plans={plans} />
 
         {/* Before the first test there is nothing to chart: a short guide is more useful than four zeros. */}
-        {hasTests ? <Performance d={d} /> : <FirstTestGuide startHref={d.startSlug ? `/tests/${d.startSlug}/attempt` : "/tests"} />}
+        {hasTests ? (
+          <Performance d={d} aside={<MyPlans plans={plans} />} />
+        ) : (
+          <>
+            <FirstTestGuide startHref={d.startSlug ? `/tests/${d.startSlug}/attempt` : "/tests"} />
+            <MyPlans plans={plans} />
+          </>
+        )}
+
+        {hasTests && <RecentTests recent={d.recent} total={d.stats.tests} />}
 
         {d.suggested.length > 0 && (
           <section className="space-y-3">
-            <h2 className="text-lg font-semibold">{hasTests ? "Next up for you" : "Recommended for you"}</h2>
+            <h2 className="text-lg font-semibold tracking-tight">{hasTests ? "Next up for you" : "Recommended for you"}</h2>
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {d.suggested.map((t) => (
                 <TestCard key={t.slug} test={t} />
@@ -57,7 +66,6 @@ export async function DashboardData({ user, purchaseNotice }: { user: Awaited<Re
           </section>
         )}
 
-        {hasTests && <RecentTests recent={d.recent} total={d.stats.tests} />}
         {reports.length > 0 && <MyReports reports={reports} />}
         {!purchaseNotice && <WhatsAppGroupCard place="dashboard" />}
       </main>

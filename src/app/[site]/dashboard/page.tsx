@@ -10,7 +10,7 @@ export const metadata: Metadata = { title: "Dashboard", robots: { index: false }
 function DashboardSkeleton() {
   return (
     <main className="mx-auto w-full max-w-6xl flex-1 space-y-6 px-4 py-6 sm:py-8">
-      <SkeletonCard className="h-48 rounded-3xl" />
+      <SkeletonCard className="h-44 rounded-3xl sm:h-48" />
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         {Array.from({ length: 4 }).map((_, i) => (
           <SkeletonStatTile key={i} />

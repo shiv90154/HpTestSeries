@@ -19,9 +19,12 @@ export function ScoreTrend({ points }: { points: Point[] }) {
           </div>
         ))}
         <div className="absolute inset-y-0 left-10 right-0 flex items-end gap-[2px]">
-          {points.map((p) => (
+          {points.map((p, i) => (
             <div key={p.id} className="group relative flex h-full flex-1 items-end justify-center" tabIndex={0} aria-label={`${p.title}, ${fmtDate(p.date)}: ${p.percent}%`}>
-              <div className="w-full max-w-7 rounded-t bg-primary transition-colors group-hover:bg-primary-strong group-focus:bg-primary-strong" style={{ height: `${Math.max(p.percent, 1.5)}%` }} />
+              <div
+                className="anim-bar-y w-full max-w-7 rounded-t-md bg-linear-to-t from-primary-strong to-primary transition-opacity group-hover:opacity-80 group-focus:opacity-80"
+                style={{ height: `${Math.max(p.percent, 1.5)}%`, animationDelay: `${Math.min(i, 30) * 20}ms` }}
+              />
               <div className="pointer-events-none absolute bottom-full z-10 mb-1 hidden w-max max-w-48 rounded-lg bg-foreground px-2.5 py-1.5 text-xs text-white shadow-lg group-hover:block group-focus:block">
                 <p className="font-semibold">{p.percent}% · {p.score}/{p.maxScore}</p>
                 <p className="truncate text-white/75">{p.title}</p>

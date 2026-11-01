@@ -29,6 +29,9 @@ import { currentSite } from "@/sites/current";
 
 export type Dashboard = Awaited<ReturnType<typeof getDashboard>>;
 
+/** Hover lift for tappable cards; no movement for people who ask for less motion. */
+const lift = "transition duration-200 hover:-translate-y-0.5 hover:border-primary hover:shadow-md motion-reduce:transition-none motion-reduce:hover:translate-y-0";
+
 const date = (d: Date) => d.toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric", timeZone: "Asia/Kolkata" });
 const when = (d: Date) => d.toLocaleString("en-IN", { weekday: "short", day: "numeric", month: "short", hour: "numeric", minute: "2-digit", timeZone: "Asia/Kolkata" });
 
@@ -52,47 +55,58 @@ export async function Hero({ firstName, d }: { firstName: string; d: Dashboard }
           : "A little practice every day beats a long session once a week.";
 
   return (
-    <section className="relative overflow-hidden rounded-3xl bg-linear-to-br from-primary-strong via-primary to-hero-glow p-5 text-white sm:p-8">
+    <section className="relative overflow-hidden rounded-3xl bg-linear-to-br from-primary-strong via-primary to-hero-glow p-5 text-white shadow-lg shadow-primary/20 sm:p-8">
+      <div
+        className="pointer-events-none absolute inset-0 opacity-40"
+        style={{ backgroundImage: "radial-gradient(rgba(255,255,255,0.18) 1px, transparent 1px)", backgroundSize: "18px 18px" }}
+        aria-hidden
+      />
       <div className="pointer-events-none absolute -right-16 -top-16 size-64 rounded-full bg-white/10 blur-2xl" aria-hidden />
-      <div className="relative space-y-5">
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-          <div className="space-y-1">
-            <p className="text-sm text-white/75">{greeting()},</p>
-            <h1 className="text-2xl font-bold sm:text-3xl">{firstName} 👋</h1>
-            <p className="max-w-md text-sm text-white/85 sm:text-base">{message}</p>
-          </div>
-          {inProgress ? (
-            <Link href={`/tests/${inProgress.slug}/attempt`} className={btn("accent", "lg", "w-full sm:w-auto")}>
-              <PlayCircle className="size-5" /> Resume test
-            </Link>
-          ) : (
-            <Link href={startHref} className={btn("accent", "lg", "w-full sm:w-auto")}>
-              <PlayCircle className="size-5" /> {stats.tests === 0 ? "Start first test" : "Take a mock test"}
-            </Link>
+      <div className="pointer-events-none absolute -bottom-20 left-1/3 size-56 rounded-full bg-accent/15 blur-3xl" aria-hidden />
+      <div className="relative flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
+        <div className="space-y-2">
+          {stats.streak >= 1 && (
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-white/15 px-3 py-1 text-xs font-semibold backdrop-blur-sm">
+              <Flame className="size-3.5 text-accent" aria-hidden /> {stats.streak} day streak
+            </span>
           )}
+          <div>
+            <p className="text-sm text-white/75">{greeting()},</p>
+            <h1 className="text-2xl font-bold tracking-tight sm:text-4xl">{firstName} 👋</h1>
+          </div>
+          <p className="max-w-md text-sm text-white/85 sm:text-base">{message}</p>
         </div>
-
-        {stats.tests > 0 && (
-          <dl className="grid grid-cols-3 gap-2 sm:gap-3">
-            <HeroStat icon={<Flame className="size-4" aria-hidden />} label="Day streak" value={`${stats.streak}`} />
-            <HeroStat icon={<TrendingUp className="size-4" aria-hidden />} label="Avg score" value={`${stats.avgPercent}%`} />
-            <HeroStat icon={<Target className="size-4" aria-hidden />} label="Accuracy" value={`${stats.accuracy}%`} />
-          </dl>
+        {inProgress ? (
+          <Link href={`/tests/${inProgress.slug}/attempt`} className={btn("accent", "lg", "w-full shadow-md sm:w-auto")}>
+            <PlayCircle className="size-5" /> Resume test
+          </Link>
+        ) : (
+          <Link href={startHref} className={btn("accent", "lg", "w-full shadow-md sm:w-auto")}>
+            <PlayCircle className="size-5" /> {stats.tests === 0 ? "Start first test" : "Take a mock test"}
+          </Link>
         )}
       </div>
     </section>
   );
 }
 
-function HeroStat({ icon, label, value }: { icon: React.ReactNode; label: string; value: string }) {
+/** Slim warning for plans about to lapse, shown above everything else so it is not missed. */
+export function PlanExpiryBanner({ plans }: { plans: Plan[] }) {
+  const renewed = new Set(plans.filter((p) => p.upcoming).map((p) => p.slug));
+  const ending = plans.filter((p) => !p.upcoming && p.daysLeft <= 7 && !renewed.has(p.slug));
+  if (ending.length === 0) return null;
+  const p = ending.reduce((a, b) => (b.daysLeft < a.daysLeft ? b : a));
   return (
-    <div className="rounded-2xl bg-white/12 px-3 py-2.5 backdrop-blur-sm">
-      <dt className="flex items-center gap-1.5 text-xs text-white/75">
-        {icon}
-        {label}
-      </dt>
-      <dd className="mt-0.5 text-xl font-bold tabular-nums sm:text-2xl">{value}</dd>
-    </div>
+    <section role="status" className="flex flex-col gap-3 rounded-2xl border border-accent bg-accent-soft p-4 sm:flex-row sm:items-center">
+      <Crown className="size-6 shrink-0 text-accent-ink" aria-hidden />
+      <p className="min-w-0 flex-1 text-sm">
+        <b>{p.title}</b> <span className="text-muted">· {daysLeftLabel(p.expiresAt)}</span>
+        {ending.length > 1 && <span className="text-muted"> (+{ending.length - 1} more)</span>}
+      </p>
+      <Link href={`/buy/${p.slug}`} className={btn("accent", "md", "w-full sm:w-auto")}>
+        Renew now <ArrowRight className="size-4" aria-hidden />
+      </Link>
+    </section>
   );
 }
 
@@ -153,7 +167,7 @@ export function QuickActions({ plans, walletPaise }: { plans: Plan[]; walletPais
   return (
     <section aria-label="Quick links" className="grid grid-cols-2 gap-3 lg:grid-cols-4">
       {tiles.map((t) => (
-        <Link key={t.href} href={t.href} className={`${card} flex items-center gap-3 p-4 transition-colors hover:border-primary`}>
+        <Link key={t.href} href={t.href} className={`${card} ${lift} flex min-h-16 items-center gap-3 p-4`}>
           <span className={`grid size-11 shrink-0 place-items-center rounded-xl ${t.chip}`}>
             <t.icon className="size-5" aria-hidden />
           </span>
@@ -243,8 +257,8 @@ export async function FirstTestGuide({ startHref }: { startHref: string }) {
 
 function Stat({ icon, chip, label, value, sub }: { icon: React.ReactNode; chip: string; label: string; value: string; sub?: string }) {
   return (
-    <div className={`${card} flex items-center gap-3 p-4`}>
-      <span className={`grid size-11 shrink-0 place-items-center rounded-xl ${chip}`}>{icon}</span>
+    <div className={`${card} flex w-44 shrink-0 snap-start items-center gap-3 p-3.5 sm:p-4 lg:w-auto`}>
+      <span className={`grid size-10 shrink-0 place-items-center rounded-xl sm:size-11 ${chip}`}>{icon}</span>
       <div className="min-w-0">
         <p className="text-xs text-muted">{label}</p>
         <p className="text-xl font-bold tabular-nums">{value}</p>
@@ -255,14 +269,14 @@ function Stat({ icon, chip, label, value, sub }: { icon: React.ReactNode; chip: 
 }
 
 /** Numbers, score trend and focus areas: only shown once there is something to chart. */
-export function Performance({ d }: { d: Dashboard }) {
+export function Performance({ d, aside }: { d: Dashboard; aside?: React.ReactNode }) {
   const { stats } = d;
   return (
     <section aria-labelledby="performance-h" className="space-y-3">
-      <h2 id="performance-h" className="text-lg font-semibold">
+      <h2 id="performance-h" className="text-lg font-semibold tracking-tight">
         Your performance
       </h2>
-      <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+      <div className="-mx-4 flex snap-x gap-3 overflow-x-auto px-4 pb-1 [scrollbar-width:none] lg:mx-0 lg:grid lg:grid-cols-4 lg:overflow-visible lg:px-0 lg:pb-0 [&::-webkit-scrollbar]:hidden">
         <Stat icon={<BarChart3 className="size-5" aria-hidden />} chip="bg-primary-soft text-primary" label="Tests taken" value={`${stats.tests}`} sub={stats.weekTests ? `${stats.weekTests} this week` : undefined} />
         <Stat icon={<TrendingUp className="size-5" aria-hidden />} chip="bg-success-soft text-success" label="Average score" value={`${stats.avgPercent}%`} sub={`Best ${stats.bestPercent}%`} />
         <Stat icon={<Target className="size-5" aria-hidden />} chip="bg-accent-soft text-accent-ink" label="Accuracy" value={`${stats.accuracy}%`} />
@@ -270,12 +284,13 @@ export function Performance({ d }: { d: Dashboard }) {
       </div>
 
       <div className="grid gap-4 lg:grid-cols-[1.5fr_1fr]">
-        <div className={`${card} p-5`}>
+        <div className={`${card} p-5 lg:self-start`}>
           <h3 className="font-semibold">Score trend</h3>
           <p className="mb-6 text-xs text-muted">Score % per test, oldest to newest</p>
           <ScoreTrend points={d.trend} />
         </div>
 
+        <div className="space-y-4">
         <div className={`${card} p-5`}>
           <h3 className="font-semibold">Focus areas</h3>
           <p className="mb-4 text-xs text-muted">Lowest accuracy (correct ÷ attempted) across your tests</p>
@@ -290,7 +305,7 @@ export function Performance({ d }: { d: Dashboard }) {
                     <span className={`font-semibold tabular-nums ${t.accuracy >= 70 ? "text-success" : t.accuracy >= 40 ? "text-accent-ink" : "text-danger"}`}>{t.accuracy}%</span>
                   </div>
                   <div className="h-1.5 overflow-hidden rounded-full bg-surface-muted">
-                    <div className={`h-full rounded-full ${t.accuracy >= 70 ? "bg-success" : t.accuracy >= 40 ? "bg-accent" : "bg-danger"}`} style={{ width: `${t.accuracy}%` }} />
+                    <div className={`anim-bar-x h-full rounded-full ${t.accuracy >= 70 ? "bg-success" : t.accuracy >= 40 ? "bg-accent" : "bg-danger"}`} style={{ width: `${t.accuracy}%` }} />
                   </div>
                 </li>
               ))}
@@ -302,6 +317,8 @@ export function Performance({ d }: { d: Dashboard }) {
             </p>
           )}
         </div>
+        {aside}
+        </div>
       </div>
     </section>
   );
@@ -312,8 +329,8 @@ export async function RecentTests({ recent, total }: { recent: Dashboard["recent
   const site = await currentSite();
   return (
     <section className={`${card} overflow-hidden`}>
-      <div className="flex items-center justify-between border-b border-border px-5 py-4">
-        <h2 className="font-semibold">Recent tests</h2>
+      <div className="flex items-center justify-between gap-3 border-b border-border px-5 py-4">
+        <h2 className="font-semibold tracking-tight">Recent tests</h2>
         {total > 0 && (
           <Link href="/results" className="inline-flex items-center gap-1 text-sm font-medium text-primary">
             View all {total} results <ArrowRight className="size-4" aria-hidden />
