@@ -1,14 +1,21 @@
 "use client";
 
 import Link from "next/link";
+import { useEffect, useState } from "react";
 import { authClient } from "@/modules/identity/auth-client";
 import { btn } from "./ui";
 import { T } from "./ui-lang";
 
 /** Keeps public pages static: the session is checked in the browser, not during render. */
 export function AuthCta() {
-  const { data, isPending } = authClient.useSession();
-  if (isPending) return <span className="h-11 w-20" />;
+  const { data, isPending, error } = authClient.useSession();
+  const [waitedLong, setWaitedLong] = useState(false);
+  useEffect(() => {
+    // Offline or slow networks can leave the session check pending; do not leave the header empty.
+    const timer = setTimeout(() => setWaitedLong(true), 2000);
+    return () => clearTimeout(timer);
+  }, []);
+  if (isPending && !error && !waitedLong) return <span className="h-11 w-20" />;
   return data ? (
     // Phones reach the dashboard from the Account tab of the bottom bar, which leaves room for the menu button.
     <span className="hidden sm:block">
