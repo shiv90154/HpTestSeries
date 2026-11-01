@@ -260,6 +260,17 @@ export const taxonomy: SubjectSeed[] = [
     ],
   },
   {
+    slug: "radiography",
+    name: "Radiography",
+    nameHi: "रेडियोग्राफी",
+    topics: [
+      ["techniques", "Radiographic Techniques & Positioning"],
+      ["physics-safety", "Radiation Physics & Safety"],
+      ["equipment-modalities", "Imaging Equipment & Modalities"],
+      ["anatomy", "Anatomy & Physiology"],
+    ],
+  },
+  {
     slug: "forestry",
     name: "Forestry & Environment",
     nameHi: "वानिकी एवं पर्यावरण",

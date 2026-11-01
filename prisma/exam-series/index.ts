@@ -17,6 +17,8 @@ import { nursingCommunity, nursingFundamentals, nursingMedSurg } from "./fresh/n
 import { pharmacyMock1 } from "./fresh/pharmacy-1";
 import { pharmacyMock2 } from "./fresh/pharmacy-2";
 import { pharmacyMock3 } from "./fresh/pharmacy-3";
+import { radiographyMock1 } from "./fresh/radiography-1";
+import { radiographyMock2 } from "./fresh/radiography-2";
 import { tetCdp } from "./fresh/tet-cdp";
 import { tgtPedagogy } from "./fresh/tgt-pedagogy";
 import { CLERK_MOCKS, HC_SECTIONALS, PROCESS_SERVER_MOCKS, PROCESS_SERVER_SCREENING_TESTS, STENO_MOCKS } from "../high-court";
@@ -525,6 +527,27 @@ const EXAMS: ExamDef[] = [
       S("Pharmaceutical Chemistry & Pharmacognosy", "फार्मास्युटिकल रसायन एवं फार्माकोग्नॉसी", [pharmacyMock1, pharmacyMock2, pharmacyMock3].map((m) => m.chemistry)),
       S("Hospital Pharmacy & Drug Laws", "हॉस्पिटल फार्मेसी एवं औषधि विधि", [pharmacyMock1, pharmacyMock2, pharmacyMock3].map((m) => m.practice)),
       S("General Awareness", "सामान्य जागरूकता", from(10, hpGk), from(5, gs)),
+    ],
+  },
+  // Radiography sections written fresh in ./fresh/radiography-N; general awareness comes from the bank (GS and reasoning, as Himachal GK is nearly used up).
+  // Kept after the special educator so the bank picks of every earlier exam stay as they were.
+  {
+    bodySlug: "hprca",
+    examSlug: "radiographer",
+    slug: "hprca-radiographer",
+    name: "HPRCA Radiographer",
+    nameHi: "एचपीआरसीए रेडियोग्राफर",
+    minutes: 120,
+    price: 99,
+    description:
+      "Full-length HPRCA Radiographer mock tests: radiographic techniques and positioning, radiation physics and safety, " +
+      "imaging equipment and modalities (CT, MRI, ultrasound), anatomy and physiology, and general awareness.",
+    sections: [
+      S("Radiographic Techniques & Positioning", "रेडियोग्राफिक तकनीक एवं पोज़िशनिंग", [radiographyMock1, radiographyMock2].map((m) => m.techniques)),
+      S("Radiation Physics & Safety", "विकिरण भौतिकी एवं सुरक्षा", [radiographyMock1, radiographyMock2].map((m) => m.physics)),
+      S("Imaging Equipment & Modalities", "इमेजिंग उपकरण एवं माध्यम", [radiographyMock1, radiographyMock2].map((m) => m.equipment)),
+      S("Anatomy & Physiology", "शरीर रचना एवं क्रिया विज्ञान", [radiographyMock1, radiographyMock2].map((m) => m.anatomy)),
+      S("General Awareness", "सामान्य जागरूकता", from(10, gs), from(5, reasoning)),
     ],
   },
 ];
