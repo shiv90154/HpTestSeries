@@ -62,6 +62,22 @@ Descriptive papers on English, Hindi, Essay and General Studies, as specified in
         q: "HPAS ki taiyari kaise shuru karein?",
         a: `NCERT se GS basics banao, Himachal GK ke alag notes rakho, roz HP current affairs padho aur har hafte ek full-length mock test do. [Free Himachal GK mock](${FREE_MOCK}) se shuruaat kar sakte ho.`,
       },
+      {
+        q: "What is the HPAS prelims exam pattern?",
+        a: "As reported for the 2026 prelims, there are two objective papers on the same day, each of 100 questions and 200 marks in 2 hours: Paper I (General Studies including Himachal GK) and Paper II (CSAT). Confirm the pattern in the HPPSC advertisement.",
+      },
+      {
+        q: "Is the HPAS CSAT paper qualifying?",
+        a: "Yes. Paper II (CSAT) is qualifying: you need 33% in it, and only Paper I marks decide who goes to the Mains.",
+      },
+      {
+        q: "Is there negative marking in HPAS prelims?",
+        a: "Yes, reported as one-third of a question's marks for each wrong answer. Confirm it in the HPPSC advertisement.",
+      },
+      {
+        q: "What is the HPAS syllabus?",
+        a: "Prelims General Studies covers history, geography, polity, economy, environment, science, Himachal Pradesh history, geography, economy and culture, and current events. Prelims Paper II is CSAT (comprehension, reasoning, decision making, numeracy). The Mains are descriptive papers on English, Hindi, Essay and General Studies.",
+      },
     ],
   },
 
@@ -107,6 +123,22 @@ JOA IT paper ki khaasiyat hai ki isme **Computer knowledge** ka weight kaafi hot
       {
         q: "JOA IT ke liye computer section kaise taiyar karein?",
         a: "MS Word/Excel ke functions aur shortcuts, OS basics, internet aur networking terms revise karo aur har topic ke sectional tests do — isi section me sabse zyada marks ka fark padta hai.",
+      },
+      {
+        q: "What is the HPRCA JOA IT syllabus?",
+        a: "Computer knowledge (fundamentals, Windows, MS Office, internet, networking, DBMS), General Knowledge and current affairs, Himachal GK, reasoning, mathematics, English and Hindi. The topic-wise list is on this page.",
+      },
+      {
+        q: "Which section decides the JOA IT merit?",
+        a: "The written objective test is where most candidates are filtered, and the computer section is where marks differ the most. The skill test follows as specified in the notification.",
+      },
+      {
+        q: "Is Himachal GK asked in the JOA IT exam?",
+        a: "Yes. Himachal GK (history, geography, districts, culture, economy) and HP current affairs are part of the written test, along with computer knowledge and aptitude.",
+      },
+      {
+        q: "Is there a free JOA IT mock test?",
+        a: `Yes. Start with the [free Himachal GK mock test](${FREE_MOCK}) without login, then attempt the JOA IT mocks in the real computer-based format.`,
       },
     ],
   },
@@ -154,6 +186,22 @@ Clerk ki job me office noting, record keeping aur computer par data entry ka kaa
       {
         q: "Clerk exam ke liye free mock test kahan milega?",
         a: `Yahin! [Free Himachal GK mock test](${FREE_MOCK}) bina login ke do, aur Clerk ke full mock tests CBT format me attempt karo.`,
+      },
+      {
+        q: "What is the HPRCA Clerk syllabus?",
+        a: "General knowledge and current affairs, Himachal GK, reasoning, mathematics, English, Hindi and basic computer knowledge. The topic-wise list is on this page.",
+      },
+      {
+        q: "What is the HPRCA Clerk exam pattern?",
+        a: "In the 2026 notification the computer-based test carried 120 marks, followed by a qualifying typing skill test (30 wpm English or 25 wpm Hindi). The commission may hold a preliminary screening test if applications are very high. Confirm the current pattern in the HPRCA notification.",
+      },
+      {
+        q: "Clerk ke liye qualification kya hai?",
+        a: "Clerk posts ke liye 12th class pass hona chahiye. Age limit aur exact conditions har post code ke notification me di jaati hain.",
+      },
+      {
+        q: "Clerk ki taiyari kaise karein?",
+        a: "Himachal GK topic-wise revise karo (districts, rivers, history, fairs aur festivals, economy), roz 20 se 30 aptitude questions karo aur typing practice jaldi shuru karo taaki skill test rukavat na bane.",
       },
     ],
   },
