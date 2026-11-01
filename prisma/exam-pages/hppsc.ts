@@ -93,6 +93,22 @@ Paper I me **Himachal GK, national and international affairs, Hindi aur English*
         q: "Is Himachal GK needed for Assistant Professor?",
         a: "Yes. Paper I has a Himachal GK section along with current affairs, Hindi and English, so it is worth revising even if your subject is your main focus.",
       },
+      {
+        q: "What is the HPPSC Assistant Professor syllabus?",
+        a: "Paper I covers Himachal GK, national and international affairs, Hindi and English. Paper II is the postgraduate-level syllabus of the subject you applied for, and the UGC NET syllabus is a reliable guide.",
+      },
+      {
+        q: "What is the Assistant Professor exam pattern in the 2026 scheme?",
+        a: "As reported, Paper I is a 100-mark screening test (qualifying only), Paper II is a 120-mark subject aptitude test, followed by a 30-mark personality test. Confirm the scheme in the HPPSC advertisement.",
+      },
+      {
+        q: "Is there negative marking in HPPSC Assistant Professor Paper I?",
+        a: "One report mentions 0.25 negative marking per wrong answer in Paper I. Confirm it in the HPPSC advertisement.",
+      },
+      {
+        q: "Is there a free HPPSC Assistant Professor mock test?",
+        a: `Yes. The [free HPPSC Assistant Professor mock test](${free("hppsc-assistant-professor-free-mock-1")}) runs in the real computer-based format, with Hindi and English solutions.`,
+      },
     ],
   },
 
@@ -156,6 +172,22 @@ ADO paper me **agronomy, soil science, horticulture, plant protection aur agricu
         q: "Does the ADO exam include Himachal-specific agriculture?",
         a: "Yes. Himachal's crops, fruit zones, horticulture and natural farming schemes are regularly asked, along with Himachal GK and current affairs.",
       },
+      {
+        q: "What is the HPPSC ADO syllabus?",
+        a: "Agronomy, soil science, horticulture, plant protection, agricultural extension, agricultural economics and plant breeding, plus Himachal agriculture, Himachal GK and current affairs.",
+      },
+      {
+        q: "What is the age limit for HPPSC ADO?",
+        a: "In the 2026 advertisement the reported age limit was 18 to 45 years on 1 January 2026. Check the HPPSC advertisement for relaxations.",
+      },
+      {
+        q: "ADO ki taiyari kaise karein?",
+        a: "Degree notes se agronomy, soil aur extension revise karo, Himachal ki fasalon, fruit belts aur agriculture schemes ki alag copy banao aur timed mocks do.",
+      },
+      {
+        q: "Is there a free HPPSC ADO mock test?",
+        a: `Yes. The [free HPPSC ADO mock test](${free("hppsc-ado-free-mock-1")}) runs in the real computer-based format.`,
+      },
     ],
   },
 
@@ -206,6 +238,22 @@ AE paper me **tumhari branch ka degree-level technical syllabus** sabse bada his
         q: "Which branches have AE posts?",
         a: "Civil, Electrical and Mechanical branches are advertised depending on the department's vacancies. Each advertisement lists branch-wise posts.",
       },
+      {
+        q: "What is the HPPSC Assistant Engineer syllabus?",
+        a: "The degree-level technical syllabus of your branch (Civil, Electrical or Mechanical), plus general studies, Himachal GK, current affairs and English comprehension.",
+      },
+      {
+        q: "What is the selection process for HPPSC Assistant Engineer?",
+        a: "A written test, with an interview where notified. The advertisement gives the exact stages and the percentage and age limit.",
+      },
+      {
+        q: "AE ki taiyari kaise karein?",
+        a: "Apni branch ke core subjects degree books se revise karo, GATE-style numericals practise karo aur Himachal GK ki chhoti copy banao (hydropower projects aur rivers engineers ke liye important hain).",
+      },
+      {
+        q: "Is there a free HPPSC Assistant Engineer mock test?",
+        a: `Yes. The [free HPPSC Assistant Engineer mock test](${free("hppsc-assistant-engineer-free-mock-1")}) runs in the real computer-based format.`,
+      },
     ],
   },
 
@@ -250,6 +298,22 @@ MO paper me **MBBS ke saare subjects** aate hain, lekin sabse zyada weight **Com
       {
         q: "Are AYUSH Medical Officers recruited by HPPSC too?",
         a: "Yes, HPPSC advertises Medical Officer posts for Ayurveda and Homeopathy separately. Each has its own qualification and syllabus in the advertisement.",
+      },
+      {
+        q: "What is the HPPSC Medical Officer syllabus?",
+        a: "All MBBS subjects (clinical, pre-clinical and para-clinical), community medicine with national health programmes, and Himachal GK and current affairs.",
+      },
+      {
+        q: "Are national health programmes asked in the MO exam?",
+        a: "Yes. National health programmes, immunisation and maternal and child health are asked directly, along with Himachal's health system, schemes and indicators.",
+      },
+      {
+        q: "Medical Officer ki taiyari kaise karein?",
+        a: "Pehle PSM aur national programmes revise karo, phir clinical subjects MCQ book se, aur Himachal ke health facts ka ek page banao.",
+      },
+      {
+        q: "Is there a free HPPSC Medical Officer mock test?",
+        a: `Yes. The [free HPPSC Medical Officer mock test](${free("hppsc-medical-officer-free-mock-1")}) runs in the real computer-based format.`,
       },
     ],
   },
@@ -296,6 +360,22 @@ VO paper me **veterinary medicine, surgery, gynaecology and obstetrics, patholog
       {
         q: "Is Himachal GK part of the Veterinary Officer paper?",
         a: "The general awareness part covers Himachal GK and current affairs, plus state livestock schemes. Check the advertisement for the exact split.",
+      },
+      {
+        q: "What is the HPPSC Veterinary Officer syllabus?",
+        a: "Veterinary sciences (anatomy, pathology, pharmacology, medicine, surgery, gynaecology, public health), animal husbandry, livestock schemes of Himachal, Himachal GK and current affairs.",
+      },
+      {
+        q: "Veterinary Officer ki taiyari kaise karein?",
+        a: "Har subject standard MCQ book se revise karo, common diseases ke cause, vaccine aur treatment yaad karo, aur Himachal ki livestock par ek chhota page banao.",
+      },
+      {
+        q: "Does the VO exam have animal husbandry questions?",
+        a: "Yes. Animal nutrition, breeds of cattle, sheep, goat and poultry, dairy science and animal genetics are part of the syllabus.",
+      },
+      {
+        q: "Is there a free HPPSC Veterinary Officer mock test?",
+        a: `Yes. The [free HPPSC Veterinary Officer mock test](${free("hppsc-veterinary-officer-free-mock-1")}) runs in the real computer-based format.`,
       },
     ],
   },
@@ -347,6 +427,22 @@ FSO paper me **FSS Act aur uske Rules, Regulations** ke seedhe questions sabse z
         q: "HPSC aur HPPSC FSO me kya fark hai?",
         a: "HPSC Haryana Public Service Commission hai, aur HPPSC Himachal Pradesh Public Service Commission. Dono alag aayog hain aur alag advertisement nikalte hain. Syllabus (FSS Act, food chemistry) dono me kaafi milta-julta hota hai.",
       },
+      {
+        q: "What is the Food Safety Officer syllabus?",
+        a: "Food law (FSS Act 2006, rules and regulations, sampling), food science (chemistry, microbiology, processing, HACCP, nutrition, adulteration), plus Himachal GK and current affairs.",
+      },
+      {
+        q: "What does a Food Safety Officer do?",
+        a: "An FSO enforces the Food Safety and Standards Act, 2006 at district level: inspects food businesses, draws samples, sends them to labs and starts action against adulteration.",
+      },
+      {
+        q: "Is the FSO syllabus the same in every state?",
+        a: "The FSS Act part is common to FSO exams in every state, so that preparation stays useful. The advertisement of each state gives its own syllabus and stages.",
+      },
+      {
+        q: "Is there a free Food Safety Officer mock test?",
+        a: `Yes. The [free Food Safety Officer mock test](${free("hppsc-food-safety-officer-free-mock-1")}) runs in the real computer-based format.`,
+      },
     ],
   },
 
@@ -391,6 +487,22 @@ Prelims me **Constitution, CPC, CrPC/BNSS, IPC/BNS, Indian Evidence Act/BSA, Con
       {
         q: "What are the stages of the HP Civil Judge selection?",
         a: "A preliminary examination, a main examination of descriptive law papers and a viva-voce, as given in the HPPSC advertisement.",
+      },
+      {
+        q: "What is the HP Judicial Services syllabus?",
+        a: "Constitution, CPC, CrPC/BNSS, IPC/BNS, Evidence Act/BSA, Contract Act, Transfer of Property Act, Specific Relief Act, Limitation Act and Negotiable Instruments Act, plus general knowledge and English and Hindi.",
+      },
+      {
+        q: "Who conducts the HP Civil Judge exam?",
+        a: "The Himachal Pradesh Public Service Commission (HPPSC), Shimla, in consultation with the High Court of Himachal Pradesh.",
+      },
+      {
+        q: "HP Judicial Services ki taiyari kaise karein?",
+        a: "Bare acts illustrations ke saath padho, past prelims papers solve karo aur landmark judgments ke short notes banao.",
+      },
+      {
+        q: "Is there a free HP Judicial Services mock test?",
+        a: `Yes. The [free HP Judicial Services mock test](${free("hppsc-judicial-services-free-mock-1")}) runs in the real computer-based format.`,
       },
     ],
   },

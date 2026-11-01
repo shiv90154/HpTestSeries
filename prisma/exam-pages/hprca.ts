@@ -80,6 +80,22 @@ JBT paper me **primary-level subjects** ka weight sabse zyada hota hai: Hindi, E
         q: "How many JBT posts did HPRCA advertise in 2026?",
         a: "In the 2026 drive HPRCA advertised 600 JBT posts (Post Code 26015). Vacancy numbers change with every notification, so confirm on hprca.hp.gov.in.",
       },
+      {
+        q: "What is the HPRCA JBT syllabus?",
+        a: "The JBT paper covers Child Development & Pedagogy, Hindi, English, primary-level Maths and EVS, plus general awareness with Himachal GK and reasoning. The topic-wise list is on this page.",
+      },
+      {
+        q: "Is there Himachal GK in the JBT exam?",
+        a: "Yes. Along with the primary-level subjects, the paper has Himachal GK, current affairs and reasoning.",
+      },
+      {
+        q: "JBT me competition kaisa hota hai?",
+        a: "Kyunki sab candidates HP TET pass hote hain, selection marks ke chhote difference par hota hai. Isliye accuracy aur speed dono par kaam karo.",
+      },
+      {
+        q: "Is there a free HPRCA JBT mock test?",
+        a: `Yes. The [free HPRCA JBT mock test](${free("hprca-jbt-free-mock-1")}) runs in the real computer-based format, with Hindi and English solutions after you submit.`,
+      },
     ],
   },
 
@@ -130,6 +146,22 @@ TGT paper me tumhare **apne subject ka sabse bada hissa** hota hai (Arts me soci
       {
         q: "HPRCA TGT ki taiyari kaise shuru karein?",
         a: `Pehle apne subject ka graduation-level syllabus khatam karo, phir pedagogy aur Himachal GK. Har hafte ek timed mock do. [HPRCA TGT free mock](${free("hprca-tgt-free-mock-1")}) se shuruaat karo.`,
+      },
+      {
+        q: "What is the HPRCA TGT syllabus?",
+        a: "Each TGT category has its own subject paper (Arts, Non-Medical or Medical), plus Child Development & Pedagogy and general awareness with Himachal GK. The category-wise list is on this page.",
+      },
+      {
+        q: "Which part of the TGT paper carries the most marks?",
+        a: "Your own subject, at graduation level with school-level questions of classes 6 to 10. A strong subject score is what keeps the cutoff safe.",
+      },
+      {
+        q: "Which documents should I keep ready for TGT?",
+        a: "Your TET certificate and your degree and B.Ed documents, before the next notification arrives.",
+      },
+      {
+        q: "Is there a free HPRCA TGT mock test?",
+        a: `Yes. The [free HPRCA TGT mock test](${free("hprca-tgt-free-mock-1")}) shows the real computer-based screen, with Hindi and English solutions.`,
       },
     ],
   },
@@ -194,6 +226,18 @@ PGT paper me **subject ka hissa sabse bada** hota hai, aur level master's degree
         q: "PGT ki taiyari kaise karein?",
         a: `Apne PG syllabus ko topic-wise revise karo, Himachal GK aur pedagogy ke short notes banao, aur har hafte ek timed mock do. [HP PGT English free mock](${free("hp-pgt-english-full-mock-1")}) se shuru karo.`,
       },
+      {
+        q: "What is the pattern of the HP PGT mock tests?",
+        a: "Each full mock has 100 questions in four parts: pedagogy and teaching aptitude, Himachal GK and general studies, and two sections of the subject at post-graduate level. HPRCA has not published an official section split.",
+      },
+      {
+        q: "Is the PGT paper at master's level?",
+        a: "Yes. The subject part is at post-graduate level, not just school level, with concepts and numericals from the PG syllabus.",
+      },
+      {
+        q: "Is the first mock of each PGT subject free?",
+        a: "Yes. The first mock of every subject is free, for English, Mathematics, Physics, Chemistry, Biology, Hindi, History, Political Science, Economics and Commerce.",
+      },
     ],
   },
 
@@ -235,6 +279,22 @@ Language Teacher ke paper me **tumhari language ka grammar, sahitya aur teaching
       {
         q: "What is the selection process for HPRCA Language Teacher?",
         a: "Recent HPRCA teacher drives use a computer-based test followed by document verification. The post-wise notification states the final process.",
+      },
+      {
+        q: "What is the HPRCA Language Teacher syllabus?",
+        a: "Language and literature of your language (grammar, vocabulary, comprehension, teaching methods), Child Development & Pedagogy, and general awareness with Himachal GK. The detail is on this page.",
+      },
+      {
+        q: "Hindi LT ki taiyari kaise karein?",
+        a: "Vyakaran, ras, alankar, chhand aur Hindi sahitya ka itihas pakka karo, phir pedagogy aur Himachal GK. Har hafte ek timed mock do.",
+      },
+      {
+        q: "What qualification is needed for Language Teacher?",
+        a: "A bachelor's degree with the language, a B.Ed and a pass in the matching HP TET language category. Age limit and vacancies are in the notification.",
+      },
+      {
+        q: "Is there a free HPRCA Language Teacher mock test?",
+        a: `Yes. Try the [free Language Teacher mock test](${free("hprca-language-teacher-free-mock-1")}) in the real computer-based format.`,
       },
     ],
   },
@@ -279,6 +339,22 @@ JE paper me **civil engineering ka technical hissa sabse bada** hota hai: buildi
       {
         q: "Is there negative marking in the HPRCA JE exam?",
         a: "It is stated in the post-wise notification and can differ between drives. Our mocks use 0.25 negative marking so you learn to avoid blind guesses.",
+      },
+      {
+        q: "What is the HPRCA JE Civil syllabus?",
+        a: "Diploma-level civil engineering: building materials, surveying, strength of materials, hydraulics, RCC, soil mechanics, transportation and estimating, plus Himachal GK, reasoning and English.",
+      },
+      {
+        q: "What is the age limit for HPRCA Junior Engineer?",
+        a: "In the 2026 drive the age limit for Junior Engineer (Civil) was 18 to 45 years. Confirm the limit and relaxations in the current notification.",
+      },
+      {
+        q: "Is the HPRCA JE exam computer-based?",
+        a: "Yes. Selection is through a computer-based test followed by document verification, as per the notification.",
+      },
+      {
+        q: "Is there a free HPRCA JE mock test?",
+        a: `Yes. The [free Junior Engineer mock test](${free("hprca-junior-engineer-free-mock-1")}) shows the pattern of questions and the CBT screen.`,
       },
     ],
   },
@@ -329,6 +405,22 @@ Paper do hisson me aata hai: **Part A me nursing subjects** (fundamentals, medic
         q: "Does the Staff Nurse paper have Himachal GK?",
         a: "Yes. Part B of the paper has Himachal GK and current affairs, everyday science, reasoning, English and Hindi along with the nursing subjects.",
       },
+      {
+        q: "What is the HPRCA Staff Nurse exam pattern?",
+        a: "For the 2026 drive it was a 120-mark computer-based test of 120 MCQs of 1 mark each, followed by document verification. Duration and negative marking are in the notification.",
+      },
+      {
+        q: "Is HPNRC registration compulsory for Staff Nurse?",
+        a: "Yes. Valid registration with the Himachal Pradesh Nurses Registration Council is needed at the time of applying, along with B.Sc. Nursing or GNM.",
+      },
+      {
+        q: "What is the HPRCA Staff Nurse syllabus?",
+        a: "Part A has nursing subjects (fundamentals, medical-surgical, community health, child health, midwifery). Part B has general awareness: Himachal GK, current affairs, everyday science, reasoning, English and Hindi.",
+      },
+      {
+        q: "Is there a free HPRCA Staff Nurse mock test?",
+        a: `Yes. The [free Staff Nurse mock test](${free("hprca-staff-nurse-free-mock-1")}) runs in the real computer-based format.`,
+      },
     ],
   },
 
@@ -369,6 +461,22 @@ Pharmacist paper me **pharmaceutics, pharmaceutical chemistry, pharmacology, pha
       {
         q: "Are drug laws asked in the pharmacist exam?",
         a: "Yes. Questions on the Pharmacy Act, the Drugs and Cosmetics Act and Rules and the NDPS Act are common and are among the easiest marks to secure.",
+      },
+      {
+        q: "What is the HPRCA Pharmacist syllabus?",
+        a: "Pharmaceutics, pharmaceutical chemistry, pharmacology, pharmacognosy, hospital pharmacy and pharmacy laws, plus Himachal GK, reasoning and English.",
+      },
+      {
+        q: "What is the age limit for HPRCA Pharmacy Officer?",
+        a: "In the 2026 drive the age limit for Pharmacy Officer (Allopathy) was 18 to 45 years. Confirm it in the current notification.",
+      },
+      {
+        q: "Is the HPRCA Pharmacist exam computer-based?",
+        a: "Yes. Selection is through a computer-based test followed by document verification, as per the notification.",
+      },
+      {
+        q: "Is there a free HPRCA Pharmacist mock test?",
+        a: `Yes. The [free Pharmacist mock test](${free("hprca-pharmacist-free-mock-1")}) shows the CBT screen and the question style.`,
       },
     ],
   },
@@ -417,6 +525,22 @@ Written paper me **Forests of Himachal, environment aur wildlife** ke saath Gene
         q: "Which subjects are important for the Forest Guard written exam?",
         a: "Forests, wildlife and environment of Himachal, Himachal GK, general science, reasoning and English. The forest-specific section is where well-prepared candidates gain an edge.",
       },
+      {
+        q: "What is the Himachal Forest Guard syllabus?",
+        a: "Forests, wildlife and environment of Himachal, Himachal GK, current affairs, reasoning, basic maths, general science and English, plus a qualifying physical test. The detail is on this page.",
+      },
+      {
+        q: "Forest Guard ki taiyari kaise karein?",
+        a: "Physical test ke liye running practice jaari rakho, aur roz 1 se 2 ghante written syllabus ko do. Himachal ke protected areas, forest types aur wildlife laws ke notes banao.",
+      },
+      {
+        q: "Who recruits Forest Guard in Himachal?",
+        a: "The advertisement names the recruiting agency (HPRCA or the Forest Department). Read the current notification for vacancies, qualification and age limit.",
+      },
+      {
+        q: "Is there a free Forest Guard mock test?",
+        a: `Yes. The [free Forest Guard mock test](${free("hprca-forest-guard-free-mock-1")}) runs in the real computer-based format.`,
+      },
     ],
   },
 
@@ -462,6 +586,18 @@ JOA Library ke paper me **library science ka technical hissa** (classification, 
         q: "Is the JOA Library paper only library science?",
         a: "No. Besides library science it tests general awareness: Himachal GK, current affairs, reasoning, English and Hindi. The exact split is in the notification.",
       },
+      {
+        q: "What is the JOA Library syllabus?",
+        a: "Library science (five laws, classification, cataloguing, management, reference services, automation), plus Himachal GK, current affairs, reasoning, English and Hindi.",
+      },
+      {
+        q: "JOA Library kis tarah ki appointment hai?",
+        a: "HPRCA JOA (Library) posts Job Trainee appointments ke roop me bharti hain. Exact terms notification me dekhein.",
+      },
+      {
+        q: "JOA Library ki taiyari kaise karein?",
+        a: "Ranganathan ke five laws, DDC aur Colon classification, cataloguing rules aur library automation revise karo, phir Himachal GK aur reasoning jodo.",
+      },
     ],
   },
 
@@ -501,6 +637,18 @@ Written test me **General Knowledge, Himachal GK, English, Hindi aur reasoning**
       {
         q: "Steno Typist me kitni vacancies aati hain?",
         a: "Vacancies kam hoti hain aur har notification me badalti hain; December 2025 ke advertisement me ek post thi. Latest number hprca.hp.gov.in par check karein.",
+      },
+      {
+        q: "What is the Steno Typist syllabus?",
+        a: "A written test on English, Hindi, Himachal GK, general knowledge, reasoning and basic computer awareness, followed by a skill test as notified.",
+      },
+      {
+        q: "Steno Typist ki taiyari kaise karein?",
+        a: "English aur Hindi grammar revise karo, Himachal GK ke notes banao aur roz 20 minute typing practice karo.",
+      },
+      {
+        q: "Who recruits Steno Typist in Himachal?",
+        a: "The Himachal Pradesh Rajya Chayan Aayog (HPRCA), Hamirpur, as Job Trainee appointments.",
       },
     ],
   },
@@ -547,6 +695,18 @@ Special Educator paper me **special education ka bada hissa** hota hai: disabili
         q: "How many Special Educator posts were advertised?",
         a: "The December 2025 HPRCA advertisement (No. 06/2025) invited applications for 108 Special Educator (Pre-Primary to Class V) posts. Check hprca.hp.gov.in for later drives.",
       },
+      {
+        q: "What is the Special Educator syllabus?",
+        a: "Special education (types of disability, RPwD Act 2016, inclusive education, IEP, assistive devices), Child Development & Pedagogy, languages and Himachal GK.",
+      },
+      {
+        q: "Which law matters most for the Special Educator exam?",
+        a: "The RPwD Act 2016. Direct questions on its sections and the categories of disability are common, so learn them well.",
+      },
+      {
+        q: "What is the selection process for Special Educator?",
+        a: "HPRCA selects through a computer-based test followed by document verification. Check the notification for any further stage.",
+      },
     ],
   },
 
@@ -588,6 +748,18 @@ Radiographer paper me **radiographic techniques, anatomy, radiation physics aur 
       {
         q: "Which topics matter most in the Radiographer exam?",
         a: "Radiographic techniques and positioning, radiation physics and safety, and imaging equipment. These technical topics carry most of the marks.",
+      },
+      {
+        q: "What is the HPRCA Radiographer syllabus?",
+        a: "Radiographic techniques and positioning, anatomy, radiation physics and safety, imaging equipment (X-ray, CT, MRI, ultrasound) and contrast media, plus Himachal GK and reasoning.",
+      },
+      {
+        q: "What is the selection process for HPRCA Radiographer?",
+        a: "A computer-based test followed by document verification, as laid down in the post-wise advertisement.",
+      },
+      {
+        q: "Radiographer ki taiyari kaise karein?",
+        a: "Har body part ki positioning aur technique revise karo, radiation units aur protection rules (ALARA, shielding) yaad karo, aur har hafte ek timed mock do.",
       },
     ],
   },
@@ -632,6 +804,18 @@ Paper me **Himachal GK, social science, everyday science, reasoning, Hindi aur E
       {
         q: "Panchayat Secretary ke mock tests me kya milta hai?",
         a: "Full-length mocks aur subject-wise tests, har question ka Hindi aur English solution, aur result ke baad HP rank. Pehle free HP GK mock se CBT screen try kar sakte ho.",
+      },
+      {
+        q: "What is the Panchayat Secretary syllabus?",
+        a: "Panchayati Raj (73rd Amendment, HP Panchayati Raj Act), rural development schemes, panchayat accounts, Himachal GK, social science, reasoning, Hindi and English.",
+      },
+      {
+        q: "What is the selection process for Panchayat Secretary?",
+        a: "HPRCA holds an objective written test as laid down in the post-wise notification. Check hprca.hp.gov.in for the current stages.",
+      },
+      {
+        q: "Panchayat Secretary ki taiyari kaise karein?",
+        a: "73rd Amendment, three-tier structure aur main rural development schemes ke short notes banao, roz Himachal GK revise karo aur timed mocks do.",
       },
     ],
   },
