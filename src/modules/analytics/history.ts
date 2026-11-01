@@ -2,12 +2,20 @@ import "server-only";
 import type { Prisma } from "@/generated/prisma/client";
 import { db } from "@/lib/db";
 import { percentileFromRank } from "@/modules/assessment/grading";
+import { testOnSite } from "@/modules/catalog/visibility";
 
 export const HISTORY_PAGE_SIZE = 20;
 
-/** A student's submitted attempts whose score may be shown (a live test's stays hidden until its window closes), optionally on one test. */
-export function shownAttemptsWhere(userId: string, testSlug?: string, now: Date = new Date()): Prisma.AttemptWhereInput {
-  return { userId, status: "SUBMITTED", test: { ...(testSlug && { slug: testSlug }), OR: [{ liveEndsAt: null }, { liveEndsAt: { lte: now } }] } };
+/**
+ * A student's submitted attempts whose score may be shown (a live test's stays hidden until its window closes), optionally on
+ * one test. One account works on every site, so `site` keeps another site's attempts out of this site's pages.
+ */
+export function shownAttemptsWhere(userId: string, testSlug?: string, now: Date = new Date(), site?: string): Prisma.AttemptWhereInput {
+  return {
+    userId,
+    status: "SUBMITTED",
+    test: { ...(testSlug && { slug: testSlug }), AND: [{ OR: [{ liveEndsAt: null }, { liveEndsAt: { lte: now } }] }, ...(site ? [testOnSite(site)] : [])] },
+  };
 }
 
 export const attemptRowSelect = {
@@ -76,11 +84,11 @@ export function withRanks(rows: AttemptRow[]): Promise<RankedAttemptRow[]> {
  * One page of /results: every submitted attempt, newest first, optionally only one test's. A student has at most a few
  * hundred attempts, so all are loaded for the summary and the page is sliced from them.
  */
-export async function getResultHistory(userId: string, opts: { page: number; testSlug?: string }) {
+export async function getResultHistory(userId: string, site: string, opts: { page: number; testSlug?: string }) {
   const [attempts, everyTest] = await Promise.all([
-    db.attempt.findMany({ where: shownAttemptsWhere(userId, opts.testSlug), orderBy: { submittedAt: "desc" }, select: attemptRowSelect }),
+    db.attempt.findMany({ where: shownAttemptsWhere(userId, opts.testSlug, undefined, site), orderBy: { submittedAt: "desc" }, select: attemptRowSelect }),
     // The tests to filter by: every test the student has a shown result in.
-    db.attempt.groupBy({ by: ["testId"], where: shownAttemptsWhere(userId), _count: { _all: true } }),
+    db.attempt.groupBy({ by: ["testId"], where: shownAttemptsWhere(userId, undefined, undefined, site), _count: { _all: true } }),
   ]);
   const titles = await db.test.findMany({ where: { id: { in: everyTest.map((t) => t.testId) } }, select: { id: true, slug: true, title: true } });
   const countById = new Map(everyTest.map((t) => [t.testId, t._count._all]));

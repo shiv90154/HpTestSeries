@@ -3,7 +3,7 @@ import { cache } from "react";
 import { db } from "@/lib/db";
 import { Prisma } from "@/generated/prisma/client";
 import { examLabel } from "@/modules/catalog/queries";
-import { bodyVisibleOn, liveTestWhere, resultVisibleStatuses } from "@/modules/catalog/visibility";
+import { bodyVisibleOn, liveTestWhere, resultVisibleStatuses, testOnSite } from "@/modules/catalog/visibility";
 import { canAccessTest } from "@/modules/commerce/access";
 import { getBuyOptionForSeries } from "@/modules/commerce/product-service";
 import { demoDurationSec, planDemo } from "./demo";
@@ -655,10 +655,10 @@ export type LastAttempt = {
   exam: { label: string; href: string } | null;
 };
 
-/** The student's most recent attempt, for the "continue where you left off" card on /tests. */
-export async function getLastAttempt(userId: string, now: Date = new Date()): Promise<LastAttempt | null> {
+/** The student's most recent attempt on `site`, for the "continue where you left off" card on /tests. One account works on every site, so another site's tests are skipped. */
+export async function getLastAttempt(userId: string, site: string, now: Date = new Date()): Promise<LastAttempt | null> {
   const a = await db.attempt.findFirst({
-    where: { userId },
+    where: { userId, test: testOnSite(site) },
     orderBy: { startedAt: "desc" },
     select: {
       id: true,

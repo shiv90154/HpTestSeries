@@ -27,7 +27,7 @@ export default async function ResultsPage({ searchParams }: PageProps<"/[site]/r
   const testSlug = typeof sp.test === "string" && sp.test ? sp.test : undefined;
   const user = await requireUser(testSlug ? `/results?test=${encodeURIComponent(testSlug)}` : "/results");
   const site = await currentSite();
-  const h = await getResultHistory(user.id, { page: parsePage(sp.page), testSlug });
+  const h = await getResultHistory(user.id, site.code, { page: parsePage(sp.page), testSlug });
 
   const activeTest = testSlug ? h.tests.find((t) => t.slug === testSlug) : undefined;
   const pageHref = (n: number) => {

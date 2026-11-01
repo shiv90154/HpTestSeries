@@ -1,7 +1,7 @@
 import "server-only";
 import { db } from "@/lib/db";
 import { getPublishedTests } from "@/modules/catalog/queries";
-import { liveTestWhere } from "@/modules/catalog/visibility";
+import { liveTestWhere, testOnSite } from "@/modules/catalog/visibility";
 import { canAccessTest } from "@/modules/commerce/access";
 import { liveEntitlements } from "@/modules/commerce/purchases";
 import { attemptRow, attemptRowSelect, shownAttemptsWhere, withRanks } from "./history";
@@ -14,15 +14,15 @@ export async function getDashboard(site: string, userId: string) {
   const [profile, attempts, totalTests, inProgress, allTests, testMeta, entitlements, liveNext] = await Promise.all([
     db.user.findUniqueOrThrow({ where: { id: userId }, select: { name: true, district: true } }),
     db.attempt.findMany({
-      where: shownAttemptsWhere(userId),
+      where: shownAttemptsWhere(userId, undefined, undefined, site),
       orderBy: { submittedAt: "desc" },
       take: 50,
       select: { ...attemptRowSelect, topicStats: true },
     }),
     // The list above stops at 50; "Tests taken" and "View all" need the real number.
-    db.attempt.count({ where: shownAttemptsWhere(userId) }),
+    db.attempt.count({ where: shownAttemptsWhere(userId, undefined, undefined, site) }),
     db.attempt.findFirst({
-      where: { userId, status: "IN_PROGRESS", deadlineAt: { gt: new Date() } },
+      where: { userId, status: "IN_PROGRESS", deadlineAt: { gt: new Date() }, test: testOnSite(site) },
       select: { deadlineAt: true, answers: true, test: { select: { slug: true, title: true } } },
     }),
     getPublishedTests(site),
