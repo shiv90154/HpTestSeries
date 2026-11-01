@@ -2015,4 +2015,288 @@ Exam ke last hafton ka plan: [HP TET last 3 weeks revision plan](/blog/hp-tet-la
       { q: "Previous year paper se kaise taiyari karein?", a: "Pattern aur repeated topics samajhne ke liye, aur ek baar 150 minute ke timer ke saath hal karne ke liye. Phir galtiyon ka concept dobara padhein." },
     ],
   },
+
+  // Search-intent posts for HP TET (cut-off/result, books, JBT vs TGT, Shastri and Language Teacher syllabus). Facts come
+  // from the November 2026 posts above (HPBOSE prospectus); nothing is stated about result dates because none was
+  // announced when this was written, and the posts say so instead of guessing.
+  {
+    slug: "hp-tet-cut-off-result-2026-qualifying-marks-certificate",
+    publish: true,
+    seoTitle: "HP TET Cut Off & Result 2026: Qualifying Marks, Certificate",
+    seoDescription: "HP TET 2026 cut off and result: qualifying marks (90/150 General, 55% reserved), how to check the result, the certificate and what to do after you qualify.",
+    title: "HP TET Cut Off and Result 2026: Qualifying Marks, How to Check Result and Certificate",
+    titleHi: "एचपी टेट कट ऑफ और रिजल्ट 2026: क्वालिफाइंग मार्क्स, रिजल्ट कैसे देखें और सर्टिफिकेट",
+    excerpt: "HP TET me alag se merit cut-off nahi hota, sirf qualifying marks hote hain. 60% aur 55% ka matlab, result kaise dekhein aur pass hone ke baad kya karein.",
+    category: "CUTOFF",
+    exams: ["hpbose/hp-tet"],
+    content: `**"HP TET cut off kitna hai?"** Ye sabse zyada poochha jaane wala sawaal hai. Seedha jawab: **HP TET me merit list ya rank-wise cut-off nahi hota. Ye ek eligibility test hai, aur isme sirf qualifying marks hote hain.** Jo candidate ye marks la leta hai, wo TET pass maana jata hai.
+
+## HP TET November 2026: qualifying marks
+
+HPBOSE ke November 2026 prospectus ke mutabiq:
+
+| Category | Qualifying % | 150 me se |
+|---|---|---|
+| General (Unreserved) | **60%** | **90** |
+| SC / ST / OBC / PH (Himachal ke) | **55%** | **lagbhag 82 se 83** |
+
+- Paper **150 questions, 150 marks, 150 minute** ka hai.
+- **Negative marking nahi hai**, isliye har question attempt karein.
+- Ye marks har paper (JBT, TGT Arts, Non-Medical, Medical aur baaki categories) ke liye hain. Apne category ke liye bulletin me ek baar dekh lein.
+
+Pattern aur section-wise split: [HP TET exam pattern](/hpbose/hp-tet/exam-pattern). TGT ke liye: [TGT syllabus aur pattern](/blog/hp-tet-tgt-syllabus-exam-pattern-arts-medical-non-medical).
+
+## Qualifying marks aur cut-off me fark
+
+| | Qualifying marks (TET) | Cut-off (bharti) |
+|---|---|---|
+| Kya hai | Pass hone ke liye minimum marks | Selection ke liye last merit marks |
+| Kaun tay karta hai | HPBOSE | Bharti karne wala board (jaise HPRCA) |
+| Har saal badalta hai | Aam taur par nahi | Haan, vacancies aur competition par |
+
+Yaani TET me 90 marks aane par aap **eligible** ho jate ho. Teacher banne ke liye alag se HPRCA ki bharti pariksha deni hoti hai, aur uska cut-off alag aata hai.
+
+## HP TET result kaise check karein
+
+Result ki date is post likhne ke samay **announce nahi hui thi**, isliye hum koi tarikh nahi de rahe. Result aane par:
+
+1. HPBOSE ki official website par jayein.
+2. TET / result section kholein aur apne paper (category) ka link chunein.
+3. Roll number daalein aur result dekhein; marks aur pass/fail status dikhega.
+4. Result aur marksheet ka print ya PDF save kar lein.
+
+Result ya certificate ki jaankari ke liye sirf HPBOSE ki website par bharosa karein. Telegram ya YouTube par aane wali "leaked answer key" par nahi.
+
+## Pass hone ke baad kya karein
+
+1. **Certificate sambhal kar rakhein.** HPRCA ki JBT, TGT, Language Teacher aur Special Educator bharti me TET pass certificate maanga jata hai.
+2. **Documents taiyar rakhein:** degree, B.Ed ya D.El.Ed ke certificate aur category certificate.
+3. **Bharti notification par nazar rakhein:** [HPRCA recruitment 2026](/blog/hprca-recruitment-2026-all-posts-dates-vacancies).
+4. **Bharti pariksha ki taiyari shuru karein:** TET se alag, HPRCA ke paper me Himachal GK aur reasoning ka weight zyada hota hai. [HPRCA TGT mock tests](/hprca/tgt) aur [JBT mock tests](/hprca/jbt) se shuruaat karein.
+
+## Agar pass nahi hue to
+
+TET ke kai attempt ho sakte hain (bulletin me attempt ki limit dekhein). Apni **error list** banayein: kaun sa section kamzor raha (aksar pedagogy ya stream ka bada section), aur agle attempt se pehle us section ke sectional tests se practice karein. [HP TET mock tests](/hpbose/hp-tet) me har category ke full mocks aur sectionals hain.
+
+## Apna score pehle se jaanch lein
+
+150 minute ke timer ke saath full mock dene se pata chalta hai ki aap 90 ke kitne paas hain. [Free HP TET mock](/tests/hp-tet-free-mock-1) se shuru karein; mock ke baad aapko section-wise score aur Himachal ke candidates me rank dikhta hai.`,
+    faqs: [
+      { q: "HP TET ka cut off kitna hota hai?", a: "HP TET me merit cut-off nahi hota. Sirf qualifying marks hain: November 2026 ke liye General ke liye 60% (150 me se 90) aur SC/ST/OBC/PH ke liye 55%. Bulletin me apne category ke liye confirm karein." },
+      { q: "HP TET result kab aata hai?", a: "Result ki date HPBOSE announce karta hai. Is post ke samay koi date announce nahi thi, isliye HPBOSE ki official website dekhte rahein." },
+      { q: "Is HP TET qualifying mark the same for JBT and TGT?", a: "As per the November 2026 prospectus the qualifying marks are 60% for General and 55% for reserved categories, on a 150-mark paper. Check your own category in the HPBOSE bulletin." },
+      { q: "TET pass karne ke baad job milti hai?", a: "Nahi. TET sirf eligibility certificate hai. Job ke liye HPRCA ki alag bharti pariksha pass karni hoti hai, jisme TET certificate maanga jata hai." },
+      { q: "HP TET me negative marking hai kya?", a: "Nahi. 150 questions, har ek 1 mark ka, galat jawab par koi marks nahi katte." },
+    ],
+  },
+
+  {
+    slug: "hp-tet-books-preparation-strategy-jbt-tgt",
+    publish: true,
+    seoTitle: "Best Books for HP TET 2026: JBT & TGT Subject-wise Guide",
+    seoDescription: "Which books to read for HP TET 2026: NCERT and HP Board class 6-12 books, pedagogy, Himachal GK and TGT subject-wise reading plan, with free practice tests.",
+    title: "Best Books for HP TET 2026: JBT and TGT Subject-wise Reading List and Strategy",
+    titleHi: "एचपी टेट 2026 के लिए बेस्ट बुक्स: JBT और TGT सब्जेक्ट-वाइज गाइड",
+    excerpt: "HP TET ke liye kaunsi books padhein: NCERT aur HP Board ki class 6 se 12 ki books, pedagogy, Himachal GK aur TGT ke har stream ki reading list.",
+    category: "STRATEGY",
+    exams: ["hpbose/hp-tet"],
+    content: `**HP TET ke liye kaunsi book best hai?** Seedha jawab: koi ek "magic" book nahi hai. HPBOSE ke prospectus ke mutabiq TGT ke subject questions **HP Board ke class 6 se 8 ke syllabus** par hote hain, par unki difficulty aur linkage **10+2 level tak** ja sakti hai. Isliye **school ki books + ek achhi pedagogy book + Himachal GK** ka combination chahiye. Is post me har section ke liye reading list hai.
+
+## Sabse pehle: school textbooks (NCERT aur HP Board)
+
+- **Class 6 se 10:** NCERT aur HP Board ki books apne subject ke liye. Inhe line by line padhein, kyunki TET ke questions inhi ke concepts se bante hain.
+- **Class 11 aur 12:** TGT me 10+2 tak ke linked questions aate hain, isliye apne stream ke topics (maths, physics, chemistry, biology, history, geography, economics) ki class 11-12 NCERT bhi dekhein.
+- **JBT:** class 1 se 5 ki books (Hindi, English, Maths, EVS) aur unke teaching ke tareeke.
+
+> Tip: kisi bhi publisher ki "TET guide" se pehle school books khatam karein. Guide revision ke liye hoti hai, base ke liye nahi.
+
+## Section-wise reading list
+
+### 1. Child Development & Pedagogy (sab papers me common, 30 questions)
+- Piaget, Vygotsky, Kohlberg, Erikson, learning theories, motivation, individual differences, inclusive education, assessment (CCE).
+- **RTE Act 2009, NCF 2005 aur NEP 2020** ke main points. Ye teeno government documents free me online milte hain.
+- Ek achhi CDP book se theory, aur [CDP sectional tests](/hpbose/hp-tet) se situation-based sawaal practice karein.
+
+### 2. General Awareness aur Himachal GK (TGT me 30 questions)
+- Himachal ka itihaas, bhugol, districts, nadiyan, mele-tyohar, arthvyavastha aur sarkari yojanayein.
+- Pichle 6 se 12 mahine ke current affairs.
+- Roz ka abhyaas: [Himachal GK free mock tests](/himachal-gk-mock-test).
+
+### 3. Stream ke subject sections (TGT)
+
+| Stream | Bade section | Kya padhein |
+|---|---|---|
+| **TGT Arts** | English (30), Social Studies (60) | NCERT history, geography, civics, economics (class 6 se 12); English grammar aur literature ke basic terms |
+| **TGT Non-Medical** | Maths (30), Physics & Chemistry (60) | NCERT maths class 6 se 12; physics aur chemistry ke numericals aur concepts |
+| **TGT Medical** | Botany & Zoology (60), Chemistry (30) | NCERT biology class 6 se 12; chemistry class 6 se 12 |
+
+Poora section-wise split: [TGT syllabus aur pattern](/blog/hp-tet-tgt-syllabus-exam-pattern-arts-medical-non-medical).
+
+### 4. JBT ke subject sections
+Hindi aur English ka grammar, Maths ka arithmetic, EVS ke concepts, aur har subject ki **pedagogy** (kaise padhayein, galtiyan kaise sudharein). Detail: [JBT syllabus aur important topics](/blog/hp-tet-jbt-syllabus-important-topics).
+
+## Book ke saath practice kaise karein
+
+1. **Ek topic padhein, usi din uske 15 se 20 sawaal hal karein.** Sirf padhna kaafi nahi.
+2. **Har hafte ek sectional test** apne sabse bade section ka.
+3. **Last 3 hafton me har doosre din ek full mock** 150 minute ke timer ke saath.
+4. **Galtiyon ki list** banayein aur use dobara padhein.
+
+Practice ke liye: [Free HP TET mock](/tests/hp-tet-free-mock-1), aur sectionals jaise [TGT Maths](/tests/hp-tet-tgt-non-medical-maths-sectional-1), [TGT Physics](/tests/hp-tet-tgt-non-medical-physics-sectional-1), [TGT Chemistry](/tests/hp-tet-tgt-chemistry-sectional-1), [TGT Botany & Zoology](/tests/hp-tet-tgt-medical-biology-sectional-1), [TGT History & Civics](/tests/hp-tet-tgt-arts-history-civics-sectional-1) aur [TGT Geography & Economics](/tests/hp-tet-tgt-arts-geography-economics-sectional-1). Exam ke last hafton ka plan: [HP TET last 3 weeks revision plan](/blog/hp-tet-last-3-weeks-revision-plan-2026).`,
+    faqs: [
+      { q: "HP TET ke liye best book kaun si hai?", a: "Koi ek book kaafi nahi hai. School ki NCERT aur HP Board books (class 6 se 12), ek pedagogy book aur Himachal GK ka combination best hai, kyunki TGT ke subject questions class 6 se 8 ke syllabus par hote hain aur 10+2 tak ke linkage ke saath." },
+      { q: "Is NCERT enough for HP TET?", a: "For the subject sections, NCERT and HP Board books are the base. You also need pedagogy theory, Himachal GK and timed practice tests, because the paper tests concepts, problem solving and teaching understanding." },
+      { q: "HP TET JBT ke liye kaunsi books padhein?", a: "Class 1 se 5 ki Hindi, English, Maths aur EVS ki books, saath me CDP aur subject pedagogy. JBT ka pattern 5 sections ka hai, har ek me 30 questions." },
+      { q: "Himachal GK ke liye kya padhein?", a: "Himachal ka itihaas, bhugol, nadiyan, districts, mele, arthvyavastha aur current affairs. Roz ka GK mock practice se yaad rahta hai." },
+    ],
+  },
+
+  {
+    slug: "hp-tet-jbt-vs-tgt-difference-eligibility-pattern-which-to-choose",
+    publish: true,
+    seoTitle: "HP TET JBT vs TGT: Difference in Eligibility, Pattern, Jobs",
+    seoDescription: "JBT or TGT? Compare HP TET JBT and TGT: classes taught, eligibility, exam pattern, sections, qualifying marks and recruitment, with a quick way to choose.",
+    title: "HP TET JBT vs TGT: Difference in Eligibility, Exam Pattern, Classes and Recruitment",
+    titleHi: "एचपी टेट JBT बनाम TGT: योग्यता, पैटर्न और भर्ती में अंतर",
+    excerpt: "JBT aur TGT TET me kya fark hai: kaunsi classes padhate hain, eligibility, exam pattern, qualifying marks aur kaun sa choose karein.",
+    category: "STRATEGY",
+    exams: ["hpbose/hp-tet"],
+    content: `**HP TET me JBT aur TGT me kya fark hai?** Dono papers HPBOSE hi karata hai aur dono teacher banne ke liye zaroori hain, par **kis class ko padhate ho, qualification kya chahiye aur paper ka pattern kaisa hai**, teeno alag hain. Is post me dono ka side-by-side comparison hai.
+
+## Short me: JBT vs TGT
+
+| | **JBT** | **TGT** |
+|---|---|---|
+| Full form | Junior Basic Training teacher | Trained Graduate Teacher |
+| Classes | **1 se 5** (primary) | **6 se 10** |
+| Qualification | Senior secondary + D.El.Ed (ya equivalent) | Bachelor's degree (kam se kam 50%) + B.Ed |
+| TET paper | JBT TET | TGT Arts, Non-Medical ya Medical TET |
+| Recruiting body (job ke liye) | HPRCA, Hamirpur | HPRCA, Hamirpur |
+| TET pattern | 150 questions, 150 minute | 150 questions, 150 minute |
+| Negative marking | Nahi | Nahi |
+| Qualifying marks | 60% General, 55% reserved | 60% General, 55% reserved |
+
+## Exam pattern: sections me fark
+
+**JBT paper** me 5 sections hain, har ek 30 questions ka:
+
+| Section | Questions |
+|---|---|
+| Child Development & Pedagogy | 30 |
+| English | 30 |
+| Hindi | 30 |
+| Mathematics | 30 |
+| EVS, Social Science aur General Awareness (Himachal sahit) | 30 |
+
+**TGT paper** me 4 sections hain: pedagogy (30) aur general awareness with Himachal (30) common hain, baaki do **stream ke subjects** ke hain:
+
+| Stream | Section III | Section IV |
+|---|---|---|
+| TGT Arts | English (30) | Social Studies (60) |
+| TGT Non-Medical | Maths (30) | Physics & Chemistry (60) |
+| TGT Medical | Botany & Zoology (60) | Chemistry (30) |
+
+Matlab: **JBT paper "sab kuch thoda-thoda" hai** (5 subjects, primary level), jabki **TGT me ek stream ke subject ka gehra gyan** chahiye (60 questions ek hi section me, 10+2 tak ke linkage ke saath).
+
+Detail: [JBT syllabus](/blog/hp-tet-jbt-syllabus-important-topics) aur [TGT syllabus aur pattern](/blog/hp-tet-tgt-syllabus-exam-pattern-arts-medical-non-medical).
+
+## Taiyari me fark
+
+- **JBT:** class 1 se 5 level ke concepts, par **paper me competition zyada** hota hai kyunki JBT candidates ki sankhya badi hoti hai. Accuracy aur speed dono zaroori hain, aur Hindi, English, Maths, EVS ke saath pedagogy pakki honi chahiye.
+- **TGT:** apne graduation subject ka depth, class 6 se 12 ki books, aur 60 questions wale bade section par sabse zyada mehnat.
+- **Common:** Child Development & Pedagogy dono me hai, isliye ye sabse pehle pakka karein.
+
+## Kaunsa choose karein?
+
+- Agar aapke paas **D.El.Ed** hai aur aap **chhote bachchon** (class 1 se 5) ko padhana chahte hain, to **JBT**.
+- Agar aapke paas **graduation (50%+) aur B.Ed** hai aur aap class 6 se 10 me **apna subject** padhana chahte hain, to **TGT**, aur stream apne graduation ke hisaab se (Arts, Non-Medical ya Medical).
+- Dono ki eligibility ek saath ho to bhi ek hi paper chunna padta hai, jo aapko pasand ho aur jisme aap strong ho.
+
+Eligibility ki exact condition aur relaxation (jaise Himachal ke SC/ST/OBC/PHH candidates ko qualification marks me chhoot) HPBOSE ke bulletin me dekhein.
+
+## Practice ke liye
+
+- JBT: [HP TET JBT mock tests](/hpbose/hp-tet)
+- TGT: Pehla full mock free hai: [Arts](/tests/hp-tet-tgt-arts-2026-full-mock-1), [Non-Medical](/tests/hp-tet-tgt-non-medical-2026-full-mock-1), [Medical](/tests/hp-tet-tgt-medical-2026-full-mock-1).
+- Bharti ki dishaa: [HPRCA JBT](/hprca/jbt) aur [HPRCA TGT](/hprca/tgt).`,
+    faqs: [
+      { q: "HP TET me JBT aur TGT me kya fark hai?", a: "JBT class 1 se 5 ke liye hai (senior secondary + D.El.Ed), TGT class 6 se 10 ke liye (bachelor's degree 50%+ aur B.Ed). JBT me 5 subjects ke 30-30 questions hain, TGT me pedagogy, general awareness aur stream ke do subject sections." },
+      { q: "JBT aur TGT me kaunsa paper aasan hai?", a: "Dono ka level alag hai. JBT me subject primary level ke hain par competition zyada hai, TGT me ek stream ka gehra gyan (60 questions ka section) chahiye. Apni qualification aur strong subject ke hisaab se chunein." },
+      { q: "Can I give both JBT and TGT TET?", a: "Only if you meet the eligibility of both papers, and each paper is a separate attempt. Choose the one that matches the post you want and your qualification, and check the HPBOSE bulletin." },
+      { q: "Is TGT TET paper me Hindi section hota hai?", a: "Nahi. TGT paper me alag Hindi section nahi hai. JBT me Hindi ka 30 questions ka section hai." },
+    ],
+  },
+
+  {
+    slug: "hp-tet-shastri-language-teacher-syllabus-2026-hindi-sanskrit",
+    publish: true,
+    seoTitle: "HP TET Shastri & Language Teacher Syllabus 2026: Topics",
+    seoDescription: "HP TET Shastri (Sanskrit) and Language Teacher (Hindi) syllabus 2026: section-wise topics, 150-question pattern, qualifying marks, important topics and free tests.",
+    title: "HP TET Shastri and Language Teacher Syllabus 2026: Sanskrit and Hindi Section-wise Topics",
+    titleHi: "एचपी टेट शास्त्री और भाषा अध्यापक सिलेबस 2026: संस्कृत और हिंदी के टॉपिक",
+    excerpt: "HP TET Shastri (Sanskrit) aur Language Teacher (Hindi) ka section-wise syllabus, pattern, qualifying marks aur important topics, saath me free practice tests.",
+    category: "SYLLABUS",
+    exams: ["hpbose/hp-tet"],
+    content: `HP TET me **Shastri (TGT Sanskrit)** aur **Language Teacher (Hindi, Punjabi, Urdu)** ke alag papers hote hain. Is post me **Shastri** aur **Hindi Language Teacher** ka syllabus section-wise diya hai, taki aapko pata ho kis section me kitni mehnat karni hai.
+
+> Dhyan dein: in dono papers ka **official section-wise split HPBOSE ke bulletin** me hota hai. Neeche ke sections hamare mock tests ke hain, jo bulletin ke topics aur is paper ke level ko dhyan me rakhkar banaye gaye hain. Exam se pehle bulletin se ek baar match zaroor karein.
+
+## Paper ka format (sab TET papers jaisa)
+
+- **150 MCQs, 150 marks, 150 minute**
+- **Negative marking nahi**
+- November 2026 session ke liye **qualifying marks 60% (150 me se 90) General** aur **55% reserved categories** ke liye. Detail: [HP TET cut off aur qualifying marks](/blog/hp-tet-cut-off-result-2026-qualifying-marks-certificate).
+- Eligibility: apni language ke saath bachelor's degree aur B.Ed (Shastri ke liye Sanskrit). Exact condition HPBOSE bulletin me.
+
+## HP TET Shastri (Sanskrit) syllabus
+
+| Section | Kya aata hai |
+|---|---|
+| **Child Development & Pedagogy** | Piaget, Vygotsky, Kohlberg, learning theories, motivation, individual differences, inclusive education, assessment |
+| **Hindi (Language I)** | Vyakaran, shabd-bhandar, apathit gadyansh, muhavare aur lokoktiyan |
+| **English (Language II)** | Grammar, vocabulary, unseen passage |
+| **Sanskrit Grammar (vyakaran)** | Sandhi, samas, karak, vibhakti, dhatu roop, shabd roop, pratyay, upsarg |
+| **Sanskrit Literature & Teaching** | Sanskrit sahitya aur kaviyon ka parichay, shlok aur unka arth, Sanskrit shikshan ke tareeke |
+
+**Important:** Sanskrit Grammar aur Sanskrit Literature sabse zyada weight wale sections hain. Dhatu aur shabd roop, sandhi aur samas ko roz ek baar likhkar revise karein.
+
+## HP TET Language Teacher (Hindi) syllabus
+
+| Section | Kya aata hai |
+|---|---|
+| **Child Development & Pedagogy** | Same as Shastri: theories, language acquisition, inclusive education, assessment |
+| **Hindi Grammar (vyakaran)** | Sandhi, samas, upsarg-pratyay, ling, vachan, kaal, karak, muhavare, shuddh vartani |
+| **Hindi Literature (sahitya)** | Kaviyon aur lekhakon ka parichay, rachnayein, Hindi sahitya ka itihas (kaal-vibhajan) |
+| **Poetics & Hindi Teaching** | Ras, alankar, chhand, kavya ke tatva; Hindi shikshan ki vidhiyan aur mulyankan |
+| **English** | Grammar, vocabulary, unseen passage |
+
+**Punjabi aur Urdu Language Teacher** ke liye bhi pedagogy aur English sab ke liye common hain; language ka grammar aur literature us language ka hota hai (bulletin dekhein).
+
+## Taiyari ka tareeqa
+
+1. **Pehle pedagogy (sab me common):** isme sabse aasan marks milte hain.
+2. **Language ka vyakaran roz:** 20 se 25 sawaal ka daily abhyaas.
+3. **Sahitya ko timeline se yaad karein:** kaal, kavi, rachna ki table banayein.
+4. **Pedagogy aur language-teaching alag se padhein:** ye section log aksar chhod dete hain, par yahin se sawaal seedhe aate hain.
+5. **Last 3 hafton me full mocks** 150 minute ke timer ke saath.
+
+## Free aur paid practice tests
+
+Shastri aur Language Teacher ke liye humare paas full mocks aur 25-question sectional tests hain:
+
+- Free mock: [HPRCA Language Teacher free mock](/tests/hprca-language-teacher-free-mock-1) aur [free HP TET mock](/tests/hp-tet-free-mock-1)
+- Sanskrit: [Sanskrit Grammar sectional](/tests/hp-tet-shastri-sanskrit-grammar-sectional-1), [Sanskrit Literature & Teaching sectional](/tests/hp-tet-shastri-sanskrit-literature-sectional-1)
+- Hindi: [Hindi Grammar sectional](/tests/hp-tet-hindi-grammar-sectional-1), [Hindi Literature sectional](/tests/hp-tet-language-teacher-hindi-literature-sectional-1), [Poetics & Hindi Teaching sectional](/tests/hp-tet-language-teacher-poetics-teaching-sectional-1)
+- Pedagogy: [CDP sectional](/tests/hp-tet-language-cdp-sectional-1)
+- Poori series: [HP TET mock tests](/hpbose/hp-tet)
+
+Bharti ke baare me: [HPRCA Language Teacher](/hprca/language-teacher).`,
+    faqs: [
+      { q: "HP TET Shastri ka syllabus kya hai?", a: "Child Development & Pedagogy, Hindi, English, Sanskrit Grammar aur Sanskrit Literature & Teaching. Paper 150 questions, 150 marks, 150 minute ka hai, aur negative marking nahi hai. Official split HPBOSE ke bulletin me dekhein." },
+      { q: "HP TET Language Teacher (Hindi) me kya padhna hai?", a: "Child Development & Pedagogy, Hindi Grammar, Hindi Literature, Poetics & Hindi Teaching aur English. Hindi vyakaran, ras-alankar-chhand aur sahitya ka itihas sabse important hain." },
+      { q: "Does HP TET Shastri have negative marking?", a: "No. The TET papers have 150 one-mark MCQs and no negative marking, so attempt every question." },
+      { q: "Language Teacher aur Shastri me kya fark hai?", a: "Language Teacher Hindi, Punjabi ya Urdu ke liye hai, jabki Shastri Sanskrit teacher (TGT Sanskrit) ke liye. Dono ka alag TET paper hota hai, aur dono me pedagogy common hai." },
+      { q: "Kya Shastri aur Language Teacher ke free mock tests hain?", a: "Haan. Free HP TET mock aur HPRCA Language Teacher free mock se shuru karein, phir Sanskrit aur Hindi ke sectional tests aur full mocks dein." },
+    ],
+  },
 ];
