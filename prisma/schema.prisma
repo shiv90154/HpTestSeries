@@ -504,6 +504,7 @@ model Order {
   razorpayOrderId String?     @unique
   claimToken      String?     @unique // secret held in the guest buyer's browser cookie; proves they placed the order
   payerEmail      String? // email typed into Razorpay Checkout; lets a guest buyer claim from another device
+  payerPhone      String? // mobile number typed into Razorpay Checkout (payment entity `contact`)
   claimedAt       DateTime? // when a guest order was attached to an account
   reminderSentAt  DateTime? // the one "finish your payment" email for an unpaid checkout (email/service.ts)
   site            String      @default("hp") // site (domain) the order was placed on: receipts, emails, reports

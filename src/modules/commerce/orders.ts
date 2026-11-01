@@ -164,15 +164,13 @@ export async function confirmCheckoutPayment(opts: {
   });
   if (!valid) return { error: "Payment signature could not be verified." };
 
-  // The signature already proves the payment. For a guest order also ask Razorpay who paid, so the buyer can
-  // still claim it from another device by email; failing to reach Razorpay must not fail a verified payment.
+  // The signature already proves the payment. Also ask Razorpay who paid: the phone number goes on every order,
+  // and a guest buyer can claim from another device by email. Failing to reach Razorpay must not fail a verified payment.
   let raw: Prisma.InputJsonValue = opts;
-  if (order.userId === null) {
-    const payment = await fetchOrderPayments(order.razorpayOrderId)
-      .then((ps) => ps.find((p) => p.id === opts.razorpayPaymentId))
-      .catch(() => undefined);
-    if (payment) raw = payment as unknown as Prisma.InputJsonValue;
-  }
+  const payment = await fetchOrderPayments(order.razorpayOrderId)
+    .then((ps) => ps.find((p) => p.id === opts.razorpayPaymentId))
+    .catch(() => undefined);
+  if (payment) raw = payment as unknown as Prisma.InputJsonValue;
   await fulfillOrder(order, opts.razorpayPaymentId, raw);
   return { ok: true };
 }
@@ -185,10 +183,11 @@ export async function confirmCheckoutPayment(opts: {
 export async function fulfillOrder(order: OrderForFulfilment, razorpayPaymentId: string | null, raw: Prisma.InputJsonValue): Promise<void> {
   const grant = order.userId ? await entitlementGrant(order.userId, order) : null;
   const payerEmail = order.userId ? undefined : payerEmailFrom(raw);
+  const payerPhone = payerPhoneFrom(raw);
 
   try {
     await db.$transaction([
-      db.order.update({ where: { id: order.id }, data: { status: "PAID", ...(payerEmail && { payerEmail }) } }),
+      db.order.update({ where: { id: order.id }, data: { status: "PAID", ...(payerEmail && { payerEmail }), ...(payerPhone && { payerPhone }) } }),
       ...(order.userId && order.walletPaise > 0 ? [confirmSpendOp({ id: order.id, userId: order.userId, walletPaise: order.walletPaise })] : []),
       ...(razorpayPaymentId
         ? [
@@ -263,6 +262,14 @@ function payerEmailFrom(raw: Prisma.InputJsonValue): string | undefined {
   const e = email.trim().toLowerCase();
   // Razorpay fills "void@razorpay.com" when the buyer gave no email (UPI / netbanking); it identifies nobody.
   return e.includes("@") && !e.endsWith(".invalid") && !e.endsWith("@razorpay.com") ? e : undefined;
+}
+
+/** The buyer's mobile number as Razorpay recorded it (payment entities carry `contact`, e.g. "+919876543210"). */
+export function payerPhoneFrom(raw: Prisma.InputJsonValue): string | undefined {
+  const contact = raw && typeof raw === "object" && !Array.isArray(raw) ? (raw as Record<string, unknown>).contact : undefined;
+  if (typeof contact !== "string") return undefined;
+  const digits = contact.replace(/[^\d+]/g, "");
+  return /\d{10}$/.test(digits) ? digits : undefined;
 }
 
 /**

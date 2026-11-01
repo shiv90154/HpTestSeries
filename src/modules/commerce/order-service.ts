@@ -6,6 +6,7 @@ export type OrderListItem = {
   userId: string | null; // null: guest order nobody has claimed yet
   userName: string;
   userEmail: string;
+  payerPhone: string | null; // mobile number given in Razorpay Checkout, else the account's phone
   productTitle: string;
   amountPaise: number;
   status: string;
@@ -28,10 +29,11 @@ export async function listOrders(site: string | null = null, limit = 200): Promi
       status: true,
       razorpayOrderId: true,
       payerEmail: true,
+      payerPhone: true,
       site: true,
       reminderSentAt: true,
       createdAt: true,
-      user: { select: { name: true, email: true } },
+      user: { select: { name: true, email: true, phoneNumber: true } },
       product: { select: { title: true } },
       payments: { select: { razorpayPaymentId: true }, take: 1, orderBy: { createdAt: "desc" } },
     },
@@ -41,6 +43,7 @@ export async function listOrders(site: string | null = null, limit = 200): Promi
     userId: o.userId,
     userName: o.user?.name ?? "Guest (not signed up yet)",
     userEmail: o.user?.email ?? o.payerEmail ?? "",
+    payerPhone: o.payerPhone ?? o.user?.phoneNumber ?? null,
     productTitle: o.product.title,
     amountPaise: o.amountPaise,
     status: o.status,

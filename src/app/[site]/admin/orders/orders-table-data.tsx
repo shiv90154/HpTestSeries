@@ -36,6 +36,7 @@ export async function OrdersTableData({ site }: { site: SiteCode | null }) {
                   <span className="italic">{o.userName}</span>
                 )}
                 <div className="text-xs text-muted">{o.userEmail}</div>
+                {o.payerPhone && <div className="text-xs text-muted">{o.payerPhone}</div>}
               </>
             ),
           },

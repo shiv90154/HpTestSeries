@@ -3,7 +3,7 @@ import type { Prisma } from "@/generated/prisma/client";
 import { db } from "@/lib/db";
 import { logError } from "@/lib/logger";
 import { verifyWebhookSignature } from "@/lib/razorpay";
-import { fulfillOrder } from "./orders";
+import { fulfillOrder, payerPhoneFrom } from "./orders";
 import { parseWebhookEvent, paymentMatchesOrder } from "./webhook-event";
 
 /**
@@ -44,5 +44,10 @@ export async function handleRazorpayWebhook(rawBody: string, signature: string |
 
   // A late capture after an earlier failed attempt still counts: the student paid.
   if (order.status !== "PAID") await fulfillOrder(order, event.razorpayPaymentId, event.entity as Prisma.InputJsonValue);
+  else if (!order.payerPhone) {
+    // The checkout callback got there first and may not have reached Razorpay for the buyer's number.
+    const payerPhone = payerPhoneFrom(event.entity as Prisma.InputJsonValue);
+    if (payerPhone) await db.order.update({ where: { id: order.id }, data: { payerPhone } });
+  }
   return 200;
 }
