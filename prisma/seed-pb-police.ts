@@ -3,11 +3,12 @@
 
 import type { PrismaClient } from "../src/generated/prisma/client";
 import { PB_POLICE_TESTS } from "./pb-police";
+import { PB_POLICE_SECTIONALS } from "./pb-reuse";
 import { seedSeries } from "./seed-series";
 
 export const PB_POLICE_SERIES_SLUG = "punjab-police-constable-mock-test-series";
 export const PB_POLICE_PRODUCT_SLUG = "punjab-police-constable-mock-series";
-const PRICE_IN_PAISE = 199_00; // proposed in docs/PB-TEST-SERIES-PLAN.md; not yet confirmed by the owner, editable in admin
+const PRICE_IN_PAISE = 249_00; // proposed in docs/PB-TEST-SERIES-PLAN.md; not yet confirmed by the owner, editable in admin
 const VALIDITY_DAYS = 365;
 
 export function seedPbPolice(db: PrismaClient) {
@@ -15,7 +16,7 @@ export function seedPbPolice(db: PrismaClient) {
     label: "Punjab Police seed",
     bodySlug: "punjab-police",
     examSlug: "constable",
-    tests: PB_POLICE_TESTS,
+    tests: [...PB_POLICE_TESTS, ...PB_POLICE_SECTIONALS],
     series: {
       slug: PB_POLICE_SERIES_SLUG,
       title: "Punjab Police Constable Mock Test Series",

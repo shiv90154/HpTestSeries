@@ -4,6 +4,7 @@
 
 import type { PrismaClient } from "../src/generated/prisma/client";
 import { PB_PATWARI_TESTS } from "./pb-patwari";
+import { PB_PATWARI_SECTIONALS } from "./pb-reuse";
 import { seedSeries } from "./seed-series";
 
 export const PB_PATWARI_SERIES_SLUG = "psssb-patwari-mock-test-series";
@@ -16,7 +17,7 @@ export function seedPbPatwari(db: PrismaClient) {
     label: "PSSSB Patwari seed",
     bodySlug: "psssb",
     examSlug: "patwari",
-    tests: PB_PATWARI_TESTS,
+    tests: [...PB_PATWARI_TESTS, ...PB_PATWARI_SECTIONALS],
     series: {
       slug: PB_PATWARI_SERIES_SLUG,
       title: "PSSSB Patwari Mock Test Series",

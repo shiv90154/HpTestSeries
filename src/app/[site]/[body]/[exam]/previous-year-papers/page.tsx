@@ -15,11 +15,9 @@ import { clipDescription } from "@/lib/seo";
 import { pyqFaqs } from "@/modules/content/subpage-faqs";
 import { examLabel, examShortName, getExamPage, getExamSubPages } from "@/modules/catalog/queries";
 import { getProductForSale } from "@/modules/commerce/product-service";
+import { PYQ_PRICE_PAISE, pyqProductSlug } from "@/modules/commerce/pyq";
 
 export const revalidate = 600;
-
-/** The product that unlocks every previous year paper (see /previous-year-papers). */
-const PYQ_PRODUCT = "previous-year-papers";
 
 export async function generateStaticParams() {
   const site = await currentSite();
@@ -45,14 +43,14 @@ export async function generateMetadata({ params }: PageProps<"/[site]/[body]/[ex
 export default async function ExamPyqPage({ params }: PageProps<"/[site]/[body]/[exam]/previous-year-papers">) {
   const site = await currentSite();
   const { body, exam } = await params;
-  const [data, product] = await Promise.all([getExamPage(site.code, body, exam), getProductForSale(site.code, PYQ_PRODUCT)]);
+  const [data, product] = await Promise.all([getExamPage(site.code, body, exam), getProductForSale(site.code, pyqProductSlug(site.code))]);
   const papers = data?.tests.filter((t) => t.type === "PYQ" && t.examName) ?? [];
   if (!data || papers.length === 0) notFound();
 
   const name = examShortName(examLabel(data.body.slug, data.name), data.seo.title);
   const ctx = buildExamCtx(data, name, site.statePage.title);
   const years = [...new Set(papers.flatMap((t) => t.title.match(/\b(?:19|20)\d{2}\b/g) ?? []))].sort();
-  const price = rupees(product?.priceInPaise ?? 29_00);
+  const price = rupees(product?.priceInPaise ?? PYQ_PRICE_PAISE);
 
   return (
     <>

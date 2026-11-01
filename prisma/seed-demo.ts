@@ -26,81 +26,80 @@ const sections = [
 
 const questions: DemoQuestion[] = [
   {
-    section: 0, subject: "hp-gk", topic: "history", difficulty: "EASY", answer: 2,
-    en: { q: "On which date did Himachal Pradesh become a full-fledged state?", o: ["15 April 1948", "1 November 1966", "25 January 1971", "26 January 1950"], e: "Himachal Pradesh became the 18th state of India on 25 January 1971. This day is celebrated as Statehood Day (Poorn Rajyatva Diwas)." },
-    hi: { q: "हिमाचल प्रदेश को पूर्ण राज्य का दर्जा किस तिथि को मिला?", o: ["15 अप्रैल 1948", "1 नवंबर 1966", "25 जनवरी 1971", "26 जनवरी 1950"], e: "हिमाचल प्रदेश 25 जनवरी 1971 को भारत का 18वाँ राज्य बना। इस दिन को पूर्ण राज्यत्व दिवस के रूप में मनाया जाता है।" },
+    section: 0, subject: "hp-gk", topic: "history", difficulty: "MEDIUM", answer: 1,
+    en: { q: "Himachal Pradesh came into existence on 15 April 1948 by joining how many princely states of the Punjab Hill region?", o: ["28", "30", "32", "36"], e: "The Chief Commissioner's province of Himachal Pradesh was formed on 15 April 1948 by merging 30 princely states." },
+    hi: { q: "पंजाब पहाड़ी क्षेत्र की कितनी रियासतों को मिलाकर 15 अप्रैल 1948 को हिमाचल प्रदेश अस्तित्व में आया?", o: ["28", "30", "32", "36"], e: "15 अप्रैल 1948 को 30 रियासतों को मिलाकर चीफ़ कमिश्नर प्रांत के रूप में हिमाचल प्रदेश बना।" },
   },
   {
-    section: 0, subject: "hp-gk", topic: "personalities", difficulty: "EASY", answer: 1,
-    en: { q: "Who was the first Chief Minister of Himachal Pradesh?", o: ["Thakur Ram Lal", "Dr. Yashwant Singh Parmar", "Shanta Kumar", "Virbhadra Singh"], e: "Dr. Yashwant Singh Parmar was the first Chief Minister of Himachal Pradesh and is known as the architect of Himachal Pradesh." },
-    hi: { q: "हिमाचल प्रदेश के पहले मुख्यमंत्री कौन थे?", o: ["ठाकुर राम लाल", "डॉ. यशवंत सिंह परमार", "शांता कुमार", "वीरभद्र सिंह"], e: "डॉ. यशवंत सिंह परमार हिमाचल प्रदेश के पहले मुख्यमंत्री थे और उन्हें हिमाचल का निर्माता कहा जाता है।" },
+    section: 0, subject: "hp-gk", topic: "history", difficulty: "MEDIUM", answer: 2,
+    en: { q: "Himachal Pradesh was given full statehood by which Act of Parliament?", o: ["Punjab Reorganisation Act, 1966", "States Reorganisation Act, 1956", "State of Himachal Pradesh Act, 1970", "Himachal Pradesh Act, 1948"], e: "Parliament passed the State of Himachal Pradesh Act in 1970, and the state came into being on 25 January 1971." },
+    hi: { q: "संसद के किस अधिनियम द्वारा हिमाचल प्रदेश को पूर्ण राज्य का दर्जा दिया गया?", o: ["पंजाब पुनर्गठन अधिनियम, 1966", "राज्य पुनर्गठन अधिनियम, 1956", "हिमाचल प्रदेश राज्य अधिनियम, 1970", "हिमाचल प्रदेश अधिनियम, 1948"], e: "संसद ने 1970 में हिमाचल प्रदेश राज्य अधिनियम पारित किया और 25 जनवरी 1971 को राज्य अस्तित्व में आया।" },
   },
   {
-    section: 0, subject: "hp-gk", topic: "districts", difficulty: "EASY", answer: 2,
-    en: { q: "How many districts are there in Himachal Pradesh?", o: ["10", "11", "12", "14"], e: "Himachal Pradesh has 12 districts: Bilaspur, Chamba, Hamirpur, Kangra, Kinnaur, Kullu, Lahaul & Spiti, Mandi, Shimla, Sirmaur, Solan and Una." },
-    hi: { q: "हिमाचल प्रदेश में कितने जिले हैं?", o: ["10", "11", "12", "14"], e: "हिमाचल प्रदेश में 12 जिले हैं: बिलासपुर, चंबा, हमीरपुर, कांगड़ा, किन्नौर, कुल्लू, लाहौल-स्पीति, मंडी, शिमला, सिरमौर, सोलन और ऊना।" },
+    section: 0, subject: "hp-gk", topic: "personalities", difficulty: "HARD", answer: 0,
+    en: { q: "Tabo Monastery in Spiti, founded in 996 AD, is associated with which Buddhist translator?", o: ["Rinchen Zangpo", "Padmasambhava", "Atisha", "Tsongkhapa"], e: "Tabo Monastery was founded in 996 AD by the great translator Rinchen Zangpo. It is one of the oldest continuously working Buddhist monasteries in India." },
+    hi: { q: "स्पीति में 996 ई. में स्थापित ताबो मठ किस बौद्ध अनुवादक से जुड़ा है?", o: ["रिनचेन ज़ंगपो", "पद्मसंभव", "अतीश", "चोंखापा"], e: "ताबो मठ की स्थापना 996 ई. में महान अनुवादक रिनचेन ज़ंगपो ने की। यह भारत के सबसे पुराने लगातार चल रहे बौद्ध मठों में से है।" },
   },
   {
-    section: 0, subject: "hp-gk", topic: "districts", difficulty: "EASY", answer: 3,
-    en: { q: "Which is the largest district of Himachal Pradesh by area?", o: ["Kangra", "Chamba", "Kinnaur", "Lahaul & Spiti"], e: "Lahaul & Spiti is the largest district of Himachal Pradesh by area, but it has the lowest population." },
-    hi: { q: "क्षेत्रफल की दृष्टि से हिमाचल प्रदेश का सबसे बड़ा जिला कौन-सा है?", o: ["कांगड़ा", "चंबा", "किन्नौर", "लाहौल-स्पीति"], e: "लाहौल-स्पीति क्षेत्रफल में हिमाचल प्रदेश का सबसे बड़ा जिला है, लेकिन इसकी जनसंख्या सबसे कम है।" },
-  },
-  {
-    section: 0, subject: "hp-gk", topic: "districts", difficulty: "MEDIUM", answer: 0,
-    en: { q: "Which is the smallest district of Himachal Pradesh by area?", o: ["Hamirpur", "Bilaspur", "Una", "Solan"], e: "Hamirpur is the smallest district of Himachal Pradesh by area." },
-    hi: { q: "क्षेत्रफल की दृष्टि से हिमाचल प्रदेश का सबसे छोटा जिला कौन-सा है?", o: ["हमीरपुर", "बिलासपुर", "ऊना", "सोलन"], e: "क्षेत्रफल की दृष्टि से हमीरपुर हिमाचल प्रदेश का सबसे छोटा जिला है।" },
-  },
-  {
-    section: 0, subject: "hp-gk", topic: "rivers-lakes", difficulty: "MEDIUM", answer: 0,
-    en: { q: "The Chandra and Bhaga rivers meet at which place to form the Chandrabhaga?", o: ["Tandi", "Keylong", "Udaipur", "Kaza"], e: "The Chandra and Bhaga meet at Tandi in Lahaul to form the Chandrabhaga, which is known as the Chenab in Jammu & Kashmir." },
-    hi: { q: "चंद्रा और भागा नदियाँ किस स्थान पर मिलकर चंद्रभागा बनाती हैं?", o: ["तांदी", "केलांग", "उदयपुर", "काज़ा"], e: "चंद्रा और भागा नदियाँ लाहौल के तांदी में मिलकर चंद्रभागा बनाती हैं, जिसे जम्मू-कश्मीर में चिनाब कहा जाता है।" },
-  },
-  {
-    section: 0, subject: "hp-gk", topic: "rivers-lakes", difficulty: "EASY", answer: 1,
-    en: { q: "The Bhakra Dam is built on which river?", o: ["Beas", "Sutlej", "Ravi", "Yamuna"], e: "The Bhakra Dam is built on the Sutlej river in Bilaspur district. Its reservoir is called Gobind Sagar." },
-    hi: { q: "भाखड़ा बाँध किस नदी पर बना है?", o: ["ब्यास", "सतलुज", "रावी", "यमुना"], e: "भाखड़ा बाँध बिलासपुर जिले में सतलुज नदी पर बना है। इसके जलाशय को गोबिंद सागर कहा जाता है।" },
+    section: 0, subject: "hp-gk", topic: "districts", difficulty: "MEDIUM", answer: 3,
+    en: { q: "Which district headquarters of Himachal Pradesh is known as 'Chhoti Kashi' for its many ancient Shiva temples?", o: ["Kullu", "Chamba", "Bilaspur", "Mandi"], e: "Mandi, on the Beas, is called Chhoti Kashi because of its large number of old temples, many of them dedicated to Lord Shiva." },
+    hi: { q: "अपने अनेक प्राचीन शिव मंदिरों के कारण हिमाचल प्रदेश का कौन-सा ज़िला मुख्यालय 'छोटी काशी' कहलाता है?", o: ["कुल्लू", "चंबा", "बिलासपुर", "मंडी"], e: "ब्यास किनारे बसा मंडी अपने बहुत से प्राचीन मंदिरों, विशेषकर शिव मंदिरों, के कारण छोटी काशी कहलाता है।" },
   },
   {
     section: 0, subject: "hp-gk", topic: "rivers-lakes", difficulty: "MEDIUM", answer: 1,
-    en: { q: "The reservoir of the Pong Dam on the Beas river is known as:", o: ["Gobind Sagar", "Maharana Pratap Sagar", "Chamera Lake", "Pandoh Lake"], e: "The Pong Dam on the Beas river in Kangra district forms the Maharana Pratap Sagar reservoir, an important wetland for migratory birds." },
-    hi: { q: "ब्यास नदी पर बने पौंग बाँध के जलाशय को किस नाम से जाना जाता है?", o: ["गोबिंद सागर", "महाराणा प्रताप सागर", "चमेरा झील", "पंडोह झील"], e: "कांगड़ा जिले में ब्यास नदी पर बने पौंग बाँध से महाराणा प्रताप सागर जलाशय बनता है, जो प्रवासी पक्षियों का महत्वपूर्ण स्थल है।" },
+    en: { q: "Through which pass does the river Satluj enter India from Tibet?", o: ["Baralacha La", "Shipki La", "Kunzum La", "Rohtang Pass"], e: "The Satluj rises near Mansarovar in Tibet and enters India through Shipki La in the Kinnaur district of Himachal Pradesh." },
+    hi: { q: "सतलुज नदी तिब्बत से भारत में किस दर्रे से प्रवेश करती है?", o: ["बारालाचा ला", "शिपकी ला", "कुंज़ुम ला", "रोहतांग दर्रा"], e: "सतलुज मानसरोवर के पास तिब्बत से निकलती है और हिमाचल प्रदेश के किन्नौर ज़िले में शिपकी ला से भारत में प्रवेश करती है।" },
   },
   {
-    section: 0, subject: "hp-gk", topic: "rivers-lakes", difficulty: "EASY", answer: 1,
-    en: { q: "Which is the largest natural lake of Himachal Pradesh?", o: ["Rewalsar", "Renuka", "Prashar", "Chandratal"], e: "Renuka Lake in Sirmaur district is the largest natural lake of Himachal Pradesh." },
-    hi: { q: "हिमाचल प्रदेश की सबसे बड़ी प्राकृतिक झील कौन-सी है?", o: ["रिवालसर", "रेणुका", "पराशर", "चंद्रताल"], e: "सिरमौर जिले की रेणुका झील हिमाचल प्रदेश की सबसे बड़ी प्राकृतिक झील है।" },
+    section: 0, subject: "hp-gk", topic: "rivers-lakes", difficulty: "MEDIUM", answer: 0,
+    en: { q: "The Parvati river joins the Beas at which place in the Kullu valley?", o: ["Bhuntar", "Manali", "Naggar", "Banjar"], e: "The Parvati, flowing down from the Mantalai glacier, meets the Beas at Bhuntar, close to the Kullu airport." },
+    hi: { q: "कुल्लू घाटी में पार्वती नदी ब्यास से किस स्थान पर मिलती है?", o: ["भुंतर", "मनाली", "नग्गर", "बंजार"], e: "मंतलाई हिमनद से आने वाली पार्वती नदी कुल्लू हवाई अड्डे के पास भुंतर में ब्यास से मिलती है।" },
   },
   {
-    section: 0, subject: "hp-gk", topic: "geography", difficulty: "EASY", answer: 1,
-    en: { q: "The Atal Tunnel is built under which pass?", o: ["Baralacha La", "Rohtang Pass", "Kunzum Pass", "Shipki La"], e: "The Atal Tunnel, opened in October 2020, is built under the Rohtang Pass and connects Manali with the Lahaul-Spiti valley all year round." },
-    hi: { q: "अटल सुरंग किस दर्रे के नीचे बनी है?", o: ["बारालाचा ला", "रोहतांग दर्रा", "कुंजुम दर्रा", "शिपकी ला"], e: "अक्टूबर 2020 में खुली अटल सुरंग रोहतांग दर्रे के नीचे बनी है और मनाली को पूरे वर्ष लाहौल-स्पीति घाटी से जोड़ती है।" },
+    section: 0, subject: "hp-gk", topic: "rivers-lakes", difficulty: "HARD", answer: 2,
+    en: { q: "Suraj Tal, the source lake of the Bhaga river, lies just below which pass?", o: ["Rohtang Pass", "Kunzum Pass", "Baralacha La", "Jalori Pass"], e: "Suraj Tal lies below Baralacha La in Lahaul. The Bhaga flows out of it and later joins the Chandra at Tandi to form the Chandrabhaga." },
+    hi: { q: "भागा नदी का उद्गम सरोवर सूरज ताल किस दर्रे के ठीक नीचे स्थित है?", o: ["रोहतांग दर्रा", "कुंज़ुम दर्रा", "बारालाचा ला", "जलोरी दर्रा"], e: "सूरज ताल लाहौल में बारालाचा ला के नीचे है। इससे भागा निकलती है, जो आगे तांदी में चंद्रा से मिलकर चंद्रभागा बनती है।" },
   },
   {
     section: 0, subject: "hp-gk", topic: "geography", difficulty: "MEDIUM", answer: 1,
-    en: { q: "What is the state bird of Himachal Pradesh?", o: ["Himalayan Monal", "Western Tragopan (Jujurana)", "Peacock", "Cheer Pheasant"], e: "The Western Tragopan, locally called Jujurana, is the state bird of Himachal Pradesh. It replaced the Monal as state bird in 2007." },
-    hi: { q: "हिमाचल प्रदेश का राज्य पक्षी कौन-सा है?", o: ["हिमालयन मोनाल", "पश्चिमी ट्रैगोपैन (जुजुराना)", "मोर", "चीड़ फीजेंट"], e: "पश्चिमी ट्रैगोपैन, जिसे स्थानीय रूप से जुजुराना कहते हैं, हिमाचल प्रदेश का राज्य पक्षी है। 2007 में इसने मोनाल का स्थान लिया।" },
+    en: { q: "The Pin Valley National Park, home of the snow leopard and the ibex, lies in which district?", o: ["Kinnaur", "Lahaul and Spiti", "Chamba", "Kullu"], e: "Pin Valley National Park is a cold-desert park in the Spiti part of the Lahaul and Spiti district." },
+    hi: { q: "हिम तेंदुए और आइबेक्स के घर पिन वैली राष्ट्रीय उद्यान कौन-से ज़िले में स्थित है?", o: ["किन्नौर", "लाहौल और स्पीति", "चंबा", "कुल्लू"], e: "पिन वैली राष्ट्रीय उद्यान लाहौल और स्पीति ज़िले के स्पीति भाग में स्थित एक शीत मरुस्थलीय उद्यान है।" },
   },
   {
-    section: 0, subject: "hp-gk", topic: "culture-festivals", difficulty: "EASY", answer: 0,
-    en: { q: "The International Kullu Dussehra is celebrated at:", o: ["Dhalpur Maidan", "Paddal Ground", "The Ridge", "Chaugan"], e: "Kullu Dussehra is celebrated at Dhalpur Maidan in Kullu. (Paddal ground is in Mandi, the Ridge in Shimla and Chaugan in Chamba.)" },
-    hi: { q: "अंतरराष्ट्रीय कुल्लू दशहरा कहाँ मनाया जाता है?", o: ["ढालपुर मैदान", "पड्डल मैदान", "रिज मैदान", "चौगान"], e: "कुल्लू दशहरा कुल्लू के ढालपुर मैदान में मनाया जाता है। (पड्डल मैदान मंडी में, रिज शिमला में और चौगान चंबा में है।)" },
+    section: 0, subject: "hp-gk", topic: "geography", difficulty: "MEDIUM", answer: 3,
+    en: { q: "The Kunzum Pass connects which two regions of Himachal Pradesh?", o: ["Kullu and Lahaul", "Kinnaur and Spiti", "Chamba and Lahaul", "Lahaul and Spiti"], e: "The Kunzum Pass, at about 4,500 m, links the Lahaul and Spiti valleys." },
+    hi: { q: "कुंज़ुम दर्रा हिमाचल प्रदेश के किन दो क्षेत्रों को जोड़ता है?", o: ["कुल्लू और लाहौल", "किन्नौर और स्पीति", "चंबा और लाहौल", "लाहौल और स्पीति"], e: "लगभग 4,500 मीटर ऊँचा कुंज़ुम दर्रा लाहौल और स्पीति घाटियों को जोड़ता है।" },
   },
   {
-    section: 0, subject: "hp-gk", topic: "culture-festivals", difficulty: "EASY", answer: 1,
-    en: { q: "The famous Minjar fair is held in which district?", o: ["Mandi", "Chamba", "Kullu", "Kinnaur"], e: "The Minjar fair is held in Chamba and is associated with the maize harvest and the Ravi river." },
-    hi: { q: "प्रसिद्ध मिंजर मेला किस जिले में आयोजित होता है?", o: ["मंडी", "चंबा", "कुल्लू", "किन्नौर"], e: "मिंजर मेला चंबा में आयोजित होता है और यह मक्की की फसल तथा रावी नदी से जुड़ा है।" },
+    section: 0, subject: "hp-gk", topic: "culture-festivals", difficulty: "HARD", answer: 0,
+    en: { q: "The Phulaich (Ukhyang) festival, in which flowers are gathered from the high pastures, is celebrated in which district?", o: ["Kinnaur", "Mandi", "Sirmaur", "Hamirpur"], e: "Phulaich, also called Ukhyang, is the festival of flowers of Kinnaur, held in the month of Bhadon (August–September)." },
+    hi: { q: "फूलों के उत्सव फुलाइच (उख्यांग), जिसमें ऊँचे चरागाहों से फूल लाए जाते हैं, कौन-से ज़िले में मनाया जाता है?", o: ["किन्नौर", "मंडी", "सिरमौर", "हमीरपुर"], e: "फुलाइच, जिसे उख्यांग भी कहते हैं, किन्नौर का फूलों का उत्सव है, जो भादों (अगस्त–सितंबर) में मनाया जाता है।" },
   },
   {
-    section: 0, subject: "hp-gk", topic: "geography", difficulty: "MEDIUM", answer: 0,
-    en: { q: "The Great Himalayan National Park, a UNESCO World Heritage Site, is located in which district?", o: ["Kullu", "Shimla", "Chamba", "Lahaul & Spiti"], e: "The Great Himalayan National Park is in Kullu district. It was declared a UNESCO World Heritage Site in 2014." },
-    hi: { q: "यूनेस्को विश्व धरोहर स्थल ग्रेट हिमालयन नेशनल पार्क किस जिले में स्थित है?", o: ["कुल्लू", "शिमला", "चंबा", "लाहौल-स्पीति"], e: "ग्रेट हिमालयन नेशनल पार्क कुल्लू जिले में है। इसे 2014 में यूनेस्को विश्व धरोहर स्थल घोषित किया गया।" },
+    section: 0, subject: "hp-gk", topic: "culture-festivals", difficulty: "MEDIUM", answer: 2,
+    en: { q: "The Kangra school of Pahari miniature painting reached its peak under which Katoch ruler?", o: ["Ghamand Chand", "Bhuvan Chand", "Sansar Chand", "Hamir Chand"], e: "Raja Sansar Chand of Kangra (1775–1823) was the great patron of the Kangra school of painting." },
+    hi: { q: "पहाड़ी लघु चित्रकला की कांगड़ा शैली किस कटोच शासक के काल में चरम पर पहुँची?", o: ["घमंड चंद", "भुवन चंद", "संसार चंद", "हमीर चंद"], e: "कांगड़ा के राजा संसार चंद (1775–1823) कांगड़ा चित्रशैली के महान संरक्षक थे।" },
+  },
+  {
+    section: 0, subject: "hp-gk", topic: "economy", difficulty: "EASY", answer: 1,
+    en: { q: "Which district of Himachal Pradesh is the largest apple-producing district?", o: ["Kullu", "Shimla", "Kinnaur", "Mandi"], e: "Shimla district grows the largest share of the state's apples, with Kullu and Kinnaur following." },
+    hi: { q: "हिमाचल प्रदेश का सबसे बड़ा सेब उत्पादक ज़िला कौन-सा है?", o: ["कुल्लू", "शिमला", "किन्नौर", "मंडी"], e: "राज्य के सेब का सबसे बड़ा हिस्सा शिमला ज़िले में होता है, उसके बाद कुल्लू और किन्नौर आते हैं।" },
+  },
+  {
+    section: 0, subject: "hp-gk", topic: "economy", difficulty: "MEDIUM", answer: 0,
+    en: { q: "The Nathpa Jhakri hydroelectric project (1,500 MW), the largest in Himachal Pradesh, is built on which river?", o: ["Satluj", "Beas", "Ravi", "Chenab"], e: "Nathpa Jhakri is on the Satluj, between Kinnaur and Shimla, and has an installed capacity of 1,500 MW." },
+    hi: { q: "हिमाचल प्रदेश की सबसे बड़ी जलविद्युत परियोजना नाथपा झाकड़ी (1,500 मेगावाट) किस नदी पर बनी है?", o: ["सतलुज", "ब्यास", "रावी", "चिनाब"], e: "नाथपा झाकड़ी किन्नौर और शिमला के बीच सतलुज पर है और इसकी स्थापित क्षमता 1,500 मेगावाट है।" },
   },
   {
     section: 0, subject: "hp-gk", topic: "polity-administration", difficulty: "EASY", answer: 2,
-    en: { q: "How many seats are there in the Himachal Pradesh Vidhan Sabha?", o: ["56", "64", "68", "72"], e: "The Himachal Pradesh Legislative Assembly (Vidhan Sabha) has 68 seats. The state also has 4 Lok Sabha and 3 Rajya Sabha seats." },
-    hi: { q: "हिमाचल प्रदेश विधानसभा में कितनी सीटें हैं?", o: ["56", "64", "68", "72"], e: "हिमाचल प्रदेश विधानसभा में 68 सीटें हैं। राज्य में लोकसभा की 4 और राज्यसभा की 3 सीटें हैं।" },
+    en: { q: "Which town was declared the second (winter) capital of Himachal Pradesh in 2017?", o: ["Mandi", "Solan", "Dharamshala", "Una"], e: "Dharamshala was declared the winter capital of Himachal Pradesh in January 2017. Shimla remains the main capital." },
+    hi: { q: "2017 में किस शहर को हिमाचल प्रदेश की दूसरी (शीतकालीन) राजधानी घोषित किया गया?", o: ["मंडी", "सोलन", "धर्मशाला", "ऊना"], e: "जनवरी 2017 में धर्मशाला को हिमाचल प्रदेश की शीतकालीन राजधानी घोषित किया गया। शिमला मुख्य राजधानी बनी हुई है।" },
   },
-
+  {
+    section: 0, subject: "hp-gk", topic: "polity-administration", difficulty: "MEDIUM", answer: 1,
+    en: { q: "How many members does Himachal Pradesh send to the Rajya Sabha?", o: ["2", "3", "4", "5"], e: "Himachal Pradesh has 3 seats in the Rajya Sabha and 4 in the Lok Sabha." },
+    hi: { q: "हिमाचल प्रदेश राज्य सभा में कितने सदस्य भेजता है?", o: ["2", "3", "4", "5"], e: "हिमाचल प्रदेश की राज्य सभा में 3 और लोक सभा में 4 सीटें हैं।" },
+  },
   {
     section: 1, subject: "reasoning", topic: "series", difficulty: "EASY", answer: 2,
     en: { q: "Find the next number in the series: 2, 6, 12, 20, 30, ?", o: ["36", "40", "42", "44"], e: "The differences are 4, 6, 8, 10, so the next difference is 12: 30 + 12 = 42. (Each term is n × (n + 1).)" },
@@ -165,7 +164,7 @@ export type FreeMockDef = {
   questions: DemoQuestion[];
 };
 
-const HP_FREE_MOCK: FreeMockDef = {
+export const HP_FREE_MOCK: FreeMockDef = {
   slug: DEMO_TEST_SLUG,
   site: hp.code,
   title: "Himachal GK Free Mock Test 1",
@@ -182,8 +181,8 @@ export async function seedDemoTest(db: PrismaClient) {
   await seedFreeMock(db, HP_FREE_MOCK);
 }
 
-export async function seedFreeMock(db: PrismaClient, def: FreeMockDef) {
-  const { questions } = def;
+/** Creates the questions that are missing (matched by text hash) and returns every question's id, in order. */
+export async function ensureDemoQuestions(db: PrismaClient, questions: DemoQuestion[]): Promise<string[]> {
   const topics = await db.topic.findMany({ select: { id: true, slug: true, subject: { select: { slug: true } } } });
   const topicId = new Map(topics.map((t) => [`${t.subject.slug}/${t.slug}`, t.id]));
 
@@ -221,6 +220,12 @@ export async function seedFreeMock(db: PrismaClient, def: FreeMockDef) {
     });
     questionIds.push(created.id);
   }
+  return questionIds;
+}
+
+export async function seedFreeMock(db: PrismaClient, def: FreeMockDef) {
+  const { questions } = def;
+  const questionIds = await ensureDemoQuestions(db, questions);
 
   const existingTest = await db.test.findUnique({ where: { slug: def.slug }, select: { id: true } });
   if (existingTest) return;

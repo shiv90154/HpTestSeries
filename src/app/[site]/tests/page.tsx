@@ -6,6 +6,8 @@ import { btn } from "@/components/ui";
 import { rupees } from "@/lib/money";
 import { examCategory, POPULAR_EXAMS, searchAliases, sortForDirectory } from "@/modules/catalog/directory";
 import { examLabel, getCatalog, getExamDirectory, getPublishedTests } from "@/modules/catalog/queries";
+import { getProductForSale } from "@/modules/commerce/product-service";
+import { PYQ_PRICE_PAISE, pyqProductSlug } from "@/modules/commerce/pyq";
 import { perTestLabel } from "@/modules/commerce/value";
 import { ContinueCard } from "./continue-card";
 import { ExamDirectory, type DirectoryCard } from "./exam-directory";
@@ -26,7 +28,8 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function TestsPage() {
   const site = await currentSite();
-  const [tests, catalog, directory] = await Promise.all([getPublishedTests(site.code), getCatalog(site.code), getExamDirectory(site.code)]);
+  const [tests, catalog, directory, pyq] = await Promise.all([getPublishedTests(site.code), getCatalog(site.code), getExamDirectory(site.code), getProductForSale(site.code, pyqProductSlug(site.code))]);
+  const pyqPrice = rupees(pyq?.priceInPaise ?? PYQ_PRICE_PAISE);
   // Exams with tests get a card, the most visited first; the rest are listed small underneath so the page is not a wall of empty cards.
   const ready: DirectoryCard[] = sortForDirectory(directory).map((e) => {
     const perTest = e.pricePaise !== null ? perTestLabel(e.pricePaise, e.priceTests) : null;
@@ -83,7 +86,7 @@ export default async function TestsPage() {
         <div className="flex flex-col gap-3 rounded-2xl border border-primary/30 bg-primary-soft p-4 sm:flex-row sm:items-center sm:justify-between sm:p-5">
           <div>
             <p className="font-semibold">
-              <T en="All previous year papers for just ₹29" pa="ਪਿਛਲੇ ਸਾਲਾਂ ਦੇ ਸਾਰੇ ਪੇਪਰ ਸਿਰਫ਼ ₹29 ਵਿੱਚ" />
+              <T en={`All previous year papers for just ${pyqPrice}`} pa={`ਪਿਛਲੇ ਸਾਲਾਂ ਦੇ ਸਾਰੇ ਪੇਪਰ ਸਿਰਫ਼ ${pyqPrice} ਵਿੱਚ`} />
             </p>
             <p className="text-sm text-muted">
               <T

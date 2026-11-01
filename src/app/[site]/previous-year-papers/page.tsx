@@ -8,21 +8,21 @@ import { btn, card } from "@/components/ui";
 import { rupees } from "@/lib/money";
 import { examLabel, getCatalog, getPublishedTests } from "@/modules/catalog/queries";
 import { getProductForSale } from "@/modules/commerce/product-service";
+import { PYQ_PRICE_PAISE, pyqProductSlug } from "@/modules/commerce/pyq";
 import { currentSite } from "@/sites/current";
 
 export const revalidate = 600;
-
-const PRODUCT_SLUG = "previous-year-papers";
 
 /** Launch exams that are listed as "launching soon" until their first paper is published. */
 const PYQ_EXAMS = ["Police Constable", "JOA IT", "Patwari"];
 
 export async function generateMetadata(): Promise<Metadata> {
   const site = await currentSite();
+  const price = rupees((await getProductForSale(site.code, pyqProductSlug(site.code)))?.priceInPaise ?? PYQ_PRICE_PAISE);
   return {
-    title: `${site.stateAdj} Previous Year Question Papers — All Papers for ₹29`,
+    title: `${site.stateAdj} Previous Year Question Papers — All Papers for ${price}`,
     description:
-      `Solve every previous year paper of ${site.stateAdj} government exams (${site.pyqExams}) in a real CBT interface with Hindi & English questions and detailed solutions. All papers for just ₹29.`,
+      `Solve every previous year paper of ${site.stateAdj} government exams (${site.pyqExams}) in a real CBT interface with Hindi & English questions and detailed solutions. All papers for just ${price}.`,
     alternates: { canonical: "/previous-year-papers" },
   };
 }
@@ -33,15 +33,15 @@ const STEPS = [
   { icon: Languages, title: "Hindi & English", text: "Switch language any time. Every question has a written solution." },
 ];
 
-const FAQS = [
-  { q: "What do I get for ₹29?", a: "Access to every previous year paper on the platform for 365 days — including papers we add later. One payment, no auto-renewal." },
+const faqs = (price: string) => [
+  { q: `What do I get for ${price}?`, a: "Access to every previous year paper on the platform for 365 days — including papers we add later. One payment, no auto-renewal." },
   { q: "Can I try before paying?", a: "Yes. Take a free mock test first to see the CBT interface, then unlock the papers when you are ready." },
   { q: "Is there a refund?", a: "Refunds follow our refund policy. If a paper is faulty, report it and we fix it." },
 ];
 
 export default async function PreviousYearPapersPage() {
   const site = await currentSite();
-  const [product, tests, catalog] = await Promise.all([getProductForSale(site.code, PRODUCT_SLUG), getPublishedTests(site.code), getCatalog(site.code)]);
+  const [product, tests, catalog] = await Promise.all([getProductForSale(site.code, pyqProductSlug(site.code)), getPublishedTests(site.code), getCatalog(site.code)]);
   const papers = tests.filter((t) => t.type === "PYQ");
   const exams = catalog.flatMap((b) =>
     b.exams.map((e) => {
@@ -52,7 +52,7 @@ export default async function PreviousYearPapersPage() {
   // Exams with papers lead, biggest first. The launch exams without one yet stay listed underneath, small.
   const ready = exams.filter((e) => e.papers > 0).sort((a, b) => b.papers - a.papers);
   const soon = exams.filter((e) => e.papers === 0 && PYQ_EXAMS.includes(e.name));
-  const price = rupees(product?.priceInPaise ?? 29_00);
+  const price = rupees(product?.priceInPaise ?? PYQ_PRICE_PAISE);
 
   return (
     <>
@@ -142,7 +142,7 @@ export default async function PreviousYearPapersPage() {
 
         <section className="mx-auto w-full max-w-3xl space-y-4 px-4 py-10 sm:py-16">
           <h2 className="text-xl font-bold tracking-tight sm:text-3xl">Questions</h2>
-          {FAQS.map((f) => (
+          {faqs(price).map((f) => (
             <details key={f.q} className={`${card} group`}>
               <summary className="cursor-pointer list-none p-4 text-[15px] font-semibold">{f.q}</summary>
               <p className="px-4 pb-4 text-sm leading-relaxed text-muted">{f.a}</p>

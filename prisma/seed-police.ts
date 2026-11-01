@@ -7,7 +7,7 @@ import { seedSeries } from "./seed-series";
 
 export const POLICE_SERIES_SLUG = "hp-police-constable-mock-test-series";
 export const POLICE_PRODUCT_SLUG = "hp-police-constable-mock-series";
-const PRICE_IN_PAISE = 199_00; // ₹199 for the whole series, same as Patwari
+const PRICE_IN_PAISE = 249_00; // ₹249 for the whole series (21 tests; raised from ₹199 in Nov 2026, see prisma/raise-prices.ts)
 const VALIDITY_DAYS = 180;
 
 export function seedPolice(db: PrismaClient) {

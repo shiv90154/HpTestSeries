@@ -115,7 +115,7 @@ const EXAMS: ExamDef[] = [
     name: "HPRCA Clerk",
     nameHi: "एचपीआरसीए क्लर्क",
     minutes: 90,
-    price: 99,
+    price: 129,
     description:
       "Full-length HPRCA Clerk (Job Trainee) mock tests on the 2026 pattern: Himachal GK and current affairs, general knowledge " +
       "and social science, everyday science, logical reasoning, General English and Hindi, and computer word processing.",
@@ -168,7 +168,7 @@ const EXAMS: ExamDef[] = [
     nameHi: "एचपी टेट (जेबीटी)",
     minutes: 150,
     marksWrong: 0,
-    price: 149,
+    price: 179,
     description: "Full-length HP TET JBT mock tests: child development & pedagogy, English, Hindi, maths and EVS & general awareness.",
     sections: [
       S("Child Development & Pedagogy", "बाल विकास एवं शिक्षाशास्त्र", tetCdp),
@@ -235,7 +235,7 @@ const EXAMS: ExamDef[] = [
     name: "HP High Court Clerk",
     nameHi: "एचपी हाई कोर्ट क्लर्क",
     minutes: 120,
-    price: 149,
+    price: 179,
     description: "Full-length HP High Court Clerk mock tests: general knowledge with Himachal GK, English, Hindi, reasoning, maths and computer.",
     extraMocks: CLERK_MOCKS,
     extraTests: HC_SECTIONALS,
@@ -292,7 +292,7 @@ const EXAMS: ExamDef[] = [
     name: "HP High Court Process Server",
     nameHi: "एचपी हाई कोर्ट प्रोसेस सर्वर",
     minutes: 120,
-    price: 149,
+    price: 179,
     description: "Full-length HP High Court Process Server mock tests: Himachal GK, general studies, reasoning, maths, Hindi and English.",
     extraMocks: PROCESS_SERVER_MOCKS,
     extraTests: [...PROCESS_SERVER_SCREENING_TESTS, ...HC_SECTIONALS],
@@ -311,7 +311,7 @@ const EXAMS: ExamDef[] = [
     name: "HP High Court Stenographer",
     nameHi: "एचपी हाई कोर्ट आशुलिपिक",
     minutes: 120,
-    price: 149,
+    price: 179,
     description:
       "Full-length HP High Court Stenographer mock tests for the written paper: English, Hindi, general knowledge with Himachal GK, reasoning and computer. " +
       "The shorthand and typing skill test is not covered.",
@@ -678,7 +678,7 @@ export const EXAM_PACKS: { slug: string; title: string; titleHi: string; priceIn
     slug: "hp-high-court-pack",
     title: "HP High Court Pack (Process Server, Stenographer, Clerk)",
     titleHi: "एचपी हाई कोर्ट पैक (प्रोसेस सर्वर, आशुलिपिक, क्लर्क)",
-    priceInPaise: 299_00,
+    priceInPaise: 349_00,
     validityDays: 180,
     seriesSlugs: ["hp-high-court-process-server", "hp-high-court-stenographer", "hp-high-court-clerk"].map((s) => `${s}-mock-test-series`),
   },
@@ -696,7 +696,7 @@ export const EXAM_PACKS: { slug: string; title: string; titleHi: string; priceIn
     slug: "hp-tet-pack",
     title: "HP TET Pack (JBT, TGT Arts, Non-Medical, Medical, Language Teacher, Shastri)",
     titleHi: "एचपी टेट पैक (जेबीटी, टीजीटी आर्ट्स, नॉन-मेडिकल, मेडिकल, भाषा अध्यापक, शास्त्री)",
-    priceInPaise: 249_00,
+    priceInPaise: 299_00,
     validityDays: 180,
     seriesSlugs: ["hp-tet-jbt", "hp-tet-tgt-arts", "hp-tet-tgt-non-medical", "hp-tet-tgt-medical", "hp-tet-language-teacher", "hp-tet-shastri"].map((s) => `${s}-mock-test-series`),
   },
