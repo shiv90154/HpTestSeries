@@ -164,4 +164,6 @@ valid topics and answer spread; questions use markdown + KaTeX rules (wrap `$` a
 | Police Constable paid Paper I mock 5 | ✅ built; Punjabi section needs a Punjabi speaker to check |
 | Police Constable paid Paper I mock 6 | ✅ built; Punjabi section needs a Punjabi speaker to check |
 | Police Constable paid mocks 7–8, Paper 2 mocks, sectionals | not started |
+| PSSSB Patwari free mock (100 q; section split is ours, notification awaited; series + hidden product ₹149 created) | ✅ built; Punjabi section needs a Punjabi speaker to check |
+| PSSSB Patwari paid mocks 1–6, sectionals | not started |
 | Punjabi bank | not started |

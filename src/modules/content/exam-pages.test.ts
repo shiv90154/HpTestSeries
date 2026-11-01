@@ -4,6 +4,7 @@ import { EXAM_PAGES, NOTIFICATION_POSTS, PUNJAB_POSTS, RAJASTHAN_POSTS } from ".
 import { EXAM_SERIES } from "../../../prisma/exam-series";
 import { PATWARI_TESTS } from "../../../prisma/patwari";
 import { COURT_CLERK_TESTS } from "../../../prisma/pb-court-clerk";
+import { PB_PATWARI_TESTS } from "../../../prisma/pb-patwari";
 import { examContent, posts } from "../../../prisma/seed-content";
 import { HP_GK_FREE_MOCK_SLUGS } from "../../../prisma/seed-hp-gk-mocks";
 import { HPAS_BANK_TEST_SLUGS } from "../../../prisma/seed-hpas-bank";
@@ -21,6 +22,7 @@ const testSlugs = new Set([
   ...EXAM_SERIES.flatMap((s) => s.tests.map((t) => t.slug)),
   ...PATWARI_TESTS.map((t) => t.slug),
   ...COURT_CLERK_TESTS.map((t) => t.slug),
+  ...PB_PATWARI_TESTS.map((t) => t.slug),
   hp.freeMockSlug,
   pb.freeMockSlug,
   rj.freeMockSlug,

@@ -1,9 +1,11 @@
 import { pb } from "../../src/sites/pb";
 import type { ExamPages } from "./types";
 import { COURT_CLERK_FREE_MOCK_SLUG } from "../pb-court-clerk";
+import { PB_PATWARI_FREE_MOCK_SLUG } from "../pb-patwari";
 
 const FREE_MOCK = `/tests/${pb.freeMockSlug}`;
 const COURT_CLERK_FREE_MOCK = `/tests/${COURT_CLERK_FREE_MOCK_SLUG}`;
+const PATWARI_FREE_MOCK = `/tests/${PB_PATWARI_FREE_MOCK_SLUG}`;
 
 // Punjab exams, shown on pbtestseries.in only. Facts that outlive one drive; anything dated says which drive it is from.
 // The PSSSB and Punjab Police patterns match the 2026 drives as reported by several sources and as far as the official
@@ -269,6 +271,57 @@ The written paper has a **qualifying Punjabi section** and a merit section domin
       {
         q: "Which streams are covered in PSSSB JE 2026?",
         a: "Junior Engineer (Civil) and Junior Engineer (Electrical) in various departments, and Junior Engineer (Mechanical) in the Water Resources Department.",
+      },
+    ],
+  },
+
+  "psssb/patwari": {
+    seo: {
+      title: "PSSSB Patwari Mock Test {year} — Punjab GK & Punjabi Practice",
+      description:
+        "PSSSB Patwari preparation: what to study while the notification is awaited, the Punjabi paper and Punjab GK. Free full-length Patwari mock test with solutions.",
+    },
+    description: `**PSSSB Patwari** recruitment fills Patwari posts in the Punjab Revenue Department through the Subordinate Services Selection Board. The board has **not published a Patwari advertisement yet**; reports put the vacancies at around **1,001 posts**, but the dates quoted by different websites conflict, so treat any date you see as unconfirmed until it appears on sssb.punjab.gov.in.
+
+Because the notification is awaited, this is the best time to prepare. PSSSB papers generally have a **qualifying Punjabi language paper** and a merit paper on general knowledge, Punjab history and culture, reasoning, English, Punjabi and computers. The exact pattern, marks and negative marking for Patwari will be in the advertisement, so read it as soon as it is out.
+
+Our free [Patwari mock test](${PATWARI_FREE_MOCK}) is a 100-question practice paper on that subject mix: Punjab GK 30, General Knowledge 20, Reasoning & Maths 20, English 10, Punjabi 10 and Computer 10. The split is ours, not an official one.
+
+**How to prepare:** build Punjab GK first (history of the Gurus and the Sikh Empire, geography, rivers, districts and culture), keep Punjabi grammar and vocabulary going every day, and practise reasoning and basic maths for speed.`,
+    syllabus: `PSSSB publishes the detailed syllabus with each advertisement. The usual areas for its merit papers are:
+
+### Punjabi (qualifying)
+- ਵਿਆਕਰਨ, ਸ਼ਬਦ ਜੋੜ, ਮੁਹਾਵਰੇ-ਅਖਾਣ ਅਤੇ ਪੈਰਾ ਪੜ੍ਹ ਕੇ ਪ੍ਰਸ਼ਨ
+
+### Punjab GK
+- History of the Gurus, the Sikh Empire and the freedom struggle in Punjab
+- Geography, rivers, districts, economy, culture and festivals
+
+### General knowledge
+- Indian history, polity, geography, general science and current affairs
+
+### Reasoning and maths
+- Series, coding-decoding, relations, directions, ranking, syllogism
+- Percentage, ratio, average, profit and loss, interest, time and work
+
+### English and computers
+- Grammar, vocabulary, comprehension, and basic computer knowledge`,
+    faqs: [
+      {
+        q: "Has PSSSB announced the Patwari recruitment?",
+        a: "Not yet. No Patwari advertisement had been published on sssb.punjab.gov.in when this page was written. Websites quote about 1,001 posts and several different dates, but none of that is official.",
+      },
+      {
+        q: "What is the PSSSB Patwari exam pattern?",
+        a: "It will be given in the official advertisement. PSSSB papers usually have a qualifying Punjabi paper and a merit paper on general knowledge, Punjab history and culture, reasoning, English, Punjabi and computers. Our practice mock follows that subject mix but is not an official pattern.",
+      },
+      {
+        q: "Is Punjabi compulsory for the Patwari exam?",
+        a: "PSSSB recruitment rules require Punjabi at matriculation level for its posts, and its papers include a qualifying Punjabi section. Confirm the exact rule in the Patwari advertisement.",
+      },
+      {
+        q: "Is there a free PSSSB Patwari mock test?",
+        a: "Yes. The free Patwari mock is a full 100-question, 120-minute paper with solutions in English and Hindi. It uses a quarter-mark negative for each wrong answer, which is our assumption until the pattern is notified.",
       },
     ],
   },

@@ -150,6 +150,7 @@ export const catalogue: BodySeed[] = [
       { slug: "clerk", name: "PSSSB Clerk", nameHi: "पीएसएसएसबी क्लर्क" },
       { slug: "group-d", name: "PSSSB Group D", nameHi: "पीएसएसएसबी ग्रुप डी" },
       { slug: "junior-engineer", name: "PSSSB Junior Engineer", nameHi: "पीएसएसएसबी जूनियर इंजीनियर" },
+      { slug: "patwari", name: "PSSSB Patwari", nameHi: "पीएसएसएसबी पटवारी" },
     ],
   },
   {

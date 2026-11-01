@@ -23,6 +23,7 @@ import { seedPatwari } from "./seed-patwari";
 import { seedPremiumPass } from "./seed-pass";
 import { seedPatwariPyq } from "./seed-patwari-pyq";
 import { seedPbCourtClerk } from "./seed-pb-court-clerk";
+import { seedPbPatwari } from "./seed-pb-patwari";
 import { seedPbPolice } from "./seed-pb-police";
 import { seedPolice } from "./seed-police";
 import { seedPoliceStandalonePyq } from "./seed-police-pyq";
@@ -111,6 +112,7 @@ async function main() {
   const police = await seedPolice(db);
   const pbCourtClerk = await seedPbCourtClerk(db);
   const pbPolice = await seedPbPolice(db);
+  const pbPatwari = await seedPbPatwari(db);
   const joaIt = await seedJoaIt(db);
   const panchayat = await seedPanchayatSecretary(db);
   const examSeries = await seedExamSeries(db);
@@ -123,7 +125,7 @@ async function main() {
   const content = await seedContent(db);
   console.log(
     `Seeded ${catalogue.length} bodies, ${taxonomy.length} subjects, the demo test "${DEMO_TEST_SLUG}", ` +
-      `${patwari.createdTests} new Patwari tests, ${police.createdTests} new Police Constable tests, ${pbCourtClerk.createdTests} new Punjab Court Clerk tests, ${pbPolice.createdTests} new Punjab Police tests, ` +
+      `${patwari.createdTests} new Patwari tests, ${police.createdTests} new Police Constable tests, ${pbCourtClerk.createdTests} new Punjab Court Clerk tests, ${pbPolice.createdTests} new Punjab Police tests, ${pbPatwari.createdTests} new PSSSB Patwari tests, ` +
       `${joaIt.createdTests} new JOA IT tests, ${panchayat.createdTests} new Panchayat Secretary tests, ${examSeries.createdTests} new tests in other exam series, ${hpas.createdTests} new free HPAS tests, ${upcoming.createdTests} new free upcoming-exam mocks, ${hpGkMocks.created} new free Himachal GK mocks, ${hpasBank.createdTests} new HPAS GS/CSAT mocks, ` +
       `${pyq.reduce((n, r) => n + r.created, 0)} new previous-year papers, ` +
       `content for ${content.filled} exams and ${content.created} new posts.`,
