@@ -162,5 +162,6 @@ valid topics and answer spread; questions use markdown + KaTeX rules (wrap `$` a
 | Police Constable paid Paper I mocks 1–3 + series and product (₹199, 365 days, price unconfirmed) | ✅ built; Punjabi section needs a Punjabi speaker to check |
 | Police Constable paid Paper I mock 4 | ✅ built; Punjabi section needs a Punjabi speaker to check |
 | Police Constable paid Paper I mock 5 | ✅ built; Punjabi section needs a Punjabi speaker to check |
-| Police Constable paid mocks 6–8, Paper 2 mocks, sectionals | not started |
+| Police Constable paid Paper I mock 6 | ✅ built; Punjabi section needs a Punjabi speaker to check |
+| Police Constable paid mocks 7–8, Paper 2 mocks, sectionals | not started |
 | Punjabi bank | not started |
