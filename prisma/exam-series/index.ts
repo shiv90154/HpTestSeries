@@ -27,6 +27,7 @@ import { tgtPedagogy } from "./fresh/tgt-pedagogy";
 import { CLERK_MOCKS, HC_SECTIONALS, PROCESS_SERVER_MOCKS, PROCESS_SERVER_SCREENING_TESTS, STENO_MOCKS } from "../high-court";
 import { HP_TET_JBT_MOCKS, HP_TET_JBT_SECTIONALS } from "../hp-tet";
 import { TGT_2026_COMMON, TGT_ARTS_2026, TGT_MEDICAL_2026, TGT_NON_MEDICAL_2026 } from "../hp-tet-tgt";
+import { TGT_ARTS_SECTIONALS, TGT_MEDICAL_SECTIONALS, TGT_NON_MEDICAL_SECTIONALS } from "../hp-tet-tgt/sectionals";
 import { LT_MOCKS, LT_SECTIONALS, LT_SECTIONS, SHASTRI_MOCKS, SHASTRI_SECTIONALS, SHASTRI_SECTIONS } from "../hp-tet-lang";
 import { PGT_SUBJECTS } from "../hp-pgt";
 import { HPAS_MOCKS, HPAS_SECTIONS } from "../hpas-series";
@@ -471,6 +472,7 @@ const EXAMS: ExamDef[] = [
       S("English Literature & Grammar", "अंग्रेज़ी साहित्य एवं व्याकरण", TGT_ARTS_2026.english),
       S("Social Studies", "सामाजिक अध्ययन", TGT_ARTS_2026.socialStudies),
     ],
+    extraTests: TGT_ARTS_SECTIONALS,
   },
   {
     bodySlug: "hpbose",
@@ -494,6 +496,7 @@ const EXAMS: ExamDef[] = [
       S("Mathematics", "गणित", TGT_NON_MEDICAL_2026.mathematics),
       S("Physics & Chemistry", "भौतिक विज्ञान एवं रसायन विज्ञान", TGT_NON_MEDICAL_2026.physicsChemistry),
     ],
+    extraTests: TGT_NON_MEDICAL_SECTIONALS,
   },
   {
     bodySlug: "hpbose",
@@ -517,6 +520,7 @@ const EXAMS: ExamDef[] = [
       S("Botany & Zoology", "वनस्पति विज्ञान एवं प्राणि विज्ञान", TGT_MEDICAL_2026.botanyZoology),
       S("Chemistry", "रसायन विज्ञान", TGT_MEDICAL_2026.chemistry),
     ],
+    extraTests: TGT_MEDICAL_SECTIONALS,
   },
   // Pharmacy sections written fresh in ./fresh/pharmacy-N; general awareness comes from the bank.
   {

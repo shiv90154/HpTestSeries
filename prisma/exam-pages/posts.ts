@@ -1856,4 +1856,163 @@ Poori series me 9 GS full mocks aur 4 CSAT mocks hain, Hindi aur English me, har
       { q: "Is Himachal GK important for HPAS Prelims?", a: "Yes. Paper I includes a good share of Himachal history, geography, economy, culture and current affairs, and it is one of the most scoring parts." },
     ],
   },
+
+  // HP TET November 2026 exams are 22 and 29 November and 6 December; these three posts target the last weeks before them.
+  // Seeded published (reviewed by hand); reword anything that has passed once the exam dates go by. Rules below are the ones in the HPBOSE prospectus as quoted in the TGT post above; reporting time and
+  // documents are deliberately left to the admit card.
+  {
+    slug: "hp-tet-admit-card-2026-exam-day-rules-omr-instructions",
+    publish: true,
+    seoTitle: "HP TET Admit Card 2026: Download, Exam Timing & OMR Rules",
+    seoDescription: "HP TET November 2026 admit card: when it is released, exam timings, OMR sheet rules, marking scheme and a checklist for exam day.",
+    title: "HP TET Admit Card 2026: When to Download, Exam Timing, OMR Rules & Exam-Day Checklist",
+    titleHi: "एचपी टेट एडमिट कार्ड 2026: डाउनलोड, परीक्षा समय और OMR नियम",
+    excerpt: "HP TET November 2026 ka admit card exam se 4 din pehle HPBOSE ki website par aayega. Exam timing, OMR sheet ke niyam aur exam-day checklist yahan hai.",
+    category: "ADMIT_CARD",
+    exams: ["hpbose/hp-tet"],
+    content: `**HP TET November 2026** ke exam **22 November, 29 November aur 6 December** ko hain. Is post me admit card, exam timing, OMR sheet ke niyam aur exam-day checklist ek jagah hai. Sab kuch HPBOSE ke prospectus ke hisaab se hai, par apne admit card par likhi hui baat hamesha final maanein.
+
+## Admit card kab aur kahan se
+
+- Admit card **exam se 4 din pehle** HPBOSE ki website se download hoga.
+- Apne paper ki date ke hisaab se download karein: TGT Arts **22 November**, TGT Non-Medical **29 November**, TGT Medical **6 December** (JBT aur baaki papers ki date notification me dekhein).
+- Print nikalne ke baad **naam, roll number, paper (category), exam date aur centre** match karein. Koi galti ho to exam se pehle HPBOSE se sampark karein.
+
+Application aur dates ki poori jaankari: [HP TET November 2026: dates, fee, pattern](/blog/hp-tet-november-2026-notification-dates-fee-exam-pattern).
+
+## Exam ka samay aur format
+
+| Cheez | Detail |
+|---|---|
+| Samay (TGT) | 10:00 AM se 12:30 PM |
+| Questions | 150 MCQ, har ek 1 mark |
+| Duration | 150 minute (2.5 ghante) |
+| Negative marking | **Nahi** |
+| Question booklet | English aur Hindi dono me |
+
+## OMR sheet ke niyam
+
+- Answer **OMR sheet** par **blue ya black ball pen** se bharna hai.
+- **Ek baar bhara hua circle badla nahi ja sakta**, isliye jawab pakka karke hi bharein.
+- Negative marking nahi hai, isliye **har question ka circle bharein**, jo nahi aata uska bhi anuman lagayein.
+
+## Exam-day checklist
+
+1. Printed admit card (aur woh photo ID jo notification me maangi gayi ho)
+2. 2 blue ya black ball pen
+3. Centre ka rasta pehle se dekh lein; time se pahunchein
+4. Raat ko naya syllabus na padhein; sirf apni **galtiyon ki list** aur short notes dekhein
+5. Paper me pehle woh sections karein jo aapke strong hain, phir baaki
+
+## Last din ki taiyari
+
+Exam ke last hafton ka plan: [HP TET last 3 weeks revision plan](/blog/hp-tet-last-3-weeks-revision-plan-2026). CBT-style practice ke liye [free HP TET mock](/tests/hp-tet-free-mock-1) aur apne category ke full mocks: [HP TET mock tests](/hpbose/hp-tet).`,
+    faqs: [
+      { q: "HP TET admit card kab download hoga?", a: "HPBOSE ke prospectus ke mutabiq admit card exam se 4 din pehle HPBOSE ki website par milega. Apni paper ki date ke hisaab se download karein." },
+      { q: "HP TET me OMR sheet kaise bharni hai?", a: "Blue ya black ball pen se. Ek baar bhara hua circle badla nahi ja sakta, isliye jawab pakka karke bharein." },
+      { q: "Does HP TET have negative marking?", a: "No. The paper has 150 one-mark questions and no marks are deducted for wrong answers, so attempt every question." },
+      { q: "HP TET TGT exam ka time kya hai?", a: "TGT papers subah 10:00 baje se 12:30 baje tak hain, yani 150 minute. Dates: Arts 22 November, Non-Medical 29 November, Medical 6 December 2026." },
+    ],
+  },
+
+  {
+    slug: "hp-tet-last-3-weeks-revision-plan-2026",
+    publish: true,
+    seoTitle: "HP TET 2026 Last 3 Weeks Revision Plan (JBT & TGT)",
+    seoDescription: "A 3-week HP TET revision plan before the 22 November, 29 November and 6 December exams: what to revise each week, mock schedule and how to use the 150-minute paper.",
+    title: "HP TET 2026: Last 3 Weeks Revision Plan for JBT and TGT (Week-by-Week)",
+    titleHi: "एचपी टेट 2026: आखिरी 3 हफ्तों का रिवीजन प्लान (JBT और TGT)",
+    excerpt: "HP TET ke exam 22 November se shuru hain. Aakhri 3 hafton me kya revise karein, kitne mock dein aur 150 minute ka paper kaise karein: week-by-week plan.",
+    category: "STRATEGY",
+    exams: ["hpbose/hp-tet"],
+    content: `**HP TET** ke exam **22 November, 29 November aur 6 December 2026** ko hain. Ab naya syllabus shuru karne ka samay nahi hai: **revision, mock tests aur galtiyon ki list** par kaam karein. Ye plan JBT aur TGT dono ke liye hai; apne paper ke hisaab se subject badal lein.
+
+## Pehle ye samajh lein
+
+- Paper **150 questions, 150 marks, 150 minute** ka hai aur **negative marking nahi** hai.
+- **Child Development & Pedagogy sab papers me common** hai (30 questions). Ye sabse scoring section hai, isliye ise sabse pehle pakka karein.
+- TGT me alag Hindi section nahi hai; section-wise split: [TGT syllabus aur pattern](/blog/hp-tet-tgt-syllabus-exam-pattern-arts-medical-non-medical). JBT ka pattern: [JBT syllabus](/blog/hp-tet-jbt-syllabus-important-topics).
+
+## Week 1: Pedagogy aur General Awareness (Himachal sahit)
+
+- Piaget, Vygotsky, Kohlberg, learning theories, individual differences, inclusive education, assessment, RTE Act 2009, NEP 2020.
+- Himachal ka itihaas, bhugol, districts, nadiyan, mele, arthvyavastha; pichle 6 se 12 mahine ke current affairs.
+- Roz **20 Himachal GK questions** aur ek **CDP sectional**.
+
+## Week 2: Apne stream ke subject sections
+
+- **JBT:** English, Hindi, Maths aur EVS (grammar, vyakaran, arithmetic, EVS concepts, subject pedagogy).
+- **TGT Arts:** English (30) aur Social Studies (60).
+- **TGT Non-Medical:** Maths (30) aur Physics & Chemistry (60).
+- **TGT Medical:** Botany & Zoology (60) aur Chemistry (30).
+- Class 6 se 10 ki NCERT / HP Board books ka base, phir 10+2 tak ke linked topics.
+- Har din apne sabse bade section ka ek **25 question ka sectional** timer ke saath.
+
+## Week 3: Full mocks aur galtiyan
+
+- Har **doosre din ek full mock (150 question, 150 minute)**, bilkul exam ki tarah ek baithak me.
+- Har mock ke baad galat aur guess kiye sawalon ki **error list** banayein, aur use agle din dobara dekhein.
+- Aakhri 2 din sirf error list, formulae aur short notes. Raat ko naya kuch na padhein.
+
+## 150 minute ka paper kaise karein
+
+1. Pehle woh sections jo aapke strong hain (aam taur par pedagogy aur general awareness).
+2. Bade subject section (60 questions) ke liye sabse zyada samay rakhein.
+3. Koi question 1 minute se zyada na atkayein; mark karke aage badhein.
+4. Negative marking nahi hai, isliye last me **har khaali circle bharein**.
+
+## Practice kahan se karein
+
+[Free HP TET mock](/tests/hp-tet-free-mock-1) se CBT format dekhein. TGT ke streams ka pehla full mock free hai: [Arts](/tests/hp-tet-tgt-arts-2026-full-mock-1), [Non-Medical](/tests/hp-tet-tgt-non-medical-2026-full-mock-1), [Medical](/tests/hp-tet-tgt-medical-2026-full-mock-1). Sab categories ke mocks aur sectionals: [HP TET mock tests](/hpbose/hp-tet).`,
+    faqs: [
+      { q: "HP TET ki taiyari last 3 hafton me kaise karein?", a: "Week 1 me pedagogy aur general awareness, week 2 me apne stream ke subject sections, week 3 me har doosre din ek full mock aur galtiyon ki list. Naya syllabus shuru na karein." },
+      { q: "HP TET ke liye kitne mock tests dene chahiye?", a: "Last 3 hafton me kam se kam 5 se 6 full mocks (150 question, 150 minute), aur har mock ke baad error list. Saath me roz ek sectional." },
+      { q: "Which section of HP TET is the most scoring?", a: "Child Development & Pedagogy, which is common to every paper (30 questions), and the general awareness section with Himachal Pradesh in the TGT papers. Secure these first." },
+    ],
+  },
+
+  {
+    slug: "hp-tet-previous-year-papers-how-to-use",
+    publish: true,
+    seoTitle: "HP TET Previous Year Papers: Where to Find Them & How to Use",
+    seoDescription: "HP TET previous year question papers: why memory-based PDFs mislead, what to check on the HPBOSE site, and how to use PYQs with mock tests for JBT and TGT.",
+    title: "HP TET Previous Year Papers: Where to Find Them, What to Trust and How to Use Them",
+    titleHi: "एचपी टेट पिछले साल के प्रश्न पत्र: कहाँ मिलेंगे और कैसे इस्तेमाल करें",
+    excerpt: "HP TET ke previous year papers kahan se dekhein, memory-based PDFs par kitna bharosa karein aur PYQ ko mock tests ke saath kaise use karein.",
+    category: "STRATEGY",
+    exams: ["hpbose/hp-tet"],
+    content: `"HP TET previous year paper" sabse zyada search hone wale terms me se hai. Is post me batate hain ki PYQ kahan dhoondhein, kis par bharosa karein aur unhe kaise use karein.
+
+## Pehle official source dekhein
+
+- HP TET **HPBOSE (Himachal Pradesh Board of School Education), Dharamshala** karata hai. Question papers, answer keys aur results ke liye **HPBOSE ki official website** dekhein.
+- Jo paper ya answer key official site par nahi hai, use **pakka** na maanein. Kaam ki jaankari (pattern, qualifying marks) hamesha prospectus se match karein.
+
+## Memory-based PDFs par kitna bharosa
+
+Internet par "TET paper" ke naam se milne wale kai PDFs **yaad se banaye gaye** hote hain. Unme question ya option galat ho sakte hain aur answer key bhi. Unse **topic trend** samjhein, par exact sawaal yaad karne me samay na lagayein.
+
+## PYQ ko use kaise karein
+
+1. **Pattern samajhne ke liye:** kis section me kaise sawaal aate hain (situation-based pedagogy, concept-based subject questions).
+2. **Topic list banane ke liye:** jo topics baar-baar aate hain, unhe revision me upar rakhein.
+3. **Timed practice ke liye:** paper ko 150 minute me ek baithak me karein.
+4. **Error list ke liye:** galat sawaalon ka concept dobara padhein, jawab ratne par nahi.
+
+## PYQ ke saath mock tests kyun
+
+Ek paper sirf ek baar ka pattern dikhata hai. Mock tests har section ka naya practice dete hain, aur hamare tests **official section-wise pattern** par bane hain, Hindi aur English me, har sawaal ke solution ke saath. Ye previous year ke asli paper nahi hain; ye exam-level practice ke liye likhe gaye naye sawaal hain.
+
+- [Free HP TET mock](/tests/hp-tet-free-mock-1)
+- [HP TET TGT syllabus aur pattern](/blog/hp-tet-tgt-syllabus-exam-pattern-arts-medical-non-medical)
+- [HP TET JBT syllabus aur important topics](/blog/hp-tet-jbt-syllabus-important-topics)
+- Sab categories: [HP TET mock tests](/hpbose/hp-tet)
+
+Exam ke last hafton ka plan: [HP TET last 3 weeks revision plan](/blog/hp-tet-last-3-weeks-revision-plan-2026).`,
+    faqs: [
+      { q: "HP TET previous year paper kahan se milenge?", a: "Official question papers aur answer keys ke liye HPBOSE ki website dekhein. Dusre sites ke PDFs aksar yaad se bane hote hain, unme galtiyan ho sakti hain." },
+      { q: "Are the mock tests on this site the real previous year papers?", a: "No. They are fresh questions written to the official HP TET pattern for exam-level practice, with Hindi and English solutions. They are not copies of past papers." },
+      { q: "Previous year paper se kaise taiyari karein?", a: "Pattern aur repeated topics samajhne ke liye, aur ek baar 150 minute ke timer ke saath hal karne ke liye. Phir galtiyon ka concept dobara padhein." },
+    ],
+  },
 ];

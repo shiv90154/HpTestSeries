@@ -77,6 +77,36 @@ SI written paper me **General Knowledge, Himachal GK, Reasoning, Quantitative Ap
       negativeMarking: "None",
       note: "A separate paper is held for each category: JBT, TGT Arts, TGT Non-Medical, TGT Medical, TGT Sanskrit, Hindi / Punjabi / Urdu Language Teacher and two Special Educator levels. For the November 2026 session the qualifying mark was reported as 60% (90 of 150) for General and 55% for SC/ST/OBC/PH. Confirm in the HPBOSE information bulletin.",
     },
+    faqs: [
+      {
+        q: "HP TET ke liye kaun apply kar sakta hai?",
+        a: "Category ke hisaab se: JBT ke liye senior secondary ke saath D.El.Ed (ya equivalent), aur TGT ke liye relevant stream me bachelor's degree (kam se kam 50%) ke saath B.Ed. B.Ed final-year ke candidates bhi TGT TET de sakte hain. Exact qualification aur relaxation HPBOSE ke bulletin me hai.",
+      },
+      {
+        q: "How many papers are there in HP TET?",
+        a: "One for each category: JBT, TGT Arts, TGT Non-Medical, TGT Medical, TGT Sanskrit, Hindi, Punjabi and Urdu Language Teacher, and two Special Educator papers (Pre-Primary to Class V and Class VI to XII). You appear only for the paper that matches the post you want.",
+      },
+      {
+        q: "HP TET me qualifying marks kitne hain?",
+        a: "November 2026 session ke liye 60% (150 me se 90) General ke liye aur 55% (82) SC/ST/OBC/PH ke liye bataya gaya hai. Negative marking nahi hai, isliye koi question khaali na chhodein.",
+      },
+      {
+        q: "Does the TGT TET paper have a Hindi section?",
+        a: "No. In the official November 2026 split the TGT papers have Child Development & Pedagogy (30), General Awareness & Himachal Pradesh (30) and two stream sections. English appears only in the TGT Arts paper.",
+      },
+      {
+        q: "HP TET ka paper kis language me aata hai?",
+        a: "Question booklet English aur Hindi dono me hoti hai (language papers apni language me). Hamare mock tests bhi Hindi aur English dono me hain.",
+      },
+      {
+        q: "Is HP TET qualification enough to get a teaching job?",
+        a: "No. TET is an eligibility certificate. Selection is done separately by the Himachal Pradesh Rajya Chayan Aayog (HPRCA) through its own recruitment test for JBT, TGT, Language Teacher and Special Educator posts.",
+      },
+      {
+        q: "Which HP TET mock should I start with?",
+        a: "Take the free HP TET mock first to see the pattern, then the first full mock of your own category (JBT, TGT Arts, Non-Medical, Medical, Shastri or Language Teacher). Each is 150 questions in 150 minutes, so practise with the timer on.",
+      },
+    ],
   },
 
   "hp-revenue/patwari": {
