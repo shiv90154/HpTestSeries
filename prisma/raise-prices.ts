@@ -19,6 +19,7 @@ const RISES: Record<string, [number, number]> = {
   "hp-high-court-clerk-mock-series": [149, 179], // 5 mocks + 8 sectionals
   "hp-high-court-process-server-mock-series": [149, 179], // 7 mocks + 8 sectionals
   "hp-high-court-stenographer-mock-series": [149, 179], // 5 mocks + 8 sectionals
+  "hp-tet-shastri-mock-series": [99, 149], // 2 mocks + sectionals
   "hp-high-court-pack": [299, 349], // the three High Court series, still well under buying them one by one
   "hp-tet-pack": [249, 299], // six TET series
 };

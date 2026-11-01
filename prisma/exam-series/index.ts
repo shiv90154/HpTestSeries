@@ -404,7 +404,7 @@ const EXAMS: ExamDef[] = [
     nameHi: "एचपी टेट (शास्त्री)",
     minutes: 150,
     marksWrong: 0,
-    price: 99,
+    price: 149,
     description:
       "Full-length HP TET Shastri (Sanskrit) mock tests: child development and pedagogy, Hindi, English, Sanskrit grammar, " +
       "Sanskrit literature and Sanskrit teaching.",
