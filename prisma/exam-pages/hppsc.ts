@@ -105,10 +105,6 @@ Paper I me **Himachal GK, national and international affairs, Hindi aur English*
         q: "Is there negative marking in HPPSC Assistant Professor Paper I?",
         a: "One report mentions 0.25 negative marking per wrong answer in Paper I. Confirm it in the HPPSC advertisement.",
       },
-      {
-        q: "Is there a free HPPSC Assistant Professor mock test?",
-        a: `Yes. The [free HPPSC Assistant Professor mock test](${free("hppsc-assistant-professor-free-mock-1")}) runs in the real computer-based format, with Hindi and English solutions.`,
-      },
     ],
   },
 
@@ -184,10 +180,6 @@ ADO paper me **agronomy, soil science, horticulture, plant protection aur agricu
         q: "ADO ki taiyari kaise karein?",
         a: "Degree notes se agronomy, soil aur extension revise karo, Himachal ki fasalon, fruit belts aur agriculture schemes ki alag copy banao aur timed mocks do.",
       },
-      {
-        q: "Is there a free HPPSC ADO mock test?",
-        a: `Yes. The [free HPPSC ADO mock test](${free("hppsc-ado-free-mock-1")}) runs in the real computer-based format.`,
-      },
     ],
   },
 
@@ -250,10 +242,6 @@ AE paper me **tumhari branch ka degree-level technical syllabus** sabse bada his
         q: "AE ki taiyari kaise karein?",
         a: "Apni branch ke core subjects degree books se revise karo, GATE-style numericals practise karo aur Himachal GK ki chhoti copy banao (hydropower projects aur rivers engineers ke liye important hain).",
       },
-      {
-        q: "Is there a free HPPSC Assistant Engineer mock test?",
-        a: `Yes. The [free HPPSC Assistant Engineer mock test](${free("hppsc-assistant-engineer-free-mock-1")}) runs in the real computer-based format.`,
-      },
     ],
   },
 
@@ -310,10 +298,6 @@ MO paper me **MBBS ke saare subjects** aate hain, lekin sabse zyada weight **Com
       {
         q: "Medical Officer ki taiyari kaise karein?",
         a: "Pehle PSM aur national programmes revise karo, phir clinical subjects MCQ book se, aur Himachal ke health facts ka ek page banao.",
-      },
-      {
-        q: "Is there a free HPPSC Medical Officer mock test?",
-        a: `Yes. The [free HPPSC Medical Officer mock test](${free("hppsc-medical-officer-free-mock-1")}) runs in the real computer-based format.`,
       },
     ],
   },
@@ -372,10 +356,6 @@ VO paper me **veterinary medicine, surgery, gynaecology and obstetrics, patholog
       {
         q: "Does the VO exam have animal husbandry questions?",
         a: "Yes. Animal nutrition, breeds of cattle, sheep, goat and poultry, dairy science and animal genetics are part of the syllabus.",
-      },
-      {
-        q: "Is there a free HPPSC Veterinary Officer mock test?",
-        a: `Yes. The [free HPPSC Veterinary Officer mock test](${free("hppsc-veterinary-officer-free-mock-1")}) runs in the real computer-based format.`,
       },
     ],
   },
@@ -439,10 +419,6 @@ FSO paper me **FSS Act aur uske Rules, Regulations** ke seedhe questions sabse z
         q: "Is the FSO syllabus the same in every state?",
         a: "The FSS Act part is common to FSO exams in every state, so that preparation stays useful. The advertisement of each state gives its own syllabus and stages.",
       },
-      {
-        q: "Is there a free Food Safety Officer mock test?",
-        a: `Yes. The [free Food Safety Officer mock test](${free("hppsc-food-safety-officer-free-mock-1")}) runs in the real computer-based format.`,
-      },
     ],
   },
 
@@ -499,10 +475,6 @@ Prelims me **Constitution, CPC, CrPC/BNSS, IPC/BNS, Indian Evidence Act/BSA, Con
       {
         q: "HP Judicial Services ki taiyari kaise karein?",
         a: "Bare acts illustrations ke saath padho, past prelims papers solve karo aur landmark judgments ke short notes banao.",
-      },
-      {
-        q: "Is there a free HP Judicial Services mock test?",
-        a: `Yes. The [free HP Judicial Services mock test](${free("hppsc-judicial-services-free-mock-1")}) runs in the real computer-based format.`,
       },
     ],
   },

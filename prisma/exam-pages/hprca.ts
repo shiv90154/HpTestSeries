@@ -92,10 +92,6 @@ JBT paper me **primary-level subjects** ka weight sabse zyada hota hai: Hindi, E
         q: "JBT me competition kaisa hota hai?",
         a: "Kyunki sab candidates HP TET pass hote hain, selection marks ke chhote difference par hota hai. Isliye accuracy aur speed dono par kaam karo.",
       },
-      {
-        q: "Is there a free HPRCA JBT mock test?",
-        a: `Yes. The [free HPRCA JBT mock test](${free("hprca-jbt-free-mock-1")}) runs in the real computer-based format, with Hindi and English solutions after you submit.`,
-      },
     ],
   },
 
@@ -158,10 +154,6 @@ TGT paper me tumhare **apne subject ka sabse bada hissa** hota hai (Arts me soci
       {
         q: "Which documents should I keep ready for TGT?",
         a: "Your TET certificate and your degree and B.Ed documents, before the next notification arrives.",
-      },
-      {
-        q: "Is there a free HPRCA TGT mock test?",
-        a: `Yes. The [free HPRCA TGT mock test](${free("hprca-tgt-free-mock-1")}) shows the real computer-based screen, with Hindi and English solutions.`,
       },
     ],
   },
@@ -292,10 +284,6 @@ Language Teacher ke paper me **tumhari language ka grammar, sahitya aur teaching
         q: "What qualification is needed for Language Teacher?",
         a: "A bachelor's degree with the language, a B.Ed and a pass in the matching HP TET language category. Age limit and vacancies are in the notification.",
       },
-      {
-        q: "Is there a free HPRCA Language Teacher mock test?",
-        a: `Yes. Try the [free Language Teacher mock test](${free("hprca-language-teacher-free-mock-1")}) in the real computer-based format.`,
-      },
     ],
   },
 
@@ -351,10 +339,6 @@ JE paper me **civil engineering ka technical hissa sabse bada** hota hai: buildi
       {
         q: "Is the HPRCA JE exam computer-based?",
         a: "Yes. Selection is through a computer-based test followed by document verification, as per the notification.",
-      },
-      {
-        q: "Is there a free HPRCA JE mock test?",
-        a: `Yes. The [free Junior Engineer mock test](${free("hprca-junior-engineer-free-mock-1")}) shows the pattern of questions and the CBT screen.`,
       },
     ],
   },
@@ -417,10 +401,6 @@ Paper do hisson me aata hai: **Part A me nursing subjects** (fundamentals, medic
         q: "What is the HPRCA Staff Nurse syllabus?",
         a: "Part A has nursing subjects (fundamentals, medical-surgical, community health, child health, midwifery). Part B has general awareness: Himachal GK, current affairs, everyday science, reasoning, English and Hindi.",
       },
-      {
-        q: "Is there a free HPRCA Staff Nurse mock test?",
-        a: `Yes. The [free Staff Nurse mock test](${free("hprca-staff-nurse-free-mock-1")}) runs in the real computer-based format.`,
-      },
     ],
   },
 
@@ -473,10 +453,6 @@ Pharmacist paper me **pharmaceutics, pharmaceutical chemistry, pharmacology, pha
       {
         q: "Is the HPRCA Pharmacist exam computer-based?",
         a: "Yes. Selection is through a computer-based test followed by document verification, as per the notification.",
-      },
-      {
-        q: "Is there a free HPRCA Pharmacist mock test?",
-        a: `Yes. The [free Pharmacist mock test](${free("hprca-pharmacist-free-mock-1")}) shows the CBT screen and the question style.`,
       },
     ],
   },
@@ -536,10 +512,6 @@ Written paper me **Forests of Himachal, environment aur wildlife** ke saath Gene
       {
         q: "Who recruits Forest Guard in Himachal?",
         a: "The advertisement names the recruiting agency (HPRCA or the Forest Department). Read the current notification for vacancies, qualification and age limit.",
-      },
-      {
-        q: "Is there a free Forest Guard mock test?",
-        a: `Yes. The [free Forest Guard mock test](${free("hprca-forest-guard-free-mock-1")}) runs in the real computer-based format.`,
       },
     ],
   },

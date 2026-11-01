@@ -136,10 +136,6 @@ JOA IT paper ki khaasiyat hai ki isme **Computer knowledge** ka weight kaafi hot
         q: "Is Himachal GK asked in the JOA IT exam?",
         a: "Yes. Himachal GK (history, geography, districts, culture, economy) and HP current affairs are part of the written test, along with computer knowledge and aptitude.",
       },
-      {
-        q: "Is there a free JOA IT mock test?",
-        a: `Yes. Start with the [free Himachal GK mock test](${FREE_MOCK}) without login, then attempt the JOA IT mocks in the real computer-based format.`,
-      },
     ],
   },
 
@@ -706,10 +702,15 @@ HP TET mock tests: [HP TET mock tests](/hpbose/hp-tet). Shuruaat [free mock test
   },
 ];
 
-/** True when the stored FAQs are exactly the first entries of the new list, so nobody edited them in admin and the list can grow. */
-function isUneditedPrefix(stored: unknown, next: Faq[]): boolean {
-  if (!Array.isArray(stored) || stored.length >= next.length) return false;
-  return stored.every((f, i) => f && typeof f === "object" && (f as Faq).q === next[i].q && (f as Faq).a === next[i].a);
+// The exam page appends its own "available for free" FAQ, so seeded "Is there a free ... mock test?" entries were dropped.
+const RETIRED_FAQ = /^Is there a free .+ mock test\?$/;
+
+/** True when the stored FAQs are the seeded list, or an earlier version of it, so nobody edited them in admin and the new list can replace them. */
+function isUnedited(stored: unknown, next: Faq[]): boolean {
+  if (!Array.isArray(stored)) return false;
+  const kept = stored.filter((f) => !RETIRED_FAQ.test((f as Faq)?.q ?? ""));
+  const sameAsNext = stored.length === next.length && stored.every((f, i) => (f as Faq)?.q === next[i].q && (f as Faq)?.a === next[i].a);
+  return !sameAsNext && kept.length <= next.length && kept.every((f, i) => f && typeof f === "object" && (f as Faq).q === next[i].q && (f as Faq).a === next[i].a);
 }
 
 export async function seedContent(db: PrismaClient) {
@@ -739,7 +740,7 @@ export async function seedContent(db: PrismaClient) {
         // The old one-paragraph seed descriptions are replaced; anything edited in admin is longer and kept.
         ...(content.description && (!exam.description || exam.description.length < 600) && { description: content.description }),
         ...(content.syllabus && !exam.syllabus && { syllabus: content.syllabus }),
-        ...(content.faqs && (exam.faqs == null || isUneditedPrefix(exam.faqs, content.faqs)) && { faqs: content.faqs }),
+        ...(content.faqs && (exam.faqs == null || isUnedited(exam.faqs, content.faqs)) && { faqs: content.faqs }),
         // SEO and pattern are only ever filled while empty, so /admin/exams edits are never overwritten.
         ...(page?.seo && (exam.seo == null || (exam.seo as { title?: string }).title === replacedSeo[key]) && { seo: page.seo }),
         ...(page?.pattern && exam.pattern == null && { pattern: page.pattern }),
