@@ -658,6 +658,12 @@ HP TET mock tests: [HP TET mock tests](/hpbose/hp-tet). Shuruaat [free mock test
   },
 ];
 
+/** True when the stored FAQs are exactly the first entries of the new list, so nobody edited them in admin and the list can grow. */
+function isUneditedPrefix(stored: unknown, next: Faq[]): boolean {
+  if (!Array.isArray(stored) || stored.length >= next.length) return false;
+  return stored.every((f, i) => f && typeof f === "object" && (f as Faq).q === next[i].q && (f as Faq).a === next[i].a);
+}
+
 export async function seedContent(db: PrismaClient) {
   let filled = 0;
   // Earlier seeded SEO copy that was rewritten for click-through (GSC, Oct 2026): still unchanged in the database means
@@ -685,7 +691,7 @@ export async function seedContent(db: PrismaClient) {
         // The old one-paragraph seed descriptions are replaced; anything edited in admin is longer and kept.
         ...(content.description && (!exam.description || exam.description.length < 600) && { description: content.description }),
         ...(content.syllabus && !exam.syllabus && { syllabus: content.syllabus }),
-        ...(content.faqs && exam.faqs == null && { faqs: content.faqs }),
+        ...(content.faqs && (exam.faqs == null || isUneditedPrefix(exam.faqs, content.faqs)) && { faqs: content.faqs }),
         // SEO and pattern are only ever filled while empty, so /admin/exams edits are never overwritten.
         ...(page?.seo && (exam.seo == null || (exam.seo as { title?: string }).title === replacedSeo[key]) && { seo: page.seo }),
         ...(page?.pattern && exam.pattern == null && { pattern: page.pattern }),
