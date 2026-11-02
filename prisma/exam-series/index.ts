@@ -6,7 +6,8 @@
 
 import type { PatwariQuestion, TestDef } from "../patwari/types";
 import type { SeriesSeed } from "../seed-series";
-import { fresh, reserve, subject, take, topic, type Pick } from "./bank";
+import { fresh, reserve, subject, take, takeFrom, topic, type Pick } from "./bank";
+import { UPCOMING_FREE_TESTS } from "../upcoming-free";
 import { banking } from "./fresh/banking";
 import { forestry } from "./fresh/forestry";
 import { forestGuardGsLate } from "./fresh/forest-guard-gs-late";
@@ -14,6 +15,9 @@ import { forestryLate } from "./fresh/forestry-late";
 import { jbtPedagogy } from "./fresh/jbt-pedagogy";
 import { law } from "./fresh/law";
 import { libraryScience } from "./fresh/library-science";
+import { linemanMock1 } from "./fresh/lineman-1";
+import { linemanMock2 } from "./fresh/lineman-2";
+import { linemanMock3, linemanMock4 } from "./fresh/lineman-3";
 import { nursingCommunity, nursingFundamentals, nursingMedSurg } from "./fresh/nursing";
 import { pharmacyMock1 } from "./fresh/pharmacy-1";
 import { pharmacyMock2 } from "./fresh/pharmacy-2";
@@ -96,6 +100,9 @@ const forestGuardLateGs = (late: number): PatwariQuestion[] =>
   late < 3
     ? take(1, 20, gs, `hprca-forest-guard mock ${late + 3} General Studies`)
     : [...forestGuardGsLate[late - 3], ...take(1, 10, gs, `hprca-forest-guard mock ${late + 3} General Studies`)];
+
+// General questions of the free sample tests, except the Lineman's own free mock (a buyer has usually taken it).
+const samplePool = UPCOMING_FREE_TESTS.filter((t) => t.slug !== "hpsebl-lineman-free-mock-1").flatMap((t) => t.questions);
 
 const S = (name: string, nameHi: string, ...parts: Part[]): Section => ({
   name,
@@ -587,6 +594,41 @@ const EXAMS: ExamDef[] = [
       S("Anatomy & Physiology", "शरीर रचना एवं क्रिया विज्ञान", [radiographyMock1, radiographyMock2].map((m) => m.anatomy)),
       S("General Awareness", "सामान्य जागरूकता", [radiographyMock1, radiographyMock2].map((m) => m.gs), from(5, gs), from(5, reasoning)),
     ],
+  },
+  // HPSEBL Lineman: the trade, line, safety, maths and Himachal GK questions are written fresh in ./fresh/lineman-N (the bank
+  // has no Himachal GK or GS to spare); only reasoning comes from the bank. Kept last so earlier exams' bank picks stay put.
+  {
+    bodySlug: "hpsebl",
+    examSlug: "lineman",
+    slug: "hpsebl-lineman",
+    name: "HPSEBL Lineman",
+    nameHi: "एचपीएसईबीएल लाइनमैन",
+    minutes: 75,
+    price: 99,
+    description:
+      "Full-length HPSEBL Lineman mock tests: ITI electrician trade theory, overhead lines, transformers and line equipment, " +
+      "safety and first aid, maths, reasoning, Himachal GK and general studies.",
+    sections: [
+      S("Electrical Trade Theory", "विद्युत ट्रेड सिद्धांत", [linemanMock1, linemanMock2].map((m) => m.trade)),
+      S("Lines, Transformers & Equipment", "लाइनें, ट्रांसफ़ॉर्मर एवं उपकरण", [linemanMock1, linemanMock2].map((m) => m.lines)),
+      S("Safety, Wiring & Tools", "सुरक्षा, वायरिंग एवं औज़ार", [linemanMock1, linemanMock2].map((m) => m.safety)),
+      S("Maths & Reasoning", "गणित एवं तर्कशक्ति", [linemanMock1, linemanMock2].map((m) => m.maths), from(5, reasoning)),
+      S("Himachal GK & General Studies", "हिमाचल सामान्य ज्ञान एवं सामान्य अध्ययन", [linemanMock1, linemanMock2].map((m) => m.gk)),
+    ],
+    // Mocks 3–4 (November 2026): fresh trade, line and safety questions; maths and reasoning from the bank, and Himachal
+    // GK and GS from the free sample tests of other exams, the one pool that still has general questions to spare.
+    lateMocks: {
+      count: 2,
+      sections: [
+        S("Electrical Trade Theory", "विद्युत ट्रेड सिद्धांत", [linemanMock3, linemanMock4].map((m) => m.trade)),
+        S("Lines, Transformers & Equipment", "लाइनें, ट्रांसफ़ॉर्मर एवं उपकरण", [linemanMock3, linemanMock4].map((m) => m.lines)),
+        S("Safety, Wiring & Tools", "सुरक्षा, वायरिंग एवं औज़ार", [linemanMock3, linemanMock4].map((m) => m.safety)),
+        S("Maths & Reasoning", "गणित एवं तर्कशक्ति", from(5, maths), from(5, reasoning)),
+        S("Himachal GK & General Studies", "हिमाचल सामान्य ज्ञान एवं सामान्य अध्ययन", {
+          shared: (late) => takeFrom(samplePool, 4, 10, subject("hp-gk", "general-studies"), `hpsebl-lineman mock ${late + 3} GK`),
+        }),
+      ],
+    },
   },
 ];
 

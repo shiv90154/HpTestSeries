@@ -52,6 +52,23 @@ export function take(s: PatwariQuestion["s"], n: number, pick: Pick, label: stri
   return out;
 }
 
+/**
+ * Like `take`, but from another pool (e.g. the free sample tests' general questions) for exams the bank cannot stretch
+ * to. It shares the bank's record of used questions, so a question still lands in only one of these tests.
+ */
+export function takeFrom(pool: PatwariQuestion[], s: PatwariQuestion["s"], n: number, pick: Pick, label: string): PatwariQuestion[] {
+  const out: PatwariQuestion[] = [];
+  for (const x of pool) {
+    if (out.length === n) break;
+    const h = hash(x);
+    if (used.has(h) || !pick(x) || STANDALONE_ONLY.test(x.en[0])) continue;
+    used.add(h);
+    out.push({ ...x, s });
+  }
+  if (out.length < n) throw new Error(`exam-series pool: only ${out.length} of ${n} questions left for ${label}`);
+  return out;
+}
+
 /** Marks questions already placed in a test as taken, so later picks never repeat them. */
 export function reserve(qs: PatwariQuestion[]) {
   for (const x of qs) used.add(hash(x));

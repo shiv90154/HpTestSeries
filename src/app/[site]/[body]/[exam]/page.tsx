@@ -25,6 +25,7 @@ import { bodyShortName, examLabel, examShortName, getAllExamParams, getCatalog, 
 import { formatDate } from "@/components/post-card";
 import { faqPageJsonLd } from "@/modules/content/exam-content";
 import { getSampleQuestions } from "@/modules/catalog/free-mocks";
+import { syllabusGuide } from "@/modules/content/syllabus-guides";
 
 export const revalidate = 3600;
 
@@ -98,8 +99,10 @@ export default async function ExamPage({ params }: PageProps<"/[site]/[body]/[ex
   ];
   if (stats.length < 4) stats.splice(stats.length - 1, 0, ["2", "Languages"]);
 
+  const guide = syllabusGuide(ctx.key);
   const faqs = [
     ...data.faqs,
+    ...(guide?.faqs ?? []),
     {
       q: `Is the ${name} mock test available for free?`,
       a: `Yes. You can start with free ${name} mock tests without logging in. Log in for free to save your results and see your rank among ${site.stateAdj} aspirants.`,
@@ -299,6 +302,18 @@ export default async function ExamPage({ params }: PageProps<"/[site]/[body]/[ex
                 <Link href={`${ctx.base}/syllabus`} className="inline-flex min-h-10 items-center text-sm font-semibold text-primary hover:underline">
                   <T en={`Read the full ${name} syllabus ${year()} →`} pa={`${name} ਦਾ ਪੂਰਾ ਸਿਲੇਬਸ ${year()} ਪੜ੍ਹੋ →`} />
                 </Link>
+              </section>
+            )}
+
+            {guide && (
+              <section className="space-y-3">
+                <h2 className="text-2xl font-bold tracking-tight">Important topics for {name} {year()}</h2>
+                <Markdown text={guide.important} />
+                <p className="text-sm">
+                  <Link href={`${ctx.base}/syllabus`} className="font-medium text-primary hover:underline">
+                    Full syllabus and study plan →
+                  </Link>
+                </p>
               </section>
             )}
 

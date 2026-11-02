@@ -8,7 +8,7 @@ import { card } from "@/components/ui";
 import { currentSite } from "@/sites/current";
 import { T } from "@/components/ui-lang";
 import { hasBodyPage } from "@/modules/catalog/body-info";
-import { bodyShortName, getCatalog, getPublishedTests } from "@/modules/catalog/queries";
+import { bodyShortName, getCatalog } from "@/modules/catalog/queries";
 
 export const revalidate = 3600;
 
@@ -32,8 +32,7 @@ function badge(name: string): string {
 
 export default async function ExamsPage() {
   const site = await currentSite();
-  const [catalog, tests] = await Promise.all([getCatalog(site.code), getPublishedTests(site.code)]);
-  const freeCount = (name: string) => tests.filter((t) => t.examName === name && t.isFree).length;
+  const catalog = await getCatalog(site.code);
   const totalExams = catalog.reduce((n, b) => n + b.exams.length, 0);
   const totalTests = catalog.reduce((n, b) => n + b.exams.reduce((m, e) => m + e.testCount, 0), 0);
   return (
@@ -134,7 +133,11 @@ export default async function ExamsPage() {
                           <span className="rounded-md bg-primary-soft px-2 py-0.5 text-primary">
                             {e.testCount} {e.testCount === 1 ? "test" : "tests"}
                           </span>
-                          {freeCount(e.name) > 0 && <span className="rounded-md bg-success-soft px-2 py-0.5 text-success">{freeCount(e.name)} free</span>}
+                          {e.freeCount > 0 ? (
+                            <span className="rounded-md bg-success-soft px-2 py-0.5 text-success">{e.freeCount} free</span>
+                          ) : (
+                            e.demoCount > 0 && <span className="rounded-md bg-success-soft px-2 py-0.5 text-success">Free demo</span>
+                          )}
                         </>
                       ) : (
                         <span className="rounded-md bg-surface-muted px-2 py-0.5 text-muted">Tests launching soon</span>

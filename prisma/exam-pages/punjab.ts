@@ -1,11 +1,17 @@
 import { pb } from "../../src/sites/pb";
 import type { ExamPages } from "./types";
 import { COURT_CLERK_FREE_MOCK_SLUG } from "../pb-court-clerk";
+import { CLERK_FREE_MOCK_SLUG, GROUP_D_FREE_MOCK_SLUG, JE_CIVIL_FREE_MOCK_SLUG, JE_ELECTRICAL_FREE_MOCK_SLUG, PCS_FREE_MOCK_SLUG } from "../pb-exams";
 import { PB_PATWARI_FREE_MOCK_SLUG } from "../pb-patwari";
 
 const FREE_MOCK = `/tests/${pb.freeMockSlug}`;
 const COURT_CLERK_FREE_MOCK = `/tests/${COURT_CLERK_FREE_MOCK_SLUG}`;
 const PATWARI_FREE_MOCK = `/tests/${PB_PATWARI_FREE_MOCK_SLUG}`;
+const CLERK_MOCK = `/tests/${CLERK_FREE_MOCK_SLUG}`;
+const GROUP_D_MOCK = `/tests/${GROUP_D_FREE_MOCK_SLUG}`;
+const JE_CIVIL_MOCK = `/tests/${JE_CIVIL_FREE_MOCK_SLUG}`;
+const JE_ELECTRICAL_MOCK = `/tests/${JE_ELECTRICAL_FREE_MOCK_SLUG}`;
+const PCS_MOCK = `/tests/${PCS_FREE_MOCK_SLUG}`;
 
 // Punjab exams, shown on pbtestseries.in only. Facts that outlive one drive; anything dated says which drive it is from.
 // The PSSSB and Punjab Police patterns match the 2026 drives as reported by several sources and as far as the official
@@ -33,7 +39,7 @@ You need a graduation degree, Punjabi passed at matriculation level and the comp
 
 The written test has two parts. **Part A is a qualifying Punjabi paper**: if you do not reach the minimum marks, Part B is not checked at all, so do not leave Punjabi for the last week. **Part B decides merit** and covers general knowledge and current affairs, **Punjab history and culture**, logical reasoning and mental ability, Punjabi, English and information and communication technology (ICT), with a quarter mark deducted for each wrong answer.
 
-**How to prepare:** revise Punjab GK district by district (our [Know Your Punjab](/punjab) page is a quick start), practise Punjabi grammar every day, and take a full mock every few days with negative marking on. Begin with the free [Punjab GK mock test](${FREE_MOCK}) to see the exam interface and your starting score.`,
+**How to prepare:** revise Punjab GK district by district (our [Know Your Punjab](/punjab) page is a quick start), practise Punjabi grammar every day, and take a full mock every few days with negative marking on. Begin with the free [PSSSB Clerk mock test](${CLERK_MOCK}) (100 questions on the Part B subjects) or the [Punjab GK mock](${FREE_MOCK}) to see the exam interface and your starting score.`,
     syllabus: `The detailed syllabus is in the PSSSB advertisement. The usual areas are:
 
 ### Part A — Punjabi (qualifying)
@@ -182,7 +188,7 @@ The biggest blocks of posts in that drive were Sewadar in the Excise and Taxatio
 
 The written test is an **OMR paper**. A **qualifying Punjabi section** comes first; only candidates who pass it are ranked on the main section of general knowledge, Punjab GK, reasoning, basic maths and English. Wrong answers in the main section cost marks, so attempt only what you are reasonably sure of.
 
-**How to prepare:** the questions are at a basic level, so speed and accuracy decide the merit. Revise Punjab GK (start with [Know Your Punjab](/punjab)), practise Punjabi grammar daily, and take timed tests. The free [Punjab GK mock test](${FREE_MOCK}) is a good first check.`,
+**How to prepare:** the questions are at a basic level, so speed and accuracy decide the merit. Revise Punjab GK (start with [Know Your Punjab](/punjab)), practise Punjabi grammar daily, and take timed tests. The free [PSSSB Group D mock test](${GROUP_D_MOCK}) is a good first check, and the [Punjab GK mock](${FREE_MOCK}) is a quick warm-up.`,
     syllabus: `PSSSB publishes the syllabus with the advertisement. The usual areas for Group D are:
 
 ### Punjabi (qualifying)
@@ -236,7 +242,7 @@ A diploma or degree in the relevant branch of engineering is the core qualificat
 
 The written paper has a **qualifying Punjabi section** and a merit section dominated by **technical questions from your own branch**, with a smaller share of general knowledge, Punjab GK, reasoning and English. Technical marks decide the merit, so your diploma subjects matter most.
 
-**How to prepare:** revise your branch subject by subject from standard JE books, solve previous PSSSB and other state JE papers, and keep Punjabi and Punjab GK going on the side. Our free [Punjab GK mock test](${FREE_MOCK}) covers the general part.`,
+**How to prepare:** revise your branch subject by subject from standard JE books, solve previous PSSSB and other state JE papers, and keep Punjabi and Punjab GK going on the side. Try the free [JE Civil mock test](${JE_CIVIL_MOCK}) or [JE Electrical mock test](${JE_ELECTRICAL_MOCK}) (technical questions plus a short general part); our [Punjab GK mock](${FREE_MOCK}) covers the general part. There is no Mechanical mock yet.`,
     syllabus: `PSSSB publishes the detailed syllabus with each advertisement. The usual areas are:
 
 ### Punjabi (qualifying)
@@ -409,7 +415,7 @@ Selection has three stages. The **preliminary exam** has two objective papers, *
 
 Punjab is everywhere in this exam: its history from the Gurus to the freedom movement, its geography and rivers, its economy and agriculture, and its art and culture appear in both prelims and mains. Strong Punjab GK, current affairs and steady answer-writing practice set toppers apart.
 
-**How to prepare:** build the NCERT base for General Studies, read Punjab history and culture properly, follow Punjab current affairs daily and keep CSAT practice going so it never becomes a hurdle. Start with the [Know Your Punjab](/punjab) page and the free [Punjab GK mock test](${FREE_MOCK}).`,
+**How to prepare:** build the NCERT base for General Studies, read Punjab history and culture properly, follow Punjab current affairs daily and keep CSAT practice going so it never becomes a hurdle. Start with the [Know Your Punjab](/punjab) page, the free [PCS Prelims General Studies mock](${PCS_MOCK}) and the [Punjab GK mock test](${FREE_MOCK}).`,
     syllabus: `PPSC publishes the full syllabus with the notification. The usual areas are:
 
 ### Prelims — General Studies

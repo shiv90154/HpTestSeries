@@ -20,6 +20,10 @@ export type CatalogExam = {
   href: string;
   /** live mock/subject tests; previous year papers are sold separately and are not counted here */
   testCount: number;
+  /** of those, tests that are wholly free */
+  freeCount: number;
+  /** of those, paid tests with a free demo part (the series' free taste when no test is wholly free) */
+  demoCount: number;
 };
 
 export type CatalogBody = {
@@ -45,6 +49,7 @@ export const getCatalog = cache(async (site: string): Promise<CatalogBody[]> => 
         where: { isActive: true },
         orderBy: { order: "asc" },
         select: {
+          id: true,
           slug: true,
           name: true,
           nameHi: true,
@@ -54,6 +59,16 @@ export const getCatalog = cache(async (site: string): Promise<CatalogBody[]> => 
       },
     },
   });
+  // Counted per exam id: several bodies have an exam of the same name (Clerk, Assistant Engineer).
+  const examIds = bodies.flatMap((b) => b.exams.map((e) => e.id));
+  const counted = { examId: { in: examIds }, ...liveTestWhere(), type: { not: "PYQ" as const } };
+  const [free, demo] = await Promise.all([
+    db.test.groupBy({ by: ["examId"], where: { ...counted, isFree: true }, _count: true }),
+    db.test.groupBy({ by: ["examId"], where: { ...counted, isFree: false, demoPercent: { gt: 0 } }, _count: true }),
+  ]);
+  const byExam = (rows: { examId: string | null; _count: number }[]) => new Map(rows.map((r) => [r.examId, r._count]));
+  const freeBy = byExam(free);
+  const demoBy = byExam(demo);
   return bodies
     .filter((b) => b.exams.length > 0)
     .map((b) => ({
@@ -69,6 +84,8 @@ export const getCatalog = cache(async (site: string): Promise<CatalogBody[]> => 
         description: e.description,
         href: `/${b.slug}/${e.slug}`,
         testCount: e._count.tests,
+        freeCount: freeBy.get(e.id) ?? 0,
+        demoCount: demoBy.get(e.id) ?? 0,
       })),
     }));
 });

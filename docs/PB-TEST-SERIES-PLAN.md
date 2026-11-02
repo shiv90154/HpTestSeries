@@ -166,4 +166,5 @@ valid topics and answer spread; questions use markdown + KaTeX rules (wrap `$` a
 | Police Constable paid mocks 7–8, Paper 2 mocks, sectionals | not started |
 | PSSSB Patwari free mock (100 q; section split is ours, notification awaited; series + hidden product ₹149 created) | ✅ built; Punjabi section needs a Punjabi speaker to check |
 | PSSSB Patwari paid mocks 1–6, sectionals | not started |
+| Free mocks for PSSSB Group D (100 q), Clerk Part B (100 q), JE Civil and JE Electrical (50 q each) and PPSC PCS Prelims GS (100 q); hidden ₹149 series each. Built from the existing Punjab banks and the HP engineering free mocks, no fresh writing | ✅ built; section splits are ours; Punjabi/Clerk and reused Gurmukhi need a Punjabi speaker; JE Mechanical, CSAT and paid mocks not started |
 | Punjabi bank | not started |

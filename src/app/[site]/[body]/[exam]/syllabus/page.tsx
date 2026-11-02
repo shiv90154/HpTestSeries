@@ -13,7 +13,9 @@ import { canonicalSiteCode } from "@/modules/catalog/visibility";
 import { clipDescription } from "@/lib/seo";
 import { syllabusFaqs } from "@/modules/content/subpage-faqs";
 import { syllabusSeo } from "@/modules/content/syllabus-seo";
-import { examLabel, examShortName, getExamPage, getExamSubPages, syllabusOutline } from "@/modules/catalog/queries";
+import { syllabusGuide } from "@/modules/content/syllabus-guides";
+import { PostCard } from "@/components/post-card";
+import { examLabel, examShortName, getCatalog, getExamPage, getExamSubPages, syllabusOutline } from "@/modules/catalog/queries";
 
 export const revalidate = 3600;
 
@@ -47,7 +49,7 @@ export async function generateMetadata({ params }: PageProps<"/[site]/[body]/[ex
 export default async function SyllabusPage({ params }: PageProps<"/[site]/[body]/[exam]/syllabus">) {
   const site = await currentSite();
   const { body, exam } = await params;
-  const data = await getExamPage(site.code, body, exam);
+  const [data, catalog] = await Promise.all([getExamPage(site.code, body, exam), getCatalog(site.code)]);
   if (!data?.syllabus?.trim()) notFound();
 
   const name = examShortName(examLabel(data.body.slug, data.name), data.seo.title);
@@ -55,6 +57,13 @@ export default async function SyllabusPage({ params }: PageProps<"/[site]/[body]
   const areas = syllabusOutline(data.syllabus);
   const topicTests = data.tests.filter((t) => t.examName && (t.type === "SECTIONAL" || t.type === "TOPIC"));
   const freeTests = data.tests.filter((t) => t.isFree).slice(0, 4);
+  const guide = syllabusGuide(`${body}/${exam}`);
+  // Same-body exams first: they share most of the syllabus, so readers of one often prepare for the other.
+  const related = catalog
+    .flatMap((b) => b.exams)
+    .filter((e) => e.href !== ctx.base)
+    .sort((a, b) => Number(b.bodySlug === body) - Number(a.bodySlug === body) || b.testCount - a.testCount)
+    .slice(0, 6);
 
   return (
     <>
@@ -76,7 +85,7 @@ export default async function SyllabusPage({ params }: PageProps<"/[site]/[body]
         crumb="Syllabus"
         h1={`${name} Syllabus ${year()}`}
         intro={`Every subject and topic of the ${name} exam in one place, with free mock tests to practise them in the real CBT format.`}
-        faqs={syllabusFaqs(name, areas)}
+        faqs={[...(guide?.faqs ?? []), ...syllabusFaqs(name, areas)]}
         updatedAt={data.updatedAt}
       >
         <section className="space-y-3">
@@ -89,6 +98,19 @@ export default async function SyllabusPage({ params }: PageProps<"/[site]/[body]
           <Markdown text={data.syllabus} />
           <p className="text-xs text-muted">The syllabus is a summary and can change with each notification. The official notification is final.</p>
         </section>
+
+        {guide && (
+          <>
+            <section className="space-y-3">
+              <h2 className="text-2xl font-bold tracking-tight">Important topics for {name} {year()}</h2>
+              <Markdown text={guide.important} />
+            </section>
+            <section className="space-y-3">
+              <h2 className="text-2xl font-bold tracking-tight">{name} study plan</h2>
+              <Markdown text={guide.plan} />
+            </section>
+          </>
+        )}
 
         {areas.length > 1 && (
           <section className="space-y-3">
@@ -133,6 +155,45 @@ export default async function SyllabusPage({ params }: PageProps<"/[site]/[body]
                 <TestCard key={t.slug} test={t} />
               ))}
             </div>
+          </section>
+        )}
+
+        {(guide || data.posts.length > 0) && (
+          <section className="space-y-4">
+            <h2 className="text-2xl font-bold tracking-tight">Read next</h2>
+            {guide && (
+              <ul className="list-disc space-y-1 pl-5 text-sm">
+                {guide.links.map((l) => (
+                  <li key={l.href}>
+                    <Link href={l.href} className="font-medium text-primary hover:underline">
+                      {l.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            )}
+            {data.posts.length > 0 && (
+              <div className="grid gap-4 sm:grid-cols-2">
+                {data.posts.slice(0, 4).map((p) => (
+                  <PostCard key={p.slug} post={p} />
+                ))}
+              </div>
+            )}
+          </section>
+        )}
+
+        {related.length > 0 && (
+          <section className="space-y-3">
+            <h2 className="text-2xl font-bold tracking-tight">Other {site.stateAdj} exams</h2>
+            <ul className="flex flex-wrap gap-2">
+              {related.map((e) => (
+                <li key={e.href}>
+                  <Link href={e.href} className="inline-flex min-h-10 items-center rounded-full border border-border bg-surface px-3 text-sm hover:text-primary">
+                    {examLabel(e.bodySlug, e.name)}
+                  </Link>
+                </li>
+              ))}
+            </ul>
           </section>
         )}
 

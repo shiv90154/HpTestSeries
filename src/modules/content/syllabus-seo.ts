@@ -16,9 +16,19 @@ export const SYLLABUS_SEO: Record<string, ExamSeo> = {
       "HP High Court Steno Grade-III syllabus {year}: English, Hindi, GK & Himachal GK, reasoning, computer and the shorthand/typing skill test. Save as PDF, take a free mock.",
   },
   "hprca/forest-guard": {
-    title: "HP Forest Guard Syllabus {year} PDF — Topic-wise + Free Mock Test",
+    title: "HP Forest Guard Syllabus {year}: Important Topics, PDF & Free Mock",
     description:
-      "Himachal Forest Guard (Vanrakshak) syllabus {year}: HP forests & wildlife, environment, GK, reasoning, maths and English. Save as PDF and take a free CBT mock test.",
+      "HP Forest Guard (Vanrakshak) syllabus {year}: national parks, forest types, forest Acts, Himachal GK, reasoning and maths, with a 2-month study plan and a free mock.",
+  },
+  "hpbose/hp-tet": {
+    title: "HP TET Syllabus {year} PDF: JBT, TGT, Shastri + Free Mock Test",
+    description:
+      "HP TET syllabus {year} for JBT, TGT Arts, Medical, Non-Medical, Shastri and LT: pedagogy topics asked most, Himachal GK, study plan and a free 150-question mock.",
+  },
+  "hp-revenue/patwari": {
+    title: "HP Patwari Syllabus {year} PDF: Important Topics & Free Mock",
+    description:
+      "HP Patwari syllabus {year}: 120 questions, 90 minutes. Himachal GK, land records terms, maths, reasoning, Hindi & English, with a study plan and free mock tests.",
   },
 };
 
