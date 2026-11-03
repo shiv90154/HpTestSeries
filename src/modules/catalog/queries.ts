@@ -105,7 +105,7 @@ export type PublicTest = {
 };
 
 /** Live tests shown on a site; with examId, that exam's tests plus the site's exam-less tests (state GK). */
-export async function getPublishedTests(site: string, filter: { examId?: string | null } = {}): Promise<PublicTest[]> {
+export async function getPublishedTests(site: string, filter: { examId?: string | null; stateMock?: boolean } = {}): Promise<PublicTest[]> {
   const tests = await db.test.findMany({
     where: {
       // With an exam: its tests plus the site's one free state GK mock, not every no-exam test (the GK mocks 2-5 live on
@@ -113,7 +113,7 @@ export async function getPublishedTests(site: string, filter: { examId?: string 
       AND: [
         liveTestWhere(),
         testOnSite(site),
-        ...(filter.examId !== undefined ? [{ OR: [{ examId: filter.examId }, { examId: null, slug: getSite(site).freeMockSlug }] }] : []),
+        ...(filter.examId !== undefined ? [{ OR: [{ examId: filter.examId }, ...(filter.stateMock === false ? [] : [{ examId: null, slug: getSite(site).freeMockSlug }])] }] : []),
       ],
     },
     orderBy: [{ isFree: "desc" }, { publishedAt: "desc" }],
@@ -164,7 +164,8 @@ export const getExamPage = cache(async (site: string, bodySlug: string, examSlug
   });
   if (!exam) return null;
   const [tests, posts, offer] = await Promise.all([
-    getPublishedTests(site, { examId: exam.id }),
+    // A state GK mock does not belong on a national entrance exam such as IIT JAM.
+    getPublishedTests(site, { examId: exam.id, stateMock: exam.body.slug !== "iit-jam" }),
     getPublishedPosts(site, { examId: exam.id, take: 6 }),
     getExamOffer(exam.id),
   ]);
