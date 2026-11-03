@@ -16,6 +16,7 @@ import { jamGeologyMock1 } from "./geology";
 import { jamMathematicsMock1 } from "./mathematics";
 import { jamPhysicsMock1 } from "./physics";
 import { jamPhysicsMock2, jamPhysicsMock3, jamPhysicsMock4 } from "./physics-more";
+import { jamPhysicsMock9, jamPhysicsMock10, jamPhysicsMock11, jamPhysicsMock12 } from "./physics-more3";
 import { jamPhysicsMock5, jamPhysicsMock6, jamPhysicsMock7, jamPhysicsMock8 } from "./physics-more2";
 import { jamStatisticsMock1 } from "./statistics";
 
@@ -38,7 +39,7 @@ const SUBJECTS: Subject[] = [
     nameHi: "भौतिकी",
     code: "PH",
     covers: "mathematical methods, mechanics, electromagnetism, thermal and statistical physics, waves and optics, quantum and modern physics, and electronics",
-    mocks: [jamPhysicsMock1, jamPhysicsMock2, jamPhysicsMock3, jamPhysicsMock4, jamPhysicsMock5, jamPhysicsMock6, jamPhysicsMock7, jamPhysicsMock8],
+    mocks: [jamPhysicsMock1, jamPhysicsMock2, jamPhysicsMock3, jamPhysicsMock4, jamPhysicsMock5, jamPhysicsMock6, jamPhysicsMock7, jamPhysicsMock8, jamPhysicsMock9, jamPhysicsMock10, jamPhysicsMock11, jamPhysicsMock12],
   },
   {
     key: "jam-chemistry",
