@@ -24,17 +24,17 @@ describe("IIT JAM series", () => {
   });
 });
 
-describe.each(JAM_SERIES.flatMap((s) => s.tests.map((t) => [t.slug, t, s.product.isActive] as const)))("%s", (_slug, def, active) => {
+describe.each(JAM_SERIES.flatMap((s) => s.tests.map((t, i) => [t.slug, t, s.product.isActive, i] as const)))("%s", (_slug, def, active, index) => {
   const qs = balanceAnswers(def.questions);
 
-  it("is a free 30-question, 90-minute MCQ mock with one-third negative marking", () => {
-    expect(def.isFree).toBe(true);
+  it("is a 30-question, 90-minute MCQ mock with one-third negative marking, free only for the first", () => {
+    expect(!!def.isFree).toBe(index === 0);
     expect(qs).toHaveLength(30);
     expect(def.durationSec).toBe(90 * 60);
     expect(def.marksCorrect).toBe(1);
     expect(def.marksWrong).toBe(0.33);
     expect(def.sections).toHaveLength(1);
-    expect(active).toBe(false);
+    expect(active).toBe(JAM_SERIES.find((x) => x.tests.some((t) => t.slug === def.slug))!.tests.length > 1);
   });
 
   it("only uses its own subject and topics that exist in the taxonomy", () => {

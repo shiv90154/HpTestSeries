@@ -15,6 +15,8 @@ import { jamChemistryMock1 } from "./chemistry";
 import { jamGeologyMock1 } from "./geology";
 import { jamMathematicsMock1 } from "./mathematics";
 import { jamPhysicsMock1 } from "./physics";
+import { jamPhysicsMock2, jamPhysicsMock3, jamPhysicsMock4 } from "./physics-more";
+import { jamPhysicsMock5, jamPhysicsMock6, jamPhysicsMock7, jamPhysicsMock8 } from "./physics-more2";
 import { jamStatisticsMock1 } from "./statistics";
 
 type Subject = {
@@ -36,7 +38,7 @@ const SUBJECTS: Subject[] = [
     nameHi: "भौतिकी",
     code: "PH",
     covers: "mathematical methods, mechanics, electromagnetism, thermal and statistical physics, waves and optics, quantum and modern physics, and electronics",
-    mocks: [jamPhysicsMock1],
+    mocks: [jamPhysicsMock1, jamPhysicsMock2, jamPhysicsMock3, jamPhysicsMock4, jamPhysicsMock5, jamPhysicsMock6, jamPhysicsMock7, jamPhysicsMock8],
   },
   {
     key: "jam-chemistry",
@@ -94,7 +96,8 @@ const SUBJECTS: Subject[] = [
   },
 ];
 
-const PRICE_IN_PAISE = 149_00;
+/** Rupees for the paid mocks. Series with only a free mock stay hidden until they have paid mocks (switch on in /admin/products). */
+const PRICE_RUPEES = 179;
 const MINUTES = 90;
 
 /** "set at exam level" or, when at least 30% of the questions are hard, "slightly above exam level". */
@@ -104,7 +107,7 @@ function level(qs: PatwariQuestion[]): string {
 
 function instructions(s: Subject, qs: PatwariQuestion[]): string {
   return (
-    `IIT JAM ${s.name} (${s.code}) sample mock: ${qs.length} multiple-choice questions, ${qs.length} marks, ${MINUTES} minutes. ` +
+    `IIT JAM ${s.name} (${s.code}) mock: ${qs.length} multiple-choice questions, ${qs.length} marks, ${MINUTES} minutes. ` +
     "Each correct answer gives 1 mark and each wrong answer deducts 0.33 (one-third), as for the MCQs of the real paper. Unanswered questions carry no penalty. " +
     "The real JAM paper has 60 questions in 3 hours for 100 marks and also has multiple-select and numerical-answer questions (no negative marking); " +
     "those formats are not part of this mock, which covers the MCQ part. " +
@@ -115,9 +118,9 @@ function instructions(s: Subject, qs: PatwariQuestion[]): string {
 
 export const JAM_SERIES: (SeriesSeed & { key: string })[] = SUBJECTS.map((s) => {
   const tests: TestDef[] = s.mocks.map((questions, i) => ({
-    slug: `${s.key}-free-mock-${i + 1}`,
-    title: `IIT JAM ${s.name} Free Mock Test ${i + 1}`,
-    titleHi: `आईआईटी जैम ${s.nameHi} फ्री मॉक टेस्ट ${i + 1}`,
+    slug: i === 0 ? `${s.key}-free-mock-1` : `${s.key}-mock-${i + 1}`,
+    title: `IIT JAM ${s.name} ${i === 0 ? "Free " : ""}Mock Test ${i + 1}`,
+    titleHi: `आईआईटी जैम ${s.nameHi} ${i === 0 ? "फ्री " : ""}मॉक टेस्ट ${i + 1}`,
     type: "MOCK",
     durationSec: MINUTES * 60,
     // The first mock is a free taste of the series; the rest must be bought.
@@ -142,7 +145,7 @@ export const JAM_SERIES: (SeriesSeed & { key: string })[] = SUBJECTS.map((s) => 
       titleHi,
       description: `Mock tests for the IIT JAM ${s.name} (${s.code}) paper covering ${s.covers}. Every question has a detailed solution.`,
     },
-    product: { slug: `${s.key}-mock-series`, title, titleHi, priceInPaise: PRICE_IN_PAISE, validityDays: 180, isActive: false },
+    product: { slug: `${s.key}-mock-series`, title, titleHi, priceInPaise: PRICE_RUPEES * 100, validityDays: 180, isActive: s.mocks.length > 1 },
   };
 });
 
