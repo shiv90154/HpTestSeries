@@ -1,10 +1,12 @@
 import type { ExamSeo } from "@/modules/content/exam-content";
+import { JAM_SYLLABUS_SEO } from "./jam-guides";
 
 /**
  * Search-result copy for /syllabus pages whose generic title drew impressions but few clicks (GSC, Oct 2026). Keyed by
  * "bodySlug/examSlug"; `{year}` is replaced at render time. The "PDF" in these titles is the page's Save-as-PDF button.
  */
 export const SYLLABUS_SEO: Record<string, ExamSeo> = {
+  ...JAM_SYLLABUS_SEO,
   "hp-high-court/clerk": {
     title: "HP High Court Clerk Syllabus {year} PDF, Exam Pattern & Free Mock",
     description:

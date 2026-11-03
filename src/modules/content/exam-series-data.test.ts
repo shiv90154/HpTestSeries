@@ -10,6 +10,7 @@ import { HPRCA_CLERK_MOCKS } from "../../../prisma/hprca-clerk";
 import { PGIMER_MOCKS } from "../../../prisma/pgimer";
 import { DEFENCE_QUESTIONS } from "../../../prisma/defence";
 import { DELHI_POLICE_QUESTIONS } from "../../../prisma/delhi-police";
+import { JAM_QUESTIONS } from "../../../prisma/jam";
 import { JOA_IT_TESTS } from "../../../prisma/joa-it";
 import { PANCHAYAT_SECRETARY_TESTS } from "../../../prisma/panchayat-secretary";
 import { PATWARI_TESTS } from "../../../prisma/patwari";
@@ -79,7 +80,7 @@ describe("exam series built from the shared bank", () => {
       for (const x of t.questions.filter((y) => specific.has(y.subject))) expect(otherSeries.has(hash(x)), `${t.slug}: ${x.en[0].slice(0, 60)}`).toBe(false);
     }
     const highCourt = [...HC_SECTIONALS.flatMap((t) => t.questions), ...[...PROCESS_SERVER_MOCKS, ...PROCESS_SERVER_SCREENING_MOCKS, ...STENO_MOCKS, ...CLERK_MOCKS].flat()];
-    for (const x of [...highCourt, ...PGIMER_MOCKS.flat(), ...HPAS_MOCKS.flat(), ...HPRCA_CLERK_MOCKS.flat(), ...SHASTRI_MOCKS.flat(), ...LT_MOCKS.flat(), ...PGT_SUBJECTS.flatMap((p) => p.mocks.flat()), ...DEFENCE_QUESTIONS, ...DELHI_POLICE_QUESTIONS, ...CHEMISTRY_2026.flat(), ...BIOLOGY_2026.flat(), ...[...SHASTRI_SECTIONALS, ...LT_SECTIONALS].flatMap((x) => x.questions)]) expect(otherSeries.has(hash(x)), x.en[0].slice(0, 60)).toBe(false);
+    for (const x of [...highCourt, ...PGIMER_MOCKS.flat(), ...HPAS_MOCKS.flat(), ...HPRCA_CLERK_MOCKS.flat(), ...SHASTRI_MOCKS.flat(), ...LT_MOCKS.flat(), ...PGT_SUBJECTS.flatMap((p) => p.mocks.flat()), ...DEFENCE_QUESTIONS, ...DELHI_POLICE_QUESTIONS, ...JAM_QUESTIONS, ...CHEMISTRY_2026.flat(), ...BIOLOGY_2026.flat(), ...[...SHASTRI_SECTIONALS, ...LT_SECTIONALS].flatMap((x) => x.questions)]) expect(otherSeries.has(hash(x)), x.en[0].slice(0, 60)).toBe(false);
   });
 
   it("makes exactly the first mock of each series free", () => {

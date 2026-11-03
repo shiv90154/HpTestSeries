@@ -233,6 +233,23 @@ export const catalogue: BodySeed[] = [
     sites: ["*"],
     exams: [{ slug: "afcat", name: "AFCAT", nameHi: "एफ़कैट" }],
   },
+  // IIT JAM is the national M.Sc. entrance; one exam per test paper, shown on every site like UPSC and SSC.
+  {
+    slug: "iit-jam",
+    name: "IIT JAM (Joint Admission Test for M.Sc.)",
+    nameHi: "आईआईटी जैम (एम.एससी. संयुक्त प्रवेश परीक्षा)",
+    sites: ["*"],
+    passExcluded: true,
+    exams: [
+      { slug: "physics", name: "Physics (PH)", nameHi: "भौतिकी (PH)" },
+      { slug: "chemistry", name: "Chemistry (CY)", nameHi: "रसायन विज्ञान (CY)" },
+      { slug: "mathematics", name: "Mathematics (MA)", nameHi: "गणित (MA)" },
+      { slug: "mathematical-statistics", name: "Mathematical Statistics (MS)", nameHi: "गणितीय सांख्यिकी (MS)" },
+      { slug: "biotechnology", name: "Biotechnology (BT)", nameHi: "जैव प्रौद्योगिकी (BT)" },
+      { slug: "biological-sciences", name: "Biological Sciences (BL)", nameHi: "जीव विज्ञान (BL)" },
+      { slug: "geology", name: "Geology (GG)", nameHi: "भूविज्ञान (GG)" },
+    ],
+  },
   // Delhi Police recruits through the Staff Selection Commission; the written test is a computer-based test.
   {
     slug: "delhi-police",

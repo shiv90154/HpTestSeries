@@ -1,0 +1,38 @@
+// IIT JAM Physics (PH) — Free Mock 1: 30 MCQs written fresh, spread over the JAM syllabus.
+
+import { j } from "./types";
+
+const P = "jam-physics";
+
+export const jamPhysicsMock1 = [
+  j(P, "math-methods", "H", 2, "The eigenvalues of the matrix [[2, 1], [1, 2]] are:", ["0 and 3", "1 and 2", "1 and 3", "2 and 4"], "The characteristic equation (2 − λ)² − 1 = 0 gives λ = 2 ± 1, that is 1 and 3."),
+  j(P, "math-methods", "M", 1, "The value of the integral of exp(−x²) from −∞ to +∞ is:", ["π", "√π", "1", "π/2"], "This is the standard Gaussian integral, equal to √π."),
+  j(P, "math-methods", "M", 2, "For the position vector r = x î + y ĵ + z k̂, the divergence ∇·r equals:", ["0", "1", "3", "r"], "∂x/∂x + ∂y/∂y + ∂z/∂z = 1 + 1 + 1 = 3."),
+  j(P, "math-methods", "H", 1, "For any twice-differentiable scalar field φ, the curl of its gradient, ∇ × (∇φ), is:", ["∇²φ", "The zero vector", "φ", "∇φ"], "The mixed partial derivatives cancel in every component, so the curl of a gradient vanishes identically."),
+  j(P, "math-methods", "H", 1, "The residue of f(z) = 1/[z(z − 1)] at the simple pole z = 0 is:", ["1", "−1", "0", "2"], "Residue = lim z→0 of z·f(z) = 1/(0 − 1) = −1."),
+  j(P, "mechanics", "E", 1, "A mass m on a spring of constant k performs simple harmonic motion. Its angular frequency is:", ["k/m", "√(k/m)", "√(m/k)", "mk"], "From m ẍ = −k x, ω² = k/m, so ω = √(k/m)."),
+  j(P, "mechanics", "H", 1, "The moment of inertia of a uniform solid sphere of mass M and radius R about an axis tangent to its surface is:", ["2MR²/5", "7MR²/5", "3MR²/5", "MR²/2"], "About a diameter I = 2MR²/5. The parallel-axis theorem adds MR² for the tangent axis: 2/5 + 1 = 7/5."),
+  j(P, "mechanics", "H", 1, "For a particle with L = ½m(ṙ² + r²θ̇²) − V(r), the coordinate θ is cyclic. The conserved quantity is:", ["m r θ̇", "m r² θ̇", "m ṙ", "m r² θ̇²"], "The momentum conjugate to a cyclic coordinate is conserved: p_θ = ∂L/∂θ̇ = m r² θ̇, the angular momentum."),
+  j(P, "mechanics", "M", 1, "A planet has the same mean density as the Earth but twice the radius. Its escape velocity compared with the Earth's is:", ["Equal to Earth's", "Twice Earth's", "√2 times Earth's", "Four times Earth's"], "v_esc = √(2GM/R) and M ∝ ρR³, so v_esc ∝ R√ρ. Doubling R at fixed density doubles v_esc."),
+  j(P, "electromagnetism", "E", 0, "The electric field inside a uniformly charged thin spherical shell is:", ["Zero", "kQ/R²", "kQ/R", "kQr/R³"], "By Gauss's law a spherical surface inside the shell encloses no charge, so the field is zero."),
+  j(P, "electromagnetism", "H", 3, "Which Maxwell equation was modified by Maxwell through the addition of the displacement current?", ["Gauss's law for electricity", "Gauss's law for magnetism", "Faraday's law", "Ampère's law"], "Ampère's law gained the term μ₀ε₀ ∂E/∂t, which makes the equations consistent with charge conservation and gives electromagnetic waves."),
+  j(P, "electromagnetism", "M", 1, "In a plane electromagnetic wave in vacuum the electric field amplitude is 300 V/m. The magnetic field amplitude is (c = 3 × 10⁸ m/s):", ["0.1 μT", "1 μT", "10 μT", "3 μT"], "B₀ = E₀/c = 300 / (3 × 10⁸) = 1 × 10⁻⁶ T = 1 μT.", "300 / 3e8 * 1e6"),
+  j(P, "electromagnetism", "H", 1, "A parallel-plate capacitor of capacitance C₀ is connected to a battery of emf V. A dielectric of constant K is inserted to fill the gap while the battery stays connected. The stored energy becomes:", ["½ C₀V²", "½ K C₀V²", "½ C₀V²/K", "½ K² C₀V²"], "With V fixed, C becomes K C₀, so U = ½ C V² = ½ K C₀ V²."),
+  j(P, "thermal-statistical", "M", 2, "A Carnot engine works between reservoirs at 600 K and 300 K. Its efficiency is:", ["25%", "33%", "50%", "67%"], "η = 1 − T_cold/T_hot = 1 − 300/600 = 0.5, that is 50%.", "(1 - 300/600) * 100"),
+  j(P, "thermal-statistical", "H", 1, "At moderate temperatures, with rotation active and vibration frozen out, the ratio of specific heats γ = C_p/C_v for an ideal diatomic gas is:", ["5/3", "7/5", "9/7", "4/3"], "C_v = (5/2)R and C_p = (7/2)R, so γ = 7/5 = 1.4."),
+  j(P, "thermal-statistical", "E", 2, "At absolute zero the Fermi–Dirac occupation probability of a state lying below the Fermi energy is:", ["0", "1/2", "1", "1/e"], "At T = 0 the distribution is a step function: all states below E_F are filled, so the probability is 1."),
+  j(P, "thermal-statistical", "H", 0, "One mole of an ideal gas expands isothermally and reversibly to twice its volume. The entropy change of the gas is:", ["R ln 2", "2R", "R/2", "Zero"], "ΔS = nR ln(V₂/V₁) = R ln 2 for an isothermal ideal-gas expansion."),
+  j(P, "waves-optics", "M", 2, "In Young's double-slit experiment λ = 600 nm, the slit separation is 0.3 mm and the screen is 1 m away. The fringe width is:", ["0.2 mm", "1 mm", "2 mm", "6 mm"], "β = λD/d = (600 × 10⁻⁹ × 1) / (0.3 × 10⁻³) = 2 × 10⁻³ m = 2 mm.", "600e-9 * 1 / 0.3e-3 * 1000"),
+  j(P, "waves-optics", "H", 2, "Unpolarised light is incident on glass of refractive index √3. The Brewster angle is:", ["30°", "45°", "60°", "90°"], "tan θ_B = n = √3, so θ_B = 60°."),
+  j(P, "waves-optics", "M", 2, "A diffraction grating has 2000 lines. Its resolving power in the second order is:", ["1000", "2000", "4000", "8000"], "R = nN = 2 × 2000 = 4000.", "2 * 2000"),
+  j(P, "waves-optics", "H", 2, "A source emitting 900 Hz moves toward a stationary listener at one-tenth of the speed of sound. The frequency heard is:", ["810 Hz", "990 Hz", "1000 Hz", "900 Hz"], "f′ = f·v/(v − v_s) = 900 / (1 − 0.1) = 1000 Hz.", "900 / (1 - 0.1)"),
+  j(P, "quantum-modern", "M", 2, "For a particle in a one-dimensional infinite well, the ratio E₂/E₁ of the first excited to the ground-state energy is:", ["2", "3", "4", "8"], "E_n ∝ n², so E₂/E₁ = 4."),
+  j(P, "quantum-modern", "H", 0, "An electron is localised to Δx = 10⁻¹⁰ m. The minimum uncertainty in its momentum, taking Δx·Δp ≥ ħ/2 with ħ = 1.055 × 10⁻³⁴ J s, is about:", ["5.3 × 10⁻²⁵ kg m/s", "1.1 × 10⁻²⁴ kg m/s", "5.3 × 10⁻²⁴ kg m/s", "1.1 × 10⁻²⁵ kg m/s"], "Δp ≥ ħ/(2Δx) = 1.055 × 10⁻³⁴ / (2 × 10⁻¹⁰) ≈ 5.3 × 10⁻²⁵ kg m/s."),
+  j(P, "quantum-modern", "M", 2, "The energy of the n = 2 level of the hydrogen atom is:", ["−13.6 eV", "−6.8 eV", "−3.4 eV", "−1.5 eV"], "E_n = −13.6 / n² eV, so E₂ = −13.6/4 = −3.4 eV."),
+  j(P, "quantum-modern", "M", 1, "An electron is accelerated from rest through 150 V. Its de Broglie wavelength is about (λ ≈ 12.27/√V Å):", ["0.1 Å", "1 Å", "10 Å", "100 Å"], "λ ≈ 12.27/√150 = 12.27/12.25 ≈ 1 Å."),
+  j(P, "quantum-modern", "H", 1, "Light of photon energy 5 eV falls on a metal of work function 2 eV. The stopping potential is:", ["2 V", "3 V", "5 V", "7 V"], "K_max = hν − φ = 5 − 2 = 3 eV, so the stopping potential is 3 V.", "5 - 2"),
+  j(P, "quantum-modern", "M", 2, "A radioactive sample has a half-life of 10 days. The fraction left after 30 days is:", ["1/3", "1/6", "1/8", "1/9"], "30 days is 3 half-lives, so the fraction is (1/2)³ = 1/8."),
+  j(P, "quantum-modern", "H", 1, "A rod of proper length 1 m moves at 0.6c along its length. Its length measured in the lab frame is:", ["0.6 m", "0.8 m", "1.25 m", "1.0 m"], "L = L₀√(1 − v²/c²) = 1 × √(1 − 0.36) = 0.8 m.", "Math.sqrt(1 - 0.36)"),
+  j(P, "electronics-solid-state", "H", 1, "In an n-type semiconductor at room temperature the Fermi level lies:", ["At the middle of the band gap", "Just below the conduction band edge", "Just above the valence band edge", "Inside the valence band"], "Donor doping raises the electron concentration, so E_F moves up from mid-gap toward the conduction band edge."),
+  j(P, "electronics-solid-state", "M", 0, "The Boolean expression A + A·B simplifies to:", ["A", "B", "A + B", "AB"], "By the absorption law A + A·B = A(1 + B) = A."),
+];

@@ -1,4 +1,5 @@
 import type { Faq } from "./exam-content";
+import { JAM_GUIDES } from "./jam-guides";
 
 /**
  * Extra study copy for exam pages that get many impressions but few clicks (GSC, Nov 2026): the topics that come up most,
@@ -17,6 +18,7 @@ export type SyllabusGuide = {
 };
 
 const SYLLABUS_GUIDES: Record<string, SyllabusGuide> = {
+  ...JAM_GUIDES,
   "hprca/forest-guard": {
     important: `- **Protected areas of Himachal:** Great Himalayan National Park (Kullu, UNESCO World Heritage Site), Pin Valley National Park (Lahaul-Spiti), Inderkilla, Khirganga and Simbalbara national parks, and the main wildlife sanctuaries district-wise
 - **State symbols:** state animal snow leopard, state bird western tragopan (jujurana), state tree deodar, state flower pink rhododendron

@@ -1,0 +1,42 @@
+// IIT JAM Geology (GG) — Free Mock 1: 30 MCQs written fresh over mineralogy, petrology, structure, stratigraphy, geomorphology and earth science.
+
+import { j } from "./types";
+
+const G = "jam-geology";
+
+export const jamGeologyMock1 = [
+  // ───────── Mineralogy and petrology ─────────
+  j(G, "mineralogy-petrology", "M", 2, "On Mohs' scale of hardness, quartz has a hardness of:", ["5", "6", "7", "8"], "Quartz is the standard mineral for hardness 7, between orthoclase (6) and topaz (8)."),
+  j(G, "mineralogy-petrology", "M", 1, "Which mineral shows perfect cubic cleavage?", ["Quartz", "Halite", "Mica", "Calcite"], "Halite cleaves in three perpendicular directions; mica has one basal cleavage and calcite cleaves into rhombohedra."),
+  j(G, "mineralogy-petrology", "H", 0, "Olivine, (Mg,Fe)₂SiO₄, is a:", ["Nesosilicate", "Inosilicate", "Phyllosilicate", "Tectosilicate"], "Its SiO₄ tetrahedra are isolated and linked only through Mg and Fe cations, the nesosilicate structure."),
+  j(G, "mineralogy-petrology", "H", 2, "In Bowen's discontinuous reaction series the first mineral to crystallise from a cooling basaltic magma is:", ["Quartz", "Biotite", "Olivine", "Muscovite"], "Olivine crystallises at the highest temperature, followed by pyroxene, amphibole and biotite."),
+  j(G, "mineralogy-petrology", "E", 1, "Granite is best described as:", ["An extrusive mafic rock", "An intrusive felsic rock", "A foliated metamorphic rock", "A clastic sedimentary rock"], "Granite crystallises slowly at depth and is rich in quartz and feldspar."),
+  j(G, "mineralogy-petrology", "M", 2, "The extrusive equivalent of gabbro is:", ["Granite", "Diorite", "Basalt", "Rhyolite"], "Gabbro and basalt share a mafic composition; basalt cooled quickly at the surface."),
+  j(G, "mineralogy-petrology", "E", 2, "Marble is formed by the metamorphism of:", ["Sandstone", "Shale", "Limestone", "Granite"], "Recrystallisation of calcite in limestone gives marble."),
+  j(G, "mineralogy-petrology", "H", 1, "Blueschist facies metamorphism is characteristic of:", ["High temperature and low pressure", "High pressure and low temperature", "High temperature and high pressure", "Low temperature and low pressure"], "Blueschists form in subduction zones where cold oceanic crust is carried rapidly to depth."),
+  j(G, "mineralogy-petrology", "M", 0, "Which sequence shows increasing grade of regional metamorphism of a shale?", ["Slate → phyllite → schist → gneiss", "Gneiss → schist → phyllite → slate", "Schist → slate → gneiss → phyllite", "Phyllite → gneiss → slate → schist"], "Grain size and metamorphic segregation increase from slate through phyllite and schist to gneiss."),
+  // ───────── Structural geology and tectonics ─────────
+  j(G, "structure-tectonics", "M", 1, "The angle between an inclined bedding plane and the horizontal, measured perpendicular to the strike, is called the:", ["Plunge", "Dip", "Pitch", "Rake"], "Dip is the maximum inclination of a plane, measured at right angles to its strike."),
+  j(G, "structure-tectonics", "H", 1, "In a normal fault, the hanging wall has moved:", ["Upward relative to the footwall", "Downward relative to the footwall", "Horizontally with no vertical component", "Away from the fault along the strike"], "Normal faults accommodate extension, with the hanging wall sliding down the fault plane."),
+  j(G, "structure-tectonics", "H", 1, "In an eroded anticline, the rocks in the core are:", ["The youngest", "The oldest", "Of the same age as the limbs", "Always igneous"], "Anticlines fold strata upward, so erosion exposes the oldest beds at the centre."),
+  j(G, "structure-tectonics", "M", 1, "The lithostatic pressure at 1000 m depth in rock of density 2700 kg/m³ (g = 10 m/s²) is:", ["2.7 MPa", "27 MPa", "270 MPa", "0.27 MPa"], "P = ρgh = 2700 × 10 × 1000 = 2.7 × 10⁷ Pa = 27 MPa.", "2700 * 10 * 1000 / 1e6"),
+  j(G, "structure-tectonics", "M", 1, "The Himalaya were formed by the convergence of:", ["Two diverging plates", "Two continental plates", "Two oceanic plates", "Plates sliding past each other"], "The Indian plate has been colliding with the Eurasian plate since about 50 million years ago."),
+  j(G, "structure-tectonics", "H", 0, "The Mohorovičić discontinuity separates the:", ["Crust from the mantle", "Mantle from the outer core", "Outer core from the inner core", "Lithosphere from the asthenosphere"], "The 'Moho' marks the abrupt increase in seismic velocity from crust to mantle."),
+  j(G, "structure-tectonics", "H", 1, "Which seismic waves cannot travel through the liquid outer core?", ["Primary waves", "Secondary waves", "Longitudinal waves", "Pressure waves"], "Secondary (shear) waves need a rigid medium. Primary, longitudinal and pressure waves are all names for P-waves."),
+  j(G, "structure-tectonics", "M", 2, "Ground-motion amplitude of a magnitude 7 earthquake compared with that of magnitude 5 is greater by a factor of:", ["2", "10", "100", "1000"], "The magnitude scale is logarithmic: each unit is a factor of 10 in amplitude, so two units give 10² = 100.", "10 ** 2"),
+  // ───────── Stratigraphy and palaeontology ─────────
+  j(G, "stratigraphy-palaeontology", "M", 2, "Trilobites are characteristic fossils of the:", ["Cenozoic", "Mesozoic", "Palaeozoic", "Precambrian"], "Trilobites appeared in the Cambrian and died out at the end of the Permian."),
+  j(G, "stratigraphy-palaeontology", "H", 3, "Ammonites became extinct at the end of the:", ["Permian", "Triassic", "Jurassic", "Cretaceous"], "They disappeared in the end-Cretaceous mass extinction, together with the non-avian dinosaurs."),
+  j(G, "stratigraphy-palaeontology", "H", 1, "A mineral contains equal numbers of atoms of a radioactive parent and its stable daughter. If the half-life is 100 Ma, the age of the mineral is:", ["50 Ma", "100 Ma", "200 Ma", "1000 Ma"], "Equal parent and daughter means half the parent has decayed, which takes one half-life."),
+  j(G, "stratigraphy-palaeontology", "M", 1, "The Deccan Trap volcanism is closely associated in time with the boundary between the:", ["Permian and Triassic", "Cretaceous and Palaeogene", "Jurassic and Cretaceous", "Ordovician and Silurian"], "The main phase of Deccan eruptions, about 66 million years ago, overlaps the Cretaceous–Palaeogene extinction."),
+  j(G, "stratigraphy-palaeontology", "E", 1, "Dinosaurs dominated the land during the:", ["Palaeozoic Era", "Mesozoic Era", "Cenozoic Era", "Proterozoic Eon"], "The Mesozoic is called the age of reptiles."),
+  // ───────── Geomorphology, hydrology and economic geology ─────────
+  j(G, "geomorphology-hydrology", "M", 1, "U-shaped valleys are the characteristic landform of erosion by:", ["Rivers", "Glaciers", "Wind", "Waves"], "Valley glaciers scour a broad, steep-sided, flat-floored trough."),
+  j(G, "geomorphology-hydrology", "H", 1, "An oxbow lake is formed by:", ["Glacial scouring", "Cut-off of a river meander", "Volcanic damming", "Wave erosion"], "When a meander neck is breached, the abandoned loop is isolated as a crescent-shaped lake."),
+  j(G, "geomorphology-hydrology", "M", 1, "Using Darcy's law, the discharge through an aquifer cross-section of 100 m² with hydraulic conductivity 10 m/day and hydraulic gradient 0.01 is:", ["1 m³/day", "10 m³/day", "100 m³/day", "0.1 m³/day"], "Q = K·i·A = 10 × 0.01 × 100 = 10 m³/day.", "10 * 0.01 * 100"),
+  j(G, "geomorphology-hydrology", "M", 1, "A rock sample of total volume 100 cm³ contains 30 cm³ of voids. Its porosity is:", ["3%", "30%", "70%", "0.3%"], "Porosity = void volume / total volume = 30/100 = 30%.", "30"),
+  j(G, "geomorphology-hydrology", "M", 0, "The principal ore of aluminium is:", ["Bauxite", "Haematite", "Galena", "Chalcopyrite"], "Bauxite is a mixture of aluminium hydroxide minerals formed by intense tropical weathering."),
+  j(G, "geomorphology-hydrology", "H", 1, "Which iron ore has the highest iron content, about 72%?", ["Haematite", "Magnetite", "Siderite", "Limonite"], "Magnetite, Fe₃O₄, is 72% Fe by weight; haematite is about 70%."),
+  j(G, "geomorphology-hydrology", "M", 1, "The ozone layer lies mainly in the:", ["Troposphere", "Stratosphere", "Mesosphere", "Thermosphere"], "Stratospheric ozone absorbs most of the Sun's harmful ultraviolet radiation."),
+  j(G, "geomorphology-hydrology", "E", 1, "The SI unit of stress is the:", ["Newton", "Pascal", "Joule", "Watt"], "Stress is force per unit area, measured in pascals (N/m²)."),
+];

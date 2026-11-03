@@ -39,6 +39,7 @@ import { HPRCA_CLERK_MOCKS, HPRCA_CLERK_SECTIONS } from "../hprca-clerk";
 import { PGIMER_MOCKS, PGIMER_SECTIONS } from "../pgimer";
 import { DEFENCE_SERIES } from "../defence";
 import { DELHI_POLICE_SERIES } from "../delhi-police";
+import { JAM_SERIES } from "../jam";
 import { CHSL_SERIES } from "../ssc/chsl";
 
 /** Bank picks, fresh questions per mock, or questions built per mock number (e.g. one set shared by several exams' mock N). */
@@ -662,7 +663,7 @@ const ALL_MOCKS = EXAMS.map((e) => [...Array.from({ length: e.mocks ?? MOCKS }, 
 // Fresh questions in earlier mocks can share their text with a bank question; late picks must not repeat them.
 ALL_MOCKS.flat().forEach(reserve);
 // So do the series written outside the bank (SSC, defence, Delhi Police).
-[...DEFENCE_SERIES, ...DELHI_POLICE_SERIES, ...CHSL_SERIES].forEach((x) => x.tests.forEach((t) => reserve(t.questions)));
+[...DEFENCE_SERIES, ...DELHI_POLICE_SERIES, ...CHSL_SERIES, ...JAM_SERIES].forEach((x) => x.tests.forEach((t) => reserve(t.questions)));
 EXAMS.forEach((e, k) => {
   if (e.lateMocks) ALL_MOCKS[k].push(...Array.from({ length: e.lateMocks.count }, (_, i) => mockQuestions(e, i, e.lateMocks!.sections)));
 });
@@ -712,7 +713,7 @@ const BANK_SERIES: ExamSeriesSeed[] = EXAMS.map((e, k) => {
 
 // NDA, CDS and AFCAT have their own paper-wise marking and instructions, so they are built in prisma/defence;
 // Delhi Police Constable is written fresh to the SSC pattern in prisma/delhi-police.
-export const EXAM_SERIES: ExamSeriesSeed[] = [...BANK_SERIES, ...DEFENCE_SERIES, ...DELHI_POLICE_SERIES, ...CHSL_SERIES];
+export const EXAM_SERIES: ExamSeriesSeed[] = [...BANK_SERIES, ...DEFENCE_SERIES, ...DELHI_POLICE_SERIES, ...CHSL_SERIES, ...JAM_SERIES];
 
 /** Products that bundle several of the series above. */
 export const EXAM_PACKS: { slug: string; title: string; titleHi: string; priceInPaise: number; validityDays: number; seriesSlugs: string[] }[] = [
