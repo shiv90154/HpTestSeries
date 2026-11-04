@@ -141,6 +141,7 @@ export const JAM_SERIES: (SeriesSeed & { key: string })[] = SUBJECTS.map((s) => 
     key: s.key,
     label: `IIT JAM ${s.name} seed`,
     bodySlug: "iit-jam",
+    syncProductSale: true,
     examSlug: s.examSlug,
     tests,
     series: {

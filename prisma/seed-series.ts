@@ -13,6 +13,8 @@ export type SeriesSeed = {
   examSlug: string;
   /** Exam stage every test belongs to (e.g. HP TET "jbt"); omitted = no stage. */
   stageSlug?: string;
+  /** true = the product's price and on/off switch follow the code on every seed (the IIT JAM series, which were first created hidden at a different price). */
+  syncProductSale?: boolean;
   tests: TestDef[];
   series: { slug: string; title: string; titleHi: string; description: string };
   product: { slug: string; title: string; titleHi: string; priceInPaise: number; validityDays: number; /** false = created hidden; switch it on in /admin/products when the series is ready to sell. Default true. */ isActive?: boolean };
@@ -130,7 +132,11 @@ export async function seedSeries(db: PrismaClient, cfg: SeriesSeed) {
 
   const product = await db.product.upsert({
     where: { slug: cfg.product.slug },
-    update: { title: cfg.product.title, titleHi: cfg.product.titleHi },
+    update: {
+      title: cfg.product.title,
+      titleHi: cfg.product.titleHi,
+      ...(cfg.syncProductSale ? { priceInPaise: cfg.product.priceInPaise, isActive: cfg.product.isActive ?? true } : {}),
+    },
     create: { ...cfg.product, kind: "SERIES", isActive: cfg.product.isActive ?? true },
     select: { id: true },
   });
