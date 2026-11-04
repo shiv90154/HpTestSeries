@@ -12,6 +12,9 @@ import type { SeriesSeed } from "../seed-series";
 import { jamBiologicalSciencesMock1 } from "./biological-sciences";
 import { jamBiotechnologyMock1 } from "./biotechnology";
 import { jamChemistryMock1 } from "./chemistry";
+import { jamChemistryMock2, jamChemistryMock3, jamChemistryMock4 } from "./chemistry-more";
+import { jamChemistryMock5, jamChemistryMock6, jamChemistryMock7, jamChemistryMock8 } from "./chemistry-more2";
+import { jamChemistryMock9, jamChemistryMock10, jamChemistryMock11, jamChemistryMock12 } from "./chemistry-more3";
 import { jamGeologyMock1 } from "./geology";
 import { jamMathematicsMock1 } from "./mathematics";
 import { jamMathematicsMock2, jamMathematicsMock3, jamMathematicsMock4 } from "./mathematics-more";
@@ -51,7 +54,7 @@ const SUBJECTS: Subject[] = [
     nameHi: "रसायन विज्ञान",
     code: "CY",
     covers: "physical, organic and inorganic chemistry",
-    mocks: [jamChemistryMock1],
+    mocks: [jamChemistryMock1, jamChemistryMock2, jamChemistryMock3, jamChemistryMock4, jamChemistryMock5, jamChemistryMock6, jamChemistryMock7, jamChemistryMock8, jamChemistryMock9, jamChemistryMock10, jamChemistryMock11, jamChemistryMock12],
   },
   {
     key: "jam-mathematics",
