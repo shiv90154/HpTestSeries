@@ -1,7 +1,8 @@
 // llms-full.txt — the same site as /llms.txt, but with the content itself (description, pattern, syllabus, FAQs) inline,
 // so an LLM can answer from one fetch. Everything here is already public on the exam pages.
 import { getSite } from "@/sites";
-import { examLabel, getCatalog, getExamPage } from "@/modules/catalog/queries";
+import { examLabel, getCatalog, getExamPage, getPost, getPublishedPosts } from "@/modules/catalog/queries";
+import { syllabusGuide } from "@/modules/content/syllabus-guides";
 import { stripMarkdown } from "@/modules/content/exam-content";
 import { siteStaticParams } from "@/sites";
 
@@ -16,6 +17,25 @@ export async function GET(_req: Request, ctx: RouteContext<"/[site]/llms-full.tx
   const exams = catalog.flatMap((b) => b.exams.map((e) => ({ body: b, exam: e })));
   const pages = await Promise.all(exams.map(({ exam }) => getExamPage(site.code, exam.bodySlug, exam.slug)));
 
+  // The latest exam updates in full, so dates and vacancy numbers can be quoted without a second fetch.
+  const recent = await getPublishedPosts(site.code, { take: 15 });
+  const posts = (await Promise.all(recent.items.map((p) => getPost(site.code, p.slug)))).filter((p) => p !== null);
+  const updates = posts.length
+    ? [
+        "# Latest exam updates",
+        "",
+        ...posts.flatMap((p) => [
+          `## ${p.title}`,
+          `Page: ${site.url}/blog/${p.slug}`,
+          `Published: ${p.publishedAt.toISOString().slice(0, 10)}. Last updated: ${p.updatedAt.toISOString().slice(0, 10)}`,
+          "",
+          stripMarkdown(p.content),
+          ...(p.faqs.length ? ["", ...p.faqs.flatMap((f) => [`**${f.q}**`, stripMarkdown(f.a)])] : []),
+          "",
+        ]),
+      ]
+    : [];
+
   const sections = pages.flatMap((data) => {
     if (!data) return [];
     const base = `${site.url}/${data.body.slug}/${data.slug}`;
@@ -23,6 +43,8 @@ export async function GET(_req: Request, ctx: RouteContext<"/[site]/llms-full.tx
     const questions = p?.sections.reduce((n, s) => n + (s.questions ?? 0), 0) ?? 0;
     const marks = p?.sections.reduce((n, s) => n + (s.marks ?? 0), 0) ?? 0;
     const free = data.tests.filter((t) => t.isFree);
+    const guide = syllabusGuide(`${data.body.slug}/${data.slug}`);
+    const faqs = [...(guide?.faqs ?? []), ...data.faqs];
     return [
       [
         `## ${examLabel(data.body.slug, data.name)} (${data.body.name})`,
@@ -43,8 +65,9 @@ export async function GET(_req: Request, ctx: RouteContext<"/[site]/llms-full.tx
             ]
           : []),
         ...(data.syllabus?.trim() ? ["### Syllabus", `Page: ${base}/syllabus`, data.syllabus.trim(), ""] : []),
+        ...(guide ? ["### Important topics", guide.important.trim(), "", "### Preparation plan", guide.plan.trim(), ""] : []),
         ...(free.length ? ["### Free tests", ...free.map((t) => `- [${t.title}](${site.url}/tests/${t.slug}): ${t.questionCount} questions, ${t.durationMin} minutes`), ""] : []),
-        ...(data.faqs.length ? ["### FAQs", ...data.faqs.flatMap((f) => [`**${f.q}**`, stripMarkdown(f.a), ""])] : []),
+        ...(faqs.length ? ["### FAQs", ...faqs.flatMap((f) => [`**${f.q}**`, stripMarkdown(f.a), ""])] : []),
       ].join("\n"),
     ];
   });
@@ -58,6 +81,7 @@ export async function GET(_req: Request, ctx: RouteContext<"/[site]/llms-full.tx
     "Short index: " + `${site.url}/llms.txt`,
     "",
     ...sections,
+    ...updates,
   ].join("\n");
 
   return new Response(text + "\n", { headers: { "Content-Type": "text/plain; charset=utf-8" } });
