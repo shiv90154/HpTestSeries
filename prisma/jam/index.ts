@@ -25,6 +25,9 @@ import { jamPhysicsMock2, jamPhysicsMock3, jamPhysicsMock4 } from "./physics-mor
 import { jamPhysicsMock9, jamPhysicsMock10, jamPhysicsMock11, jamPhysicsMock12 } from "./physics-more3";
 import { jamPhysicsMock5, jamPhysicsMock6, jamPhysicsMock7, jamPhysicsMock8 } from "./physics-more2";
 import { jamStatisticsMock1 } from "./statistics";
+import { jamStatisticsMock2, jamStatisticsMock3, jamStatisticsMock4 } from "./statistics-more";
+import { jamStatisticsMock5, jamStatisticsMock6, jamStatisticsMock7, jamStatisticsMock8 } from "./statistics-more2";
+import { jamStatisticsMock9, jamStatisticsMock10, jamStatisticsMock11, jamStatisticsMock12 } from "./statistics-more3";
 
 type Subject = {
   key: string;
@@ -72,7 +75,7 @@ const SUBJECTS: Subject[] = [
     nameHi: "गणितीय सांख्यिकी",
     code: "MS",
     covers: "calculus and linear algebra, probability, random variables and distributions, estimation and testing of hypotheses",
-    mocks: [jamStatisticsMock1],
+    mocks: [jamStatisticsMock1, jamStatisticsMock2, jamStatisticsMock3, jamStatisticsMock4, jamStatisticsMock5, jamStatisticsMock6, jamStatisticsMock7, jamStatisticsMock8, jamStatisticsMock9, jamStatisticsMock10, jamStatisticsMock11, jamStatisticsMock12],
   },
   {
     key: "jam-biotechnology",
