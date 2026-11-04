@@ -11,6 +11,9 @@ import type { PatwariQuestion, TestDef } from "../patwari/types";
 import type { SeriesSeed } from "../seed-series";
 import { jamBiologicalSciencesMock1 } from "./biological-sciences";
 import { jamBiotechnologyMock1 } from "./biotechnology";
+import { jamBiotechnologyMock2, jamBiotechnologyMock3, jamBiotechnologyMock4 } from "./biotechnology-more";
+import { jamBiotechnologyMock5, jamBiotechnologyMock6, jamBiotechnologyMock7, jamBiotechnologyMock8 } from "./biotechnology-more2";
+import { jamBiotechnologyMock9, jamBiotechnologyMock10, jamBiotechnologyMock11, jamBiotechnologyMock12 } from "./biotechnology-more3";
 import { jamChemistryMock1 } from "./chemistry";
 import { jamChemistryMock2, jamChemistryMock3, jamChemistryMock4 } from "./chemistry-more";
 import { jamChemistryMock5, jamChemistryMock6, jamChemistryMock7, jamChemistryMock8 } from "./chemistry-more2";
@@ -84,7 +87,7 @@ const SUBJECTS: Subject[] = [
     nameHi: "जैव प्रौद्योगिकी",
     code: "BT",
     covers: "biochemistry, cell and molecular biology, genetics, microbiology and immunology, plant and animal biology, with chemistry, physics and mathematics",
-    mocks: [jamBiotechnologyMock1],
+    mocks: [jamBiotechnologyMock1, jamBiotechnologyMock2, jamBiotechnologyMock3, jamBiotechnologyMock4, jamBiotechnologyMock5, jamBiotechnologyMock6, jamBiotechnologyMock7, jamBiotechnologyMock8, jamBiotechnologyMock9, jamBiotechnologyMock10, jamBiotechnologyMock11, jamBiotechnologyMock12],
   },
   {
     key: "jam-biological-sciences",
