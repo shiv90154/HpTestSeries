@@ -14,6 +14,9 @@ import { jamBiotechnologyMock1 } from "./biotechnology";
 import { jamChemistryMock1 } from "./chemistry";
 import { jamGeologyMock1 } from "./geology";
 import { jamMathematicsMock1 } from "./mathematics";
+import { jamMathematicsMock2, jamMathematicsMock3, jamMathematicsMock4 } from "./mathematics-more";
+import { jamMathematicsMock5, jamMathematicsMock6, jamMathematicsMock7, jamMathematicsMock8 } from "./mathematics-more2";
+import { jamMathematicsMock9, jamMathematicsMock10, jamMathematicsMock11, jamMathematicsMock12 } from "./mathematics-more3";
 import { jamPhysicsMock1 } from "./physics";
 import { jamPhysicsMock2, jamPhysicsMock3, jamPhysicsMock4 } from "./physics-more";
 import { jamPhysicsMock9, jamPhysicsMock10, jamPhysicsMock11, jamPhysicsMock12 } from "./physics-more3";
@@ -57,7 +60,7 @@ const SUBJECTS: Subject[] = [
     nameHi: "गणित",
     code: "MA",
     covers: "real analysis, calculus, vector calculus, linear algebra, differential equations and abstract algebra",
-    mocks: [jamMathematicsMock1],
+    mocks: [jamMathematicsMock1, jamMathematicsMock2, jamMathematicsMock3, jamMathematicsMock4, jamMathematicsMock5, jamMathematicsMock6, jamMathematicsMock7, jamMathematicsMock8, jamMathematicsMock9, jamMathematicsMock10, jamMathematicsMock11, jamMathematicsMock12],
   },
   {
     key: "jam-mathematical-statistics",
