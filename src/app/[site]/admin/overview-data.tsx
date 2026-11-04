@@ -4,7 +4,6 @@ import {
   AlertTriangle,
   BookOpenCheck,
   Flag,
-  IndianRupee,
   ListChecks,
   ShoppingBag,
   Users,
@@ -24,12 +23,11 @@ export async function OverviewData({ site }: { site: SiteCode | null }) {
   // Money and people belong to a site; exams, questions and attempts are shared, so they are never filtered.
   const orderSite = site ? { site } : {};
 
-  const [exams, questions, published, users, revenue, ordersToday, attemptsToday, flagged, bySite] = await Promise.all([
+  const [exams, questions, published, users, ordersToday, attemptsToday, flagged, bySite] = await Promise.all([
     db.exam.count(),
     db.question.count(),
     db.question.count({ where: { status: "PUBLISHED" } }),
     db.user.count({ where: site ? { signupSite: site } : {} }),
-    db.order.aggregate({ where: { ...orderSite, status: "PAID" }, _sum: { amountPaise: true } }),
     db.order.count({ where: { ...orderSite, status: "PAID", createdAt: { gte: todayStart } } }),
     db.attempt.count({ where: { status: "SUBMITTED", submittedAt: { gte: todayStart } } }),
     db.attempt.count({ where: { flagged: true } }),
@@ -45,7 +43,6 @@ export async function OverviewData({ site }: { site: SiteCode | null }) {
     { label: "Questions", value: questions, icon: ListChecks },
     { label: "Published questions", value: published, icon: ListChecks },
     { label: "Users", value: users, icon: Users },
-    { label: "Revenue (paid)", value: (revenue._sum.amountPaise ?? 0) / 100, icon: IndianRupee, isCurrency: true },
     { label: "Orders today", value: ordersToday, icon: ShoppingBag },
     { label: "Attempts today", value: attemptsToday, icon: BookOpenCheck },
     { label: "Flagged attempts", value: flagged, icon: Flag, tone: flagged > 0 ? "danger" : undefined },
