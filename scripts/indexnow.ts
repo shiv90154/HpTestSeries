@@ -5,6 +5,7 @@ import { INDEXNOW_KEY } from "../src/lib/indexnow";
 const hosts = process.argv.slice(2);
 if (hosts.length === 0) hosts.push("hptestseries.in", "pbtestseries.in", "rjtestseries.in");
 
+async function main() {
 for (const host of hosts) {
   const xml = await (await fetch(`https://${host}/sitemap.xml`)).text();
   const urls = [...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => m[1]);
@@ -22,3 +23,9 @@ for (const host of hosts) {
     console.log(`${host}: ${urls.slice(i, i + 10000).length} URLs -> HTTP ${res.status}`);
   }
 }
+}
+
+main().catch((e) => {
+  console.error(e);
+  process.exit(1);
+});
