@@ -10,6 +10,9 @@
 import type { PatwariQuestion, TestDef } from "../patwari/types";
 import type { SeriesSeed } from "../seed-series";
 import { jamBiologicalSciencesMock1 } from "./biological-sciences";
+import { jamBiologicalSciencesMock2, jamBiologicalSciencesMock3, jamBiologicalSciencesMock4 } from "./biological-sciences-more";
+import { jamBiologicalSciencesMock5, jamBiologicalSciencesMock6, jamBiologicalSciencesMock7, jamBiologicalSciencesMock8 } from "./biological-sciences-more2";
+import { jamBiologicalSciencesMock9, jamBiologicalSciencesMock10, jamBiologicalSciencesMock11, jamBiologicalSciencesMock12 } from "./biological-sciences-more3";
 import { jamBiotechnologyMock1 } from "./biotechnology";
 import { jamBiotechnologyMock2, jamBiotechnologyMock3, jamBiotechnologyMock4 } from "./biotechnology-more";
 import { jamBiotechnologyMock5, jamBiotechnologyMock6, jamBiotechnologyMock7, jamBiotechnologyMock8 } from "./biotechnology-more2";
@@ -96,7 +99,7 @@ const SUBJECTS: Subject[] = [
     nameHi: "जीव विज्ञान",
     code: "BL",
     covers: "cell biology and biochemistry, genetics and molecular biology, physiology, ecology and evolution, plant biology, with chemistry, mathematics and physics",
-    mocks: [jamBiologicalSciencesMock1],
+    mocks: [jamBiologicalSciencesMock1, jamBiologicalSciencesMock2, jamBiologicalSciencesMock3, jamBiologicalSciencesMock4, jamBiologicalSciencesMock5, jamBiologicalSciencesMock6, jamBiologicalSciencesMock7, jamBiologicalSciencesMock8, jamBiologicalSciencesMock9, jamBiologicalSciencesMock10, jamBiologicalSciencesMock11, jamBiologicalSciencesMock12],
   },
   {
     key: "jam-geology",
