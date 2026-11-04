@@ -22,6 +22,9 @@ import { jamChemistryMock2, jamChemistryMock3, jamChemistryMock4 } from "./chemi
 import { jamChemistryMock5, jamChemistryMock6, jamChemistryMock7, jamChemistryMock8 } from "./chemistry-more2";
 import { jamChemistryMock9, jamChemistryMock10, jamChemistryMock11, jamChemistryMock12 } from "./chemistry-more3";
 import { jamGeologyMock1 } from "./geology";
+import { jamGeologyMock2, jamGeologyMock3, jamGeologyMock4 } from "./geology-more";
+import { jamGeologyMock5, jamGeologyMock6, jamGeologyMock7, jamGeologyMock8 } from "./geology-more2";
+import { jamGeologyMock9, jamGeologyMock10, jamGeologyMock11, jamGeologyMock12 } from "./geology-more3";
 import { jamMathematicsMock1 } from "./mathematics";
 import { jamMathematicsMock2, jamMathematicsMock3, jamMathematicsMock4 } from "./mathematics-more";
 import { jamMathematicsMock5, jamMathematicsMock6, jamMathematicsMock7, jamMathematicsMock8 } from "./mathematics-more2";
@@ -108,7 +111,7 @@ const SUBJECTS: Subject[] = [
     nameHi: "भूविज्ञान",
     code: "GG",
     covers: "mineralogy and petrology, structural geology and tectonics, stratigraphy and palaeontology, geomorphology, hydrology and economic geology",
-    mocks: [jamGeologyMock1],
+    mocks: [jamGeologyMock1, jamGeologyMock2, jamGeologyMock3, jamGeologyMock4, jamGeologyMock5, jamGeologyMock6, jamGeologyMock7, jamGeologyMock8, jamGeologyMock9, jamGeologyMock10, jamGeologyMock11, jamGeologyMock12],
   },
 ];
 
