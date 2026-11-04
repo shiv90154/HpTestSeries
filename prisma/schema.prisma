@@ -64,6 +64,7 @@ model User {
   emailCampaigns EmailCampaign[]
   pushSubscriptions PushSubscription[]
   pushCampaigns     PushCampaign[]
+  financeEntries    FinanceEntry[]
 
   @@map("user")
 }
@@ -853,4 +854,33 @@ model PushLog {
 
   @@unique([subscriptionId, kind, refKey])
   @@index([createdAt])
+}
+
+// ───────────────────────── Finance ─────────────────────────
+
+enum FinanceKind {
+  EXPENSE // money the business spent (servers, Claude Code, ads…)
+  PAYOUT // money a partner took out of the business
+}
+
+enum Partner {
+  SHIV
+  NIKHIL
+}
+
+/// Admin-only books behind /admin/finance. Revenue itself is never stored here: it is the sum of PAID orders.
+model FinanceEntry {
+  id          String      @id @default(cuid())
+  kind        FinanceKind
+  partner     Partner? // PAYOUT: who took the money. EXPENSE: who paid it from their own pocket (null = business cash)
+  category    String? // EXPENSE only
+  title       String
+  amountPaise Int
+  entryDate   DateTime // the day it happened (IST), not when it was typed in
+  note        String?
+  createdById String
+  createdBy   User        @relation(fields: [createdById], references: [id])
+  createdAt   DateTime    @default(now())
+
+  @@index([kind, entryDate])
 }
