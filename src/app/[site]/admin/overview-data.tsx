@@ -107,14 +107,12 @@ export async function OverviewData({ site }: { site: SiteCode | null }) {
   );
 }
 
-type SiteRow = { code: SiteCode; paidRupees: number; paidOrders: number; unpaidOrders: number; last30Rupees: number; users: number };
+type SiteRow = { code: SiteCode; paidOrders: number; unpaidOrders: number; users: number };
 
-/** Paid revenue, orders and signups per domain, all time, plus the last 30 days of revenue. */
+/** Paid and unpaid orders and signups per domain, all time. */
 async function siteBreakdown(): Promise<SiteRow[]> {
-  const since = new Date(Date.now() - 30 * 86_400_000);
-  const [orders, recent, users] = await Promise.all([
-    db.order.groupBy({ by: ["site", "status"], _sum: { amountPaise: true }, _count: { _all: true } }),
-    db.order.groupBy({ by: ["site"], where: { status: "PAID", createdAt: { gte: since } }, _sum: { amountPaise: true } }),
+  const [orders, users] = await Promise.all([
+    db.order.groupBy({ by: ["site", "status"], _count: { _all: true } }),
     db.user.groupBy({ by: ["signupSite"], _count: { _all: true } }),
   ]);
   return Object.values(SITES).map(({ code }) => {
@@ -122,27 +120,21 @@ async function siteBreakdown(): Promise<SiteRow[]> {
     const paid = mine.find((o) => o.status === "PAID");
     return {
       code,
-      paidRupees: (paid?._sum.amountPaise ?? 0) / 100,
       paidOrders: paid?._count._all ?? 0,
       unpaidOrders: mine.filter((o) => o.status === "CREATED" || o.status === "FAILED").reduce((n, o) => n + o._count._all, 0),
-      last30Rupees: (recent.find((o) => o.site === code)?._sum.amountPaise ?? 0) / 100,
       users: users.find((u) => u.signupSite === code)?._count._all ?? 0,
     };
   });
 }
 
 function SiteBreakdown({ rows, current }: { rows: SiteRow[]; current: SiteCode | null }) {
-  const inr = (n: number) => `₹${n.toLocaleString("en-IN")}`;
-  const total = rows.reduce((n, r) => n + r.paidRupees, 0);
   return (
     <div className="overflow-x-auto rounded-xl border border-border bg-surface">
       <table className="w-full text-sm">
-        <caption className="px-4 pt-3 text-left text-sm font-semibold text-muted">Revenue by site</caption>
+        <caption className="px-4 pt-3 text-left text-sm font-semibold text-muted">Orders and users by site</caption>
         <thead className="text-left text-xs text-muted">
           <tr>
             <th className="px-4 py-2">Domain</th>
-            <th className="px-4 py-2 text-right">Revenue (paid)</th>
-            <th className="px-4 py-2 text-right">Last 30 days</th>
             <th className="px-4 py-2 text-right">Paid orders</th>
             <th className="px-4 py-2 text-right">Not paid</th>
             <th className="px-4 py-2 text-right">Users</th>
@@ -156,11 +148,6 @@ function SiteBreakdown({ rows, current }: { rows: SiteRow[]; current: SiteCode |
                   {siteDomain(r.code)}
                 </Link>
               </td>
-              <td className="px-4 py-2 text-right font-semibold">
-                {inr(r.paidRupees)}
-                {total > 0 && <span className="ml-1 text-xs font-normal text-muted">{Math.round((r.paidRupees / total) * 100)}%</span>}
-              </td>
-              <td className="px-4 py-2 text-right">{inr(r.last30Rupees)}</td>
               <td className="px-4 py-2 text-right">{r.paidOrders.toLocaleString("en-IN")}</td>
               <td className="px-4 py-2 text-right text-muted">{r.unpaidOrders.toLocaleString("en-IN")}</td>
               <td className="px-4 py-2 text-right">{r.users.toLocaleString("en-IN")}</td>

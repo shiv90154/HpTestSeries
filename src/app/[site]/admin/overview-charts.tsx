@@ -115,15 +115,14 @@ function BarChart({
   );
 }
 
-/** Revenue and signups follow the site filter; attempts are shared by every site, so those charts never do. */
+/** Signups follow the site filter; attempts are shared by every site, so those charts never do. */
 export async function OverviewCharts({ site }: { site: SiteCode | null }) {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
   const days = Array.from({ length: DAYS }, (_, i) => new Date(today.getTime() - (DAYS - 1 - i) * DAY_MS));
   const since = days[0];
 
-  const [orders, attempts, signups, topGroups] = await Promise.all([
-    db.order.findMany({ where: { ...(site ? { site } : {}), status: "PAID", createdAt: { gte: since } }, select: { createdAt: true, amountPaise: true } }),
+  const [attempts, signups, topGroups] = await Promise.all([
     db.attempt.findMany({ where: { status: "SUBMITTED", submittedAt: { gte: since } }, select: { submittedAt: true } }),
     db.user.findMany({ where: { ...(site ? { signupSite: site } : {}), createdAt: { gte: since } }, select: { createdAt: true } }),
     db.attempt.groupBy({
@@ -143,17 +142,14 @@ export async function OverviewCharts({ site }: { site: SiteCode | null }) {
   const top = topGroups.map((g) => ({ title: titleOf.get(g.testId) ?? "Deleted test", count: g._count._all }));
   const topMax = Math.max(...top.map((t) => t.count), 1);
 
-  const revenue = bucketByDay(orders.map((o) => ({ at: o.createdAt, value: o.amountPaise / 100 })), days);
   const attemptSeries = bucketByDay(attempts.map((a) => ({ at: a.submittedAt, value: 1 })), days);
   const signupSeries = bucketByDay(signups.map((u) => ({ at: u.createdAt, value: 1 })), days);
   const sum = (a: number[]) => a.reduce((x, y) => x + y, 0);
-  const inr = (n: number) => `₹${n.toLocaleString("en-IN")}`;
   const num = (n: number) => n.toLocaleString("en-IN");
 
   return (
     <section aria-label="Analytics" className="space-y-3">
       <div className="grid gap-3 lg:grid-cols-2">
-        <BarChart title="Revenue per day" total={inr(sum(revenue))} days={days} values={revenue} format={inr} />
         <BarChart title="Tests submitted per day" total={num(sum(attemptSeries))} days={days} values={attemptSeries} format={num} />
         <BarChart title="New signups per day" total={num(sum(signupSeries))} days={days} values={signupSeries} format={num} />
 

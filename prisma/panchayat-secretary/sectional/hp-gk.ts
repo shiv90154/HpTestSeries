@@ -48,7 +48,7 @@ export const hpGkNew: PanchayatQuestion[] = [
   q(0, "hp-gk", "economy", "M", 2,
     ["The GI-tagged Kullu shawl is traditionally woven on handlooms and is known for its:", ["silk embroidery of hunting scenes", "plain white cotton", "colourful geometric borders", "mirror work"], "Kullu shawls are woollen, handloom-woven and decorated with bright geometric patterns along the borders; they received a GI tag."],
     ["GI-टैग प्राप्त कुल्लू शॉल परंपरा से हथकरघे पर बुनी जाती है और किसके लिए जानी जाती है?", ["शिकार दृश्यों की रेशमी कढ़ाई", "सादी सफ़ेद सूती", "रंगीन ज्यामितीय किनारी", "शीशे का काम"], "कुल्लू शॉल ऊनी, हथकरघे पर बुनी और किनारों पर चटकीले ज्यामितीय डिज़ाइन वाली होती है; इसे GI टैग मिला है।"]),
-  q(0, "hp-gk", "geography", "M", 2,
+  q(0, "hp-gk", "geography", "M", 1,
     ["Bara Shigri, the longest glacier of Himachal Pradesh, lies in the:", ["Beas basin of Kullu", "Chandra basin of Lahaul and Spiti", "Satluj basin of Kinnaur", "Ravi basin of Chamba"], "Bara Shigri is in the Chandra valley of Lahaul and Spiti and is among the largest glaciers of the Himalaya outside the polar regions."],
     ["हिमाचल प्रदेश का सबसे लंबा ग्लेशियर बड़ा शिगरी किस घाटी में स्थित है?", ["कुल्लू की ब्यास घाटी", "लाहौल-स्पीति की चंद्रा घाटी", "किन्नौर की सतलुज घाटी", "चंबा की रावी घाटी"], "बड़ा शिगरी लाहौल-स्पीति की चंद्रा घाटी में है और ध्रुवीय क्षेत्रों के बाहर हिमालय के सबसे बड़े ग्लेशियरों में गिना जाता है।"]),
 ];

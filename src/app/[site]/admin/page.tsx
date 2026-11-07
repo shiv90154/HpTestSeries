@@ -22,7 +22,7 @@ export default async function AdminOverviewPage({ searchParams }: PageProps<"/[s
     <div className="space-y-6">
       <div>
         <h1 className="text-xl font-semibold">Overview</h1>
-        <p className="mt-1 text-sm text-muted">Live snapshot of content, learners, and revenue.</p>
+        <p className="mt-1 text-sm text-muted">Live snapshot of content and learners.</p>
       </div>
 
       <SiteFilter path="/admin" current={site} />
