@@ -20,7 +20,7 @@ services:
       retries: 20
 
   app:
-    image: listmonk/listmonk:${LISTMONK_VERSION:-latest}
+    image: listmonk/listmonk:${LISTMONK_VERSION:-v6.2.0}
     restart: unless-stopped
     ports:
       - "127.0.0.1:9100:9000"
