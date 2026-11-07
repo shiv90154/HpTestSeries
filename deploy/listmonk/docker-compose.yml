@@ -1,0 +1,46 @@
+# Listmonk (newsletters / marketing email) for the HP, PB and RJ sites. Separate from the app stack: own Postgres,
+# own project name ("listmonk"). Run through deploy/listmonk/setup.sh. The UI binds to 127.0.0.1:9100 only; nginx
+# serves it at https://lists.hptestseries.in (deploy/nginx-listmonk.conf). Mail goes out through an SMTP relay
+# (Brevo / Resend / SES) set in Listmonk's Settings → SMTP, never from this VPS directly.
+
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      POSTGRES_USER: listmonk
+      POSTGRES_DB: listmonk
+    volumes:
+      - lm-pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U listmonk -d listmonk"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  app:
+    image: listmonk/listmonk:${LISTMONK_VERSION:-latest}
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:9100:9000"
+    env_file: .env
+    environment:
+      LISTMONK_app__address: 0.0.0.0:9000
+      LISTMONK_db__host: db
+      LISTMONK_db__port: "5432"
+      LISTMONK_db__user: listmonk
+      LISTMONK_db__database: listmonk
+      LISTMONK_db__ssl_mode: disable
+      TZ: Asia/Kolkata
+    # Install the schema on first boot, apply upgrades on later ones, then serve.
+    command: [sh, -c, "./listmonk --install --idempotent --yes --config '' && ./listmonk --upgrade --yes --config '' && ./listmonk --config ''"]
+    volumes:
+      - lm-uploads:/listmonk/uploads
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  lm-pgdata:
+  lm-uploads:
