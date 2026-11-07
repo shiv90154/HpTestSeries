@@ -1,4 +1,4 @@
-import { CheckCircle2, ChevronRight, Clock, Languages, MonitorCheck, ShieldCheck, Trophy } from "lucide-react";
+import { CalendarClock, CheckCircle2, ChevronRight, Clock, Languages, MonitorCheck, ShieldCheck, Trophy } from "lucide-react";
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { Breadcrumbs } from "@/components/breadcrumbs";
@@ -19,6 +19,8 @@ import { SeparateSaving } from "@/components/pricing-plans";
 import { perTestLabel } from "@/modules/commerce/value";
 import type { ExamOffer } from "@/modules/catalog/queries";
 import { startTest } from "@/modules/catalog/start-test";
+import { latestExamNews, type ExamNews } from "@/modules/catalog/exam-news";
+import type { PostCategory } from "@/modules/content/post-input";
 
 /** Everything the exam hub and its SEO sub-pages (syllabus, pattern, previous papers) share. */
 export type ExamCtx = {
@@ -37,6 +39,8 @@ export type ExamCtx = {
   offer: ExamOffer | null;
   /** Which sub-pages have content, so the tabs never link to a 404. */
   has: { syllabus: boolean; pattern: boolean; pyq: boolean };
+  /** The latest exam-date or admit-card post, shown under the section tabs. */
+  news: ExamNews | null;
 };
 
 type ExamData = {
@@ -47,6 +51,7 @@ type ExamData = {
   nameHi: string | null;
   body: { slug: string; name: string };
   slug: string;
+  posts?: { slug: string; title: string; category: PostCategory; updatedAt: Date }[];
 };
 
 /** `stateGk`: the site's state GK test name ("Himachal GK"), offered when the exam has no free test of its own. */
@@ -62,6 +67,7 @@ export function buildExamCtx(data: ExamData, label: string, stateGk: string): Ex
     startLabel: start?.label ?? "Start free test",
     offer: data.offer,
     has: { syllabus: !!data.syllabus?.trim(), pattern: !!data.pattern, pyq: data.tests.some((t) => t.type === "PYQ" && t.examName) },
+    news: latestExamNews(data.posts ?? []),
   };
 }
 
@@ -103,6 +109,28 @@ export function ExamTabs({ ctx, active }: { ctx: ExamCtx; active: "overview" | "
         </Link>
       ))}
     </nav>
+  );
+}
+
+/** Exam date or admit card news for the exam, linking to the post that has the details. */
+export function ExamNewsBanner({ ctx }: { ctx: ExamCtx }) {
+  if (!ctx.news) return null;
+  return (
+    <TrackedLink
+      href={ctx.news.href}
+      event="exam_news_click"
+      params={{ exam: ctx.key }}
+      className="flex items-center gap-3 rounded-2xl border border-accent bg-accent-soft p-4 transition-colors hover:border-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+    >
+      <CalendarClock className="size-6 shrink-0 text-accent-ink" aria-hidden />
+      <span className="min-w-0 flex-1">
+        <span className="block text-xs font-semibold uppercase tracking-wider text-accent-ink">
+          <T en="Latest update" pa="ਤਾਜ਼ਾ ਅਪਡੇਟ" /> · <time dateTime={ctx.news.updatedAt.toISOString()}>{formatDate(ctx.news.updatedAt)}</time>
+        </span>
+        <span className="block font-semibold">{ctx.news.title}</span>
+      </span>
+      <ChevronRight className="size-5 shrink-0 text-muted" aria-hidden />
+    </TrackedLink>
   );
 }
 
@@ -381,6 +409,7 @@ export async function ExamSubPage({
         </section>
         <div className="mx-auto w-full max-w-6xl space-y-10 px-4 py-10">
           <ExamTabs ctx={ctx} active={active} />
+          <ExamNewsBanner ctx={ctx} />
           <div className="grid gap-10 lg:grid-cols-[1fr_320px]">
             <div className="min-w-0 space-y-10">
               <PracticeStrip ctx={ctx} placement={`top-${active}`} />

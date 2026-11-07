@@ -11,6 +11,7 @@ import { UPCOMING_FREE_TESTS } from "../upcoming-free";
 import { banking } from "./fresh/banking";
 import { forestry } from "./fresh/forestry";
 import { forestGuardGsLate } from "./fresh/forest-guard-gs-late";
+import { forestGuardMock8 } from "./fresh/forest-guard-tail-1";
 import { forestryLate } from "./fresh/forestry-late";
 import { jbtPedagogy } from "./fresh/jbt-pedagogy";
 import { law } from "./fresh/law";
@@ -75,6 +76,8 @@ type ExamDef = {
    * exam's own mocks have picked, so adding them never shifts another exam's questions.
    */
   lateMocks?: { count: number; sections: Section[] };
+  /** Fresh full mocks numbered after the late mocks (question `s` = index into `lateMocks.sections`), for when the bank has run dry. */
+  tailMocks?: PatwariQuestion[][];
 };
 
 const hpGk = subject("hp-gk");
@@ -205,7 +208,8 @@ const EXAMS: ExamDef[] = [
       S("Mathematics", "गणित", from(10, maths)),
       S("Hindi & English", "हिंदी एवं अंग्रेज़ी", from(5, english), from(5, hindi)),
     ],
-    // Mocks 3–7 (October 2026): same split, fresh forestry questions.
+    // Mocks 3–7 (October 2026): same split, fresh forestry questions. Mocks 8+ are written wholly fresh (the bank has run dry).
+    tailMocks: [forestGuardMock8],
     lateMocks: {
       count: 5,
       sections: [
@@ -666,6 +670,7 @@ ALL_MOCKS.flat().forEach(reserve);
 [...DEFENCE_SERIES, ...DELHI_POLICE_SERIES, ...CHSL_SERIES, ...JAM_SERIES].forEach((x) => x.tests.forEach((t) => reserve(t.questions)));
 EXAMS.forEach((e, k) => {
   if (e.lateMocks) ALL_MOCKS[k].push(...Array.from({ length: e.lateMocks.count }, (_, i) => mockQuestions(e, i, e.lateMocks!.sections)));
+  if (e.tailMocks) ALL_MOCKS[k].push(...e.tailMocks);
 });
 
 const BANK_SERIES: ExamSeriesSeed[] = EXAMS.map((e, k) => {

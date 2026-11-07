@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Breadcrumbs } from "@/components/breadcrumbs";
-import { buildExamCtx, Disclaimer, ExamFinalCta, ExamTabs, HowItWorks, OfferCard } from "@/components/exam-landing";
+import { buildExamCtx, Disclaimer, ExamFinalCta, ExamNewsBanner, ExamTabs, HowItWorks, OfferCard } from "@/components/exam-landing";
 import { ExamAlertBox } from "@/components/exam-email-form";
 import { FaqList } from "@/components/faq-list";
 import { JsonLd } from "@/components/json-ld";
@@ -235,6 +235,7 @@ export default async function ExamPage({ params }: PageProps<"/[site]/[body]/[ex
         <div className="mx-auto grid w-full max-w-6xl gap-10 px-4 py-10 lg:grid-cols-[1fr_320px]">
           <div className="min-w-0 space-y-12">
             <ExamTabs ctx={ctx} active="overview" />
+            <ExamNewsBanner ctx={ctx} />
             <OfferCard ctx={ctx} placement="inline" className="lg:hidden" />
 
             {data.description && (

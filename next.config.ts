@@ -25,6 +25,7 @@ const nextConfig: NextConfig = {
   async redirects() {
     return [
       { source: "/exams/hp-police", destination: "/hp-police", permanent: true },
+      { source: "/exams/hppsc-hpas", destination: "/hppsc/hpas", permanent: true },
       { source: "/tests/pgimer-nursing-officer", destination: "/pgimer/nursing-officer", permanent: true },
       { source: "/tests/hppsc-ado", destination: "/hppsc/ado", permanent: true },
       { source: "/tests/hppsc-assistant-professor", destination: "/hppsc/assistant-professor", permanent: true },

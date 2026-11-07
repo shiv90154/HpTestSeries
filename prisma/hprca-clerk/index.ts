@@ -10,6 +10,7 @@ import { hprcaClerkMock2 } from "./mock2";
 import { hprcaClerkMock3 } from "./mock3";
 import { hprcaClerkMock4 } from "./mock4";
 import { hprcaClerkMock5 } from "./mock5";
+import { hprcaClerkMock6 } from "./mock6";
 
 export const HPRCA_CLERK_SECTIONS = [
   { name: "Himachal GK & Current Affairs", nameHi: "हिमाचल सामान्य ज्ञान एवं समसामयिकी" },
@@ -21,4 +22,4 @@ export const HPRCA_CLERK_SECTIONS = [
 ];
 
 /** Full mocks 1, 2, 3, … in order. */
-export const HPRCA_CLERK_MOCKS: PatwariQuestion[][] = [hprcaClerkMock1, hprcaClerkMock2, hprcaClerkMock3, hprcaClerkMock4, hprcaClerkMock5];
+export const HPRCA_CLERK_MOCKS: PatwariQuestion[][] = [hprcaClerkMock1, hprcaClerkMock2, hprcaClerkMock3, hprcaClerkMock4, hprcaClerkMock5, hprcaClerkMock6];

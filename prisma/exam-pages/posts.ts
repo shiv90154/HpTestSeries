@@ -1541,56 +1541,64 @@ Hamare TGT mock tests isi official section-wise pattern par bane hain, aur har s
     ],
   },
 
-  // Students search "hp high court process server exam date" (~650 impressions a month in GSC, Oct 2026) with no page
-  // answering it. As of 28 October 2026 no date is announced; update the table the day the High Court publishes one.
+  // "hp high court process server exam date" queries: ~3,300 impressions a month in GSC (Nov 2026). The 22 and 29 November
+  // dates are as reported by news sites on 5-6 November 2026; the official portal only lists both posts on its admit card
+  // page. Replace "reported" once the High Court publishes the schedule.
   {
     slug: "hp-high-court-process-server-exam-date-2026",
     publish: true,
-    seoTitle: "HP High Court Process Server Exam Date 2026: Kab Hoga Exam?",
-    seoDescription: "HP High Court Process Server exam date 2026 ka latest status, admit card kaise milega, 65 posts ki details aur exam se pehle free mock test.",
-    title: "HP High Court Process Server Exam Date 2026: Latest Update, Admit Card & Taiyari",
-    titleHi: "एचपी हाई कोर्ट प्रोसेस सर्वर परीक्षा तिथि 2026",
-    excerpt: "HP High Court Process Server exam kab hoga? 2026 bharti ka latest status, admit card kaise aayega, 65 posts ki details aur exam se pehle ki taiyari.",
+    seoTitle: "HP High Court Process Server Exam Date 2026: 22 Nov, Admit Card Out",
+    seoDescription: "HP High Court Process Server exam 22 November 2026 (reported), Clerk 29 November. Admit card download link, exam day tips aur 15 din ka revision plan.",
+    title: "HP High Court Process Server Exam Date 2026: 22 November, Admit Card Out",
+    titleHi: "एचपी हाई कोर्ट प्रोसेस सर्वर परीक्षा तिथि 2026: 22 नवंबर",
+    excerpt: "HP High Court Process Server screening test 22 November 2026 ko reported hai aur Clerk ka 29 November ko. Admit card kahan se download karein aur bache 15 din me kya padhein.",
     category: "EXAM_DATE",
     exams: ["hp-high-court/process-server", "hp-high-court/clerk", "hp-high-court/stenographer"],
-    content: `**HP High Court Process Server exam kab hoga?** Ye sawal abhi har Process Server candidate ke mann me hai. Is post me latest status hai, aur date aate hi hum ise update karenge.
+    content: `**HP High Court Process Server exam kab hai?** Recruitment news sites ke mutabiq Process Server ka screening test **22 November 2026 (Sunday)** ko hai, aur Clerk (District Judiciary) ka **29 November 2026** ko. Admit card bhi aa chuka hai. Neeche poori detail aur bache hue dino ka plan hai.
 
-## Latest update (28 October 2026)
-
-**High Court of Himachal Pradesh ne abhi Process Server exam ki date announce nahi ki hai.** Hamne official recruitment portal (hphcrecruitment.in) check kiya hai, wahan abhi tak is bharti ka exam schedule ya admit card notice nahi hai. Koi website exact date bata rahi hai to use official notice se zaroor milaao.
+## Latest update (7 November 2026)
 
 | Detail | Status |
 |---|---|
-| Notification | August 2026 (388 posts) |
+| Notification | DJ-Advt./2026(1), August 2026 (388 posts) |
 | Process Server posts | 65 |
-| Online application | 10 August to 10 September 2026 (band ho chuki hai) |
-| Exam date | **Abhi announce nahi hui** |
-| Admit card | Exam date ke saath aayega |
-| Official portal | hphcrecruitment.in |
+| **Process Server exam date** | **22 November 2026 (reported)** |
+| **Clerk (District Judiciary) exam date** | **29 November 2026 (reported)** |
+| Admit card | **Out** (around 5 November 2026) |
+| Admit card link | hphcrecruitment.in/auth/get-admit-card |
 
-Clerk (141 posts) aur Stenographer Grade-III (79 posts) isi bharti ka hissa hain, aur unki exam date bhi abhi nahi aayi hai.
+**Zaroori:** ye dates recruitment news websites ne report ki hain. High Court ke recruitment portal ke admit card page par Process Server aur Clerk dono ke options aa gaye hain, par hamein home page par alag exam schedule notice nahi mila. **Exam ki date, time aur centre wahi maanna jo aapke admit card par likha hai.**
 
-## Exam date aur admit card kaise pata chalega?
+## Admit card kaise download karein?
 
-- High Court ki recruitment notices me likha hota hai ki exam schedule ki jaankari candidates ko **SMS aur email** par di jaati hai, usi mobile number aur email par jo form me bhara tha. Isliye wo number aur email chalu rakho.
-- Admit card portal ke **Admit Card** section se download hota hai, apne registration details se.
-- Hafte me ek-do baar hphcrecruitment.in ka home page aur Latest News dekhte raho.
+1. **hphcrecruitment.in/auth/get-admit-card** kholo.
+2. **Advertisement** me "Process Server (District Judiciary) DJ-Advt./2026(1)" chuno (Clerk ke liye "Clerk (District Judiciary)").
+3. Form me bhara hua **mobile number** daalo aur Submit karo.
+4. Admit card download karke **2 print** nikaal lo. Photo, naam, roll number, centre aur reporting time check karo.
 
-## Ab tak ki taiyari ka sahi tareeka
+Exam ke din admit card ke saath **original photo ID** (Aadhaar, voter card, PAN, driving licence ya passport) le jaana zaroori hai.
 
-Date na aayi ho to bhi ye time sabse keemti hai, kyunki notice aane ke baad aksar 2-3 hafte hi milte hain.
+## Bache 15 din: revision plan
 
-1. **Syllabus pakka karo:** Himachal GK, general knowledge, basic reasoning, basic maths, aur Hindi-English. Poora topic-wise syllabus: [HP High Court Process Server syllabus](/hp-high-court/process-server/syllabus).
-2. **Himachal GK roz:** districts, rivers, history, fairs-festivals aur HP current affairs ke short notes banao.
-3. **Har hafte ek full mock:** timer ke saath, exam jaisi CBT screen par. Galat questions ki alag list banao aur agle mock se pehle revise karo.
+Ab naya padhne ka time kam hai. Jo padha hai use pakka karo aur exam jaisi practice karo.
 
-Shuruaat [HP High Court Process Server free mock test](/tests/hp-high-court-process-server-full-mock-1) se karo. Poori practice series aur sectional tests [Process Server page](/hp-high-court/process-server) par hain. Clerk ke liye [HP High Court Clerk](/hp-high-court/clerk) aur Steno ke liye [Stenographer](/hp-high-court/stenographer) page dekho.`,
+| Din | Kya karein |
+|---|---|
+| 1-5 | Har din **1 full mock**, phir galat questions ki list. Himachal GK ke notes roz 1 ghanta. |
+| 6-10 | Kamzor topic ke **sectional tests** (reasoning, maths, Hindi-English). Har doosre din 1 full mock. |
+| 11-13 | Sirf revision: galat questions ki list, HP GK aur current affairs. 2 full mock exam wale time par. |
+| 14 | Halka revision, admit card aur ID ready, centre ka rasta dekh lo. |
+| 15 | Exam: reporting time se pehle pahuncho. |
+
+**Mock test kyun:** screening test me speed aur accuracy dono chahiye. Har mock ke baad dekho kaunse topic me marks kat rahe hain, aur agle 2 din wahi padho.
+
+Shuruaat [HP High Court Process Server free mock test](/tests/hp-high-court-process-server-full-mock-1) se karo. Poori series aur screening mocks [Process Server page](/hp-high-court/process-server) par hain. Topic-wise syllabus: [HP High Court Process Server syllabus](/hp-high-court/process-server/syllabus). Clerk candidates [HP High Court Clerk](/hp-high-court/clerk) page dekhein.`,
     faqs: [
-      { q: "HP High Court Process Server exam kab hoga?", a: "28 October 2026 tak High Court ne exam date announce nahi ki hai. Date aate hi ye post update hogi; official jaankari hphcrecruitment.in par aati hai." },
-      { q: "HP High Court Process Server ka admit card kab aayega?", a: "Admit card exam date ke saath hphcrecruitment.in ke Admit Card section me aayega. Exam schedule ki soochna SMS aur email par bhi aati hai." },
+      { q: "HP High Court Process Server exam kab hai?", a: "Recruitment news sites ke mutabiq Process Server screening test 22 November 2026 ko hai. Final date, time aur centre apne admit card par check karein." },
+      { q: "HP High Court Clerk exam kab hai?", a: "Clerk (District Judiciary) ka screening test 29 November 2026 ko reported hai. Apne admit card par date confirm karein." },
+      { q: "HP High Court Process Server admit card kahan se download karein?", a: "hphcrecruitment.in/auth/get-admit-card par Advertisement me Process Server (District Judiciary) DJ-Advt./2026(1) chunein aur form wala mobile number daalein." },
       { q: "HP High Court me Process Server ki kitni posts hain?", a: "August 2026 ki 388 posts wali bharti me Process Server ki 65 posts hain." },
-      { q: "Kya Process Server ka form abhi bhar sakte hain?", a: "Nahi. Online application 10 August se 10 September 2026 tak thi aur band ho chuki hai." },
-      { q: "Process Server exam ki taiyari kaise karein?", a: "Himachal GK, GK, basic reasoning, maths aur Hindi-English padho aur har hafte ek full mock test do. Pehla mock free hai." },
+      { q: "Exam se pehle bache dino me kya padhein?", a: "Naya kam, revision zyada: har din ya har doosre din ek full mock, galat questions ki list, aur roz Himachal GK. Pehla mock free hai." },
     ],
   },
 

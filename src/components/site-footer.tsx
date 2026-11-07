@@ -189,7 +189,7 @@ export async function SiteFooter() {
             pa={`ਇੱਕ ਸੁਤੰਤਰ ਅਭਿਆਸ ਪਲੇਟਫਾਰਮ — ${site.disclaimerBodies} ਜਾਂ ਕਿਸੇ ਵੀ ਸਰਕਾਰੀ ਸੰਸਥਾ ਨਾਲ ਸੰਬੰਧਿਤ ਨਹੀਂ।`}
           />{" "}
           <T en="Built and run by" pa="ਨਿਰਮਾਤਾ:" />{" "}
-          <a href="https://shivapphub.in/" className="text-slate-300 underline-offset-2 hover:text-white hover:underline">
+          <a href="https://shivapphub.in/" className="text-slate-300 underline underline-offset-2 hover:text-white hover:no-underline">
             ShivAppHub
           </a>
           .
