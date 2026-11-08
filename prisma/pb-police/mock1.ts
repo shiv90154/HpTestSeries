@@ -88,8 +88,8 @@ export const policeMock1: PatwariQuestion[] = [
     ["भारत की सबसे बड़ी तटीय लैगून चिल्का किस राज्य में स्थित है?", ["आंध्र प्रदेश", "तमिलनाडु", "केरल", "ओडिशा"], "चिल्का ओडिशा के तट पर खारे पानी की लैगून है।"]),
 
   q(0, G, "general-science", "E", 0,
-    ["Scurvy is caused by the deficiency of:", ["Vitamin C", "Vitamin A", "Vitamin D", "Vitamin K"], "Lack of vitamin C causes scurvy, with bleeding gums and slow healing of wounds."],
-    ["स्कर्वी रोग किसकी कमी से होता है?", ["विटामिन C", "विटामिन A", "विटामिन D", "विटामिन K"], "विटामिन C की कमी से स्कर्वी होता है, जिसमें मसूड़ों से खून आता है और घाव देर से भरते हैं।"]),
+    ["Beriberi is a disease caused by the deficiency of:", ["Vitamin B1 (thiamine)", "Vitamin A", "Vitamin D", "Vitamin K"], "Lack of thiamine harms the nerves and heart and causes beriberi."],
+    ["बेरीबेरी रोग किसकी कमी से होता है?", ["विटामिन B1 (थायमिन)", "विटामिन A", "विटामिन D", "विटामिन K"], "थायमिन की कमी से तंत्रिकाओं और हृदय को हानि होती है और बेरीबेरी होता है।"]),
   q(0, G, "general-science", "M", 1,
     ["The organelle called the powerhouse of the cell is the:", ["Ribosome", "Mitochondrion", "Nucleus", "Golgi body"], "Mitochondria release energy from food through respiration and store it as ATP."],
     ["कोशिका का 'ऊर्जा घर' किस कोशिकांग को कहते हैं?", ["राइबोसोम", "माइटोकॉन्ड्रिया", "केंद्रक", "गॉल्जी काय"], "माइटोकॉन्ड्रिया श्वसन द्वारा भोजन से ऊर्जा मुक्त करके उसे ATP के रूप में संचित करते हैं।"]),

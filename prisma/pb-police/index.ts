@@ -10,6 +10,8 @@ import { policeMock3 } from "./mock3";
 import { policeMock4 } from "./mock4";
 import { policeMock5 } from "./mock5";
 import { policeMock6 } from "./mock6";
+import { policeMock7 } from "./mock7";
+import { policeMock8 } from "./mock8";
 
 export const PAPER1_SECTIONS = [
   { name: "General Awareness", nameHi: "सामान्य जागरूकता", count: 35 },
@@ -47,7 +49,7 @@ export const POLICE_FREE_TEST: TestDef = paper1(
   true,
 );
 
-const PAID_MOCKS: PatwariQuestion[][] = [policeMock1, policeMock2, policeMock3, policeMock4, policeMock5, policeMock6];
+const PAID_MOCKS: PatwariQuestion[][] = [policeMock1, policeMock2, policeMock3, policeMock4, policeMock5, policeMock6, policeMock7, policeMock8];
 
 export const POLICE_PAID_TESTS: TestDef[] = PAID_MOCKS.map((questions, i) =>
   paper1(`punjab-police-constable-mock-${i + 1}`, `Punjab Police Constable Full Mock ${i + 1} (Paper I)`, `पंजाब पुलिस कांस्टेबल फ़ुल मॉक ${i + 1} (पेपर I)`, questions),

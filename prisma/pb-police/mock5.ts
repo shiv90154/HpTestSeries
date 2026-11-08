@@ -279,8 +279,8 @@ export const policeMock5: PatwariQuestion[] = [
     ["What does the idiom 'to leave no stone unturned' mean?", ["To clear a field of stones", "To try every possible means", "To refuse to help", "To build a house"], "The phrase means to make every possible effort to find or achieve something."],
     ["मुहावरे 'to leave no stone unturned' का अर्थ है:", ["खेत से पत्थर हटाना", "हर संभव उपाय आज़माना", "मदद से इनकार करना", "घर बनाना"], "इस मुहावरे का अर्थ कुछ पाने या खोजने के लिए हर संभव प्रयास करना है।"]),
   q(3, E, "cloze-test", "H", 1,
-    ["Fill in the blank: He is senior ___ me by two years.", ["than", "to", "from", "over"], "'Senior', 'junior', 'superior' and 'inferior' are followed by 'to', not 'than'."],
-    ["रिक्त स्थान भरिए: He is senior ___ me by two years.", ["than", "to", "from", "over"], "'Senior', 'junior', 'superior' और 'inferior' के बाद 'than' नहीं, 'to' आता है।"]),
+    ["Fill in the blank: The inspector is responsible ___ law and order in this area.", ["of", "for", "on", "at"], "'Responsible' takes the preposition 'for' when a duty is meant."],
+    ["रिक्त स्थान भरिए: The inspector is responsible ___ law and order in this area.", ["of", "for", "on", "at"], "कर्तव्य के अर्थ में 'responsible' के साथ 'for' आता है।"]),
 
   // ───────── Section 4: Punjabi (10) ─────────
   q(4, PA, "alphabet", "E", 0,

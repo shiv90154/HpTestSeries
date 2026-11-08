@@ -400,6 +400,14 @@ The CBT has two papers. **Paper I** (100 questions, 120 minutes) covers general 
         q: "Are the PST and PMT scored?",
         a: "No. The Physical Screening Test and Physical Measurement Test are qualifying. Your rank comes from the CBT.",
       },
+      {
+        q: "How many Punjab Police Constable mock tests are available on PB Test Series?",
+        a: "There is one free full Paper I mock and eight paid full Paper I mocks. Each has 100 questions in 120 minutes with no negative marking, in the same section order as the 2026 CBT, and every question has a solution in English and Hindi.",
+      },
+      {
+        q: "Is the Punjabi section in the Paper I mocks in Gurmukhi?",
+        a: "Yes. The 10 Punjabi questions are written in Gurmukhi, with the English or Hindi meaning of the question in brackets, so you practise reading the script as in the real paper. The qualifying Paper II mocks are not on the site yet.",
+      },
     ],
   },
 

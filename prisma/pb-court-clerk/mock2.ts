@@ -77,9 +77,9 @@ export const courtClerkMock2: PatwariQuestion[] = [
     ["At which Indus Valley site was the 'Great Bath' excavated?", ["Harappa", "Mohenjo-daro", "Lothal", "Kalibangan"], "The Great Bath is at Mohenjo-daro in Sindh."],
     ["सिंधु घाटी सभ्यता का 'विशाल स्नानागार' कहाँ मिला?", ["हड़प्पा", "मोहनजोदड़ो", "लोथल", "कालीबंगा"], "विशाल स्नानागार सिंध के मोहनजोदड़ो में है।"]),
 
-  q(0, G, "indian-polity", "M", 3,
-    ["The Constitution of India was adopted by the Constituent Assembly on:", ["26 January 1950", "15 August 1947", "9 December 1946", "26 November 1949"], "It was adopted on 26 November 1949 (Constitution Day) and came into force on 26 January 1950."],
-    ["संविधान सभा ने भारत का संविधान कब अंगीकार किया?", ["26 जनवरी 1950", "15 अगस्त 1947", "9 दिसंबर 1946", "26 नवंबर 1949"], "इसे 26 नवंबर 1949 (संविधान दिवस) को अंगीकार किया गया और 26 जनवरी 1950 को लागू हुआ।"]),
+  q(0, G, "indian-polity", "M", 2,
+    ["The Constituent Assembly of India held its first sitting on:", ["26 January 1950", "15 August 1947", "9 December 1946", "26 November 1949"], "The Assembly first met on 9 December 1946, with Sachchidananda Sinha as temporary chairman; the Constitution was adopted on 26 November 1949."],
+    ["भारत की संविधान सभा की पहली बैठक कब हुई?", ["26 जनवरी 1950", "15 अगस्त 1947", "9 दिसंबर 1946", "26 नवंबर 1949"], "सभा की पहली बैठक 9 दिसंबर 1946 को हुई, जिसके अस्थायी अध्यक्ष सच्चिदानंद सिन्हा थे; संविधान 26 नवंबर 1949 को अंगीकार हुआ।"]),
   q(0, G, "indian-polity", "M", 0,
     ["Which writ orders that a detained person be brought before the court?", ["Habeas corpus", "Mandamus", "Certiorari", "Quo warranto"], "Habeas corpus ('you may have the body') tests whether a detention is lawful."],
     ["कौन-सी रिट हिरासत में रखे व्यक्ति को न्यायालय के सामने पेश करने का आदेश देती है?", ["बंदी प्रत्यक्षीकरण", "परमादेश", "उत्प्रेषण", "अधिकार पृच्छा"], "बंदी प्रत्यक्षीकरण ('शरीर प्रस्तुत करो') जाँचता है कि हिरासत वैध है या नहीं।"]),
