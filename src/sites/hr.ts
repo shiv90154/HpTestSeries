@@ -1,10 +1,9 @@
 import type { SiteConfig } from "./types";
 
-// Soft launch: live but noindex and out of the sitemap until the owner has checked the Haryana content
-// (the Haryana GK facts are AI-written). Flip `launched` to true to index it, as rj did.
+// Launched 9 November 2026: indexed and in the sitemap. The Haryana GK facts are AI-written; keep spot-checking them.
 export const hr: SiteConfig = {
   code: "hr",
-  launched: false,
+  launched: true,
   domains: ["hrtestseries.in", "www.hrtestseries.in"],
   url: process.env.NEXT_PUBLIC_HR_SITE_URL ?? "https://hrtestseries.in",
   name: "HR Test Series",

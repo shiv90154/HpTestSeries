@@ -3,7 +3,7 @@
 import { INDEXNOW_KEY } from "../src/lib/indexnow";
 
 const hosts = process.argv.slice(2);
-if (hosts.length === 0) hosts.push("hptestseries.in", "pbtestseries.in", "rjtestseries.in");
+if (hosts.length === 0) hosts.push("hptestseries.in", "pbtestseries.in", "rjtestseries.in", "hrtestseries.in");
 
 async function main() {
 for (const host of hosts) {
