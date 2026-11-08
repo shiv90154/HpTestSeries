@@ -12,7 +12,7 @@ import { PrismaClient } from "../src/generated/prisma/client";
 /** slug → [old rupees, new rupees] */
 const RISES: Record<string, [number, number]> = {
   "hp-police-constable-mock-series": [199, 249], // HP Police Constable: 9 full mocks + 12 subject tests
-  "hp-patwari-mock-series": [199, 249], // HP Patwari: 7 full mocks + 14 subject tests
+  "hp-patwari-mock-series": [249, 398], // HP Patwari: 7 full mocks + 14 subject tests; sold at ₹199 (50% off) with PATWARI50 until 22 Nov (patwari-offer.ts)
   "punjab-police-constable-mock-series": [199, 249], // PB Police: 7 mocks + 8 subject tests, 365 days
   "hprca-clerk-mock-series": [99, 129], // 5 mocks, a live drive
   "hp-tet-jbt-mock-series": [149, 179], // 5 mocks + 6 sectionals

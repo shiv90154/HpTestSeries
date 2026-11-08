@@ -7,7 +7,7 @@ import { seedSeries } from "./seed-series";
 
 export const PATWARI_SERIES_SLUG = "hp-patwari-mock-test-series";
 export const PATWARI_PRODUCT_SLUG = "hp-patwari-mock-series";
-const PRICE_IN_PAISE = 249_00; // ₹249 for the whole series (21 tests; raised from ₹199 in Nov 2026, see prisma/raise-prices.ts)
+const PRICE_IN_PAISE = 398_00; // ₹398 for the whole series (21 tests). Raised from ₹249 for the Nov 2026 exam rush, sold at ₹199 with coupon PATWARI50 (prisma/patwari-offer.ts)
 const VALIDITY_DAYS = 180;
 
 export function seedPatwari(db: PrismaClient) {

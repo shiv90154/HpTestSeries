@@ -31,7 +31,7 @@ export async function generateMetadata({ params }: PageProps<"/[site]/buy/[slug]
   };
 }
 
-export default async function BuyPage({ params }: PageProps<"/[site]/buy/[slug]">) {
+export default async function BuyPage({ params, searchParams }: PageProps<"/[site]/buy/[slug]">) {
   const site = await currentSite();
   const { slug } = await params;
   const [product, user] = await Promise.all([getProductForSale(site.code, slug), getCurrentUser()]);
@@ -40,7 +40,10 @@ export default async function BuyPage({ params }: PageProps<"/[site]/buy/[slug]"
   // less can't take a referral code, so the student sees a friendly note instead of a code that would be refused.
   const cookieCode = (await cookies()).get(REFERRAL_COOKIE)?.value ?? "";
   const referralOk = referralAllowedFor(product.priceInPaise);
-  const referralCode = referralOk ? cookieCode : "";
+  // A sale link (/buy/<slug>?coupon=CODE) pre-fills its own code; it wins over a referral code from the cookie.
+  const linkCode = (await searchParams).coupon;
+  const saleCode = typeof linkCode === "string" ? linkCode.trim().toUpperCase().slice(0, 40) : "";
+  const referralCode = saleCode || (referralOk ? cookieCode : "");
   const referralNote = referralOk ? undefined : REFERRAL_LOW_PRICE_MESSAGE;
 
   const walletPaise = user ? await getWalletBalance(user.id) : 0;
@@ -138,7 +141,7 @@ export default async function BuyPage({ params }: PageProps<"/[site]/buy/[slug]"
                   don&apos;t lose any days.
                 </p>
               )}
-              <BuyButton productSlug={product.slug} pricePaise={product.priceInPaise} user={user} label={own.kind === "renewable" ? "Renew now" : undefined} initialCode={referralCode} referralNote={referralNote} showReferralNote={!!cookieCode} walletPaise={walletPaise} />
+              <BuyButton productSlug={product.slug} pricePaise={product.priceInPaise} user={user} label={own.kind === "renewable" ? "Renew now" : undefined} initialCode={referralCode} referralNote={referralNote} showReferralNote={!!cookieCode && !saleCode} walletPaise={walletPaise} />
             </>
           )}
           <div className="space-y-2 text-xs text-muted">

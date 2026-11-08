@@ -6,6 +6,7 @@ import { LEGAL_LINKS, supportPhones } from "@/lib/business";
 import { AuthFooterLink } from "./auth-cta";
 import { HelpChat } from "./help-chat";
 import { Logo } from "./logo";
+import { OfferPopup } from "./offer-popup";
 import { PublicBottomNav } from "./public-bottom-nav";
 import { TrackedLink } from "./tracked-link";
 import { T } from "./ui-lang";
@@ -198,6 +199,7 @@ export async function SiteFooter() {
       </div>
       <PublicBottomNav />
       <HelpChat siteName={site.name} phones={supportPhones()} />
+      <OfferPopup />
     </footer>
   );
 }
