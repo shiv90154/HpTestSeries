@@ -1,4 +1,4 @@
-import { BadgeCheck, Calendar, CheckCircle2, Circle, Crown, Mail, Pencil, Phone, Receipt, ShieldCheck } from "lucide-react";
+import { BadgeCheck, Calendar, CheckCircle2, Circle, Crown, Mail, Pencil, Receipt, ShieldCheck } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { AppHeader } from "@/components/app-header";
@@ -14,6 +14,8 @@ import { requireUser } from "@/modules/identity/session";
 import { currentSite } from "@/sites/current";
 import { AppSettings } from "@/components/pwa/app-settings";
 import { EmailPrefsForm } from "./email-prefs-form";
+import { phoneLoginEnabled } from "@/modules/identity/login-methods";
+import { PhoneEditor } from "./phone-editor";
 import { ProfileForm } from "./profile-form";
 
 export const metadata: Metadata = { title: "My Profile", robots: { index: false } };
@@ -117,36 +119,27 @@ export default async function ProfilePage() {
           </section>
         )}
 
-        <section className={`${card} p-5`}>
-          <h2 className="mb-4 font-semibold">Account</h2>
-          <dl className="space-y-3 text-sm">
-            <div className="flex items-center gap-3">
-              <Mail className="size-4 shrink-0 text-muted" />
-              <dt className="sr-only">Email</dt>
-              <dd className="flex min-w-0 flex-1 flex-wrap items-center gap-2">
-                <span className="truncate">{profile.email}</span>
-                {profile.emailVerified && verified}
-              </dd>
-            </div>
-            <div className="flex items-center gap-3">
-              <Phone className="size-4 shrink-0 text-muted" />
-              <dt className="sr-only">Phone</dt>
-              <dd className="flex flex-1 flex-wrap items-center gap-2">
-                {profile.phoneNumber ?? <span className="text-muted">Not linked</span>}
-                {profile.phoneNumber && profile.phoneNumberVerified && verified}
-              </dd>
-            </div>
-            <div className="flex items-center gap-3">
-              <ShieldCheck className="size-4 shrink-0 text-muted" />
-              <dt className="sr-only">Sign-in</dt>
-              <dd className="flex-1 text-muted">You sign in with a one-time code, so there is no password to remember.</dd>
-            </div>
-          </dl>
+        <section id="edit" className={`${card} scroll-mt-24 p-5`}>
+          <ProfileForm name={profile.name} district={profile.district} preferredLang={profile.preferredLang} />
         </section>
 
-        <section id="edit" className={`${card} scroll-mt-24 p-5`}>
-          <h2 className="mb-4 font-semibold">Edit details</h2>
-          <ProfileForm name={profile.name} district={profile.district} preferredLang={profile.preferredLang} />
+        <section id="account" className={`${card} scroll-mt-24 p-5`}>
+          <h2 className="mb-4 font-semibold">Sign-in details</h2>
+          <div className="space-y-4 text-sm">
+            <div className="flex items-center gap-3">
+              <Mail className="size-4 shrink-0 text-muted" />
+              <span className="sr-only">Email</span>
+              <div className="flex min-w-0 flex-1 flex-wrap items-center gap-2">
+                {isRealEmail(profile.email) ? <span className="truncate">{profile.email}</span> : <span className="text-muted">Not added</span>}
+                {isRealEmail(profile.email) && profile.emailVerified && verified}
+              </div>
+            </div>
+            <PhoneEditor phone={profile.phoneNumber} verified={profile.phoneNumberVerified} enabled={phoneLoginEnabled} />
+            <div className="flex items-center gap-3">
+              <ShieldCheck className="size-4 shrink-0 text-muted" />
+              <p className="flex-1 text-muted">You sign in with a one-time code, so there is no password to remember.</p>
+            </div>
+          </div>
         </section>
 
         {isRealEmail(profile.email) && (
