@@ -2,8 +2,9 @@ import Link from "next/link";
 import { examLabel, getCatalog, getPublishedPosts } from "@/modules/catalog/queries";
 import { SITES, freeMockHref } from "@/sites";
 import { currentSite } from "@/sites/current";
-import { LEGAL_LINKS } from "@/lib/business";
+import { LEGAL_LINKS, supportPhones } from "@/lib/business";
 import { AuthFooterLink } from "./auth-cta";
+import { HelpChat } from "./help-chat";
 import { Logo } from "./logo";
 import { PublicBottomNav } from "./public-bottom-nav";
 import { TrackedLink } from "./tracked-link";
@@ -196,6 +197,7 @@ export async function SiteFooter() {
         </p>
       </div>
       <PublicBottomNav />
+      <HelpChat siteName={site.name} phones={supportPhones()} />
     </footer>
   );
 }
