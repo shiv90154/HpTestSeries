@@ -10,6 +10,7 @@ import { processServerMock4 } from "./process-server-mock4";
 import { processServerMock5 } from "./process-server-mock5";
 import { processServerScreening1 } from "./process-server-screening1";
 import { processServerScreening2 } from "./process-server-screening2";
+import { processServerScreening3 } from "./process-server-screening3";
 import { clerkMock3 } from "./clerk-mock3";
 import { clerkMock4 } from "./clerk-mock4";
 import { clerkMock5 } from "./clerk-mock5";
@@ -62,7 +63,7 @@ const SCREENING_SECTIONS = [
   { name: "Hindi & English", nameHi: "हिंदी एवं अंग्रेज़ी" },
 ];
 
-export const PROCESS_SERVER_SCREENING_MOCKS: PatwariQuestion[][] = [processServerScreening1, processServerScreening2];
+export const PROCESS_SERVER_SCREENING_MOCKS: PatwariQuestion[][] = [processServerScreening1, processServerScreening2, processServerScreening3];
 
 export const PROCESS_SERVER_SCREENING_TESTS: TestDef[] = PROCESS_SERVER_SCREENING_MOCKS.map((questions, i) => ({
   slug: `hp-high-court-process-server-screening-mock-${i + 1}`,
