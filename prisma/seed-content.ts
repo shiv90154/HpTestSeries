@@ -775,8 +775,9 @@ export async function seedContent(db: PrismaClient) {
         faqs: p.faqs ?? [],
         seoTitle: p.seoTitle ?? null,
         seoDescription: p.seoDescription ?? null,
-        status: p.publish ? "PUBLISHED" : "DRAFT",
-        publishedAt: p.publish ? new Date() : undefined,
+        // Owner's rule: nothing is left as a draft, so every seeded post goes live (set publish: false to hold one back).
+        status: p.publish === false ? "DRAFT" : "PUBLISHED",
+        publishedAt: p.publish === false ? undefined : new Date(),
         site: p.site ?? "hp",
         exams: { connect: examIds },
       },
