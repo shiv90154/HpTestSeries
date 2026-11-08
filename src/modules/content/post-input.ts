@@ -138,6 +138,31 @@ const SITE_CATEGORY_COPY: Partial<Record<SiteCode, Record<PostCategory, Category
       blurb: "Rajasthan current affairs for RSSB, RPSC, Rajasthan Police and Patwari exams.",
     },
   },
+  hr: {
+    NOTIFICATION: {
+      heading: "Haryana Govt Job Notifications",
+      blurb: "Latest Haryana government recruitment notifications — HSSC, HPSC, Haryana Police and more, with vacancies, eligibility and how to apply.",
+    },
+    SYLLABUS: { heading: "Haryana Exam Syllabus", blurb: "Topic-wise syllabus for HSSC, Haryana Police, HPSC and HTET exams, with what to study first." },
+    EXAM_PATTERN: {
+      heading: "Haryana Exam Pattern",
+      blurb: "Questions, marks, time and negative marking for every major Haryana government exam.",
+    },
+    EXAM_DATE: { heading: "Haryana Exam Dates", blurb: "Exam calendar and date updates for HSSC, HPSC, Haryana Police and other Haryana government exams." },
+    ADMIT_CARD: { heading: "Haryana Exam Admit Cards", blurb: "When and how to download admit cards for HSSC, HPSC and Haryana Police exams." },
+    RESULT: { heading: "Haryana Exam Results", blurb: "Results, answer keys and merit list news for Haryana government recruitment exams." },
+    CUTOFF: { heading: "Haryana Exam Cutoff Marks", blurb: "Previous cutoff marks for HSSC, Haryana Police and HPSC exams, category-wise." },
+    STRATEGY: {
+      heading: "Haryana Exam Preparation Strategy",
+      blurb: "How to prepare for Haryana government exams — study plans, Haryana GK and mock test strategy.",
+    },
+    CURRENT_AFFAIRS: {
+      label: "Haryana Current Affairs",
+      labelHi: "हरियाणा समसामयिकी",
+      heading: "Haryana Current Affairs",
+      blurb: "Haryana current affairs for HSSC, HPSC, Haryana Police and Patwari exams.",
+    },
+  },
 };
 
 /** A category's label and landing-page copy as shown on one site. */

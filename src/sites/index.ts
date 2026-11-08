@@ -1,6 +1,7 @@
 // Site registry: the one place a state is defined. Safe to import anywhere (client, server, proxy).
 
 import { hp } from "./hp";
+import { hr } from "./hr";
 import { pb } from "./pb";
 import { rj } from "./rj";
 import { SITE_CODES, type SiteCode, type SiteConfig } from "./types";
@@ -8,7 +9,7 @@ import { SITE_CODES, type SiteCode, type SiteConfig } from "./types";
 export type { SiteCode, SiteConfig } from "./types";
 export { SITE_CODES } from "./types";
 
-export const SITES: Record<SiteCode, SiteConfig> = { hp, pb, rj };
+export const SITES: Record<SiteCode, SiteConfig> = { hp, pb, rj, hr };
 
 /** Owns /admin, the canonical copy of national-exam pages, and any host we don't recognise. */
 export const PRIMARY_SITE = hp;

@@ -87,6 +87,7 @@ export function PushForm({ exams }: { exams: { id: string; name: string }[] }) {
                 <option value="hp">Himachal (hptestseries.in)</option>
                 <option value="pb">Punjab (pbtestseries.in)</option>
                 <option value="rj">Rajasthan (rjtestseries.in)</option>
+                <option value="hr">Haryana (hrtestseries.in)</option>
               </select>
             </div>
             <div>

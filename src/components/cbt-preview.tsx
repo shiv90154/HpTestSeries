@@ -19,6 +19,10 @@ const STATE: Record<SiteCode, { paper: string; gk: { tab: string; no: number; q:
     paper: "RSSB Patwari — Mock Test 3",
     gk: { tab: "Rajasthan GK", no: 6, q: "Which is the longest river that flows entirely within Rajasthan?", options: ["Banas", "Luni", "Chambal", "Mahi"], answer: 0 },
   },
+  hr: {
+    paper: "HSSC CET — Mock Test 3",
+    gk: { tab: "Haryana GK", no: 6, q: "In which year was the First Battle of Panipat fought?", options: ["1526", "1556", "1761", "1539"], answer: 0 },
+  },
 };
 
 const common = [

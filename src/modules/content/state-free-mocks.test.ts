@@ -1,9 +1,11 @@
 import { describe, expect, it } from "vitest";
 import { punjabFreeMock } from "../../../prisma/punjab/free-mock";
+import { haryanaFreeMock } from "../../../prisma/haryana/free-mock";
 import { rajasthanFreeMock } from "../../../prisma/rajasthan/free-mock";
 import { COMMON_FREE_QUESTIONS } from "../../../prisma/seed-demo";
 import { taxonomy } from "../../../prisma/taxonomy";
 import { pb } from "@/sites/pb";
+import { hr } from "@/sites/hr";
 import { rj } from "@/sites/rj";
 import { questionTextHash } from "./text-hash";
 
@@ -12,6 +14,7 @@ const topics = new Set(taxonomy.flatMap((s) => s.topics.map(([slug]) => `${s.slu
 const MOCKS = [
   { site: pb, subject: "punjab-gk", mock: punjabFreeMock(COMMON_FREE_QUESTIONS) },
   { site: rj, subject: "rajasthan-gk", mock: rajasthanFreeMock(COMMON_FREE_QUESTIONS) },
+  { site: hr, subject: "haryana-gk", mock: haryanaFreeMock(COMMON_FREE_QUESTIONS) },
 ];
 
 describe.each(MOCKS)("$site.code free mock", ({ site, subject, mock }) => {

@@ -38,7 +38,7 @@ export const campaignSchema = z.object({
   title: z.string().trim().min(1, "Write a title.").max(TITLE_MAX, `Title is at most ${TITLE_MAX} characters.`),
   body: z.string().trim().min(1, "Write a message.").max(BODY_MAX, `Message is at most ${BODY_MAX} characters.`),
   url: z.string().trim().refine(isSitePath, "The link must be a path on the site, like /tests/hp-police-full-mock-1."),
-  site: z.enum(["hp", "pb", "rj", "all"]),
+  site: z.enum(["hp", "pb", "rj", "hr", "all"]),
   examId: z.string().trim().max(60).optional().transform((v) => v || null),
 });
 export type CampaignInput = z.infer<typeof campaignSchema>;

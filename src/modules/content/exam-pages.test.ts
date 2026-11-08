@@ -35,7 +35,7 @@ const testSlugs = new Set([
 ]);
 
 /** The state GK pages (/himachal on hp, /punjab on pb, /rajasthan on rj), which exam pages may link to. */
-const STATE_PAGES = new Set(["/himachal", "/punjab", "/rajasthan"]);
+const STATE_PAGES = new Set(["/himachal", "/punjab", "/rajasthan", "/haryana"]);
 
 /** Everything a page shows, merged the way prisma/seed-content.ts merges it. */
 function pageFor(key: string) {
@@ -136,7 +136,7 @@ const PYQ_EXAMS = new Set(["hp-revenue/patwari", "hp-police/constable", "hprca/j
 /** Whether an internal link in a draft post points at a page that exists (or will, once the page's own content is seeded). */
 function linkExists(href: string): boolean {
   const path = href.split(/[?#]/)[0];
-  if (["/exams", "/tests", "/previous-year-papers", "/himachal", "/punjab", "/rajasthan", hp.gkMockHub].includes(path)) return true;
+  if (["/exams", "/tests", "/previous-year-papers", "/himachal", "/punjab", "/rajasthan", "/haryana", hp.gkMockHub].includes(path)) return true;
   const test = path.match(/^\/tests\/([^/]+)$/);
   if (test) return testSlugs.has(test[1]);
   const blog = path.match(/^\/blog\/([^/]+)$/);

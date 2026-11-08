@@ -49,6 +49,20 @@ export const taxonomy: SubjectSeed[] = [
     ],
   },
   {
+    slug: "haryana-gk",
+    name: "Haryana GK",
+    nameHi: "हरियाणा सामान्य ज्ञान",
+    topics: [
+      ["history", "History of Haryana"],
+      ["geography", "Geography of Haryana"],
+      ["rivers", "Rivers & Wetlands"],
+      ["districts", "Districts"],
+      ["culture", "Culture, Fairs & Folk Traditions"],
+      ["economy", "Economy of Haryana"],
+      ["polity-administration", "Polity & Administration"],
+    ],
+  },
+  {
     slug: "general-studies",
     name: "General Studies",
     nameHi: "सामान्य अध्ययन",

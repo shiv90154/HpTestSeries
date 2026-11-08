@@ -8,6 +8,8 @@ describe("siteFromHost", () => {
     expect(siteFromHost("PBTESTSERIES.IN:443").code).toBe("pb");
     expect(siteFromHost("rjtestseries.in").code).toBe("rj");
     expect(siteFromHost("www.rjtestseries.in").code).toBe("rj");
+    expect(siteFromHost("hrtestseries.in").code).toBe("hr");
+    expect(siteFromHost("www.hrtestseries.in").code).toBe("hr");
   });
 
   it("maps <code>.localhost for local dev and plain localhost to the primary site", () => {

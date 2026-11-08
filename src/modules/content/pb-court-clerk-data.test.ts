@@ -9,6 +9,7 @@ import { COURT_CLERK_FREE_MOCK_SLUG, COURT_CLERK_TESTS, SECTIONS } from "../../.
 import { POLICE_FREE_TEST } from "../../../prisma/pb-police";
 import { POLICE_TESTS } from "../../../prisma/police";
 import { punjabFreeMock } from "../../../prisma/punjab/free-mock";
+import { haryanaFreeMock } from "../../../prisma/haryana/free-mock";
 import { rajasthanFreeMock } from "../../../prisma/rajasthan/free-mock";
 import { COMMON_FREE_QUESTIONS } from "../../../prisma/seed-demo";
 import { taxonomy } from "../../../prisma/taxonomy";
@@ -21,7 +22,7 @@ const topics = new Set(taxonomy.flatMap((s) => s.topics.map(([slug]) => `${s.slu
 const otherStems = new Set([
   ...[...EXAM_SERIES.flatMap((s) => s.tests), ...PATWARI_TESTS, ...POLICE_TESTS, ...JOA_IT_TESTS, ...PANCHAYAT_SECRETARY_TESTS, ...UPCOMING_FREE_TESTS, ...HPAS_FREE_TESTS, POLICE_FREE_TEST]
     .flatMap((t) => t.questions.map((x) => questionTextHash(x.en[0]))),
-  ...[punjabFreeMock(COMMON_FREE_QUESTIONS), rajasthanFreeMock(COMMON_FREE_QUESTIONS)].flatMap((m) => m.questions.map((x) => questionTextHash(x.en.q))),
+  ...[punjabFreeMock(COMMON_FREE_QUESTIONS), rajasthanFreeMock(COMMON_FREE_QUESTIONS), haryanaFreeMock(COMMON_FREE_QUESTIONS)].flatMap((m) => m.questions.map((x) => questionTextHash(x.en.q))),
 ]);
 
 describe("Punjab District Court Clerk series", () => {

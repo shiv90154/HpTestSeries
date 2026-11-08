@@ -19,7 +19,7 @@ export default async function PushAdminPage() {
     { label: "Devices", value: `${p.total}`, hint: "phones and browsers that allowed notifications" },
     { label: "Signed in", value: `${p.signedIn}`, hint: "tied to a student account (can get access reminders)" },
     { label: "Himachal", value: `${p.bySite.hp ?? 0}`, hint: "hptestseries.in" },
-    { label: "Punjab / Rajasthan", value: `${p.bySite.pb ?? 0} / ${p.bySite.rj ?? 0}`, hint: "pbtestseries.in / rjtestseries.in" },
+    { label: "Punjab / Rajasthan / Haryana", value: `${p.bySite.pb ?? 0} / ${p.bySite.rj ?? 0} / ${p.bySite.hr ?? 0}`, hint: "pbtestseries.in / rjtestseries.in / hrtestseries.in" },
   ];
 
   return (
