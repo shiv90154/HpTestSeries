@@ -60,19 +60,19 @@ export default async function ProfilePage() {
         <section className={`${card} overflow-hidden`}>
           <div className="h-20 bg-linear-to-r from-primary to-primary-strong" aria-hidden />
           <div className="px-5 pb-5">
-            <div className="-mt-10 flex items-end gap-4">
+            <div className="-mt-10 flex items-end justify-between gap-4">
               <span className="grid size-20 shrink-0 place-items-center rounded-full border-4 border-surface bg-primary-soft text-2xl font-bold text-primary" aria-hidden>
                 {initialsOf(profile.name)}
               </span>
-              <div className="min-w-0 pb-1">
-                <h1 className="truncate text-xl font-bold sm:text-2xl">{profile.name}</h1>
-                <p className="flex items-center gap-1.5 text-sm text-muted">
-                  <Calendar className="size-3.5 shrink-0" /> Member since {memberSince}
-                </p>
-              </div>
-              <a href="#edit" className={btn("outline", "sm", "ml-auto mb-1 shrink-0")}>
+              <a href="#edit" className={btn("outline", "sm", "mb-1 shrink-0")}>
                 <Pencil className="size-3.5" /> Edit profile
               </a>
+            </div>
+            <div className="mt-3 min-w-0">
+              <h1 className="truncate text-xl font-bold sm:text-2xl">{profile.name}</h1>
+              <p className="flex items-center gap-1.5 text-sm text-muted">
+                <Calendar className="size-3.5 shrink-0" /> Member since {memberSince}
+              </p>
             </div>
 
             {topPlan && (
@@ -109,8 +109,8 @@ export default async function ProfilePage() {
               <div className="h-full rounded-full bg-primary transition-all" style={{ width: `${completeness.percent}%` }} />
             </div>
             <ul className="mt-3 grid gap-1.5 text-sm sm:grid-cols-2">
-              {completeness.steps.map((s) => (
-                <li key={s.key} className={`flex items-center gap-2 ${s.done ? "text-muted line-through" : ""}`}>
+              {[...completeness.steps].sort((x, y) => Number(x.done) - Number(y.done)).map((s) => (
+                <li key={s.key} className={`flex items-center gap-2 ${s.done ? "text-muted" : "font-medium"}`}>
                   {s.done ? <CheckCircle2 className="size-4 text-success" /> : <Circle className="size-4 text-muted" />}
                   {s.label}
                 </li>
