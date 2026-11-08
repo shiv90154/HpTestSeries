@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { catalogue } from "../../../prisma/catalogue";
-import { EXAM_PAGES, NOTIFICATION_POSTS, PUNJAB_POSTS, RAJASTHAN_POSTS } from "../../../prisma/exam-pages";
+import { EXAM_PAGES, HARYANA_POSTS, NOTIFICATION_POSTS, PUNJAB_POSTS, RAJASTHAN_POSTS } from "../../../prisma/exam-pages";
 import { EXAM_SERIES } from "../../../prisma/exam-series";
 import { PATWARI_TESTS } from "../../../prisma/patwari";
 import { COURT_CLERK_TESTS } from "../../../prisma/pb-court-clerk";
@@ -12,6 +12,7 @@ import { HPAS_BANK_TEST_SLUGS } from "../../../prisma/seed-hpas-bank";
 import { UPCOMING_FREE_TESTS } from "../../../prisma/upcoming-free";
 import { hp } from "@/sites/hp";
 import { pb } from "@/sites/pb";
+import { hr } from "@/sites/hr";
 import { rj } from "@/sites/rj";
 import { faqListSchema, patternSchema, seoSchema } from "./exam-content";
 import { postSchema } from "./post-input";
@@ -27,6 +28,7 @@ const testSlugs = new Set([
   ...ALL_PB_EXAM_TESTS.map((t) => t.slug),
   hp.freeMockSlug,
   pb.freeMockSlug,
+  hr.freeMockSlug,
   rj.freeMockSlug,
   "hpas-free-mock-1",
   "hpas-free-mock-2",
@@ -154,7 +156,7 @@ describe("draft posts", () => {
     expect(new Set(slugs).size).toBe(slugs.length);
   });
 
-  describe.each([...NOTIFICATION_POSTS, ...PUNJAB_POSTS, ...RAJASTHAN_POSTS].map((p) => [p.slug, p] as const))("%s", (_slug, p) => {
+  describe.each([...NOTIFICATION_POSTS, ...HARYANA_POSTS, ...PUNJAB_POSTS, ...RAJASTHAN_POSTS].map((p) => [p.slug, p] as const))("%s", (_slug, p) => {
     it("passes the same validation as the admin blog editor", () => {
       const r = postSchema.safeParse({ ...p, titleHi: p.titleHi ?? "", coverImage: "", seoTitle: p.seoTitle ?? "", seoDescription: p.seoDescription ?? "", faqs: p.faqs ?? [], examIds: [] });
       expect(r.success ? [] : r.error.issues.map((i) => i.message)).toEqual([]);

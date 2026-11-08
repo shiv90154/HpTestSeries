@@ -9,7 +9,7 @@
 // the slug doesn't exist. Edits made in the admin panel are safe on re-seed.
 import type { PrismaClient } from "../src/generated/prisma/client";
 import { hp } from "../src/sites/hp";
-import { EXAM_PAGES, NOTIFICATION_POSTS, PUNJAB_POSTS, RAJASTHAN_POSTS, type PostSeed } from "./exam-pages";
+import { EXAM_PAGES, HARYANA_POSTS, NOTIFICATION_POSTS, PUNJAB_POSTS, RAJASTHAN_POSTS, type PostSeed } from "./exam-pages";
 
 const FREE_MOCK = `/tests/${hp.freeMockSlug}`;
 
@@ -345,6 +345,7 @@ Land-record terms such as jamabandi, khasra, khatauni and girdawari are also wor
 
 export const posts: PostSeed[] = [
   ...NOTIFICATION_POSTS,
+  ...HARYANA_POSTS,
   ...PUNJAB_POSTS,
   ...RAJASTHAN_POSTS,
   {

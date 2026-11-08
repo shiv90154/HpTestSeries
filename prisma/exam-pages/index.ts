@@ -11,6 +11,7 @@ import type { ExamPages } from "./types";
 
 export type { ExamPage, ExamPages, PostSeed } from "./types";
 export { NOTIFICATION_POSTS } from "./posts";
+export { HARYANA_POSTS } from "./haryana-posts";
 export { PUNJAB_POSTS } from "./punjab-posts";
 export { RAJASTHAN_POSTS } from "./rajasthan-posts";
 
