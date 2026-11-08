@@ -23,6 +23,10 @@ if ! grep -qE 'api/cron/emails|cron-call\.sh"? emails' <<<"$current"; then
   # Daily reminder and offer emails (see /admin/emails).
   add+="$email_time * * * bash \"$dir/cron-call.sh\" emails >> $log 2>&1 # hptestseries"$'\n'
 fi
+if [ -f "$dir/listmonk/.env" ] && ! grep -q 'listmonk/sync\.sh' <<<"$current"; then
+  # Every 6 hours: students and their offer consent into Listmonk (only once Listmonk is installed).
+  add+="17 */6 * * * bash \"$dir/listmonk/sync.sh\" >> $log 2>&1 # hptestseries"$'\n'
+fi
 
 if [ -z "$add" ]; then
   echo "Cron jobs already set."
