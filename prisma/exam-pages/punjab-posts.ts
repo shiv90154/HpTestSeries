@@ -1,6 +1,7 @@
 import { pb } from "../../src/sites/pb";
 import type { PostSeed } from "./types";
 import { COURT_CLERK_POSTS } from "./punjab-court-clerk-posts";
+import { PUNJAB_SYLLABUS_POSTS } from "./punjab-syllabus-posts";
 
 const FREE_MOCK = `/tests/${pb.freeMockSlug}`;
 
@@ -10,6 +11,7 @@ const FREE_MOCK = `/tests/${pb.freeMockSlug}`;
 
 export const PUNJAB_POSTS: PostSeed[] = [
   ...COURT_CLERK_POSTS,
+  ...PUNJAB_SYLLABUS_POSTS,
   {
     slug: "psssb-group-d-exam-date-2026-admit-card",
     site: "pb",
