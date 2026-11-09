@@ -156,7 +156,7 @@ describe("draft posts", () => {
     expect(new Set(slugs).size).toBe(slugs.length);
   });
 
-  describe.each([...NOTIFICATION_POSTS, ...HARYANA_POSTS, ...PUNJAB_POSTS, ...RAJASTHAN_POSTS].map((p) => [p.slug, p] as const))("%s", (_slug, p) => {
+  describe.each([...NOTIFICATION_POSTS, ...HP_MORE_POSTS, ...HARYANA_POSTS, ...PUNJAB_POSTS, ...RAJASTHAN_POSTS].map((p) => [p.slug, p] as const))("%s", (_slug, p) => {
     it("passes the same validation as the admin blog editor", () => {
       const r = postSchema.safeParse({ ...p, titleHi: p.titleHi ?? "", coverImage: "", seoTitle: p.seoTitle ?? "", seoDescription: p.seoDescription ?? "", faqs: p.faqs ?? [], examIds: [] });
       expect(r.success ? [] : r.error.issues.map((i) => i.message)).toEqual([]);

@@ -133,7 +133,7 @@ Mode (OMR ya CBT), negative marking aur bonus marks ke baare me sources match na
 
 Himachal GK General Awareness ka bada hissa hai, isliye [Himachal GK](/himachal) ko pehle revise karo. Hindi aur English me grammar, maths me percentage, ratio aur average. Physical ki practice paper ki taiyari ke saath chalate raho.
 
-[Constable mock tests](/hp-police/constable) aur [free Himachal GK mock](/tests/hp-police-constable-free-mock-1) se practice karein.`,
+[Constable mock tests](/hp-police/constable) aur [free Himachal GK mock](/himachal-gk-mock-test) se practice karein.`,
     faqs: [
       { q: "Kya HP Police Constable me interview hota hai?", a: "Ek report ke mutabik is bharti me interview nahi hai aur final merit written exam par based hai. Notification me confirm karein." },
       { q: "Physical test pehle hota hai ya written?", a: "Reports ke mutabik PST aur PET pehle hote hain, aur written exam unke baad un candidates ke liye." },
@@ -483,12 +483,305 @@ Taiyari: [HPAS](/hppsc/hpas), [HPRCA Clerk](/hprca/clerk), [Police Constable](/h
 
 - **Answer key** par objection ka mauka aam taur par kuch din hota hai.
 - Agle stage (typing test, physical, document verification) ki date notification me aati hai.
-- Cut-off ke liye hamare [cut-off posts](/blog/category/cutoff) dekhein.
+- Cut-off ke liye hamare cut-off posts blog ke Cutoff section me dekhein.
 
 Jab tak result na aaye, taiyari rukne na dein: [Clerk](/hprca/clerk), [HPAS](/hppsc/hpas), [Constable](/hp-police/constable).`,
     faqs: [
       { q: "HPRCA ka result kahan aata hai?", a: "hprca.hp.gov.in par Results section me PDF ke roop me." },
       { q: "Result me naam nahi hai to kya karein?", a: "Notification me di gayi grievance process dekhein aur commission se sampark karein." },
+    ],
+  },
+
+  {
+    slug: "hp-police-constable-syllabus-2026-topic-wise",
+    seoTitle: "HP Police Constable Syllabus 2026: Topic-Wise, Hindi & English",
+    seoDescription: "HP Police Constable syllabus 2026 topic-wise: General Awareness with Himachal GK, English, Hindi, Maths and Logical Reasoning, with a weekly study order.",
+    title: "HP Police Constable Syllabus 2026: Topic-Wise List and What to Study First",
+    titleHi: "एचपी पुलिस कांस्टेबल सिलेबस 2026: टॉपिक वाइज",
+    excerpt: "Constable written exam ke 5 subjects ka topic-wise syllabus aur kis order me padhna sabse faydemand hai.",
+    category: "SYLLABUS",
+    exams: ["hp-police/constable"],
+    content: `Reports ke mutabik HP Police Constable ke written paper me 5 subjects hain: **General Awareness, English, Hindi, Mathematics aur Logical Reasoning**. Ye topic-wise list usual areas par based hai; final syllabus notification me dekhein.
+
+## Subject-wise topics
+
+| Subject | Topics |
+|---|---|
+| General Awareness | Himachal GK (history, geography, rivers, passes, fairs, districts, polity), India ka itihas aur geography, polity, general science, current affairs |
+| English | Grammar, vocabulary, synonyms-antonyms, error spotting, comprehension |
+| Hindi | Vyakaran, muhavare, paryayvachi-vilom, shuddhi, apathit gadyansh |
+| Mathematics | Percentage, ratio, average, profit-loss, time-work, speed-distance, simple interest |
+| Logical Reasoning | Series, analogy, coding-decoding, direction, blood relations |
+
+## Kis order me padhein
+
+1. **Hafta 1-2:** Himachal GK. Ye sabse bada hissa hai aur sirf yaad karne par marks milte hain.
+2. **Hafta 3-4:** Maths aur reasoning ke basics, roz 1 ghanta.
+3. **Hafta 5:** English aur Hindi grammar.
+4. **Uske baad:** roz 1 full mock, galat questions ki list banao.
+
+Syllabus page: [Constable syllabus](/hp-police/constable/syllabus). Practice: [free Himachal GK mock](/himachal-gk-mock-test) aur [Constable mock tests](/hp-police/constable). GK ke liye [important questions](/blog/himachal-gk-important-questions-for-all-hp-exams) bhi padhein.`,
+    faqs: [
+      { q: "Constable paper me sabse zyada weightage kis subject ki hai?", a: "Reports ke mutabik General Awareness, English, Hindi aur Maths me 20-20 questions hain aur reasoning me 10. Himachal GK General Awareness ka bada hissa hai." },
+      { q: "Kya syllabus Hindi me bhi milta hai?", a: "Haan, notification Hindi aur English dono me hoti hai. Hamare mocks ke solutions bhi dono bhashaon me hain." },
+    ],
+  },
+
+  {
+    slug: "hp-police-physical-test-preparation-plan-running-fitness",
+    seoTitle: "HP Police Physical Test Preparation: 6-Week Running Plan",
+    seoDescription: "HP Police constable physical test preparation: a 6-week running and fitness plan, diet basics and test-day tips. Check exact standards in the notification.",
+    title: "HP Police Physical Test Preparation: 6-Week Running and Fitness Plan",
+    titleHi: "एचपी पुलिस फिजिकल टेस्ट की तैयारी: 6 हफ्ते का प्लान",
+    excerpt: "PST/PET ke liye 6 hafte ka running aur fitness plan, diet aur test ke din ki tips. Exact standards notification se dekhein.",
+    category: "STRATEGY",
+    exams: ["hp-police/constable", "hp-police/driver-constable"],
+    content: `Reports ke mutabik HP Police Constable me **PST (height, chest)** aur **PET (running aur doosre events)** pehle hote hain. **Exact height, chest aur running ke standards category aur gender ke hisaab se notification me hote hain**, isliye wahi dekhein; hum yahan koi number nahi de rahe.
+
+## 6 hafte ka plan (shuruaat karne walon ke liye)
+
+| Hafta | Roz ka kaam |
+|---|---|
+| 1-2 | 20 minute brisk walk plus halki jogging, stretching, 3 din rest |
+| 3-4 | 25-30 minute continuous running, hafte me 1 din interval (1 min tez, 2 min dheere) |
+| 5 | Target distance ka 80% timed run, hafte me 2 baar |
+| 6 | Poori distance timed run, aakhri 2 din halka abhyas |
+
+Saath me hafte me 3 din push-ups, squats aur skipping.
+
+## Khana aur recovery
+
+- Protein ke liye dal, ande, paneer, doodh; saath me roti-chawal aur mausmi fal.
+- Din me 3 se 4 litre paani, aur 7 se 8 ghante ki neend.
+- Test se ek raat pehle bhaari ya tala hua khana na khayein.
+
+## Test ke din
+
+1. Admit card aur documents pehle se tayyar rakhein.
+2. Halka warm-up karein, thande mausam me zyada.
+3. Start me tez na bhaagein, pehle 100 meter me pace banayein.
+
+Physical ke saath written ki taiyari na rukne dein: [Constable syllabus](/hp-police/constable/syllabus) aur [free mock](/himachal-gk-mock-test). Medical problem ho to doctor se salah lekar hi training badhayein.`,
+    faqs: [
+      { q: "PST aur PET me kya antar hai?", a: "PST me height aur chest naapi jaati hai, PET me running jaise events hote hain." },
+      { q: "Standards kahan milenge?", a: "Official notification me, category aur gender ke hisaab se." },
+    ],
+  },
+
+  {
+    slug: "himachal-gk-rivers-passes-fairs-districts-quick-revision",
+    seoTitle: "Himachal GK: Rivers, Passes, Fairs, Districts Quick Revision",
+    seoDescription: "Himachal GK quick revision for HP exams: 12 districts, major rivers, high passes, famous fairs, formation dates and a memory table you can finish in one sitting.",
+    title: "Himachal GK Quick Revision: Rivers, Passes, Fairs, Districts and Formation Dates",
+    titleHi: "हिमाचल जीके: नदियां, दर्रे, मेले, जिले और स्थापना तिथियां",
+    excerpt: "HP exams ke sabse repeat hone wale static topics ka ek table: districts, nadiyan, darre, mele aur important dates.",
+    category: "STRATEGY",
+    exams: ["hp-police/constable", "hp-revenue/patwari", "hprca/clerk"],
+    content: `Ye wo static facts hain jo Himachal ke har exam me baar-baar aate hain. Ek baar me padho, phir roz 10 minute revise karo.
+
+## Basics
+
+- **12 districts:** Bilaspur, Chamba, Hamirpur, Kangra, Kinnaur, Kullu, Lahaul-Spiti, Mandi, Shimla, Sirmaur, Solan, Una.
+- **Rajdhani:** Shimla; Dharamshala doosri (winter) rajdhani hai.
+- **15 April 1948:** Himachal Pradesh ka gathan.
+- **1 November 1966:** Punjab ke pahadi ilake Himachal me mile.
+- **25 January 1971:** Poorn rajya ka darja, desh ka 18va rajya.
+
+## Pramukh nadiyan
+
+| Nadi | Yaad rakhne ki baat |
+|---|---|
+| Satluj | Shipki La se Himachal me aati hai, Kinnaur, Shimla, Kullu, Mandi aur Bilaspur se hoti hui |
+| Beas | Rohtang ke paas Beas Kund se nikalti hai, Kullu aur Mandi se behti hai |
+| Ravi | Chamba ki mukhya nadi |
+| Chenab | Lahaul me Chandra aur Bhaga ke milne se banti hai |
+| Yamuna | Sirmaur ki sima par behti hai |
+
+## Pramukh darre
+
+Rohtang, Baralacha La, Kunzum, Shipki La, Jalori, Bhaba aur Sach Pass.
+
+## Pramukh mele
+
+| Mela | Jagah |
+|---|---|
+| Kullu Dussehra | Kullu |
+| Minjar | Chamba |
+| Lavi | Rampur (Shimla) |
+| Renuka | Sirmaur |
+| Shivratri | Mandi |
+
+## Revise karne ka tareeka
+
+Table ko dekh kar likho, phir chhupa kar yaad karo. Aur [important questions](/blog/himachal-gk-important-questions-for-all-hp-exams) se practice karo. Pura topic-wise GK: [Himachal GK](/himachal). Practice: [free Himachal GK mock](/himachal-gk-mock-test).`,
+    faqs: [
+      { q: "Himachal ka gathan kab hua?", a: "15 April 1948 ko. 25 January 1971 ko ye poorn rajya bana." },
+      { q: "Himachal me kitne districts hain?", a: "12: Bilaspur, Chamba, Hamirpur, Kangra, Kinnaur, Kullu, Lahaul-Spiti, Mandi, Shimla, Sirmaur, Solan aur Una." },
+    ],
+  },
+
+  {
+    slug: "hp-patwari-vs-police-constable-which-exam-to-choose",
+    seoTitle: "HP Patwari vs Police Constable: Which Exam Should You Choose?",
+    seoDescription: "HP Patwari vs Police Constable compared: work, selection stages, physical test, syllabus overlap and how to prepare for both with common Himachal GK.",
+    title: "HP Patwari vs Police Constable: Which Exam to Choose and How to Prepare for Both",
+    titleHi: "एचपी पटवारी बनाम पुलिस कांस्टेबल: कौन सी परीक्षा चुनें",
+    excerpt: "Dono exams ka kaam, selection stages, syllabus overlap aur dono ki taiyari saath kaise karein.",
+    category: "STRATEGY",
+    exams: ["hp-police/constable", "hp-revenue/patwari"],
+    content: `Bahut se students dono exams dena chahte hain. Ye comparison general hai; exact eligibility aur dates har notification me dekhein.
+
+| Point | Patwari | Police Constable |
+|---|---|---|
+| Kaam | Land records, girdawari, intkal, certificates | Law and order, patrol, investigation me madad |
+| Physical test | Nahi | Haan (PST/PET) |
+| Written subjects | GK, reasoning, maths, language, computer ke basics | GA, English, Hindi, maths, reasoning (reported) |
+| Field work | Revenue circle | Station, duty, posting |
+
+## Common syllabus
+
+**Himachal GK, reasoning, maths aur Hindi/English** dono me common hain. Isliye ek hi taiyari se dono ke liye kaam chal jaata hai.
+
+## Kaun si exam choose karein
+
+- Agar aap physical fitness par kaam karna chahte ho aur uniformed job chahiye: **Constable**.
+- Agar desk based, revenue ka kaam pasand hai: **Patwari**. Isme Patwari ke revenue terms alag se yaad karne padte hain.
+- Aap dono bhi de sakte ho, bas dates na takrayein.
+
+## Dono ki taiyari ka plan
+
+1. Pehle common hissa: [Himachal GK](/himachal), reasoning aur maths.
+2. Phir Patwari ke liye revenue terms aur [Patwari strategy](/blog/hp-patwari-exam-preparation-strategy-himachal-gk).
+3. Constable ke liye physical routine saath chalayein.
+
+Practice: [Patwari tests](/hp-revenue/patwari) aur [Constable tests](/hp-police/constable).`,
+    faqs: [
+      { q: "Kya Patwari me physical test hota hai?", a: "Nahi, Patwari ki selection written exam par based hoti hai. Notification me dekh lein." },
+      { q: "Kya dono exams ek saath de sakte hain?", a: "Haan, jab tak dates na takrayein. Himachal GK, reasoning aur maths common hain." },
+    ],
+  },
+
+  {
+    slug: "how-to-prepare-current-affairs-for-himachal-exams-monthly-plan",
+    seoTitle: "How to Prepare Current Affairs for Himachal Exams: Monthly Plan",
+    seoDescription: "How to prepare current affairs for HPAS, Clerk, Patwari and Police exams: what to read, how to make notes, a weekly routine and how to revise 12 months.",
+    title: "How to Prepare Current Affairs for Himachal Exams: A Simple Monthly Plan",
+    titleHi: "हिमाचल परीक्षाओं के लिए करंट अफेयर्स कैसे पढ़ें",
+    excerpt: "Current affairs me kya padhein, notes kaise banayein aur 12 mahine ki ghatnayein kaise revise karein.",
+    category: "STRATEGY",
+    exams: ["hp-gk-ca/current-affairs", "hppsc/hpas"],
+    content: `Har Himachal exam me current affairs ke kuch questions aate hain, aur ye sabse aasan marks me se ek hain agar aap system se padhein.
+
+## Kya padhna hai
+
+- **Himachal:** state ki schemes, projects, awards, mele-festival, appointments aur infrastructure.
+- **National:** laws, schemes, awards, reports aur appointments.
+- **International aur sports:** summits, agreements aur records.
+
+## Notes kaise banayein
+
+Har ghatna ek line me likho: **kya, kahan, kab, kitna**. Jaise "Apple MIS price Rs 13/kg". Mahine ke end me ek page ka summary banao.
+
+## Weekly routine
+
+| Din | Kaam |
+|---|---|
+| Mon-Fri | 20 minute news padhna aur notes |
+| Shani | Hafte ke notes revise |
+| Ravi | Current affairs ka mock test |
+
+## Revise kaise karein
+
+Exam se pehle **6 se 12 mahine** ka cover chahiye. Har mahine ke notes ko hafte me ek baar dekho. Exam se 2-3 hafte pehle tak ki news zaroor dekhein.
+
+Practice: [free HP Current Affairs mock](/tests/hp-current-affairs-free-mock-1). Example ke liye [October 2026 current affairs](/blog/himachal-current-affairs-october-2026) padhein.`,
+    faqs: [
+      { q: "Kitne mahine ka current affairs padhna chahiye?", a: "Aam taur par pichhle 6 se 12 mahine." },
+      { q: "Kya hindi me bhi mil jaata hai?", a: "Haan, hamare mocks me solutions Hindi aur English dono me hain." },
+    ],
+  },
+
+  {
+    slug: "how-cut-off-is-decided-hp-exams-estimate-your-score",
+    seoTitle: "How HP Exam Cut-Off Is Decided: Estimate Your Safe Score",
+    seoDescription: "How Himachal exam cut-offs are decided: vacancies, difficulty, category and attempts. A simple way to estimate a safe score from mock tests.",
+    title: "How HP Exam Cut-Off Is Decided and How to Estimate a Safe Score",
+    titleHi: "एचपी परीक्षा कट-ऑफ कैसे तय होता है",
+    excerpt: "Cut-off kin cheezon se banta hai aur mock tests se apna safe score kaise andaza lagayein.",
+    category: "CUTOFF",
+    exams: ["hprca/clerk", "hp-police/constable"],
+    content: `Cut-off ek fixed number nahi hota. Ye har bharti me alag banta hai.
+
+## Cut-off in cheezon se banta hai
+
+1. **Vacancies:** kam posts par cut-off zyada jaata hai.
+2. **Paper ki difficulty:** mushkil paper me cut-off neeche aata hai.
+3. **Category:** General, OBC, SC, ST, EWS aur ex-serviceman ka alag hota hai.
+4. **Candidates ki sankhya aur performance:** zyada achhe score wale zyada hon to cut-off upar jaata hai.
+5. **Qualifying marks:** notification me ek minimum percentage hota hai (jaise Constable me reports ke mutabik 50% General/OBC aur 40% SC/ST), par final merit usse upar ban sakti hai.
+
+## Apna safe score kaise nikalein
+
+- Pichhle saal ka cut-off dekho (official merit list se).
+- Us par 5 se 10 marks ka cushion jodo.
+- Mocks me us score se lagataar upar aao, uski average dekho.
+
+## Mock tests se andaza
+
+Last 5 mocks ka average nikalo. Agar average target se 8-10 marks upar hai to aap safe zone ke paas ho. Accuracy aur attempt, dono dekhein, kyunki negative marking ho sakti hai.
+
+Practice karein: [Clerk tests](/hprca/clerk) aur [Constable tests](/hp-police/constable). Result ke baad kya karein: [result guide](/blog/how-to-check-hp-exam-result-merit-list-hprca-hppsc).`,
+    faqs: [
+      { q: "Kya cut-off har saal same rehta hai?", a: "Nahi, vacancies, difficulty aur candidates ke performance ke hisaab se badalta hai." },
+      { q: "Pichhle saal ka cut-off kahan milega?", a: "Official merit list ya result PDF me, hprca.hp.gov.in ya hppsc.hp.gov.in par." },
+    ],
+  },
+
+  {
+    slug: "hp-exam-day-checklist-cbt-omr-admit-card-documents",
+    seoTitle: "HP Exam Day Checklist: Admit Card, Documents, CBT and OMR Tips",
+    seoDescription: "Himachal exam day checklist: admit card, ID proof, reporting time, what to carry, CBT and OMR tips, and what to do the night before.",
+    title: "HP Exam Day Checklist: Admit Card, Documents, CBT and OMR Tips",
+    titleHi: "एचपी परीक्षा के दिन की चेकलिस्ट",
+    excerpt: "Exam se ek raat pehle aur exam ke din kya karna hai: documents, reporting time, CBT aur OMR ke tips.",
+    category: "ADMIT_CARD",
+    exams: ["hprca/clerk", "hp-police/constable", "hppsc/hpas"],
+    content: `Exam ke din ki chhoti galtiyan bhi mehnat par paani pher deti hain. Ye checklist har Himachal exam par lagu hoti hai; centre ke rules admit card par dekhein.
+
+## Ek raat pehle
+
+- Admit card ke **2 printout** nikaal lo.
+- Centre ka route aur travel time dekh lo, ho sake to ek baar jaakar dekhein.
+- Halka khana khayein aur 7-8 ghante soyein.
+
+## Kya saath le jaana hai
+
+| Cheez | Dhyan rakhein |
+|---|---|
+| Admit card | Dono pages, photo ke saath |
+| Photo ID | Original, jo admit card par likha ho |
+| Pen | Black ya blue ballpoint (OMR ke liye admit card ki instruction dekhein) |
+| Paani | Transparent bottle, agar allow ho |
+
+Mobile, smart watch aur calculator aam taur par allowed nahi hote.
+
+## CBT ke tips
+
+1. Reporting time se pehle pahunchein.
+2. Screen par instructions dhyan se padhein.
+3. Mark for review ka istemaal karein, par aakhri 5 minute me sab khatam karein.
+4. CBT practice ke liye [free Himachal GK mock](/himachal-gk-mock-test) dekhein.
+
+## OMR ke tips
+
+- Bubble poora gehra bharo, ek baar bharne ke baad badalne ki koshish na karein.
+- Roll number aur set code do baar check karein.
+- Pehle OMR bharein, phir time bache to review.
+
+Agar exam kisi bhi stage ka ho, admit card ki tarikh aur centre official site se dobara match karein.`,
+    faqs: [
+      { q: "Exam ke din kitni der pehle pahunchna chahiye?", a: "Admit card par likhe reporting time ke hisaab se, aam taur par kam se kam 30 minute pehle." },
+      { q: "Kya calculator ya mobile le ja sakte hain?", a: "Aam taur par nahi. Allowed cheezein admit card ki instructions me hoti hain." },
     ],
   },
 ];
