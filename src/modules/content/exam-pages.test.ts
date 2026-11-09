@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { catalogue } from "../../../prisma/catalogue";
-import { EXAM_PAGES, HARYANA_POSTS, NOTIFICATION_POSTS, PUNJAB_POSTS, RAJASTHAN_POSTS } from "../../../prisma/exam-pages";
+import { EXAM_PAGES, HARYANA_POSTS, HP_MORE_POSTS, NOTIFICATION_POSTS, PUNJAB_POSTS, RAJASTHAN_POSTS } from "../../../prisma/exam-pages";
 import { EXAM_SERIES } from "../../../prisma/exam-series";
 import { PATWARI_TESTS } from "../../../prisma/patwari";
 import { COURT_CLERK_TESTS } from "../../../prisma/pb-court-clerk";

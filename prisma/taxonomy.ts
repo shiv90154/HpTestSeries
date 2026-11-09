@@ -225,6 +225,15 @@ export const taxonomy: SubjectSeed[] = [
     ],
   },
   {
+    slug: "driving",
+    name: "Driving & Road Safety",
+    nameHi: "ड्राइविंग एवं सड़क सुरक्षा",
+    topics: [
+      ["road-safety", "Road Signs, Rules & Motor Vehicles Act"],
+      ["vehicle-knowledge", "Vehicle Parts & Maintenance"],
+    ],
+  },
+  {
     slug: "agriculture",
     name: "Agriculture",
     nameHi: "कृषि",

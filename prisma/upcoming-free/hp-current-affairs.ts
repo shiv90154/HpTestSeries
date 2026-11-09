@@ -1,0 +1,55 @@
+// HP Current Affairs Free Mock 1 — 15 questions (Himachal Landmarks & Recognition 7, National & International Events 8).
+// Only settled facts (events that already happened, enacted laws, completed projects), so the mock stays correct as news moves on.
+
+import { q, type PatwariQuestion } from "../patwari/types";
+
+export const hpCurrentAffairsMock1: PatwariQuestion[] = [
+  // ───────── Section 0: Himachal Landmarks & Recognition ─────────
+  q(0, "hp-gk", "economy", "M", 1,
+    ["The Atal Tunnel, which connects Manali with Lahaul-Spiti valley, was inaugurated in October 2020. What is its length?", ["About 5 km", "About 9 km", "About 12 km", "About 15 km"], "The Atal Tunnel under the Rohtang Pass is about 9.02 km long, the longest highway tunnel in the world above 10,000 feet, and keeps Lahaul-Spiti connected in winter."],
+    ["मनाली को लाहौल-स्पीति घाटी से जोड़ने वाली अटल सुरंग का उद्घाटन अक्तूबर 2020 में हुआ। इसकी लंबाई कितनी है?", ["लगभग 5 किमी", "लगभग 9 किमी", "लगभग 12 किमी", "लगभग 15 किमी"], "रोहतांग दर्रे के नीचे बनी अटल सुरंग लगभग 9.02 किमी लंबी है, 10,000 फीट से ऊपर विश्व की सबसे लंबी राजमार्ग सुरंग है और सर्दियों में लाहौल-स्पीति को जोड़े रखती है।"]),
+  q(0, "hp-gk", "geography", "M", 3,
+    ["The Great Himalayan National Park in Kullu district was inscribed as a UNESCO World Heritage Site in:", ["2008", "2010", "2012", "2014"], "UNESCO added the Great Himalayan National Park Conservation Area to the World Heritage List in 2014 for its biodiversity."],
+    ["कुल्लू जिले के ग्रेट हिमालयन नेशनल पार्क को यूनेस्को विश्व धरोहर स्थल का दर्जा कब मिला?", ["2008", "2010", "2012", "2014"], "जैव-विविधता के कारण यूनेस्को ने 2014 में ग्रेट हिमालयन नेशनल पार्क संरक्षण क्षेत्र को विश्व धरोहर सूची में शामिल किया।"]),
+  q(0, "hp-gk", "culture-festivals", "M", 0,
+    ["The Kalka–Shimla railway line was inscribed on the UNESCO World Heritage List as part of the 'Mountain Railways of India' in:", ["2008", "1999", "2003", "2019"], "The Kalka–Shimla railway joined the Mountain Railways of India World Heritage Site in 2008; Darjeeling (1999) and Nilgiri (2005) were inscribed earlier."],
+    ["कालका–शिमला रेलमार्ग को 'भारत की पर्वतीय रेलवे' के अंतर्गत यूनेस्को विश्व धरोहर सूची में कब शामिल किया गया?", ["2008", "1999", "2003", "2019"], "कालका–शिमला रेलमार्ग 2008 में भारत की पर्वतीय रेलवे धरोहर स्थल में जुड़ा; दार्जिलिंग (1999) और नीलगिरि (2005) पहले शामिल हुए थे।"]),
+  q(0, "hp-gk", "culture-festivals", "M", 2,
+    ["Which handicraft of Chamba, Himachal Pradesh, received a Geographical Indication (GI) tag in 2007?", ["Kullu shawl", "Kangra painting", "Chamba Rumal", "Pattu"], "Chamba Rumal, an embroidered handkerchief-like craft with double-satin stitch, was granted a GI tag in 2007; the Kullu shawl and Kangra painting were registered separately."],
+    ["चंबा (हिमाचल प्रदेश) के किस हस्तशिल्प को 2007 में भौगोलिक संकेतक (GI) टैग मिला?", ["कुल्लू शॉल", "कांगड़ा चित्रकला", "चंबा रुमाल", "पट्टू"], "दोहरे साटन टाँके से कढ़ाई वाले चंबा रुमाल को 2007 में GI टैग मिला; कुल्लू शॉल और कांगड़ा चित्रकला का पंजीकरण अलग से हुआ।"]),
+  q(0, "hp-gk", "polity-administration", "M", 1,
+    ["In which city is the Tapovan complex, where the winter session of the Himachal Pradesh Legislative Assembly is held?", ["Shimla", "Dharamshala", "Mandi", "Solan"], "The Vidhan Sabha complex at Tapovan, Dharamshala hosts the assembly's winter session; the other sessions are held at Shimla."],
+    ["हिमाचल प्रदेश विधानसभा का शीतकालीन सत्र जिस तपोवन परिसर में होता है, वह किस शहर में है?", ["शिमला", "धर्मशाला", "मंडी", "सोलन"], "धर्मशाला के तपोवन विधानसभा परिसर में विधानसभा का शीतकालीन सत्र होता है; अन्य सत्र शिमला में होते हैं।"]),
+  q(0, "hp-gk", "rivers-lakes", "E", 3,
+    ["Pong Dam, a wetland of international importance, is built on which river?", ["Sutlej", "Ravi", "Chenab", "Beas"], "Pong Dam (Maharana Pratap Sagar) in Kangra district is built on the Beas river and was designated a Ramsar site in 2002."],
+    ["अंतर्राष्ट्रीय महत्व की आर्द्रभूमि पौंग बाँध किस नदी पर बना है?", ["सतलुज", "रावी", "चिनाब", "ब्यास"], "कांगड़ा जिले का पौंग बाँध (महाराणा प्रताप सागर) ब्यास नदी पर बना है और इसे 2002 में रामसर स्थल घोषित किया गया।"]),
+  q(0, "hp-gk", "economy", "M", 0,
+    ["Which fruit is the most important horticultural crop of Himachal Pradesh by area and value?", ["Apple", "Mango", "Orange", "Litchi"], "Apple is the leading fruit crop of Himachal Pradesh and a mainstay of the rural economy, grown mainly in Shimla, Kullu, Kinnaur and Mandi."],
+    ["क्षेत्रफल और मूल्य की दृष्टि से हिमाचल प्रदेश की सबसे महत्वपूर्ण बागवानी फसल कौन-सी है?", ["सेब", "आम", "संतरा", "लीची"], "सेब हिमाचल प्रदेश की प्रमुख फल फसल है और ग्रामीण अर्थव्यवस्था का आधार है, जिसे मुख्यतः शिमला, कुल्लू, किन्नौर और मंडी में उगाया जाता है।"]),
+
+  // ───────── Section 1: National & International Events ─────────
+  q(1, "general-studies", "current-affairs", "E", 2,
+    ["India's Chandrayaan-3 lander made a soft landing near the Moon's south pole on:", ["14 July 2023", "15 August 2023", "23 August 2023", "2 September 2023"], "Chandrayaan-3's Vikram lander touched down on 23 August 2023, making India the first country to land near the lunar south pole and the fourth to soft-land on the Moon."],
+    ["भारत के चंद्रयान-3 के लैंडर ने चंद्रमा के दक्षिणी ध्रुव के निकट सॉफ्ट लैंडिंग कब की?", ["14 जुलाई 2023", "15 अगस्त 2023", "23 अगस्त 2023", "2 सितंबर 2023"], "चंद्रयान-3 का विक्रम लैंडर 23 अगस्त 2023 को उतरा; भारत चंद्र दक्षिणी ध्रुव के निकट उतरने वाला पहला और चंद्रमा पर सॉफ्ट लैंडिंग करने वाला चौथा देश बना।"]),
+  q(1, "general-studies", "current-affairs", "M", 1,
+    ["The Nari Shakti Vandan Adhiniyam, 2023 provides for how much reservation for women in the Lok Sabha and state legislative assemblies?", ["25%", "33%", "40%", "50%"], "The Constitution (106th Amendment) Act, 2023 reserves one-third (33%) of the seats for women in the Lok Sabha and state assemblies, to take effect after delimitation."],
+    ["नारी शक्ति वंदन अधिनियम, 2023 में लोकसभा और राज्य विधानसभाओं में महिलाओं के लिए कितना आरक्षण है?", ["25%", "33%", "40%", "50%"], "संविधान (106वाँ संशोधन) अधिनियम, 2023 लोकसभा और राज्य विधानसभाओं में एक-तिहाई (33%) सीटें महिलाओं के लिए आरक्षित करता है, जो परिसीमन के बाद लागू होगा।"]),
+  q(1, "general-studies", "current-affairs", "M", 1,
+    ["Which spacecraft did ISRO launch in September 2023 to study the Sun?", ["Mangalyaan", "Aditya-L1", "Gaganyaan", "Chandrayaan-2"], "Aditya-L1, India's first solar observatory mission, was launched on 2 September 2023 and placed in a halo orbit around the Sun–Earth L1 point."],
+    ["इसरो ने सितंबर 2023 में सूर्य के अध्ययन के लिए कौन-सा अंतरिक्ष यान प्रक्षेपित किया?", ["मंगलयान", "आदित्य-L1", "गगनयान", "चंद्रयान-2"], "भारत का पहला सौर वेधशाला मिशन आदित्य-L1 2 सितंबर 2023 को प्रक्षेपित हुआ और सूर्य–पृथ्वी L1 बिंदु के पास हेलो कक्षा में स्थापित किया गया।"]),
+  q(1, "general-studies", "current-affairs", "E", 0,
+    ["The 2024 Summer Olympic Games were hosted by which city?", ["Paris", "Tokyo", "Los Angeles", "Brisbane"], "Paris hosted the 2024 Summer Olympics; Tokyo hosted the 2020 Games (held in 2021), and Los Angeles will host in 2028."],
+    ["2024 के ग्रीष्मकालीन ओलंपिक खेलों की मेज़बानी किस शहर ने की?", ["पेरिस", "टोक्यो", "लॉस एंजेलिस", "ब्रिसबेन"], "पेरिस ने 2024 ग्रीष्मकालीन ओलंपिक की मेज़बानी की; टोक्यो ने 2020 के खेल (2021 में) आयोजित किए थे और लॉस एंजेलिस 2028 में मेज़बान होगा।"]),
+  q(1, "general-studies", "current-affairs", "M", 2,
+    ["The G20 Leaders' Summit of 2023, held under India's presidency, took place in:", ["Mumbai", "Bengaluru", "New Delhi", "Hyderabad"], "The 18th G20 Leaders' Summit was held at Bharat Mandapam, New Delhi on 9–10 September 2023, where the African Union became a permanent member."],
+    ["भारत की अध्यक्षता में 2023 का G20 शिखर सम्मेलन कहाँ आयोजित हुआ?", ["मुंबई", "बेंगलुरु", "नई दिल्ली", "हैदराबाद"], "18वाँ G20 शिखर सम्मेलन 9–10 सितंबर 2023 को नई दिल्ली के भारत मंडपम में हुआ, जिसमें अफ्रीकी संघ स्थायी सदस्य बना।"]),
+  q(1, "general-studies", "static-gk", "E", 1,
+    ["The Nobel Peace Prize is awarded in which city?", ["Stockholm", "Oslo", "Geneva", "Copenhagen"], "The Nobel Peace Prize is presented in Oslo, Norway, while the other Nobel prizes are presented in Stockholm, Sweden."],
+    ["नोबेल शांति पुरस्कार किस शहर में प्रदान किया जाता है?", ["स्टॉकहोम", "ओस्लो", "जिनेवा", "कोपेनहेगन"], "नोबेल शांति पुरस्कार नॉर्वे के ओस्लो में दिया जाता है, जबकि अन्य नोबेल पुरस्कार स्वीडन के स्टॉकहोम में दिए जाते हैं।"]),
+  q(1, "general-studies", "current-affairs", "M", 3,
+    ["The Digital Personal Data Protection Act was passed by the Indian Parliament in:", ["2019", "2021", "2022", "2023"], "Parliament passed the Digital Personal Data Protection Act in August 2023 to regulate how personal digital data is processed."],
+    ["डिजिटल व्यक्तिगत डेटा संरक्षण अधिनियम भारतीय संसद ने कब पारित किया?", ["2019", "2021", "2022", "2023"], "संसद ने व्यक्तिगत डिजिटल डेटा के प्रसंस्करण को नियंत्रित करने के लिए अगस्त 2023 में डिजिटल व्यक्तिगत डेटा संरक्षण अधिनियम पारित किया।"]),
+  q(1, "general-studies", "current-affairs", "M", 0,
+    ["The consecration (Pran Pratishtha) of the Ram temple in Ayodhya took place on:", ["22 January 2024", "26 January 2024", "1 January 2024", "17 April 2024"], "The Pran Pratishtha ceremony of the Ram Lalla idol at the Ram Mandir in Ayodhya was held on 22 January 2024."],
+    ["अयोध्या में राम मंदिर की प्राण प्रतिष्ठा कब हुई?", ["22 जनवरी 2024", "26 जनवरी 2024", "1 जनवरी 2024", "17 अप्रैल 2024"], "अयोध्या के राम मंदिर में रामलला की मूर्ति की प्राण प्रतिष्ठा का समारोह 22 जनवरी 2024 को हुआ।"]),
+];

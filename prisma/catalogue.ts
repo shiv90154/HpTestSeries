@@ -31,6 +31,7 @@ export const catalogue: BodySeed[] = [
       { slug: "veterinary-officer", name: "Veterinary Officer", nameHi: "पशु चिकित्सा अधिकारी" },
       { slug: "food-safety-officer", name: "Food Safety Officer", nameHi: "खाद्य सुरक्षा अधिकारी" },
       { slug: "judicial-services", name: "HP Judicial Services", nameHi: "हिमाचल प्रदेश न्यायिक सेवा" },
+      { slug: "naib-tehsildar", name: "Naib Tehsildar", nameHi: "नायब तहसीलदार" },
     ],
   },
   {
@@ -69,6 +70,7 @@ export const catalogue: BodySeed[] = [
       { slug: "special-educator", name: "Special Educator", nameHi: "विशेष शिक्षक" },
       { slug: "radiographer", name: "Radiographer", nameHi: "रेडियोग्राफर" },
       { slug: "panchayat-secretary", name: "Panchayat Secretary", nameHi: "पंचायत सचिव" },
+      { slug: "lab-assistant", name: "Lab Assistant", nameHi: "लैब असिस्टेंट" },
     ],
   },
   {
@@ -78,6 +80,8 @@ export const catalogue: BodySeed[] = [
     exams: [
       { slug: "constable", name: "Police Constable", nameHi: "पुलिस कांस्टेबल" },
       { slug: "sub-inspector", name: "Sub-Inspector", nameHi: "सब-इंस्पेक्टर" },
+      { slug: "head-constable", name: "Head Constable", nameHi: "हेड कांस्टेबल" },
+      { slug: "driver-constable", name: "Driver Constable", nameHi: "ड्राइवर कांस्टेबल" },
     ],
   },
   {
@@ -139,6 +143,30 @@ export const catalogue: BodySeed[] = [
     name: "Himachal Pradesh State Cooperative Bank",
     nameHi: "हिमाचल प्रदेश राज्य सहकारी बैंक",
     exams: [{ slug: "clerk", name: "Clerk", nameHi: "क्लर्क" }],
+  },
+  {
+    slug: "hpu",
+    name: "Himachal Pradesh University",
+    nameHi: "हिमाचल प्रदेश विश्वविद्यालय",
+    exams: [{ slug: "hp-set", name: "HP SET", nameHi: "एचपी सेट" }],
+  },
+  {
+    slug: "hp-wcd",
+    name: "HP Women and Child Development Department",
+    nameHi: "महिला एवं बाल विकास विभाग, हिमाचल प्रदेश",
+    exams: [{ slug: "anganwadi-supervisor", name: "Anganwadi Supervisor", nameHi: "आंगनवाड़ी पर्यवेक्षक" }],
+  },
+  {
+    slug: "kccb-jccb",
+    name: "Kangra Central Co-operative Bank and Jogindra Central Co-operative Bank",
+    nameHi: "कांगड़ा केंद्रीय सहकारी बैंक एवं जोगिंद्रा केंद्रीय सहकारी बैंक",
+    exams: [{ slug: "clerk", name: "KCCB / JCCB Clerk", nameHi: "केसीसीबी / जेसीसीबी क्लर्क" }],
+  },
+  {
+    slug: "hp-gk-ca",
+    name: "Himachal GK and Current Affairs",
+    nameHi: "हिमाचल सामान्य ज्ञान एवं समसामयिकी",
+    exams: [{ slug: "current-affairs", name: "HP Current Affairs", nameHi: "हिमाचल समसामयिकी" }],
   },
   // Punjab (pbtestseries.in only). Exam names carry the body so they stay unique in the /tests filter.
   {

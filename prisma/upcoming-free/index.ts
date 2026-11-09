@@ -2,6 +2,14 @@
 // Adding an exam = adding a file here and a card in src/modules/catalog/upcoming-exams.ts.
 
 import { balanceAnswers, type PatwariQuestion } from "../patwari/types";
+import { anganwadiSupervisorMock1 } from "./anganwadi-supervisor";
+import { driverConstableMock1 } from "./driver-constable";
+import { headConstableMock1 } from "./head-constable";
+import { hpCurrentAffairsMock1 } from "./hp-current-affairs";
+import { hpSetMock1 } from "./hp-set";
+import { kccbJccbClerkMock1 } from "./kccb-jccb-clerk";
+import { labAssistantMock1 } from "./lab-assistant";
+import { naibTehsildarMock1 } from "./naib-tehsildar";
 import { adoMock1 } from "./ado";
 import { asstProfMock1 } from "./asst-prof";
 import { clerkMock1 } from "./clerk";
@@ -412,6 +420,139 @@ const TESTS: UpcomingFreeTest[] = [
       { name: "Himachal GK", nameHi: "हिमाचल सामान्य ज्ञान" },
     ],
     questions: linemanMock1,
+  },
+  {
+    bodySlug: "hppsc",
+    examSlug: "naib-tehsildar",
+    slug: "hppsc-naib-tehsildar-free-mock-1",
+    title: "HPPSC Naib Tehsildar Free Mock Test 1",
+    titleHi: "एचपीपीएससी नायब तहसीलदार फ्री मॉक टेस्ट 1",
+    durationSec: 15 * 60,
+    instructions: instructions("HPPSC Naib Tehsildar", "Himachal GK & Revenue (5), General Studies (3), Reasoning (3), Maths (2), English (2)"),
+    sections: [
+      { name: "Himachal GK & Revenue", nameHi: "हिमाचल सामान्य ज्ञान एवं राजस्व" },
+      { name: "General Studies", nameHi: "सामान्य अध्ययन" },
+      { name: "Reasoning", nameHi: "तर्कशक्ति" },
+      { name: "Mathematics", nameHi: "गणित" },
+      { name: "English", nameHi: "अंग्रेज़ी" },
+    ],
+    questions: naibTehsildarMock1,
+  },
+  {
+    bodySlug: "hpu",
+    examSlug: "hp-set",
+    slug: "hpu-hp-set-free-mock-1",
+    title: "HP SET Free Mock Test 1 (Paper I)",
+    titleHi: "एचपी सेट फ्री मॉक टेस्ट 1 (पेपर I)",
+    durationSec: 15 * 60,
+    instructions: instructions("HP SET Paper I", "Teaching Aptitude (5), Research Aptitude (4), Reasoning (3), General Awareness (3)"),
+    sections: [
+      { name: "Teaching Aptitude", nameHi: "शिक्षण अभिक्षमता" },
+      { name: "Research Aptitude", nameHi: "शोध अभिक्षमता" },
+      { name: "Reasoning", nameHi: "तर्कशक्ति" },
+      { name: "General Awareness", nameHi: "सामान्य जागरूकता" },
+    ],
+    questions: hpSetMock1,
+  },
+  {
+    bodySlug: "hprca",
+    examSlug: "lab-assistant",
+    slug: "hprca-lab-assistant-free-mock-1",
+    title: "HPRCA Lab Assistant Free Mock Test 1",
+    titleHi: "एचपीआरसीए लैब असिस्टेंट फ्री मॉक टेस्ट 1",
+    durationSec: 15 * 60,
+    instructions: instructions("HPRCA Lab Assistant", "Physics (4), Chemistry (4), Biology (3), Maths (2), Himachal GK (2)"),
+    sections: [
+      { name: "Physics", nameHi: "भौतिक विज्ञान" },
+      { name: "Chemistry", nameHi: "रसायन विज्ञान" },
+      { name: "Biology", nameHi: "जीव विज्ञान" },
+      { name: "Mathematics", nameHi: "गणित" },
+      { name: "Himachal GK", nameHi: "हिमाचल सामान्य ज्ञान" },
+    ],
+    questions: labAssistantMock1,
+  },
+  {
+    bodySlug: "hp-wcd",
+    examSlug: "anganwadi-supervisor",
+    slug: "hp-wcd-anganwadi-supervisor-free-mock-1",
+    title: "HP Anganwadi Supervisor Free Mock Test 1",
+    titleHi: "एचपी आंगनवाड़ी पर्यवेक्षक फ्री मॉक टेस्ट 1",
+    durationSec: 15 * 60,
+    instructions: instructions("HP Anganwadi Supervisor", "ICDS & Child Nutrition (5), Himachal GK (3), General Studies (3), Reasoning (2), Hindi & English (2)"),
+    sections: [
+      { name: "ICDS & Child Nutrition", nameHi: "आईसीडीएस एवं बाल पोषण" },
+      { name: "Himachal GK", nameHi: "हिमाचल सामान्य ज्ञान" },
+      { name: "General Studies", nameHi: "सामान्य अध्ययन" },
+      { name: "Reasoning", nameHi: "तर्कशक्ति" },
+      { name: "Hindi & English", nameHi: "हिंदी एवं अंग्रेज़ी" },
+    ],
+    questions: anganwadiSupervisorMock1,
+  },
+  {
+    bodySlug: "kccb-jccb",
+    examSlug: "clerk",
+    slug: "kccb-jccb-clerk-free-mock-1",
+    title: "KCCB / JCCB Clerk Free Mock Test 1",
+    titleHi: "केसीसीबी / जेसीसीबी क्लर्क फ्री मॉक टेस्ट 1",
+    durationSec: 15 * 60,
+    instructions: instructions("KCCB / JCCB Clerk", "Banking & Cooperative Awareness (4), Quantitative Aptitude (3), Reasoning (3), English (3), Himachal GK (2)"),
+    sections: [
+      { name: "Banking & Cooperative Awareness", nameHi: "बैंकिंग एवं सहकारिता जागरूकता" },
+      { name: "Quantitative Aptitude", nameHi: "मात्रात्मक अभिक्षमता" },
+      { name: "Reasoning", nameHi: "तर्कशक्ति" },
+      { name: "English", nameHi: "अंग्रेज़ी" },
+      { name: "Himachal GK", nameHi: "हिमाचल सामान्य ज्ञान" },
+    ],
+    questions: kccbJccbClerkMock1,
+  },
+  {
+    bodySlug: "hp-gk-ca",
+    examSlug: "current-affairs",
+    slug: "hp-current-affairs-free-mock-1",
+    title: "HP Current Affairs Free Mock Test 1",
+    titleHi: "हिमाचल समसामयिकी फ्री मॉक टेस्ट 1",
+    durationSec: 15 * 60,
+    instructions: instructions("HP Current Affairs", "Himachal Landmarks & Recognition (7), National & International Events (8)"),
+    sections: [
+      { name: "Himachal Landmarks & Recognition", nameHi: "हिमाचल की प्रमुख उपलब्धियाँ एवं मान्यताएँ" },
+      { name: "National & International Events", nameHi: "राष्ट्रीय एवं अंतर्राष्ट्रीय घटनाएँ" },
+    ],
+    questions: hpCurrentAffairsMock1,
+  },
+  {
+    bodySlug: "hp-police",
+    examSlug: "head-constable",
+    slug: "hp-police-head-constable-free-mock-1",
+    title: "HP Police Head Constable Free Mock Test 1",
+    titleHi: "एचपी पुलिस हेड कांस्टेबल फ्री मॉक टेस्ट 1",
+    durationSec: 15 * 60,
+    instructions: instructions("HP Police Head Constable", "Himachal GK (4), General Studies (3), Reasoning (3), Maths (2), English (2), Computer (1)"),
+    sections: [
+      { name: "Himachal GK", nameHi: "हिमाचल सामान्य ज्ञान" },
+      { name: "General Studies", nameHi: "सामान्य अध्ययन" },
+      { name: "Reasoning", nameHi: "तर्कशक्ति" },
+      { name: "Mathematics", nameHi: "गणित" },
+      { name: "English", nameHi: "अंग्रेज़ी" },
+      { name: "Computer", nameHi: "कंप्यूटर" },
+    ],
+    questions: headConstableMock1,
+  },
+  {
+    bodySlug: "hp-police",
+    examSlug: "driver-constable",
+    slug: "hp-police-driver-constable-free-mock-1",
+    title: "HP Police Driver Constable Free Mock Test 1",
+    titleHi: "एचपी पुलिस ड्राइवर कांस्टेबल फ्री मॉक टेस्ट 1",
+    durationSec: 15 * 60,
+    instructions: instructions("HP Police Driver Constable", "Himachal GK (3), General Studies (2), Reasoning (2), Maths (2), Road Safety & Vehicle Knowledge (6)"),
+    sections: [
+      { name: "Himachal GK", nameHi: "हिमाचल सामान्य ज्ञान" },
+      { name: "General Studies", nameHi: "सामान्य अध्ययन" },
+      { name: "Reasoning", nameHi: "तर्कशक्ति" },
+      { name: "Mathematics", nameHi: "गणित" },
+      { name: "Road Safety & Vehicle Knowledge", nameHi: "सड़क सुरक्षा एवं वाहन ज्ञान" },
+    ],
+    questions: driverConstableMock1,
   },
 ];
 

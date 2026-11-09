@@ -26,6 +26,8 @@ const CATEGORY_OF: Record<string, CategoryKey> = {
   "/hppsc/veterinary-officer": "medical",
   "/hppsc/food-safety-officer": "medical",
   "/hppsc/medical-officer": "medical",
+  "/hpu/hp-set": "teaching",
+  "/hp-gk-ca/current-affairs": "officer",
 };
 
 /** The job group an exam belongs to, from its body and slug, e.g. ("hprca", "staff-nurse") → "medical". */
