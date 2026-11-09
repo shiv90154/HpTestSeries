@@ -77,7 +77,7 @@ export function OfferPopup() {
         role="dialog"
         aria-modal="true"
         aria-labelledby="offer-title"
-        className="relative w-full max-w-sm space-y-4 rounded-2xl bg-surface p-5 shadow-2xl"
+        className="relative w-full max-w-sm space-y-4 rounded-2xl bg-surface p-5 text-foreground shadow-2xl"
         onClick={(e) => e.stopPropagation()}
       >
         <button onClick={close} aria-label="Close" className="absolute right-3 top-3 rounded-full p-2 text-muted hover:bg-primary-soft">
@@ -106,9 +106,9 @@ export function OfferPopup() {
           <span className="mb-1.5 rounded-md bg-accent px-2 py-0.5 text-xs font-bold text-accent-ink">{off}% OFF</span>
         </div>
 
-        <p className="flex items-center gap-1.5 text-sm font-medium">
+        <p className="flex items-center gap-1.5 text-sm font-medium text-foreground">
           <Tag className="size-4 text-accent-strong" aria-hidden />
-          Code <b className="rounded bg-primary-soft px-1.5 py-0.5 tracking-wide">{offer.couponCode}</b> khud lag jayega
+          Code <b className="rounded bg-primary-soft px-1.5 py-0.5 tracking-wide text-primary-strong">{offer.couponCode}</b> khud lag jayega
         </p>
 
         <Link
