@@ -23,6 +23,7 @@ import { seedExamSeries } from "./seed-exam-series";
 import { seedPatwari } from "./seed-patwari";
 import { seedPremiumPass } from "./seed-pass";
 import { seedPatwariPyq } from "./seed-patwari-pyq";
+import { seedHrCet } from "./seed-hr-cet";
 import { seedPbCourtClerk } from "./seed-pb-court-clerk";
 import { seedPbExams } from "./seed-pb-exams";
 import { seedPbPatwari } from "./seed-pb-patwari";
@@ -113,6 +114,7 @@ async function main() {
   await seedFreeMock(db, haryanaFreeMock(COMMON_FREE_QUESTIONS));
   const patwari = await seedPatwari(db);
   const police = await seedPolice(db);
+  const hrCet = await seedHrCet(db);
   const pbCourtClerk = await seedPbCourtClerk(db);
   const pbPolice = await seedPbPolice(db);
   const pbPatwari = await seedPbPatwari(db);
@@ -129,7 +131,7 @@ async function main() {
   const content = await seedContent(db);
   console.log(
     `Seeded ${catalogue.length} bodies, ${taxonomy.length} subjects, the demo test "${DEMO_TEST_SLUG}", ` +
-      `${patwari.createdTests} new Patwari tests, ${police.createdTests} new Police Constable tests, ${pbCourtClerk.createdTests} new Punjab Court Clerk tests, ${pbPolice.createdTests} new Punjab Police tests, ${pbPatwari.createdTests} new PSSSB Patwari tests, ${pbExams.createdTests} new Punjab Group D, Clerk, JE and PCS tests, ` +
+      `${patwari.createdTests} new Patwari tests, ${police.createdTests} new Police Constable tests, ${hrCet.createdTests} new HSSC CET tests, ${pbCourtClerk.createdTests} new Punjab Court Clerk tests, ${pbPolice.createdTests} new Punjab Police tests, ${pbPatwari.createdTests} new PSSSB Patwari tests, ${pbExams.createdTests} new Punjab Group D, Clerk, JE and PCS tests, ` +
       `${joaIt.createdTests} new JOA IT tests, ${panchayat.createdTests} new Panchayat Secretary tests, ${examSeries.createdTests} new tests in other exam series, ${hpas.createdTests} new free HPAS tests, ${upcoming.createdTests} new free upcoming-exam mocks, ${hpGkMocks.created} new free Himachal GK mocks, ${hpasBank.createdTests} new HPAS GS/CSAT mocks, ` +
       `${pyq.reduce((n, r) => n + r.created, 0)} new previous-year papers, ` +
       `content for ${content.filled} exams and ${content.created} new posts.`,

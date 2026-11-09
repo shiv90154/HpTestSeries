@@ -186,6 +186,14 @@ export const catalogue: BodySeed[] = [
     sites: ["pb"],
     exams: [{ slug: "clerk", name: "Punjab District Court Clerk", nameHi: "पंजाब ज़िला न्यायालय क्लर्क" }],
   },
+  // Haryana (hrtestseries.in only). Exam names carry the body so they stay unique in the /tests filter.
+  {
+    slug: "hssc",
+    name: "Haryana Staff Selection Commission",
+    nameHi: "हरियाणा कर्मचारी चयन आयोग",
+    sites: ["hr"],
+    exams: [{ slug: "cet-group-c", name: "HSSC CET Group C", nameHi: "एचएसएससी सीईटी ग्रुप सी" }],
+  },
   // Rajasthan (rjtestseries.in only). Exam names carry the body so they stay unique in the /tests filter.
   {
     slug: "rssb",
