@@ -6,6 +6,7 @@ import type { PatwariQuestion, TestDef } from "../patwari/types";
 import { patwariFreeMock } from "./free-mock";
 import { pbPatwariMock1 } from "./mock1";
 import { pbPatwariMock2 } from "./mock2";
+import { pbPatwariMock3 } from "./mock3";
 
 export const PB_PATWARI_SECTIONS = [
   { name: "Punjab GK", nameHi: "पंजाब सामान्य ज्ञान", count: 30 },
@@ -42,7 +43,7 @@ export const PB_PATWARI_FREE_TEST: TestDef = mock(
   true,
 );
 
-const PAID_MOCKS: PatwariQuestion[][] = [pbPatwariMock1, pbPatwariMock2];
+const PAID_MOCKS: PatwariQuestion[][] = [pbPatwariMock1, pbPatwariMock2, pbPatwariMock3];
 
 export const PB_PATWARI_PAID_TESTS: TestDef[] = PAID_MOCKS.map((questions, i) =>
   mock(`psssb-patwari-mock-${i + 1}`, `PSSSB Patwari Mock Test ${i + 1}`, `पीएसएसएसबी पटवारी मॉक टेस्ट ${i + 1}`, questions),
