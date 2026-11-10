@@ -10,6 +10,7 @@ import { renewalStart } from "./ownership";
 import { rewardReferrer } from "./referral";
 import { getOwnership } from "./purchases";
 import { confirmSpendOp, createOrderWithWallet, releaseOrderReservation } from "./wallet";
+import { sendPurchaseConfirmation } from "@/modules/email/purchase";
 import { productOnSite } from "@/modules/catalog/visibility";
 import { paymentMatchesOrder } from "./webhook-event";
 
@@ -185,9 +186,12 @@ export async function fulfillOrder(order: OrderForFulfilment, razorpayPaymentId:
   const payerEmail = order.userId ? undefined : payerEmailFrom(raw);
   const payerPhone = payerPhoneFrom(raw);
 
+  let firstPaid = false;
   try {
-    await db.$transaction([
-      db.order.update({ where: { id: order.id }, data: { status: "PAID", ...(payerEmail && { payerEmail }), ...(payerPhone && { payerPhone }) } }),
+    // updateMany with a status guard tells us whether this call is the one that made the order PAID (checkout
+    // callback, webhook and reconcile can all race here); only that one sends the confirmation email.
+    const [flip] = await db.$transaction([
+      db.order.updateMany({ where: { id: order.id, status: { not: "PAID" } }, data: { status: "PAID", ...(payerEmail && { payerEmail }), ...(payerPhone && { payerPhone }) } }),
       ...(order.userId && order.walletPaise > 0 ? [confirmSpendOp({ id: order.id, userId: order.userId, walletPaise: order.walletPaise })] : []),
       ...(razorpayPaymentId
         ? [
@@ -209,11 +213,13 @@ export async function fulfillOrder(order: OrderForFulfilment, razorpayPaymentId:
           ]
         : []),
     ]);
+    firstPaid = flip.count === 1;
   } catch (err) {
     // A concurrent fulfilment of the same payment won the unique-key race; it already did the work.
     if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === "P2002") return;
     throw err;
   }
+  if (firstPaid) void sendPurchaseConfirmation(order.id);
   if (order.couponId) {
     await recordRedemption(order.couponId).catch((e) => logError(e, { path: "coupon-redemption", userId: order.userId ?? undefined }));
     await rewardReferrer(order.id).catch((e) => logError(e, { path: "referral-reward", userId: order.userId ?? undefined }));

@@ -87,6 +87,57 @@ export async function getMyPlanDetails(userId: string): Promise<PlanDetail[]> {
   return plans.map((p) => ({ ...p, included: bySlug.get(p.slug) ?? [], paidTestCount }));
 }
 
+export type FreshPurchase = {
+  title: string;
+  kind: "SERIES" | "PACK" | "PASS";
+  startsAt: Date;
+  expiresAt: Date;
+  daysLeft: number;
+  /** series the plan opens, with live test counts (empty for an all-access pass) */
+  included: { title: string; testCount: number }[];
+  /** where "Start" goes: the first test of the bought series the student has not tried yet, else the test list */
+  startHref: string;
+  startLabel: string;
+  /** receipt of the order, when the plan came from a payment */
+  receiptHref: string | null;
+};
+
+/** The plan the student bought most recently: shown on the dashboard right after checkout so they can start at once. */
+export async function getFreshPurchase(userId: string): Promise<FreshPurchase | null> {
+  const now = new Date();
+  const e = await db.entitlement.findFirst({
+    where: { userId, revokedAt: null, expiresAt: { gt: now } },
+    orderBy: { createdAt: "desc" },
+    select: {
+      startsAt: true,
+      expiresAt: true,
+      order: { select: { id: true, status: true } },
+      product: {
+        select: {
+          title: true,
+          kind: true,
+          items: { select: { series: { select: { title: true, tests: { where: { test: liveTestWhere() }, orderBy: { order: "asc" }, select: { test: { select: { slug: true, attempts: { where: { userId }, select: { id: true }, take: 1 } } } } } } } } },
+        },
+      },
+    },
+  });
+  if (!e) return null;
+  const series = e.product.items.map((i) => i.series);
+  const tests = series.flatMap((s) => s.tests.map((t) => t.test));
+  const next = tests.find((t) => t.attempts.length === 0) ?? tests[0];
+  return {
+    title: e.product.title,
+    kind: e.product.kind,
+    startsAt: e.startsAt,
+    expiresAt: e.expiresAt,
+    daysLeft: Math.max(0, Math.ceil((e.expiresAt.getTime() - now.getTime()) / 86_400_000)),
+    included: e.product.kind === "PASS" ? [] : series.map((s) => ({ title: s.title, testCount: s.tests.length })),
+    startHref: next && e.startsAt <= now ? `/tests/${next.slug}` : "/tests",
+    startLabel: next && e.startsAt <= now && next.attempts.length === 0 ? "Start your first test" : "Browse your tests",
+    receiptHref: e.order?.status === "PAID" ? `/orders/${e.order.id}/receipt` : null,
+  };
+}
+
 export type PurchaseRow = { id: string; productTitle: string; amountPaise: number; status: "PAID" | "REFUNDED"; createdAt: Date };
 
 /** Completed purchases only: abandoned and failed checkouts would just confuse students. */

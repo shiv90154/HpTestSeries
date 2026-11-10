@@ -4,16 +4,22 @@ import { TestCard } from "@/components/test-card";
 import { WhatsAppGroupCard } from "@/components/whatsapp-group";
 import { getDashboard } from "@/modules/analytics/dashboard";
 import { currentSite } from "@/sites/current";
-import { getMyPlans } from "@/modules/commerce/purchases";
+import { getFreshPurchase, getMyPlans } from "@/modules/commerce/purchases";
 import { getWalletBalance } from "@/modules/commerce/wallet";
 import { getMyReports } from "@/modules/content/report-service";
 import type { requireUser } from "@/modules/identity/session";
-import { FirstTestGuide, Hero, InProgressCard, LiveCard, MyPlans, MyReports, Performance, PlanExpiryBanner, QuickActions, RecentTests } from "./dashboard-sections";
+import { FirstTestGuide, Hero, InProgressCard, LiveCard, MyPlans, MyReports, Performance, PlanExpiryBanner, PurchaseSuccess, QuickActions, RecentTests } from "./dashboard-sections";
 import { ProfileCard } from "./profile-card";
 
 export async function DashboardData({ user, purchaseNotice }: { user: Awaited<ReturnType<typeof requireUser>>; purchaseNotice: "unlocked" | "pending" | null }) {
   const site = await currentSite();
-  const [d, plans, reports, walletPaise] = await Promise.all([getDashboard(site.code, user.id), getMyPlans(user.id), getMyReports(user.id), getWalletBalance(user.id)]);
+  const [d, plans, reports, walletPaise, fresh] = await Promise.all([
+    getDashboard(site.code, user.id),
+    getMyPlans(user.id),
+    getMyReports(user.id),
+    getWalletBalance(user.id),
+    purchaseNotice === "unlocked" ? getFreshPurchase(user.id) : null,
+  ]);
   // Profile comes from the DB (not the 5-minute session cookie cache) so edits show immediately.
   const firstName = d.profile.name.split(" ")[0];
   const needsProfile = d.profile.name === "Aspirant" || !d.profile.district;
@@ -23,13 +29,17 @@ export async function DashboardData({ user, purchaseNotice }: { user: Awaited<Re
     <>
       <AppHeader user={{ ...user, name: d.profile.name }} />
       <main className="mx-auto w-full max-w-6xl flex-1 space-y-6 px-4 py-6 sm:py-8">
-        {purchaseNotice && (
-          <p role="status" className="flex items-start gap-2 rounded-2xl border border-success bg-success-soft p-4 text-sm font-medium">
-            <BadgeCheck className="mt-0.5 size-5 shrink-0 text-success" aria-hidden />
-            {purchaseNotice === "unlocked"
-              ? "Payment received — your purchase is now unlocked on this account."
-              : "Payment received — it's being confirmed by the bank. Your access appears here automatically within a few minutes."}
-          </p>
+        {fresh ? (
+          <PurchaseSuccess purchase={fresh} />
+        ) : (
+          purchaseNotice && (
+            <p role="status" className="flex items-start gap-2 rounded-2xl border border-success bg-success-soft p-4 text-sm font-medium">
+              <BadgeCheck className="mt-0.5 size-5 shrink-0 text-success" aria-hidden />
+              {purchaseNotice === "unlocked"
+                ? "Payment received — your purchase is now unlocked on this account."
+                : "Payment received — it's being confirmed by the bank. Your access appears here automatically within a few minutes."}
+            </p>
+          )
         )}
         {/* Right after paying is when a student is keenest to join; otherwise the invite sits lower down. */}
         {purchaseNotice && <WhatsAppGroupCard place="after_purchase" />}

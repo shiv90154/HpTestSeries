@@ -134,8 +134,9 @@ export function BuyButton({
                 ? `Payment received but could not be confirmed: ${result.error}. Don't pay again — log in and your access is added automatically within a few minutes.`
                 : `Payment received but could not be confirmed: ${result.error}. If money was deducted, access unlocks automatically within a few minutes.`,
             );
+            // Either way the buyer lands on a page that explains the wait and picks the access up when it arrives.
             if (guest) router.push("/claim");
-            else setLoading(false);
+            else router.push("/dashboard?purchase=pending");
             return;
           }
           track("purchase", { transaction_id: order.orderId, value: order.amountPaise / 100, currency: "INR", item_name: order.productTitle });

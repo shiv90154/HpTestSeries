@@ -3,6 +3,7 @@ import {
   BadgeCheck,
   BarChart3,
   BookOpenCheck,
+  CheckCircle2,
   Clock,
   Crown,
   Flag,
@@ -11,6 +12,7 @@ import {
   NotebookPen,
   PlayCircle,
   Radio,
+  Receipt,
   Target,
   TrendingUp,
   type LucideIcon,
@@ -22,7 +24,7 @@ import { btn, card } from "@/components/ui";
 import { rupees } from "@/lib/money";
 import type { getDashboard } from "@/modules/analytics/dashboard";
 import { daysLeftLabel, planUsedPercent } from "@/modules/commerce/plan-rules";
-import type { Plan } from "@/modules/commerce/purchases";
+import type { FreshPurchase, Plan } from "@/modules/commerce/purchases";
 import type { MyReport } from "@/modules/content/report-service";
 import { ScoreTrend } from "./score-trend";
 import { currentSite } from "@/sites/current";
@@ -106,6 +108,77 @@ export function PlanExpiryBanner({ plans }: { plans: Plan[] }) {
       <Link href={`/buy/${p.slug}`} className={btn("accent", "md", "w-full sm:w-auto")}>
         Renew now <ArrowRight className="size-4" aria-hidden />
       </Link>
+    </section>
+  );
+}
+
+/** Shown once, right after checkout: what was bought, how long it lasts, and a button straight into the first test. */
+export function PurchaseSuccess({ purchase: p }: { purchase: FreshPurchase }) {
+  const longPlan = p.kind === "PASS" ? "Every paid test on the platform is open for you" : null;
+  return (
+    <section role="status" className={`${card} overflow-hidden border-success`}>
+      <div className="relative bg-linear-to-br from-primary-strong via-primary to-hero-glow p-5 text-white sm:p-6">
+        <div className="flex items-start gap-4">
+          <span className="grid size-12 shrink-0 place-items-center rounded-full bg-white/15 ring-4 ring-white/10">
+            <BadgeCheck className="size-7" aria-hidden />
+          </span>
+          <div className="min-w-0 flex-1">
+            <p className="text-xs font-semibold uppercase tracking-wide text-white/75">Payment successful</p>
+            <h2 className="mt-0.5 text-xl font-bold leading-snug sm:text-2xl">{p.title} is unlocked</h2>
+            <p className="mt-1 text-sm text-white/85">
+              Valid for {p.daysLeft} day{p.daysLeft === 1 ? "" : "s"} · till {date(p.expiresAt)}
+            </p>
+          </div>
+        </div>
+      </div>
+      <div className="space-y-4 p-5 sm:p-6">
+        <div>
+          <h3 className="mb-2 text-sm font-semibold">What you get</h3>
+          <ul className="space-y-1.5 text-sm">
+            {longPlan ? (
+              <li className="flex gap-2">
+                <CheckCircle2 className="mt-0.5 size-4 shrink-0 text-success" aria-hidden />
+                {longPlan}
+              </li>
+            ) : p.included.length ? (
+              p.included.map((s) => (
+                <li key={s.title} className="flex gap-2">
+                  <CheckCircle2 className="mt-0.5 size-4 shrink-0 text-success" aria-hidden />
+                  <span>
+                    {s.title}
+                    {s.testCount > 0 && (
+                      <span className="text-muted">
+                        {" "}
+                        · {s.testCount} test{s.testCount === 1 ? "" : "s"}
+                      </span>
+                    )}
+                  </span>
+                </li>
+              ))
+            ) : (
+              <li className="flex gap-2">
+                <CheckCircle2 className="mt-0.5 size-4 shrink-0 text-success" aria-hidden />
+                Mock tests, detailed solutions and your all-India rank
+              </li>
+            )}
+          </ul>
+        </div>
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+          <Link href={p.startHref} className={btn("primary", "lg", "w-full sm:w-auto")}>
+            <PlayCircle className="size-5" aria-hidden /> {p.startLabel}
+          </Link>
+          <div className="flex flex-wrap gap-x-5 gap-y-1 text-sm">
+            <Link href="/plan" className="inline-flex items-center gap-1 font-medium text-primary hover:underline">
+              View my plan <ArrowRight className="size-4" aria-hidden />
+            </Link>
+            {p.receiptHref && (
+              <Link href={p.receiptHref} className="inline-flex items-center gap-1 font-medium text-primary hover:underline">
+                <Receipt className="size-4" aria-hidden /> Receipt
+              </Link>
+            )}
+          </div>
+        </div>
+      </div>
     </section>
   );
 }
