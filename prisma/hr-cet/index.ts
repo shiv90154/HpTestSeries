@@ -1,8 +1,9 @@
 // HSSC CET Group C mock test series for hrtestseries.in. Plan and test counts: docs/HR-TEST-SERIES-PLAN.md §3.1.
-// So far: four Haryana GK sectionals (100 questions). The free mock, the paid full mocks and the other sectionals follow.
+// So far: a free full mock, two paid full mocks (mocks.ts) and four Haryana GK sectionals. More mocks and the other sectionals follow.
 // Adding a test = writing its questions and adding it to CET_SECTIONALS (or a mock list).
 
 import { balanceAnswers, type PatwariQuestion, type TestDef } from "../patwari/types";
+import { CET_FREE_TEST, CET_PAID_TESTS } from "./mocks";
 import { cetHaryanaGkGeography, cetHaryanaGkHistory } from "./sectionals-gk-1";
 import { cetHaryanaGkCultureEconomy, cetHaryanaGkPolityPeople } from "./sectionals-gk-2";
 
@@ -32,4 +33,6 @@ export const CET_SECTIONALS: TestDef[] = [
   sectional("hssc-cet-haryana-gk-4", "HSSC CET Haryana GK Sectional Test 4 (Polity & Personalities)", "एचएसएससी सीईटी हरियाणा GK सेक्शनल टेस्ट 4 (राजव्यवस्था एवं व्यक्तित्व)", HARYANA_GK, cetHaryanaGkPolityPeople),
 ];
 
-export const CET_TESTS: TestDef[] = [...CET_SECTIONALS];
+export const CET_MOCKS: TestDef[] = [CET_FREE_TEST, ...CET_PAID_TESTS];
+
+export const CET_TESTS: TestDef[] = [...CET_MOCKS, ...CET_SECTIONALS];

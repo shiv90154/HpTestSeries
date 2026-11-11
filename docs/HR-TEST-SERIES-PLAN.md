@@ -74,7 +74,7 @@ same day. Not confirmed, so no copy may state it as fact.
 
 ## 6. Launch checklist (blocks all organic traffic)
 
-- [ ] CET series live (free mock + at least 2 paid mocks)
+- [ ] CET series live (free mock + at least 2 paid mocks) — questions written; needs seeding/deploy and switching the product on in /admin/products
 - [ ] Owner confirms CET pattern/marking against the 2026 advertisement
 - [ ] Razorpay: add hrtestseries.in as a website
 - [ ] Resend domain + `EMAIL_FROM_HR`
@@ -90,6 +90,6 @@ same day. Not confirmed, so no copy may state it as fact.
 | Haryana free GK mock | ✅ live (noindex) |
 | `hssc` / `hpsc` bodies and exam pages | not started |
 | Haryana GK bank | not started |
-| CET series (free + 6 mocks + sectionals) | not started |
+| CET series (free + 6 mocks + sectionals) | in progress: free mock + paid mocks 1–2 (`prisma/hr-cet/mocks.ts`, 300 Qs, Haryana GK new, other sections reused from the HP/Punjab banks) and 4 Haryana GK sectionals done; paid mocks 3–6 and 11 other sectionals to go |
 | Police series | not started |
 | Posts | not started |

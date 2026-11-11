@@ -26,7 +26,39 @@ describe("HSSC CET Group C series", () => {
     for (const t of CET_TESTS) for (const x of t.questions) expect(topics.has(`${x.subject}/${x.topic}`), `${t.slug}: ${x.subject}/${x.topic}`).toBe(true);
   });
 
-  describe.each(CET_TESTS.map((t) => [t.slug, t] as const))("%s", (_slug, def) => {
+  describe.each(CET_TESTS.filter((t) => t.type === "MOCK").map((t) => [t.slug, t] as const))("%s", (_slug, def) => {
+    const qs = def.questions;
+
+    it("is a 100-question, 105-minute mock with the CET section split and no negative marking", () => {
+      expect(qs).toHaveLength(100);
+      expect(def.durationSec).toBe(105 * 60);
+      expect(def.marksWrong).toBe(0);
+      expect(def.sections).toHaveLength(6);
+      expect(def.sections.map((_, i) => qs.filter((x) => x.s === i).length)).toEqual([25, 15, 20, 15, 15, 10]);
+      expect(def.isFree === (def.slug === "hssc-cet-free-mock-1")).toBe(true);
+    });
+
+    it("has 4 distinct options per language and a valid answer", () => {
+      qs.forEach((x, i) => {
+        const where = `#${i + 1} ${x.en[0].slice(0, 50)}`;
+        for (const lang of [x.en, x.hi]) {
+          expect(lang[0].trim().length, where).toBeGreaterThan(5);
+          expect(lang[2].trim().length, where).toBeGreaterThan(5);
+          expect(new Set(lang[1].map((o) => o.trim())).size, `${where} options`).toBe(4);
+        }
+        expect([0, 1, 2, 3]).toContain(x.a);
+      });
+    });
+
+    it("spreads the correct answer over A–D", () => {
+      [0, 1, 2, 3].map((p) => qs.filter((x) => x.a === p).length).forEach((c) => {
+        expect(c).toBeGreaterThanOrEqual(15);
+        expect(c).toBeLessThanOrEqual(35);
+      });
+    });
+  });
+
+  describe.each(CET_TESTS.filter((t) => t.type === "SECTIONAL").map((t) => [t.slug, t] as const))("%s", (_slug, def) => {
     const qs = def.questions;
 
     it("is one section of 25 questions in 20 minutes with no negative marking", () => {
